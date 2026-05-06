@@ -12,6 +12,18 @@ import {
 } from '../../core/functions';
 import { MeoSet } from '../base/MeoSet';
 
+/**
+ * An ordered set of distinct integers.
+ *
+ * @example
+ * ```ts
+ * const s = IntSet.fromString('{1, 3, 7, 15}');
+ * console.log(s.numValues()); // 4
+ * console.log(s.startValue()); // 1
+ * console.log(s.endValue());   // 15
+ * s.free();
+ * ```
+ */
 export class IntSet extends MeoSet<number> {
 	protected _make(ptr: Ptr): this {
 		return new IntSet(ptr) as this;
@@ -21,10 +33,18 @@ export class IntSet extends MeoSet<number> {
 	// CONSTRUCTORS
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Parses an `IntSet` from its WKT string representation.
+	 * @param str WKT string, e.g. `"{1, 3, 7}"`.
+	 */
 	static fromString(str: string): IntSet {
 		return new IntSet(intset_in(str));
 	}
 
+	/**
+	 * Deserialises an `IntSet` from a hex-encoded WKB string produced by {@link asHexWKB}.
+	 * @param hexwkb Hex-encoded WKB string.
+	 */
 	static fromHexWKB(hexwkb: string): IntSet {
 		return new IntSet(set_from_hexwkb(hexwkb));
 	}
@@ -33,6 +53,7 @@ export class IntSet extends MeoSet<number> {
 	// OUTPUT
 	// -------------------------------------------------------------------------
 
+	/** Returns the WKT string representation (e.g. `{1, 3, 7}`). */
 	toString(): string {
 		return intset_out(this._inner);
 	}
@@ -41,15 +62,20 @@ export class IntSet extends MeoSet<number> {
 	// ACCESSORS
 	// -------------------------------------------------------------------------
 
+	/** Returns the smallest (first) integer in this set. */
 	startValue(): number {
 		return intset_start_value(this._inner);
 	}
 
+	/** Returns the largest (last) integer in this set. */
 	endValue(): number {
 		return intset_end_value(this._inner);
 	}
 
-	/** Returns the n-th value (0-based index). */
+	/**
+	 * Returns the n-th integer (0-based index).
+	 * @param n 0-based index (MEOS internally uses 1-based indexing).
+	 */
 	valueN(n: number): number {
 		return intset_value_n(this._inner, n + 1);
 	}
@@ -58,6 +84,10 @@ export class IntSet extends MeoSet<number> {
 	// DISTANCE
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Returns the distance (gap) between `this` and `other` in integers.
+	 * Returns `0` if they share at least one element.
+	 */
 	distance(other: IntSet): number {
 		return distance_intset_intset(this._inner, other.inner);
 	}
@@ -66,15 +96,20 @@ export class IntSet extends MeoSet<number> {
 	// CONVERSIONS & MATH
 	// -------------------------------------------------------------------------
 
-	/** Returns a new FloatSet converting each integer value to float (raw Ptr). */
+	/**
+	 * Converts each integer in this set to a float and returns the raw WASM pointer.
+	 * Use `new FloatSet(ptr)` to obtain a typed object.
+	 */
 	toFloatSet(): Ptr {
 		return intset_to_floatset(this._inner);
 	}
 
 	/**
-	 * Shift and/or scale the set.
-	 * @param shift  amount to shift (pass 0 and hasShift=false to skip)
-	 * @param width  new width (pass 0 and hasWidth=false to skip)
+	 * Returns a new set shifted and/or scaled along the integer axis.
+	 * @param shift Amount to add to every element (ignored when `hasShift` is `false`).
+	 * @param width New total width (ignored when `hasWidth` is `false`).
+	 * @param hasShift Set to `false` to skip shifting (default `true`).
+	 * @param hasWidth Set to `false` to skip scaling (default `true`).
 	 */
 	shiftScale(shift: number, width: number, hasShift = true, hasWidth = true): IntSet {
 		return new IntSet(intset_shift_scale(this._inner, shift, width, hasShift, hasWidth));

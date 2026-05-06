@@ -16,6 +16,19 @@ import {
 import { SpanSet } from '../base/SpanSet';
 import { DateSpan } from './DateSpan';
 
+/**
+ * An ordered set of disjoint {@link DateSpan} values.
+ *
+ * Dates are represented as `DateADT` integers (days since 2000-01-01).
+ *
+ * @example
+ * ```ts
+ * const ss = DateSpanSet.fromString('{[2020-01-01, 2020-06-01), [2020-09-01, 2020-12-31]}');
+ * console.log(ss.numSpans());  // 2
+ * console.log(ss.numDates());  // total distinct dates across all spans
+ * ss.free();
+ * ```
+ */
 export class DateSpanSet extends SpanSet<DateSpan> {
 	protected _makeSpanSet(ptr: Ptr): this {
 		return new DateSpanSet(ptr) as this;
@@ -29,14 +42,26 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	// CONSTRUCTORS
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Parses a `DateSpanSet` from its WKT string representation.
+	 * @param str WKT string, e.g. `"{[2020-01-01, 2020-06-01), [2020-09-01, 2020-12-31]}"`.
+	 */
 	static fromString(str: string): DateSpanSet {
 		return new DateSpanSet(datespanset_in(str));
 	}
 
+	/**
+	 * Deserialises a `DateSpanSet` from a hex-encoded WKB string produced by {@link asHexWKB}.
+	 * @param hexwkb Hex-encoded WKB string.
+	 */
 	static fromHexWKB(hexwkb: string): DateSpanSet {
 		return new DateSpanSet(spanset_from_hexwkb(hexwkb));
 	}
 
+	/**
+	 * Wraps a single {@link DateSpan} into a one-element `DateSpanSet`.
+	 * @param span The span to wrap.
+	 */
 	static fromSpan(span: DateSpan): DateSpanSet {
 		return new DateSpanSet(span_to_spanset(span.inner));
 	}
@@ -45,6 +70,7 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	// OUTPUT
 	// -------------------------------------------------------------------------
 
+	/** Returns the WKT string representation. */
 	toString(): string {
 		return datespanset_out(this._inner);
 	}
@@ -53,32 +79,35 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	// ACCESSORS
 	// -------------------------------------------------------------------------
 
-	/** Lower bound as days since 2000-01-01. */
+	/** Returns the lower bound of the first span as days since 2000-01-01. */
 	lower(): DateADT {
 		return datespanset_start_date(this._inner);
 	}
 
-	/** Upper bound as days since 2000-01-01. */
+	/** Returns the upper bound of the last span as days since 2000-01-01. */
 	upper(): DateADT {
 		return datespanset_end_date(this._inner);
 	}
 
-	/** Total number of distinct dates across all spans. */
+	/** Returns the total number of distinct dates across all spans. */
 	numDates(): number {
 		return datespanset_num_dates(this._inner);
 	}
 
-	/** Start date of the spanset as days since 2000-01-01. */
+	/** Returns the start date of the first span as days since 2000-01-01. */
 	startDate(): DateADT {
 		return datespanset_start_date(this._inner);
 	}
 
-	/** End date of the spanset as days since 2000-01-01. */
+	/** Returns the end date of the last span as days since 2000-01-01. */
 	endDate(): DateADT {
 		return datespanset_end_date(this._inner);
 	}
 
-	/** Returns the n-th date (0-based index) as days since 2000-01-01. */
+	/**
+	 * Returns the n-th date (0-based index) as days since 2000-01-01.
+	 * @param n 0-based index (MEOS internally uses 1-based indexing).
+	 */
 	dateN(n: number): DateADT {
 		return datespanset_date_n(this._inner, n + 1);
 	}
@@ -87,7 +116,10 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	// DISTANCE
 	// -------------------------------------------------------------------------
 
-	/** Distance in days between this and another DateSpan or DateSpanSet. */
+	/**
+	 * Returns the distance (gap) between `this` and `other` in days.
+	 * Returns `0` if they overlap. Accepts either a {@link DateSpan} or a `DateSpanSet`.
+	 */
 	distance(other: DateSpan | DateSpanSet): number {
 		if (other instanceof DateSpan)
 			return distance_datespanset_datespan(this._inner, other.inner);
@@ -98,15 +130,20 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	// CONVERSIONS & MATH
 	// -------------------------------------------------------------------------
 
-	/** Convert to a TsTzSpanSet (bounds become midnight UTC). Returns a raw Ptr. */
+	/**
+	 * Converts this set to a {@link TsTzSpanSet} (date bounds become midnight UTC) and returns the raw WASM pointer.
+	 * Use `new TsTzSpanSet(ptr)` to obtain a typed object.
+	 */
 	toTsTzSpanSet(): Ptr {
 		return datespanset_to_tstzspanset(this._inner);
 	}
 
 	/**
-	 * Shift and/or scale the spanset.
-	 * @param shift  days to shift (pass 0 and hasShift=false to skip)
-	 * @param width  new width in days (pass 0 and hasWidth=false to skip)
+	 * Returns a new span set shifted and/or scaled along the date axis.
+	 * @param shift Number of days to shift (ignored when `hasShift` is `false`).
+	 * @param width New total width in days (ignored when `hasWidth` is `false`).
+	 * @param hasShift Set to `false` to skip shifting (default `true`).
+	 * @param hasWidth Set to `false` to skip scaling (default `true`).
 	 */
 	shiftScale(
 		shift: number,

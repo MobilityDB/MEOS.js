@@ -187,7 +187,12 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_as_hexwkb
 	 */
 	asHexWKB(): string {
-		return call<string>('temporal_as_hexwkb_w', 'string', [ptrArgType()], [ptrArgVal(this._inner)]);
+		return call<string>(
+			'temporal_as_hexwkb_w',
+			'string',
+			[ptrArgType()],
+			[ptrArgVal(this._inner)]
+		);
 	}
 
 	/**
@@ -218,7 +223,12 @@ export abstract class Temporal<V> {
 	 */
 	interpolation(): TInterpolation {
 		return TInterpolation.fromString(
-			call<string>('temporal_interp_w', 'string', [ptrArgType()], [ptrArgVal(this._inner)])
+			call<string>(
+				'temporal_interp_w',
+				'string',
+				[ptrArgType()],
+				[ptrArgVal(this._inner)]
+			)
 		);
 	}
 
@@ -227,7 +237,12 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_num_instants
 	 */
 	numInstants(): number {
-		return call<number>('temporal_num_instants_w', 'number', [ptrArgType()], [ptrArgVal(this._inner)]);
+		return call<number>(
+			'temporal_num_instants_w',
+			'number',
+			[ptrArgType()],
+			[ptrArgVal(this._inner)]
+		);
 	}
 
 	/**
@@ -280,7 +295,11 @@ export abstract class Temporal<V> {
 	 */
 	instantN(n: number): this {
 		return this._fromInner(
-			callPtr('temporal_instant_n_w', [ptrArgType(), 'number'], [ptrArgVal(this._inner), n])
+			callPtr(
+				'temporal_instant_n_w',
+				[ptrArgType(), 'number'],
+				[ptrArgVal(this._inner), n]
+			)
 		);
 	}
 
@@ -289,7 +308,12 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_num_timestamps
 	 */
 	numTimestamps(): number {
-		return call<number>('temporal_num_timestamps_w', 'number', [ptrArgType()], [ptrArgVal(this._inner)]);
+		return call<number>(
+			'temporal_num_timestamps_w',
+			'number',
+			[ptrArgType()],
+			[ptrArgVal(this._inner)]
+		);
 	}
 
 	/**
@@ -297,12 +321,14 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_start_timestamptz
 	 */
 	startTimestamp(): TimestampTz {
-		return Number(call<bigint>(
-			'temporal_start_timestamptz_w',
-			'bigint',
-			[ptrArgType()],
-			[ptrArgVal(this._inner)]
-		));
+		return Number(
+			call<bigint>(
+				'temporal_start_timestamptz_w',
+				'bigint',
+				[ptrArgType()],
+				[ptrArgVal(this._inner)]
+			)
+		);
 	}
 
 	/**
@@ -310,12 +336,14 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_end_timestamptz
 	 */
 	endTimestamp(): TimestampTz {
-		return Number(call<bigint>(
-			'temporal_end_timestamptz_w',
-			'bigint',
-			[ptrArgType()],
-			[ptrArgVal(this._inner)]
-		));
+		return Number(
+			call<bigint>(
+				'temporal_end_timestamptz_w',
+				'bigint',
+				[ptrArgType()],
+				[ptrArgVal(this._inner)]
+			)
+		);
 	}
 
 	/**

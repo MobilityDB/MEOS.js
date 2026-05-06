@@ -25,3 +25,8 @@ Thumbs.db
 
 # JAVA REP
 JMEOS-fix-tests-using-docker
+
+# DOCUMENTATION
+docs/api/
+docs/.vitepress/dist/
+docs/.vitepress/cache/

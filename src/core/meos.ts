@@ -11,7 +11,7 @@
  *
  *   getModule() - returns the initialised MeosModule instance. All
  *                 generated TypeScript wrappers in core/functions.ts call
- *                 this internally via the call<T>() helper.
+ *                 this internally via the `call<T>()` helper.
  */
 
 import createMeosModule, { type MeosModule } from '../../wasm/meos.js';
@@ -29,8 +29,10 @@ export async function initMeos(): Promise<void> {
 	if (Module) return;
 	Module = await createMeosModule();
 	Module.ccall('meos_init_lib', null, [], []);
-	// meos_pointer_size was added in a later binary; guard against older builds.
-	if (typeof (Module as unknown as Record<string, unknown>)['_meos_pointer_size'] === 'function') {
+	if (
+		typeof (Module as unknown as Record<string, unknown>)['_meos_pointer_size'] ===
+		'function'
+	) {
 		const ptrSize = Module.ccall('meos_pointer_size', 'number', [], []) as number;
 		setWasm64(ptrSize === 8);
 	}
@@ -40,7 +42,7 @@ export async function initMeos(): Promise<void> {
  * Returns the initialised MeosModule.
  *
  * Throws if initMeos() has not been called yet. All generated wrappers in
- * core/functions.ts call this via the call<T>() helper.
+ * core/functions.ts call this via the `call<T>()` helper.
  */
 export function getModule(): MeosModule {
 	if (!Module)

@@ -1,0 +1,19 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "readme": "none",
+  "outputFileStrategy": "members",
+  "membersWithOwnFile": ["Class", "Interface", "Enum"],
+  "entryFileName": "index",
+  "indexFormat": "table",
+  "useCodeBlocks": true,
+  "expandObjects": true,
+  "tableColumnSettings": {
+    "hideInherited": false,
+    "hideModifiers": true,
+    "hideSources": true
+  }
+}

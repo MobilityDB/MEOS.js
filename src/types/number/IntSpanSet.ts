@@ -15,6 +15,18 @@ import {
 import { SpanSet } from '../base/SpanSet';
 import { IntSpan } from './IntSpan';
 
+/**
+ * An ordered set of disjoint {@link IntSpan} values.
+ *
+ * @example
+ * ```ts
+ * const ss = IntSpanSet.fromString('{[1, 5), [8, 12)}');
+ * console.log(ss.numSpans()); // 2
+ * console.log(ss.lower());    // 1
+ * console.log(ss.upper());    // 12
+ * ss.free();
+ * ```
+ */
 export class IntSpanSet extends SpanSet<IntSpan> {
 	protected _makeSpanSet(ptr: Ptr): this {
 		return new IntSpanSet(ptr) as this;
@@ -28,14 +40,26 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	// CONSTRUCTORS
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Parses an `IntSpanSet` from its WKT string representation.
+	 * @param str WKT string, e.g. `"{[1, 5), [8, 12)}"`.
+	 */
 	static fromString(str: string): IntSpanSet {
 		return new IntSpanSet(intspanset_in(str));
 	}
 
+	/**
+	 * Deserialises an `IntSpanSet` from a hex-encoded WKB string produced by {@link asHexWKB}.
+	 * @param hexwkb Hex-encoded WKB string.
+	 */
 	static fromHexWKB(hexwkb: string): IntSpanSet {
 		return new IntSpanSet(spanset_from_hexwkb(hexwkb));
 	}
 
+	/**
+	 * Wraps a single {@link IntSpan} into a one-element `IntSpanSet`.
+	 * @param span The span to wrap.
+	 */
 	static fromSpan(span: IntSpan): IntSpanSet {
 		return new IntSpanSet(span_to_spanset(span.inner));
 	}
@@ -44,6 +68,7 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	// OUTPUT
 	// -------------------------------------------------------------------------
 
+	/** Returns the WKT string representation (e.g. `{[1, 5), [8, 12)}`). */
 	toString(): string {
 		return intspanset_out(this._inner);
 	}
@@ -52,17 +77,21 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	// ACCESSORS
 	// -------------------------------------------------------------------------
 
+	/** Returns the inclusive lower bound of the first span. */
 	lower(): number {
 		return intspanset_lower(this._inner);
 	}
 
+	/** Returns the exclusive upper bound of the last span (stored half-open). */
 	upper(): number {
 		return intspanset_upper(this._inner);
 	}
 
 	/**
-	 * Total width (sum of individual span widths).
-	 * @param boundSpan false (default) -> sum; true -> bounding span width
+	 * Returns the total width of this span set.
+	 * @param boundSpan
+	 *   - `false` (default): sum of all individual span widths.
+	 *   - `true`: width of the bounding span (from first lower to last upper).
 	 */
 	width(boundSpan = false): number {
 		return intspanset_width(this._inner, boundSpan);
@@ -72,6 +101,10 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	// DISTANCE
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Returns the distance (gap) between `this` and `other` in integers.
+	 * Returns `0` if they overlap. Accepts either an {@link IntSpan} or an `IntSpanSet`.
+	 */
 	distance(other: IntSpan | IntSpanSet): number {
 		if (other instanceof IntSpan)
 			return distance_intspanset_intspan(this._inner, other.inner);
@@ -82,15 +115,20 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	// CONVERSIONS & MATH
 	// -------------------------------------------------------------------------
 
-	/** Returns a FloatSpanSet converting each span's bounds to float (raw Ptr). */
+	/**
+	 * Converts this set to a {@link FloatSpanSet} and returns the raw WASM pointer.
+	 * Use `new FloatSpanSet(ptr)` to obtain a typed object.
+	 */
 	toFloatSpanSet(): Ptr {
 		return intspanset_to_floatspanset(this._inner);
 	}
 
 	/**
-	 * Shift and/or scale the spanset.
-	 * @param shift  amount to shift (pass 0 and hasShift=false to skip)
-	 * @param width  new width (pass 0 and hasWidth=false to skip)
+	 * Returns a new span set shifted and/or scaled along the integer axis.
+	 * @param shift Amount to add to every bound (ignored when `hasShift` is `false`).
+	 * @param width New total width (ignored when `hasWidth` is `false`).
+	 * @param hasShift Set to `false` to skip shifting (default `true`).
+	 * @param hasWidth Set to `false` to skip scaling (default `true`).
 	 */
 	shiftScale(shift: number, width: number, hasShift = true, hasWidth = true): IntSpanSet {
 		return new IntSpanSet(
