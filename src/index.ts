@@ -3,6 +3,7 @@
  */
 
 export { initMeos, getModule } from './core/meos';
+export * from './errors';
 export { Span } from './types/base/Span';
 export { SpanSet } from './types/base/SpanSet';
 export { MeoSet } from './types/base/MeoSet';

@@ -56,32 +56,28 @@ export function callPtr(
 // errlevel mirrors PostgreSQL severity constants: NOTICE=18, WARNING=19, ERROR=21.
 // After every generated wrapper call, checkMeosError() reads the C globals written
 // by _meos_error_handler (registered in meos_init_lib) and throws if errcode != 0.
+//
+// Typed exceptions (MeosInternalError, MeosInvalidArgError, …) are defined in
+// src/errors.ts and dispatched via makeMeosException().
 
-export const MEOS_NOTICE  = 18;
-export const MEOS_WARNING = 19;
-export const MEOS_ERROR   = 21;
+import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from '../errors';
+export * from '../errors';
 
-export class MeosError extends Error {
-	constructor(
-		message: string,
-		public readonly code: number,
-		public readonly level: number
-	) {
-		super(message);
-		this.name = 'MeosError';
-	}
-}
+// MeosError kept as alias for backward compatibility.
+export { MeosException as MeosError };
 
 export function checkMeosError(): void {
-	const code = call<number>('meos_err_code', 'number', [], []);
-	if (code === 0) return;
+	const code  = call<number>('meos_err_code',  'number', [], []);
 	const level = call<number>('meos_err_level', 'number', [], []);
-	const msg   = call<string>('meos_err_msg',   'string', [], []);
+	if (code === 0 && level === 0) return;
+	const msg = call<string>('meos_err_msg', 'string', [], []);
 	call<void>('meos_err_clear', null, [], []);
-	if (level === MEOS_WARNING) {
+	if (level === MEOS_NOTICE) {
+		console.info(`MEOS notice [${code}]: ${msg}`);
+	} else if (level === MEOS_WARNING) {
 		console.warn(`MEOS warning [${code}]: ${msg}`);
 	} else {
-		throw new MeosError(msg, code, level);
+		throw makeMeosException(code, level, msg);
 	}
 }
 

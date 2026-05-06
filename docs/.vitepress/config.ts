@@ -31,6 +31,12 @@ export default defineConfig({
 						{ text: 'Temporal Bounding Box', link: '/guide/tbox' },
 					],
 				},
+				{
+					text: 'Advanced',
+					items: [
+						{ text: 'Error Handling', link: '/guide/errors' },
+					],
+				},
 			],
 
 			'/api/': [
