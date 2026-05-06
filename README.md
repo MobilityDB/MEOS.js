@@ -2,20 +2,20 @@
 
 TypeScript/JavaScript bindings for [MEOS](https://libmeos.org/), the C library that powers [MobilityDB](https://mobilitydb.com/) spatiotemporal types.
 
-MEOS is compiled to WebAssembly via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values (booleans, integers, floats, time spans...) in Node.js or the browser.
+MEOS is compiled to WebAssembly via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values (spans, span sets, sets, bounding boxes) in Node.js or the browser.
+
+**Documentation:** https://nyuke235.github.io/MEOS.js/
 
 ## Table of contents
-- [Requirements](#Requirements)
-- [Installation](#Installation)
-- [Memory management](#Memory-management)
-- [Implemented types](#Implemented-types)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Memory management](#memory-management)
+- [Implemented types](#implemented-types)
 
 ## Requirements
 
-- **Node.js** 18+ (tests and code generation use the built-in test runner and `tsx`)
+- **Node.js** 18+
 - **Docker**: required only to build the WASM module from source; not needed if you use the prebuilt files
-
-No other local toolchain is needed. All C/Emscripten compilation happens inside the Docker container.
 
 ## Installation
 
@@ -37,20 +37,17 @@ docker build --output type=local,dest=./wasm --target wasm .
 docker build --build-arg TARGET=wasm32 --output type=local,dest=./wasm --target wasm .
 ```
 
-This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build might take a long time as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
+This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
 
 **Option B - use the prebuilt files**
 
 *todo*
 
 ### 3. Run the tests
-To assure WASM is working fine, run the tests:
 
 ```bash
 npm test
 ```
-
-> **Future:** MEOS.js is intended to be published as an npm package so that the installation will be as simple as `npm install meos.js`, with the WASM binary bundled directly in the package.
 
 ## Memory management
 
@@ -66,7 +63,7 @@ span.free();
 
 **Option 2: `using` (recommended)**
 
-All types implement `[Symbol.dispose]()`, so you can use the ES2025 [Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management) syntax. The object is freed automatically when the block exits, even if an exception is thrown.
+All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management) syntax. The object is freed automatically when the block exits, even if an exception is thrown.
 
 ```ts
 {
@@ -75,55 +72,80 @@ All types implement `[Symbol.dispose]()`, so you can use the ES2025 [Explicit Re
 } // span.free() called automatically here
 ```
 
-> **Note:** `using` requires TypeScript 5.2+ with `"lib": ["ES2025"]` (or `"ESNext"`) in `tsconfig.json`.
+> `using` requires TypeScript 5.2+ with `"lib": ["ES2022"]` or `"ESNext"` in `tsconfig.json`.
 
 ## Implemented types
 
-
 ### Base classes (`src/types/base/`)
 
- Class        | Description                                 
---------------|---------------------------------------------
- `MeoSet<T>`  | Abstract generic base for all set types 
- `Span`       | Abstract base for all span types            
- `SpanSet<S>` | Abstract generic base for all spanset types     
-
+| Class | Description |
+|---|---|
+| `MeoSet<T>` | Abstract generic base for all set types |
+| `Span` | Abstract base for all span types |
+| `SpanSet<S>` | Abstract generic base for all span-set types |
 
 ### Temporal types (`src/types/temporal/` & `src/types/base/`)
 
- Class    | Description      | Tests                            
-----------|------------------|----------------------------------
- `TBool`  | Temporal boolean | ✅ `test/temporal/test_tbool.ts`  
- `TInt`   | Temporal integer | ✅ `test/temporal/test_tint.ts`   
- `TFloat` | Temporal float   | ✅ `test/temporal/test_tfloat.ts` 
-
+| Class | Description | Tests |
+|---|---|---|
+| `TBool` | Temporal boolean | ✅ `test/temporal/test_tbool.ts` |
+| `TInt` | Temporal integer | ✅ `test/temporal/test_tint.ts` |
+| `TFloat` | Temporal float | ✅ `test/temporal/test_tfloat.ts` |
 
 ### Number types (`src/types/number/`)
 
- Class          | Description          | Tests                             
-----------------|----------------------|-----------------------------------
- `IntSpan`      | Span of integers     | ✅ `test/number/test_intspan.ts`   
- `IntSpanSet`   | Set of integer spans | ✅ `test/number/test_intspanset.ts`
- `IntSet`       | Set of integers      | ✅ `test/number/test_intset.ts`
- `FloatSpan`    | Span of floats       | ✅ `test/number/test_floatspan.ts` 
- `FloatSpanSet` | Set of float spans   | ✅ `test/number/test_floatspanset.ts`
- `FloatSet`     | Set of floats        | ✅ `test/number/test_floatset.ts`
-
+| Class | Description | Tests |
+|---|---|---|
+| `IntSpan` | Span of integers | ✅ `test/number/test_intspan.ts` |
+| `IntSpanSet` | Set of integer spans | ✅ `test/number/test_intspanset.ts` |
+| `IntSet` | Set of integers | ✅ `test/number/test_intset.ts` |
+| `FloatSpan` | Span of floats | ✅ `test/number/test_floatspan.ts` |
+| `FloatSpanSet` | Set of float spans | ✅ `test/number/test_floatspanset.ts` |
+| `FloatSet` | Set of floats | ✅ `test/number/test_floatset.ts` |
 
 ### Time types (`src/types/time/`)
 
- Class         | Description               | Tests                             
----------------|---------------------------|-----------------------------------
- `TsTzSpan`    | Timestamptz span          | ✅ `test/time/test_tstzspan.ts`    
- `TsTzSpanSet` | Set of timestamptz spans  | ✅ `test/time/test_tstzspanset.ts` 
- `TsTzSet`     | Set of timestamptz values | ✅ `test/time/test_tstzset.ts`     
- `DateSpan`    | Date span                 | ✅ `test/time/test_datespan.ts`    
- `DateSpanSet` | Set of date spans         | ✅ `test/time/test_datespanset.ts`
- `DateSet`     | Set of dates              | ✅ `test/time/test_dateset.ts`
-
+| Class | Description | Tests |
+|---|---|---|
+| `TsTzSpan` | Timestamptz span | ✅ `test/time/test_tstzspan.ts` |
+| `TsTzSpanSet` | Set of timestamptz spans | ✅ `test/time/test_tstzspanset.ts` |
+| `TsTzSet` | Set of timestamptz values | ✅ `test/time/test_tstzset.ts` |
+| `DateSpan` | Date span | ✅ `test/time/test_datespan.ts` |
+| `DateSpanSet` | Set of date spans | ✅ `test/time/test_datespanset.ts` |
+| `DateSet` | Set of dates | ✅ `test/time/test_dateset.ts` |
 
 ### Boxes (`src/types/boxes/`)
 
- Class  | Description                     | Tests 
---------|---------------------------------|-------
- `TBox` | Numeric x temporal bounding box | 🔲    
+| Class | Description | Tests |
+|---|---|---|
+| `TBox` | Numeric x temporal bounding box | ✅ `test/boxes/test_tbox.ts` |
+
+
+## Types not yet implemented
+
+### BigInt types (`src/types/number/`)
+
+| Class | Description |
+|---|---|
+| `BigIntSpan` | Span of 64-bit integers |
+| `BigIntSpanSet` | Set of `BigIntSpan` values |
+| `BigIntSet` | Ordered set of distinct 64-bit integers |
+
+### Spatiotemporal bounding box (`src/types/boxes/`)
+
+| Class | Description |
+|---|---|
+| `STBox` | Spatiotemporal bounding box (X, Y, Z spatial axes + T temporal axis) |
+
+### Temporal text (`src/types/temporal/`)
+
+| Class | Description |
+|---|---|
+| `TText` | Temporal text (instant, sequence, sequence set) |
+
+### Temporal geometry / geography (`src/types/temporal/`)
+
+| Class | Description |
+|---|---|
+| `TGeomPoint` | Temporal geometry point (2D/3D) |
+| `TGeogPoint` | Temporal geography point (2D/3D, geodesic) |

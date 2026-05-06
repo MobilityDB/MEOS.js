@@ -7,8 +7,8 @@ MEOS.js provides four set types:
 
 | Class | Value type | Unit |
 |---|---|---|
-| `IntSet` | Integer | — |
-| `FloatSet` | Float (IEEE 754 double) | — |
+| `IntSet` | Integer | - |
+| `FloatSet` | Float (IEEE 754 double) | - |
 | `DateSet` | Calendar date | Days since 2000-01-01 |
 | `TsTzSet` | Timestamp with time zone | Microseconds since 2000-01-01 UTC |
 
@@ -39,9 +39,9 @@ const copy   = IntSet.fromHexWKB(hexwkb);
 const s = IntSet.fromString('{1, 3, 7, 15}');
 
 s.numValues();    // 4
-s.startValue();   // 1   — smallest element
-s.endValue();     // 15  — largest element
-s.valueN(0);      // 1   — 0-based index
+s.startValue();   // 1   (smallest)
+s.endValue();     // 15  (largest)
+s.valueN(0);      // 1   (0-based index)
 s.valueN(2);      // 7
 ```
 
@@ -51,8 +51,8 @@ s.valueN(2);      // 7
 const a = IntSet.fromString('{1, 3, 7}');
 const b = IntSet.fromString('{3, 7, 20}');
 
-a.overlaps(b);        // true  — share {3, 7}
-a.isContainedIn(b);   // false — 1 ∉ b
+a.overlaps(b);        // true  (share {3, 7})
+a.isContainedIn(b);   // false (1 not in b)
 b.contains(a);        // false
 a.eq(b);              // false
 ```
@@ -63,7 +63,7 @@ a.eq(b);              // false
 const a = IntSet.fromString('{1, 3}');
 const b = IntSet.fromString('{7, 15}');
 
-a.isBefore(b);        // true  — max(a)=3 < min(b)=7
+a.isBefore(b);        // true  (max(a)=3 < min(b)=7)
 a.isOverOrBefore(b);  // true
 b.isAfter(a);         // true
 b.isOverOrAfter(a);   // true
@@ -85,8 +85,8 @@ const a = IntSet.fromString('{1, 3, 7}');
 const b = IntSet.fromString('{3, 7, 20}');
 
 const u = a.union(b);          // {1, 3, 7, 20}
-const i = a.intersection(b);  // {3, 7}  — null if disjoint
-const m = a.minus(b);         // {1}     — null if result is empty
+const i = a.intersection(b);  // {3, 7}  (null if disjoint)
+const m = a.minus(b);         // {1}     (null if empty)
 
 u.free(); i?.free(); m?.free();
 ```
@@ -119,6 +119,6 @@ Every set can be projected to its bounding span or a span set of unit spans:
 ```ts
 const s = IntSet.fromString('{1, 3, 7}');
 
-const span    = s.toSpan();    // raw Ptr — bounding IntSpan [1, 7]
-const spanset = s.toSpanSet(); // raw Ptr — IntSpanSet {[1,1],[3,3],[7,7]}
+const span    = s.toSpan();    // raw Ptr: bounding IntSpan [1, 7]
+const spanset = s.toSpanSet(); // raw Ptr: IntSpanSet {[1,1],[3,3],[7,7]}
 ```

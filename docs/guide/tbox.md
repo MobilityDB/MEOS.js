@@ -7,14 +7,14 @@ temporal number sequences, and is useful as a lightweight summary type.
 ## Dimensions
 
 A `TBox` can have:
-- **X only** — a numeric range (integer or float span).
-- **T only** — a timestamp range (`TsTzSpan`).
-- **XT** — both a numeric and a temporal range.
+- **X only**: a numeric range (integer or float span).
+- **T only**: a timestamp range (`TsTzSpan`).
+- **XT**: both a numeric and a temporal range.
 
 MEOS outputs different WKT prefixes depending on the X type:
-- Integer X → `TBOX X(...)` or `TBOX XT(...)`
-- Float X → `TBOXFLOAT X(...)` or `TBOXFLOAT XT(...)`
-- T only → `TBOX T(...)`
+- Integer X: `TBOX X(...)` or `TBOX XT(...)`
+- Float X: `TBOXFLOAT X(...)` or `TBOXFLOAT XT(...)`
+- T only: `TBOX T(...)`
 
 ## Creating a TBox
 
@@ -58,7 +58,7 @@ const box = TBox.fromNumSpanTsTzSpan(numSpan.inner, timeSpan.inner);
 
 ### Using `TBox.make`
 
-The most flexible constructor — pass `0` for either dimension to omit it:
+The most flexible constructor: pass `0` for either dimension to omit it.
 
 ```ts
 import { IntSpan } from 'meos.js';
@@ -86,7 +86,7 @@ b.xmaxInc();  // true
 ### TimestampTz returns BigInt
 
 `tmin()` and `tmax()` return `BigInt` at runtime, even though the TypeScript type is `number`.
-This is a quirk of the WASM binding — compare with `0n`, not `0`:
+This is a quirk of the WASM binding: compare with `0n`, not `0`:
 
 ```ts
 b.tmin() === 0n  // correct comparison for epoch 2000-01-01
@@ -112,15 +112,15 @@ Position is split across the two axes:
 ```ts
 // On the X axis
 a.isLeft(b);           // true if max(a.x) < min(b.x)
-a.isOverOrLeft(b);     // true if max(a.x) ≤ max(b.x)
+a.isOverOrLeft(b);     // true if max(a.x) <= max(b.x)
 a.isRight(b);          // true if min(a.x) > max(b.x)
-a.isOverOrRight(b);    // true if min(a.x) ≥ min(b.x)
+a.isOverOrRight(b);    // true if min(a.x) >= min(b.x)
 
 // On the T axis
 a.isBefore(b);         // true if max(a.t) < min(b.t)
-a.isOverOrBefore(b);   // …
-a.isAfter(b);          // …
-a.isOverOrAfter(b);    // …
+a.isOverOrBefore(b);
+a.isAfter(b);
+a.isOverOrAfter(b);
 ```
 
 ## Set operations
@@ -129,8 +129,8 @@ a.isOverOrAfter(b);    // …
 const a = TBox.fromString('TBOXFLOAT X([1.0, 5.0])');
 const b = TBox.fromString('TBOXFLOAT X([3.0, 10.0])');
 
-const i = a.intersection(b);   // TBOXFLOAT X([3.0, 5.0])  — null if disjoint
-const u = a.union(b);          // TBOXFLOAT X([1.0, 10.0]) — strict=false allows non-touching
+const i = a.intersection(b);   // TBOXFLOAT X([3.0, 5.0])  (null if disjoint)
+const u = a.union(b);          // TBOXFLOAT X([1.0, 10.0]) (strict=false allows non-touching)
 ```
 
 ## Math operations
@@ -138,11 +138,11 @@ const u = a.union(b);          // TBOXFLOAT X([1.0, 10.0]) — strict=false allo
 ### Expanding
 
 ```ts
-// Float box — expand by 0.5 on each side
+// Float box: expand by 0.5 on each side
 const fb = TBox.fromString('TBOXFLOAT X([2.0, 8.0])');
 const expanded = fb.expandFloat(0.5);  // TBOXFLOAT X([1.5, 8.5])
 
-// Integer box — expand by 2 on each side
+// Integer box: expand by 2 on each side
 const ib = TBox.make(IntSpan.fromBounds(2, 8).inner, 0);
 const expanded2 = ib.expandInt(2);  // TBOX X([0, 10])
 ```
@@ -154,7 +154,7 @@ const expanded2 = ib.expandInt(2);  // TBOX X([0, 10])
 
 ```ts
 const ib = TBox.make(IntSpan.fromBounds(1, 5).inner, 0);
-const shifted = ib.shiftScaleInt(2, 0, true, false);  // shift +2, keep width → [3, 7]
+const shifted = ib.shiftScaleInt(2, 0, true, false);  // shift +2, keep width -> [3, 7]
 const scaled  = ib.shiftScaleInt(0, 10, false, true); // no shift, rescale width to 10
 
 const fb = TBox.fromString('TBOXFLOAT X([1.0, 5.0])');
@@ -175,7 +175,7 @@ import { IntSpan, FloatSpan, TsTzSpan } from 'meos.js';
 
 const b = TBox.fromString('TBOXFLOAT XT([1.5, 10.5],[2020-01-01, 2020-12-31])');
 
-const xInt   = new IntSpan(b.toIntSpan());    // X as IntSpan
+const xInt   = new IntSpan(b.toIntSpan());     // X as IntSpan
 const xFloat = new FloatSpan(b.toFloatSpan()); // X as FloatSpan
-const t      = new TsTzSpan(b.toTsTzSpan());  // T as TsTzSpan
+const t      = new TsTzSpan(b.toTsTzSpan());   // T as TsTzSpan
 ```
