@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": ["core/index.ts"],
   "out": "docs/api",
   "plugin": ["typedoc-plugin-markdown"],
   "excludePrivate": true,

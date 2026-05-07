@@ -49,7 +49,7 @@ export default defineConfig({
 					items: [
 						{ text: 'Span', link: '/api/classes/Span' },
 						{ text: 'SpanSet', link: '/api/classes/SpanSet' },
-						{ text: 'MeoSet', link: '/api/classes/MeoSet' },
+						{ text: 'MeosSet', link: '/api/classes/MeosSet' },
 					],
 				},
 				{

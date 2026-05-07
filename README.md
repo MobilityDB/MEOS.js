@@ -30,11 +30,7 @@ npm install
 **Option A - build from source (Docker)**
 
 ```bash
-# wasm64 (default)
 docker build --output type=local,dest=./wasm --target wasm .
-
-# wasm32
-docker build --build-arg TARGET=wasm32 --output type=local,dest=./wasm --target wasm .
 ```
 
 This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
@@ -76,15 +72,15 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 
 ## Implemented types
 
-### Base classes (`src/types/base/`)
+### Base classes (`core/types/base/`)
 
 | Class | Description |
 |---|---|
-| `MeoSet<T>` | Abstract generic base for all set types |
+| `MeosSet<T>` | Abstract generic base for all set types |
 | `Span` | Abstract base for all span types |
 | `SpanSet<S>` | Abstract generic base for all span-set types |
 
-### Temporal types (`src/types/temporal/` & `src/types/base/`)
+### Temporal types (`core/types/temporal/` & `core/types/base/`)
 
 | Class | Description | Tests |
 |---|---|---|
@@ -92,7 +88,7 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 | `TInt` | Temporal integer | ✅ `test/temporal/test_tint.ts` |
 | `TFloat` | Temporal float | ✅ `test/temporal/test_tfloat.ts` |
 
-### Number types (`src/types/number/`)
+### Number types (`core/types/number/`)
 
 | Class | Description | Tests |
 |---|---|---|
@@ -103,7 +99,7 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 | `FloatSpanSet` | Set of float spans | ✅ `test/number/test_floatspanset.ts` |
 | `FloatSet` | Set of floats | ✅ `test/number/test_floatset.ts` |
 
-### Time types (`src/types/time/`)
+### Time types (`core/types/time/`)
 
 | Class | Description | Tests |
 |---|---|---|
@@ -114,7 +110,7 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 | `DateSpanSet` | Set of date spans | ✅ `test/time/test_datespanset.ts` |
 | `DateSet` | Set of dates | ✅ `test/time/test_dateset.ts` |
 
-### Boxes (`src/types/boxes/`)
+### Boxes (`core/types/boxes/`)
 
 | Class | Description | Tests |
 |---|---|---|
@@ -123,7 +119,7 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 
 ## Types not yet implemented
 
-### BigInt types (`src/types/number/`)
+### BigInt types (`core/types/number/`)
 
 | Class | Description |
 |---|---|
@@ -131,19 +127,19 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 | `BigIntSpanSet` | Set of `BigIntSpan` values |
 | `BigIntSet` | Ordered set of distinct 64-bit integers |
 
-### Spatiotemporal bounding box (`src/types/boxes/`)
+### Spatiotemporal bounding box (`core/types/boxes/`)
 
 | Class | Description |
 |---|---|
 | `STBox` | Spatiotemporal bounding box (X, Y, Z spatial axes + T temporal axis) |
 
-### Temporal text (`src/types/temporal/`)
+### Temporal text (`core/types/temporal/`)
 
 | Class | Description |
 |---|---|
 | `TText` | Temporal text (instant, sequence, sequence set) |
 
-### Temporal geometry / geography (`src/types/temporal/`)
+### Temporal geometry / geography (`core/types/temporal/`)
 
 | Class | Description |
 |---|---|

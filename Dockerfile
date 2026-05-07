@@ -137,7 +137,7 @@ RUN git clone --depth=1 --branch master https://github.com/MobilityDB/MobilityDB
 WORKDIR /app
 COPY . .
 
-# Generate c-src/bindings.c and src/core/functions.ts from meos-idl.json
+# Generate core/c-src/bindings.c and src/core/functions.ts from meos-idl.json
 RUN npm install && npm run generate
 
 # CMAKE: configure MobilityDB
@@ -208,7 +208,7 @@ RUN case "$TARGET" in \
     esac \
     && mkdir -p /app/wasm \
     && emcc $EM_FLAGS $EXTRA_FLAGS \
-        /app/c-src/bindings.c \
+        /app/core/c-src/bindings.c \
         /root/MobilityDB/build_${TARGET}/meos/libmeos.a \
         /root/geos/build/lib/libgeos.a \
         /root/geos/build/lib/libgeos_c.a \

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "JavaScript/TypeScript bindings for MobilityDB MEOS via WebAssembly",
-  "main": "index.js",
+  "main": "core/index.js",
   "scripts": {
-    "generate": "npx tsx src/builder/FunctionsGenerator.ts",
+    "generate": "npx tsx codegen/FunctionsGenerator.ts",
     "build:wasm": "bash scripts/build_wasm.sh",
     "build:ts": "tsc",
     "build": "npm run build:wasm && npm run build:ts",
