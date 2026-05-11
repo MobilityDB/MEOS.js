@@ -282,3 +282,32 @@ describe('IntSpan - Comparisons', () => {
 		b.free();
 	});
 });
+
+describe('IntSpan - shiftScale', () => {
+	it('shift only: lower moves by shift amount', () => {
+		const s = IntSpan.fromString('[1, 5)');
+		const r = s.shiftScale(10, 0, true, false);
+		assert.equal(r.lower(), 11);
+		assert.equal(r.upper(), 15);
+		s.free();
+		r.free();
+	});
+
+	it('scale only: width is adjusted', () => {
+		const s = IntSpan.fromString('[1, 5)');
+		const r = s.shiftScale(0, 8, false, true);
+		assert.equal(r.lower(), 1);
+		assert.equal(r.width(), 9);
+		s.free();
+		r.free();
+	});
+
+	it('shift and scale together', () => {
+		const s = IntSpan.fromString('[1, 5)');
+		const r = s.shiftScale(10, 8, true, true);
+		assert.equal(r.lower(), 11);
+		assert.equal(r.width(), 9);
+		s.free();
+		r.free();
+	});
+});

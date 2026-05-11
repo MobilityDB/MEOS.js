@@ -9184,8 +9184,8 @@ export function tgeo_minus_value(temp: Ptr, gs: Ptr): Ptr {
 	return _r;
 }
 
-export function tpoint_at_geom(temp: Ptr, gs: Ptr, zspan: Ptr): Ptr {
-	const _r = callPtr('tpoint_at_geom_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs), ptrArgVal(zspan)]);
+export function tpoint_at_geom(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tpoint_at_geom_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
@@ -9196,8 +9196,8 @@ export function tpoint_at_value(temp: Ptr, gs: Ptr): Ptr {
 	return _r;
 }
 
-export function tpoint_minus_geom(temp: Ptr, gs: Ptr, zspan: Ptr): Ptr {
-	const _r = callPtr('tpoint_minus_geom_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs), ptrArgVal(zspan)]);
+export function tpoint_minus_geom(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tpoint_minus_geom_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
@@ -9874,110 +9874,110 @@ export function etouches_tpoint_geo(temp: Ptr, gs: Ptr): number {
 	return _r;
 }
 
-export function tcontains_geo_tgeo(gs: Ptr, temp: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcontains_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcontains_geo_tgeo(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tcontains_geo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tcontains_tgeo_geo(temp: Ptr, gs: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcontains_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcontains_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tcontains_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tcontains_tgeo_tgeo(temp1: Ptr, temp2: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcontains_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcontains_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tcontains_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tcovers_geo_tgeo(gs: Ptr, temp: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcovers_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcovers_geo_tgeo(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tcovers_geo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tcovers_tgeo_geo(temp: Ptr, gs: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcovers_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcovers_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tcovers_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tcovers_tgeo_tgeo(temp1: Ptr, temp2: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tcovers_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tcovers_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tcovers_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdisjoint_geo_tgeo(gs: Ptr, temp: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdisjoint_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdisjoint_geo_tgeo(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_geo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdisjoint_tgeo_geo(temp: Ptr, gs: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdisjoint_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdisjoint_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdisjoint_tgeo_tgeo(temp1: Ptr, temp2: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdisjoint_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdisjoint_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdwithin_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist, restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdwithin_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist, restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tdwithin_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist, restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tdwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintersects_geo_tgeo(gs: Ptr, temp: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tintersects_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tintersects_geo_tgeo(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tintersects_geo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintersects_tgeo_geo(temp: Ptr, gs: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tintersects_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tintersects_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tintersects_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintersects_tgeo_tgeo(temp1: Ptr, temp2: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('tintersects_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function tintersects_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tintersects_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function ttouches_geo_tgeo(gs: Ptr, temp: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('ttouches_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function ttouches_geo_tgeo(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('ttouches_geo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function ttouches_tgeo_geo(temp: Ptr, gs: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('ttouches_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function ttouches_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('ttouches_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
-export function ttouches_tgeo_tgeo(temp1: Ptr, temp2: Ptr, restr: boolean, atvalue: boolean): Ptr {
-	const _r = callPtr('ttouches_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), restr ? 1 : 0, atvalue ? 1 : 0]);
+export function ttouches_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('ttouches_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }

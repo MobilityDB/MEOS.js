@@ -8,6 +8,10 @@ import {
 	span_from_hexwkb,
 	adjacent_span_span,
 	distance_tstzspan_tstzspan,
+	tstzspan_shift_scale,
+	tstzspan_expand,
+	tstzspan_tprecision,
+	tstzspan_to_datespan,
 } from '../../functions/functions.generated';
 import { Span } from '../base/Span';
 
@@ -111,5 +115,47 @@ export class TsTzSpan extends Span {
 	 */
 	distance(other: this): number {
 		return distance_tstzspan_tstzspan(this._inner, other.inner);
+	}
+
+	// -------------------------------------------------------------------------
+	// TRANSFORMATIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns a new span shifted and/or scaled along the time axis.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 */
+	shiftScale(shift: Ptr, duration: Ptr): TsTzSpan {
+		return new TsTzSpan(tstzspan_shift_scale(this._inner, shift, duration));
+	}
+
+	/**
+	 * Returns a new span expanded by the given interval on each side.
+	 * @param interval Raw WASM pointer to a MEOS interval.
+	 */
+	expand(interval: Ptr): TsTzSpan {
+		return new TsTzSpan(tstzspan_expand(this._inner, interval));
+	}
+
+	/**
+	 * Returns a new span snapped to the nearest multiple of `duration` starting from `origin`.
+	 * @param duration Raw WASM pointer to a MEOS interval defining the bucket size.
+	 * @param origin  Reference timestamp in microseconds since 2000-01-01 UTC.
+	 */
+	tprecision(duration: Ptr, origin: TimestampTz): TsTzSpan {
+		return new TsTzSpan(tstzspan_tprecision(this._inner, duration, origin));
+	}
+
+	// -------------------------------------------------------------------------
+	// CONVERSIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Converts this span to a {@link DateSpan} (timestamps truncated to midnight UTC)
+	 * and returns the raw WASM pointer. Use `new DateSpan(ptr)` to obtain a typed object.
+	 */
+	toDateSpan(): Ptr {
+		return tstzspan_to_datespan(this._inner);
 	}
 }

@@ -7845,8 +7845,8 @@ Temporal * tgeo_minus_value_w(const Temporal * temp, int * gs) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tpoint_at_geom_w(const Temporal * temp, const int * gs, const Span * zspan) {
-  return tpoint_at_geom(temp, gs, zspan);
+Temporal * tpoint_at_geom_w(const Temporal * temp, const int * gs) {
+  return tpoint_at_geom(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -7855,8 +7855,8 @@ Temporal * tpoint_at_value_w(const Temporal * temp, int * gs) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tpoint_minus_geom_w(const Temporal * temp, const int * gs, const Span * zspan) {
-  return tpoint_minus_geom(temp, gs, zspan);
+Temporal * tpoint_minus_geom_w(const Temporal * temp, const int * gs) {
+  return tpoint_minus_geom(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8420,93 +8420,93 @@ int etouches_tpoint_geo_w(const Temporal * temp, const int * gs) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcontains_geo_tgeo_w(const int * gs, const Temporal * temp, int restr, int atvalue) {
-  return tcontains_geo_tgeo(gs, temp, (bool) restr, (bool) atvalue);
+Temporal * tcontains_geo_tgeo_w(const int * gs, const Temporal * temp) {
+  return tcontains_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcontains_tgeo_geo_w(const Temporal * temp, const int * gs, int restr, int atvalue) {
-  return tcontains_tgeo_geo(temp, gs, (bool) restr, (bool) atvalue);
+Temporal * tcontains_tgeo_geo_w(const Temporal * temp, const int * gs) {
+  return tcontains_tgeo_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcontains_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, int restr, int atvalue) {
-  return tcontains_tgeo_tgeo(temp1, temp2, (bool) restr, (bool) atvalue);
+Temporal * tcontains_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return tcontains_tgeo_tgeo(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcovers_geo_tgeo_w(const int * gs, const Temporal * temp, int restr, int atvalue) {
-  return tcovers_geo_tgeo(gs, temp, (bool) restr, (bool) atvalue);
+Temporal * tcovers_geo_tgeo_w(const int * gs, const Temporal * temp) {
+  return tcovers_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcovers_tgeo_geo_w(const Temporal * temp, const int * gs, int restr, int atvalue) {
-  return tcovers_tgeo_geo(temp, gs, (bool) restr, (bool) atvalue);
+Temporal * tcovers_tgeo_geo_w(const Temporal * temp, const int * gs) {
+  return tcovers_tgeo_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tcovers_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, int restr, int atvalue) {
-  return tcovers_tgeo_tgeo(temp1, temp2, (bool) restr, (bool) atvalue);
+Temporal * tcovers_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return tcovers_tgeo_tgeo(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdisjoint_geo_tgeo_w(const int * gs, const Temporal * temp, int restr, int atvalue) {
-  return tdisjoint_geo_tgeo(gs, temp, (bool) restr, (bool) atvalue);
+Temporal * tdisjoint_geo_tgeo_w(const int * gs, const Temporal * temp) {
+  return tdisjoint_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdisjoint_tgeo_geo_w(const Temporal * temp, const int * gs, int restr, int atvalue) {
-  return tdisjoint_tgeo_geo(temp, gs, (bool) restr, (bool) atvalue);
+Temporal * tdisjoint_tgeo_geo_w(const Temporal * temp, const int * gs) {
+  return tdisjoint_tgeo_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdisjoint_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, int restr, int atvalue) {
-  return tdisjoint_tgeo_tgeo(temp1, temp2, (bool) restr, (bool) atvalue);
+Temporal * tdisjoint_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return tdisjoint_tgeo_tgeo(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdwithin_geo_tgeo_w(const int * gs, const Temporal * temp, double dist, int restr, int atvalue) {
-  return tdwithin_geo_tgeo(gs, temp, dist, (bool) restr, (bool) atvalue);
+Temporal * tdwithin_geo_tgeo_w(const int * gs, const Temporal * temp, double dist) {
+  return tdwithin_geo_tgeo(gs, temp, dist);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdwithin_tgeo_geo_w(const Temporal * temp, const int * gs, double dist, int restr, int atvalue) {
-  return tdwithin_tgeo_geo(temp, gs, dist, (bool) restr, (bool) atvalue);
+Temporal * tdwithin_tgeo_geo_w(const Temporal * temp, const int * gs, double dist) {
+  return tdwithin_tgeo_geo(temp, gs, dist);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdwithin_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double dist, int restr, int atvalue) {
-  return tdwithin_tgeo_tgeo(temp1, temp2, dist, (bool) restr, (bool) atvalue);
+Temporal * tdwithin_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double dist) {
+  return tdwithin_tgeo_tgeo(temp1, temp2, dist);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tintersects_geo_tgeo_w(const int * gs, const Temporal * temp, int restr, int atvalue) {
-  return tintersects_geo_tgeo(gs, temp, (bool) restr, (bool) atvalue);
+Temporal * tintersects_geo_tgeo_w(const int * gs, const Temporal * temp) {
+  return tintersects_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tintersects_tgeo_geo_w(const Temporal * temp, const int * gs, int restr, int atvalue) {
-  return tintersects_tgeo_geo(temp, gs, (bool) restr, (bool) atvalue);
+Temporal * tintersects_tgeo_geo_w(const Temporal * temp, const int * gs) {
+  return tintersects_tgeo_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tintersects_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, int restr, int atvalue) {
-  return tintersects_tgeo_tgeo(temp1, temp2, (bool) restr, (bool) atvalue);
+Temporal * tintersects_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return tintersects_tgeo_tgeo(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * ttouches_geo_tgeo_w(const int * gs, const Temporal * temp, int restr, int atvalue) {
-  return ttouches_geo_tgeo(gs, temp, (bool) restr, (bool) atvalue);
+Temporal * ttouches_geo_tgeo_w(const int * gs, const Temporal * temp) {
+  return ttouches_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * ttouches_tgeo_geo_w(const Temporal * temp, const int * gs, int restr, int atvalue) {
-  return ttouches_tgeo_geo(temp, gs, (bool) restr, (bool) atvalue);
+Temporal * ttouches_tgeo_geo_w(const Temporal * temp, const int * gs) {
+  return ttouches_tgeo_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * ttouches_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, int restr, int atvalue) {
-  return ttouches_tgeo_tgeo(temp1, temp2, (bool) restr, (bool) atvalue);
+Temporal * ttouches_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return ttouches_tgeo_tgeo(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE

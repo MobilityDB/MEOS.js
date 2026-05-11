@@ -1,11 +1,14 @@
-import { Temporal } from '../temporal/Temporal';
+import { TNumber } from './TNumber';
 import type { Ptr, TimestampTz } from '../../functions/functions.generated';
 import {
 	tfloat_in,
 	tfloat_out,
 	tfloatinst_make,
+	tfloat_from_base_temp,
+	tfloatseq_from_base_tstzset,
+	tfloatseq_from_base_tstzspan,
+	tfloatseqset_from_base_tstzspanset,
 	tfloat_from_mfjson,
-	tfloat_start_value,
 	tfloat_end_value,
 	tfloat_min_value,
 	tfloat_max_value,
@@ -14,6 +17,10 @@ import {
 	sub_tfloat_float,
 	mult_tfloat_float,
 	div_tfloat_float,
+	add_float_tfloat,
+	sub_float_tfloat,
+	mult_float_tfloat,
+	div_float_tfloat,
 	tfloat_at_value,
 	tfloat_minus_value,
 	ever_eq_tfloat_float,
@@ -34,6 +41,24 @@ import {
 	tle_tfloat_float,
 	tgt_tfloat_float,
 	tge_tfloat_float,
+	tfloat_value_n,
+	tfloat_start_value,
+	temporal_at_timestamptz,
+	meos_free,
+	tfloat_ceil,
+	tfloat_floor,
+	tfloat_degrees,
+	tfloat_radians,
+	tfloat_exp,
+	tfloat_ln,
+	tfloat_log10,
+	tfloat_shift_value,
+	tfloat_scale_value,
+	tfloat_shift_scale_value,
+	tdistance_tfloat_float,
+	nad_tfloat_float,
+	nad_tfloat_tfloat,
+	nad_tfloat_tbox,
 } from '../../functions/functions.generated';
 import { TInt } from './TInt';
 import { TBool } from './TBool';
@@ -58,7 +83,7 @@ import { TBool } from './TBool';
  * t.free();
  * ```
  */
-export class TFloat extends Temporal<number> {
+export class TFloat extends TNumber {
 	// -------------------------------------------------------------------------
 	// CONSTRUCTORS
 	// -------------------------------------------------------------------------
@@ -88,6 +113,29 @@ export class TFloat extends Temporal<number> {
 	 */
 	static fromMFJSON(mfjson: string): TFloat {
 		return new TFloat(tfloat_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Create a TFloat with constant value `d` spanning the same domain as `domain`.
+	 * MEOS: tfloat_from_base_temp
+	 */
+	static fromBaseTemporal(d: number, domain: TFloat): TFloat {
+		return new TFloat(tfloat_from_base_temp(d, domain.inner));
+	}
+
+	/**
+	 * Create a TFloat with constant value `d` over a time object.
+	 * Accepts a raw Ptr to a TsTzSet, TsTzSpan, or TsTzSpanSet.
+	 * For TsTzSpan and TsTzSpanSet, `interp` selects the interpolation
+	 * (1=Stepwise, 3=Linear, default Linear).
+	 * MEOS: tfloatseq_from_base_tstzset / tstzspan / tfloatseqset_from_base_tstzspanset
+	 */
+	static fromBaseTime(d: number, time: Ptr, type: 'tstzset' | 'tstzspan' | 'tstzspanset', interp = 3): TFloat {
+		switch (type) {
+			case 'tstzset':     return new TFloat(tfloatseq_from_base_tstzset(d, time));
+			case 'tstzspan':    return new TFloat(tfloatseq_from_base_tstzspan(d, time, interp));
+			case 'tstzspanset': return new TFloat(tfloatseqset_from_base_tstzspanset(d, time, interp));
+		}
 	}
 
 	/**
@@ -302,4 +350,118 @@ export class TFloat extends Temporal<number> {
 	temporalGe(d: number): TBool {
 		return new TBool(tge_tfloat_float(this._inner, d));
 	}
+
+	// -------------------------------------------------------------------------
+	// VALUE ACCESS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns the n-th distinct float value (0-based index) across all instants.
+	 * @param n 0-based index (MEOS internally uses 1-based indexing).
+	 * MEOS: tfloat_value_n
+	 */
+	valueN(n: number): number {
+		return tfloat_value_n(this._inner, n + 1);
+	}
+
+	/**
+	 * Evaluates the temporal at a specific timestamp.
+	 * Returns `null` when the timestamp is outside the temporal's domain.
+	 *
+	 * @param t      Timestamp in microseconds since 2000-01-01 UTC.
+	 * @param strict `true`: timestamp must be within a period (default `false`).
+	 *
+	 * MEOS: tfloat_value_at_timestamptz
+	 */
+	valueAtTimestamp(t: TimestampTz): number | null {
+		const restricted = temporal_at_timestamptz(this._inner, t);
+		if (restricted === 0) return null;
+		const value = tfloat_start_value(restricted);
+		meos_free(restricted);
+		return value;
+	}
+
+	// -------------------------------------------------------------------------
+	// MATH
+	// -------------------------------------------------------------------------
+
+	/** Returns a new temporal with each value rounded up to the nearest integer. MEOS: tfloat_ceil */
+	ceil(): TFloat {
+		return new TFloat(tfloat_ceil(this._inner));
+	}
+
+	/** Returns a new temporal with each value rounded down to the nearest integer. MEOS: tfloat_floor */
+	floor(): TFloat {
+		return new TFloat(tfloat_floor(this._inner));
+	}
+
+	/**
+	 * Converts each value from radians to degrees.
+	 * @param normalize If `true`, normalises the result to `[0, 360)` (default `false`).
+	 * MEOS: tfloat_degrees
+	 */
+	degrees(normalize = false): TFloat {
+		return new TFloat(tfloat_degrees(this._inner, normalize));
+	}
+
+	/** Converts each value from degrees to radians. MEOS: tfloat_radians */
+	radians(): TFloat {
+		return new TFloat(tfloat_radians(this._inner));
+	}
+
+	/** Applies e^x to each value. MEOS: tfloat_exp */
+	exp(): TFloat {
+		return new TFloat(tfloat_exp(this._inner));
+	}
+
+	/** Applies the natural logarithm ln(x) to each value. MEOS: tfloat_ln */
+	ln(): TFloat {
+		return new TFloat(tfloat_ln(this._inner));
+	}
+
+	/** Applies the base-10 logarithm log10(x) to each value. MEOS: tfloat_log10 */
+	log10(): TFloat {
+		return new TFloat(tfloat_log10(this._inner));
+	}
+
+	// -------------------------------------------------------------------------
+	// VALUE SHIFT / SCALE
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns a new temporal with every value shifted by `shift`.
+	 * MEOS: tfloat_shift_value
+	 */
+	shiftValue(shift: number): TFloat {
+		return new TFloat(tfloat_shift_value(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new temporal with the value range scaled to `width`.
+	 * MEOS: tfloat_scale_value
+	 */
+	scaleValue(width: number): TFloat {
+		return new TFloat(tfloat_scale_value(this._inner, width));
+	}
+
+	/**
+	 * Returns a new temporal with the value range shifted by `shift` and scaled to `width`.
+	 * MEOS: tfloat_shift_scale_value
+	 */
+	shiftScaleValue(shift: number, width: number): TFloat {
+		return new TFloat(tfloat_shift_scale_value(this._inner, shift, width));
+	}
+
+	// -------------------------------------------------------------------------
+	// TNUMBER ABSTRACT HOOK IMPLEMENTATIONS
+	// -------------------------------------------------------------------------
+
+	protected _raddScalar(d: number): Ptr  { return add_float_tfloat(d, this._inner); }
+	protected _rsubScalar(d: number): Ptr  { return sub_float_tfloat(d, this._inner); }
+	protected _rmulScalar(d: number): Ptr  { return mult_float_tfloat(d, this._inner); }
+	protected _rdivScalar(d: number): Ptr  { return div_float_tfloat(d, this._inner); }
+	protected _distanceScalar(d: number): Ptr        { return tdistance_tfloat_float(this._inner, d); }
+	protected _nadScalar(d: number): number          { return nad_tfloat_float(this._inner, d); }
+	protected _nadTemporal(other: TNumber): number   { return nad_tfloat_tfloat(this._inner, other.inner); }
+	protected _nadTBox(box: Ptr): number             { return nad_tfloat_tbox(this._inner, box); }
 }

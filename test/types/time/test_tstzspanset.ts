@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos';
+import { interval_make, meos_free } from '../../../core/functions/functions.generated';
 import { TsTzSpan } from '../../../core/types/time/TsTzSpan';
 import { TsTzSpanSet } from '../../../core/types/time/TsTzSpanSet';
 
@@ -414,4 +415,49 @@ describe('TsTzSpanSet - Comparisons', () => {
 	it('le: equal spansets = true', () => assert.equal(ss1.le(ss1b), true));
 	it('gt: {[T1,T2)} > {[T0,T1)} = true', () => assert.equal(ss2.gt(ss1), true));
 	it('ge: equal spansets = true', () => assert.equal(ss1.ge(ss1b), true));
+});
+
+describe('TsTzSpanSet - shiftScale', () => {
+	it('shift by 1 hour: each span moves forward 1 hour', () => {
+		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
+		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
+		const r = ss.shiftScale(interv, 0);
+		assert.ok(r.inner !== 0);
+		assert.ok(r.lower() > ss.lower());
+		r.free();
+		ss.free();
+		meos_free(interv);
+	});
+
+	it('scale to 4h total duration: upper bound extends', () => {
+		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1})}`); // 1h span
+		const dur = interval_make(0, 0, 0, 0, 4, 0, 0);       // 4 hours
+		const r = ss.shiftScale(0, dur);
+		assert.ok(r.upper() > ss.upper());
+		r.free();
+		ss.free();
+		meos_free(dur);
+	});
+});
+
+describe('TsTzSpanSet - tprecision', () => {
+	it('returns a non-zero pointer', () => {
+		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T3})}`);
+		const dur = interval_make(0, 0, 0, 0, 1, 0, 0); // 1-hour bucket
+		const r = ss.tprecision(dur, ss.lower());
+		assert.ok(r.inner !== 0);
+		ss.free();
+		r.free();
+		meos_free(dur);
+	});
+});
+
+describe('TsTzSpanSet - toDateSpanSet', () => {
+	it('returns a non-zero pointer', () => {
+		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1})}`);
+		const ptr = ss.toDateSpanSet();
+		assert.ok(ptr !== 0);
+		meos_free(ptr);
+		ss.free();
+	});
 });

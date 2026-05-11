@@ -11,6 +11,9 @@ import {
 	tstzspanset_timestamptz_n,
 	distance_tstzspanset_tstzspan,
 	distance_tstzspanset_tstzspanset,
+	tstzspanset_shift_scale,
+	tstzspanset_tprecision,
+	tstzspanset_to_datespanset,
 } from '../../functions/functions.generated';
 import { SpanSet } from '../base/SpanSet';
 import { TsTzSpan } from './TsTzSpan';
@@ -133,5 +136,39 @@ export class TsTzSpanSet extends SpanSet<TsTzSpan> {
 		if (other instanceof TsTzSpan)
 			return distance_tstzspanset_tstzspan(this._inner, other.inner);
 		return distance_tstzspanset_tstzspanset(this._inner, other.inner);
+	}
+
+	// -------------------------------------------------------------------------
+	// TRANSFORMATIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns a new span set shifted and/or scaled along the time axis.
+	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 */
+	shiftScale(shift: Ptr, duration: Ptr): TsTzSpanSet {
+		return new TsTzSpanSet(tstzspanset_shift_scale(this._inner, shift, duration));
+	}
+
+	/**
+	 * Returns a new span set with each span snapped to the nearest multiple of `duration` from `origin`.
+	 * @param duration Raw WASM pointer to a MEOS interval defining the bucket size.
+	 * @param origin  Reference timestamp in microseconds since 2000-01-01 UTC.
+	 */
+	tprecision(duration: Ptr, origin: TimestampTz): TsTzSpanSet {
+		return new TsTzSpanSet(tstzspanset_tprecision(this._inner, duration, origin));
+	}
+
+	// -------------------------------------------------------------------------
+	// CONVERSIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Converts this span set to a {@link DateSpanSet} (timestamps truncated to midnight UTC)
+	 * and returns the raw WASM pointer. Use `new DateSpanSet(ptr)` to obtain a typed object.
+	 */
+	toDateSpanSet(): Ptr {
+		return tstzspanset_to_datespanset(this._inner);
 	}
 }

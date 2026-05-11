@@ -8,6 +8,7 @@ import {
 	span_from_hexwkb,
 	distance_datespan_datespan,
 	datespan_to_tstzspan,
+	datespan_shift_scale,
 } from '../../functions/functions.generated';
 import { Span } from '../base/Span';
 
@@ -126,5 +127,21 @@ export class DateSpan extends Span {
 	 */
 	toTsTzSpan(): Ptr {
 		return datespan_to_tstzspan(this._inner);
+	}
+
+	/**
+	 * Returns a new span shifted and/or scaled along the date axis.
+	 * @param shift Number of days to shift (ignored when `hasShift` is `false`).
+	 * @param width New total width in days (ignored when `hasWidth` is `false`).
+	 * @param hasShift Set to `false` to skip shifting (default `true`).
+	 * @param hasWidth Set to `false` to skip scaling (default `true`).
+	 */
+	shiftScale(
+		shift: number,
+		width: number,
+		hasShift = true,
+		hasWidth = true
+	): DateSpan {
+		return new DateSpan(datespan_shift_scale(this._inner, shift, width, hasShift, hasWidth));
 	}
 }

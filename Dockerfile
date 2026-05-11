@@ -6,10 +6,12 @@
 #   docker build --build-arg TARGET=wasm32 --output type=local,dest=./wasm --target wasm .
 #
 # Versions:
-#   emscripten 5.0.6  |  MobilityDB master  |  GEOS 3.14.1
-#   PROJ 9.8.1        |  SQLite 3.46.1      |  JSON-C 0.18  |  GSL 2.8
+#   emscripten 5.0.6  |  MobilityDB ee27da1  |  GEOS 3.14.1
+#   PROJ 9.8.1        |  SQLite 3.46.1       |  JSON-C 0.18  |  GSL 2.8
 
 ARG TARGET=wasm64
+# Pinned MobilityDB commit — update together with meos-idl.json when upgrading.
+ARG MOBILITYDB_COMMIT=ee27da1a6d2f6cdbdd226bd66a1e7fea86c2832b
 
 # EMSCRIPTEN & EVERY NEEDED TOOL
 FROM emscripten/emsdk:5.0.6 AS base
@@ -107,12 +109,13 @@ RUN case "$TARGET" in wasm64) EM_FLAGS="-sMEMORY64=1" ;; *) EM_FLAGS="" ;; esac 
 FROM base AS gsl
 ARG TARGET
 
-RUN curl -fL "https://ftp.gnu.org/gnu/gsl/gsl-2.8.tar.gz" | tar xz -C /root
+RUN curl -fL "https://ftpmirror.gnu.org/gsl/gsl-2.8.tar.gz" | tar xz -C /root
 
 WORKDIR /root/gsl-2.8
 RUN case "$TARGET" in wasm64) EM_FLAGS="-sMEMORY64=1" ;; *) EM_FLAGS="" ;; esac \
-    && curl -fL "https://git.savannah.gnu.org/cgit/config.git/plain/config.sub" -o config.sub \
-    && curl -fL "https://git.savannah.gnu.org/cgit/config.git/plain/config.guess" -o config.guess \
+    && apt-get update && apt-get install -y --no-install-recommends automake && rm -rf /var/lib/apt/lists/* \
+    && cp /usr/share/automake-*/config.sub config.sub \
+    && cp /usr/share/automake-*/config.guess config.guess \
     && emconfigure ./configure \
         --prefix=/root/gsl-wasm \
         --host=wasm32-unknown-emscripten \
@@ -132,7 +135,8 @@ COPY --from=proj   /root/PROJ            /root/PROJ
 COPY --from=jsonc  /root/json-c-install  /root/json-c-install
 COPY --from=gsl    /root/gsl-wasm        /root/gsl-wasm
 
-RUN git clone --depth=1 --branch master https://github.com/MobilityDB/MobilityDB.git /root/MobilityDB
+RUN git clone https://github.com/MobilityDB/MobilityDB.git /root/MobilityDB \
+    && git -C /root/MobilityDB checkout ${MOBILITYDB_COMMIT}
 
 WORKDIR /app
 COPY . .

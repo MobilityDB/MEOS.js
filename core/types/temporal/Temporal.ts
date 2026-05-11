@@ -20,7 +20,29 @@
 
 import { getModule } from '../../runtime/meos';
 import type { Ptr, TimestampTz } from '../../functions/functions.generated';
-import { ptrArgType, ptrArgVal, callPtr } from '../../functions/functions.generated';
+import {
+	ptrArgType, ptrArgVal, callPtr,
+	temporal_at_min,
+	temporal_at_max,
+	temporal_minus_min,
+	temporal_minus_max,
+	temporal_at_tstzset,
+	temporal_at_tstzspan,
+	temporal_at_tstzspanset,
+	temporal_minus_tstzset,
+	temporal_minus_tstzspan,
+	temporal_minus_tstzspanset,
+	temporal_shift_time,
+	temporal_scale_time,
+	temporal_shift_scale_time,
+	temporal_set_interp,
+	temporal_to_tinstant,
+	temporal_to_tsequence,
+	temporal_to_tsequenceset,
+	temporal_append_tinstant,
+	temporal_append_tsequence,
+	temporal_merge,
+} from '../../functions/functions.generated';
 
 function call<T>(
 	name: string,
@@ -368,6 +390,138 @@ export abstract class Temporal<V> {
 			) / 1000
 		);
 	}
+
+	// -------------------------------------------------------------------------
+	// RESTRICTIONS — at min/max value
+	// -------------------------------------------------------------------------
+
+	/** Restricts to instants where the value is the minimum. MEOS: temporal_at_min */
+	atMin(): this { return this._fromInner(temporal_at_min(this._inner)); }
+
+	/** Restricts to instants where the value is the maximum. MEOS: temporal_at_max */
+	atMax(): this { return this._fromInner(temporal_at_max(this._inner)); }
+
+	/** Excludes instants where the value is the minimum. MEOS: temporal_minus_min */
+	minusMin(): this { return this._fromInner(temporal_minus_min(this._inner)); }
+
+	/** Excludes instants where the value is the maximum. MEOS: temporal_minus_max */
+	minusMax(): this { return this._fromInner(temporal_minus_max(this._inner)); }
+
+	// -------------------------------------------------------------------------
+	// RESTRICTIONS — at/minus time objects
+	// -------------------------------------------------------------------------
+
+	/** Restricts to the given timestamp set. MEOS: temporal_at_tstzset */
+	atTsTzSet(s: Ptr): this { return this._fromInner(temporal_at_tstzset(this._inner, s)); }
+
+	/** Restricts to the given timestamp span. MEOS: temporal_at_tstzspan */
+	atTsTzSpan(s: Ptr): this { return this._fromInner(temporal_at_tstzspan(this._inner, s)); }
+
+	/** Restricts to the given timestamp span set. MEOS: temporal_at_tstzspanset */
+	atTsTzSpanSet(ss: Ptr): this { return this._fromInner(temporal_at_tstzspanset(this._inner, ss)); }
+
+	/** Excludes the given timestamp set. MEOS: temporal_minus_tstzset */
+	minusTsTzSet(s: Ptr): this { return this._fromInner(temporal_minus_tstzset(this._inner, s)); }
+
+	/** Excludes the given timestamp span. MEOS: temporal_minus_tstzspan */
+	minusTsTzSpan(s: Ptr): this { return this._fromInner(temporal_minus_tstzspan(this._inner, s)); }
+
+	/** Excludes the given timestamp span set. MEOS: temporal_minus_tstzspanset */
+	minusTsTzSpanSet(ss: Ptr): this { return this._fromInner(temporal_minus_tstzspanset(this._inner, ss)); }
+
+	// -------------------------------------------------------------------------
+	// TRANSFORMATIONS — time shift/scale/interp/subtype
+	// -------------------------------------------------------------------------
+
+	/** Shifts the temporal domain by the given interval pointer. MEOS: temporal_shift_time */
+	shiftTime(shift: Ptr): this { return this._fromInner(temporal_shift_time(this._inner, shift)); }
+
+	/** Scales the temporal domain to the given duration interval pointer. MEOS: temporal_scale_time */
+	scaleTime(duration: Ptr): this { return this._fromInner(temporal_scale_time(this._inner, duration)); }
+
+	/** Shifts and scales the temporal domain. MEOS: temporal_shift_scale_time */
+	shiftScaleTime(shift: Ptr, duration: Ptr): this {
+		return this._fromInner(temporal_shift_scale_time(this._inner, shift, duration));
+	}
+
+	/**
+	 * Returns a new temporal with the interpolation changed to `interp`.
+	 * Pass TInterpolation values as numbers: Discrete=0, Stepwise=1, Linear=2.
+	 * MEOS: temporal_set_interp
+	 */
+	setInterp(interp: TInterpolation): this {
+		const interpMap: Record<TInterpolation, number> = {
+			[TInterpolation.None]: 0,
+			[TInterpolation.Discrete]: 1,
+			[TInterpolation.Stepwise]: 2,
+			[TInterpolation.Linear]: 3,
+		};
+		return this._fromInner(temporal_set_interp(this._inner, interpMap[interp]));
+	}
+
+	/** Converts to TInstant (must already be an instant). MEOS: temporal_to_tinstant */
+	toInstant(): this { return this._fromInner(temporal_to_tinstant(this._inner)); }
+
+	/** Converts to TSequence with the given interpolation. MEOS: temporal_to_tsequence */
+	toSequence(interp: TInterpolation): this {
+		const interpMap: Record<TInterpolation, number> = {
+			[TInterpolation.None]: 0,
+			[TInterpolation.Discrete]: 1,
+			[TInterpolation.Stepwise]: 2,
+			[TInterpolation.Linear]: 3,
+		};
+		return this._fromInner(temporal_to_tsequence(this._inner, interpMap[interp]));
+	}
+
+	/** Converts to TSequenceSet with the given interpolation. MEOS: temporal_to_tsequenceset */
+	toSequenceSet(interp: TInterpolation): this {
+		const interpMap: Record<TInterpolation, number> = {
+			[TInterpolation.None]: 0,
+			[TInterpolation.Discrete]: 1,
+			[TInterpolation.Stepwise]: 2,
+			[TInterpolation.Linear]: 3,
+		};
+		return this._fromInner(temporal_to_tsequenceset(this._inner, interpMap[interp]));
+	}
+
+	// -------------------------------------------------------------------------
+	// MODIFICATIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Appends an instant to this temporal, returning a new temporal.
+	 * MEOS: temporal_append_tinstant
+	 *
+	 * @param inst      The instant to append (same subtype as this).
+	 * @param maxdist   Maximum distance gap allowed (0 = no limit).
+	 * @param maxt      Maximum time gap as interval pointer (0 = no limit).
+	 * @param expand    Whether to expand the sequence in-place.
+	 */
+	appendInstant(inst: this, maxdist = 0, maxt: Ptr = 0, expand = false): this {
+		return this._fromInner(
+			temporal_append_tinstant(this._inner, inst.inner, 0, maxdist, maxt, expand)
+		);
+	}
+
+	/**
+	 * Appends a sequence to this temporal, returning a new temporal.
+	 * MEOS: temporal_append_tsequence
+	 */
+	appendSequence(seq: this, expand = false): this {
+		return this._fromInner(temporal_append_tsequence(this._inner, seq.inner, expand));
+	}
+
+	/**
+	 * Merges this temporal with another, returning a new temporal.
+	 * MEOS: temporal_merge
+	 */
+	merge(other: this): this {
+		return this._fromInner(temporal_merge(this._inner, other.inner));
+	}
+
+	// -------------------------------------------------------------------------
+	// IDENTITY / DEBUG
+	// -------------------------------------------------------------------------
 
 	/**
 	 * Pointer-based identity check.

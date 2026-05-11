@@ -1,9 +1,13 @@
-import { Temporal } from '../temporal/Temporal';
+import { TNumber } from './TNumber';
 import type { Ptr, TimestampTz } from '../../functions/functions.generated';
 import {
 	tint_in,
 	tint_out,
 	tintinst_make,
+	tint_from_base_temp,
+	tintseq_from_base_tstzset,
+	tintseq_from_base_tstzspan,
+	tintseqset_from_base_tstzspanset,
 	tint_from_mfjson,
 	tint_start_value,
 	tint_end_value,
@@ -14,6 +18,10 @@ import {
 	sub_tint_int,
 	mult_tint_int,
 	div_tint_int,
+	add_int_tint,
+	sub_int_tint,
+	mult_int_tint,
+	div_int_tint,
 	tint_at_value,
 	tint_minus_value,
 	ever_eq_tint_int,
@@ -34,6 +42,16 @@ import {
 	tle_tint_int,
 	tgt_tint_int,
 	tge_tint_int,
+	tint_value_n,
+	temporal_at_timestamptz,
+	meos_free,
+	tint_shift_value,
+	tint_scale_value,
+	tint_shift_scale_value,
+	tdistance_tint_int,
+	nad_tint_int,
+	nad_tint_tint,
+	nad_tint_tbox,
 } from '../../functions/functions.generated';
 import { TBool } from './TBool';
 
@@ -58,7 +76,7 @@ import { TBool } from './TBool';
  * t.free();
  * ```
  */
-export class TInt extends Temporal<number> {
+export class TInt extends TNumber {
 	// -------------------------------------------------------------------------
 	// CONSTRUCTORS
 	// -------------------------------------------------------------------------
@@ -81,6 +99,27 @@ export class TInt extends Temporal<number> {
 	 */
 	static fromMFJSON(mfjson: string): TInt {
 		return new TInt(tint_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Create a TInt with constant value `i` spanning the same domain as `domain`.
+	 * MEOS: tint_from_base_temp
+	 */
+	static fromBaseTemporal(i: number, domain: TInt): TInt {
+		return new TInt(tint_from_base_temp(i, domain.inner));
+	}
+
+	/**
+	 * Create a TInt with constant value `i` over a time object.
+	 * Accepts a raw Ptr to a TsTzSet, TsTzSpan, or TsTzSpanSet.
+	 * MEOS: tintseq_from_base_tstzset / tstzspan / tintseqset_from_base_tstzspanset
+	 */
+	static fromBaseTime(i: number, time: Ptr, type: 'tstzset' | 'tstzspan' | 'tstzspanset'): TInt {
+		switch (type) {
+			case 'tstzset':    return new TInt(tintseq_from_base_tstzset(i, time));
+			case 'tstzspan':   return new TInt(tintseq_from_base_tstzspan(i, time));
+			case 'tstzspanset': return new TInt(tintseqset_from_base_tstzspanset(i, time));
+		}
 	}
 
 	/**
@@ -293,4 +332,75 @@ export class TInt extends Temporal<number> {
 	temporalGe(i: number): TBool {
 		return new TBool(tge_tint_int(this._inner, i));
 	}
+
+	// -------------------------------------------------------------------------
+	// VALUE ACCESS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns the n-th distinct integer value (0-based index) across all instants.
+	 * @param n 0-based index (MEOS internally uses 1-based indexing).
+	 * MEOS: tint_value_n
+	 */
+	valueN(n: number): number {
+		return tint_value_n(this._inner, n + 1);
+	}
+
+	/**
+	 * Evaluates the temporal at a specific timestamp.
+	 * Returns `null` when the timestamp is outside the temporal's domain.
+	 *
+	 * @param t      Timestamp in microseconds since 2000-01-01 UTC.
+	 * @param strict `true`: timestamp must be within a period (default `false`).
+	 *
+	 * MEOS: tint_value_at_timestamptz
+	 */
+	valueAtTimestamp(t: TimestampTz): number | null {
+		const restricted = temporal_at_timestamptz(this._inner, t);
+		if (restricted === 0) return null;
+		const value = tint_start_value(restricted);
+		meos_free(restricted);
+		return value;
+	}
+
+	// -------------------------------------------------------------------------
+	// VALUE SHIFT / SCALE
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns a new temporal with every value shifted by `shift`.
+	 * MEOS: tint_shift_value
+	 */
+	shiftValue(shift: number): TInt {
+		return new TInt(tint_shift_value(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new temporal with the value range scaled to `width`.
+	 * MEOS: tint_scale_value
+	 */
+	scaleValue(width: number): TInt {
+		return new TInt(tint_scale_value(this._inner, width));
+	}
+
+	/**
+	 * Returns a new temporal with the value range shifted by `shift` and scaled to `width`.
+	 * MEOS: tint_shift_scale_value
+	 */
+	shiftScaleValue(shift: number, width: number): TInt {
+		return new TInt(tint_shift_scale_value(this._inner, shift, width));
+	}
+
+	// -------------------------------------------------------------------------
+	// TNUMBER ABSTRACT HOOK IMPLEMENTATIONS
+	// -------------------------------------------------------------------------
+
+	protected _raddScalar(i: number): Ptr  { return add_int_tint(i, this._inner); }
+	protected _rsubScalar(i: number): Ptr  { return sub_int_tint(i, this._inner); }
+	protected _rmulScalar(i: number): Ptr  { return mult_int_tint(i, this._inner); }
+	protected _rdivScalar(i: number): Ptr  { return div_int_tint(i, this._inner); }
+	protected _distanceScalar(i: number): Ptr        { return tdistance_tint_int(this._inner, i); }
+	protected _nadScalar(i: number): number          { return nad_tint_int(this._inner, i); }
+	protected _nadTemporal(other: TNumber): number   { return nad_tint_tint(this._inner, other.inner); }
+	protected _nadTBox(box: Ptr): number             { return nad_tint_tbox(this._inner, box); }
 }

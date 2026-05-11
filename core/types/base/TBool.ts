@@ -4,6 +4,10 @@ import {
 	tbool_in,
 	tbool_out,
 	tboolinst_make,
+	tbool_from_base_temp,
+	tboolseq_from_base_tstzset,
+	tboolseq_from_base_tstzspan,
+	tboolseqset_from_base_tstzspanset,
 	tbool_start_value,
 	tbool_end_value,
 	tbool_from_mfjson,
@@ -19,6 +23,10 @@ import {
 	teq_tbool_bool,
 	tne_tbool_bool,
 	tbool_when_true,
+	tbool_to_tint,
+	tbool_value_n,
+	temporal_at_timestamptz,
+	meos_free,
 } from '../../functions/functions.generated';
 
 /**
@@ -73,6 +81,27 @@ export class TBool extends Temporal<boolean> {
 	 */
 	static fromMFJSON(mfjson: string): TBool {
 		return new TBool(tbool_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Create a TBool with constant value `b` spanning the same domain as `domain`.
+	 * MEOS: tbool_from_base_temp
+	 */
+	static fromBaseTemporal(b: boolean, domain: TBool): TBool {
+		return new TBool(tbool_from_base_temp(b, domain.inner));
+	}
+
+	/**
+	 * Create a TBool with constant value `b` over a time object.
+	 * Accepts a raw Ptr to a TsTzSet, TsTzSpan, or TsTzSpanSet.
+	 * MEOS: tboolseq_from_base_tstzset / tstzspan / tboolseqset_from_base_tstzspanset
+	 */
+	static fromBaseTime(b: boolean, time: Ptr, type: 'tstzset' | 'tstzspan' | 'tstzspanset'): TBool {
+		switch (type) {
+			case 'tstzset':     return new TBool(tboolseq_from_base_tstzset(b, time));
+			case 'tstzspan':    return new TBool(tboolseq_from_base_tstzspan(b, time));
+			case 'tstzspanset': return new TBool(tboolseqset_from_base_tstzspanset(b, time));
+		}
 	}
 
 	/**
@@ -253,5 +282,48 @@ export class TBool extends Temporal<boolean> {
 	 */
 	whenFalse(): Ptr {
 		return tbool_when_true(tnot_tbool(this._inner));
+	}
+
+	// -------------------------------------------------------------------------
+	// VALUE ACCESS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Returns the n-th distinct value (0-based index) across all instants.
+	 * @param n 0-based index (MEOS internally uses 1-based indexing).
+	 * MEOS: tbool_value_n
+	 */
+	valueN(n: number): boolean {
+		return tbool_value_n(this._inner, n + 1);
+	}
+
+	/**
+	 * Evaluates the temporal at a specific timestamp.
+	 * Returns `null` when the timestamp is outside the temporal's domain.
+	 *
+	 * @param t      Timestamp in microseconds since 2000-01-01 UTC.
+	 * @param strict `true`: timestamp must be within a period (default `false`).
+	 *
+	 * MEOS: tbool_value_at_timestamptz
+	 */
+	valueAtTimestamp(t: TimestampTz): boolean | null {
+		const restricted = temporal_at_timestamptz(this._inner, t);
+		if (restricted === 0) return null;
+		const value = tbool_start_value(restricted);
+		meos_free(restricted);
+		return value;
+	}
+
+	// -------------------------------------------------------------------------
+	// CONVERSIONS
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Converts this TBool to a TInt (true → 1, false → 0) and returns the raw WASM pointer.
+	 * Use `new TInt(ptr)` to obtain a typed object.
+	 * MEOS: tbool_to_tint
+	 */
+	toTInt(): Ptr {
+		return tbool_to_tint(this._inner);
 	}
 }

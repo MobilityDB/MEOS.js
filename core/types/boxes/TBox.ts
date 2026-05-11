@@ -35,9 +35,11 @@ import {
 	spanset_to_tbox,
 	tintbox_expand,
 	tfloatbox_expand,
+	tbox_expand_time,
 	tbox_round,
 	tintbox_shift_scale,
 	tfloatbox_shift_scale,
+	tbox_shift_scale_time,
 	adjacent_tbox_tbox,
 	contained_tbox_tbox,
 	contains_tbox_tbox,
@@ -513,6 +515,23 @@ export class TBox {
 	 */
 	shiftScaleFloat(shift: number, width: number, hasShift = true, hasWidth = true): TBox {
 		return new TBox(tfloatbox_shift_scale(this._inner, shift, width, hasShift, hasWidth));
+	}
+
+	/**
+	 * Returns a new box with the T dimension expanded by the given interval on each side.
+	 * @param interval Raw WASM pointer to a MEOS interval.
+	 */
+	expandTime(interval: Ptr): TBox {
+		return new TBox(tbox_expand_time(this._inner, interval));
+	}
+
+	/**
+	 * Returns a new box with the T dimension shifted and/or scaled.
+	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 */
+	shiftScaleTime(shift: Ptr, duration: Ptr): TBox {
+		return new TBox(tbox_shift_scale_time(this._inner, shift, duration));
 	}
 
 	// -------------------------------------------------------------------------

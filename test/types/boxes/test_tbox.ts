@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos';
-import { pg_timestamptz_in } from '../../../core/functions/functions.generated';
+import { pg_timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated';
 import { TBox } from '../../../core/types/boxes/TBox';
 import { IntSpan } from '../../../core/types/number/IntSpan';
 import { FloatSpan } from '../../../core/types/number/FloatSpan';
@@ -606,5 +606,40 @@ describe('TBox - Math', () => {
 		assert.ok(Math.abs(s.xmax() - 7.0) < 1e-9);
 		b.free();
 		s.free();
+	});
+});
+
+describe('TBox - expandTime', () => {
+	it('expands the T dimension on each side', () => {
+		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
+		const interv = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const r = b.expandTime(interv);
+		assert.ok(r.tmin() < b.tmin());
+		assert.ok(r.tmax() > b.tmax());
+		b.free();
+		r.free();
+		meos_free(interv);
+	});
+});
+
+describe('TBox - shiftScaleTime', () => {
+	it('shifts T dimension forward by 1 day', () => {
+		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
+		const shift = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const r = b.shiftScaleTime(shift, 0);
+		assert.ok(r.tmin() > b.tmin());
+		b.free();
+		r.free();
+		meos_free(shift);
+	});
+
+	it('scales T dimension to 2 days', () => {
+		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
+		const dur = interval_make(0, 0, 0, 2, 0, 0, 0); // 2 days
+		const r = b.shiftScaleTime(0, dur);
+		assert.ok(r.tmax() > b.tmax());
+		b.free();
+		r.free();
+		meos_free(dur);
 	});
 });

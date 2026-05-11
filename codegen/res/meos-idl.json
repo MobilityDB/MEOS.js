@@ -30274,11 +30274,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "zspan",
-          "cType": "const Span *",
-          "canonical": "const Span *"
         }
       ]
     },
@@ -30319,11 +30314,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "zspan",
-          "cType": "const Span *",
-          "canonical": "const Span *"
         }
       ]
     },
@@ -32684,16 +32674,6 @@
           "name": "temp",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32714,16 +32694,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32744,16 +32714,6 @@
           "name": "temp2",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32774,16 +32734,6 @@
           "name": "temp",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32804,16 +32754,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32834,16 +32774,6 @@
           "name": "temp2",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32864,16 +32794,6 @@
           "name": "temp",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32894,16 +32814,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32924,16 +32834,6 @@
           "name": "temp2",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32959,16 +32859,6 @@
           "name": "dist",
           "cType": "double",
           "canonical": "double"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -32994,16 +32884,6 @@
           "name": "dist",
           "cType": "double",
           "canonical": "double"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33029,16 +32909,6 @@
           "name": "dist",
           "cType": "double",
           "canonical": "double"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33059,16 +32929,6 @@
           "name": "temp",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33089,16 +32949,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33119,16 +32969,6 @@
           "name": "temp2",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33149,16 +32989,6 @@
           "name": "temp",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33179,16 +33009,6 @@
           "name": "gs",
           "cType": "const int *",
           "canonical": "const int *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },
@@ -33209,16 +33029,6 @@
           "name": "temp2",
           "cType": "const Temporal *",
           "canonical": "const Temporal *"
-        },
-        {
-          "name": "restr",
-          "cType": "bool",
-          "canonical": "bool"
-        },
-        {
-          "name": "atvalue",
-          "cType": "bool",
-          "canonical": "bool"
         }
       ]
     },

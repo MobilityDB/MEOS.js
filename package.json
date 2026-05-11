@@ -6,16 +6,15 @@
   "main": "core/index.js",
   "scripts": {
     "generate": "npx tsx codegen/FunctionsGenerator.ts",
-    "build:wasm": "bash scripts/build_wasm.sh",
+    "build:wasm": "docker build --output type=local,dest=./wasm --target wasm .",
     "build:ts": "tsc",
-    "build": "npm run build:wasm && npm run build:ts",
+    "build": "npm run build:ts",
     "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
     "play": "node --import tsx/esm test/playground.ts",
     "docs:api": "typedoc",
     "docs:dev": "npm run docs:api && vitepress dev docs",
     "docs:build": "npm run docs:api && vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "dev": "vite"
+    "docs:preview": "vitepress preview docs"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +25,6 @@
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^6.0.2",
-    "vite": "^8.0.7",
-    "vitepress": "^1.6.4"
+    "vitepress": "^2.0.0-alpha.17"
   }
 }

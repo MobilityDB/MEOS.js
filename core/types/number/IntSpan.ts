@@ -10,6 +10,7 @@ import {
 	distance_intspan_intspan,
 	intspan_to_floatspan,
 	intspan_expand,
+	intspan_shift_scale,
 } from '../../functions/functions.generated';
 import { Span } from '../base/Span';
 
@@ -137,5 +138,16 @@ export class IntSpan extends Span {
 	 */
 	expand(value: number): IntSpan {
 		return new IntSpan(intspan_expand(this._inner, value));
+	}
+
+	/**
+	 * Returns a new span shifted and/or scaled along the integer axis.
+	 * @param shift Amount to add to every bound (ignored when `hasShift` is `false`).
+	 * @param width New total width (ignored when `hasWidth` is `false`).
+	 * @param hasShift Set to `false` to skip shifting (default `true`).
+	 * @param hasWidth Set to `false` to skip scaling (default `true`).
+	 */
+	shiftScale(shift: number, width: number, hasShift = true, hasWidth = true): IntSpan {
+		return new IntSpan(intspan_shift_scale(this._inner, shift, width, hasShift, hasWidth));
 	}
 }

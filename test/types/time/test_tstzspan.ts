@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos';
+import { interval_make, meos_free } from '../../../core/functions/functions.generated';
 import { TsTzSpan } from '../../../core/types/time/TsTzSpan';
 
 const T0 = '2000-01-01 00:00:00+00';
@@ -329,4 +330,68 @@ describe('TsTzSpan - Comparisons', () => {
 	it('le: [T0,T1) <= [T0,T1) = true', () => assert.equal(s1.le(s1b), true));
 	it('gt: [T1,T2) > [T0,T1) = true', () => assert.equal(s2.gt(s1), true));
 	it('ge: [T0,T1) >= [T0,T1) = true', () => assert.equal(s1.ge(s1b), true));
+});
+
+// -------------------------------------------------------------------------
+// TRANSFORMATIONS (shiftScale, expand, tprecision)
+// -------------------------------------------------------------------------
+
+describe('TsTzSpan - shiftScale', () => {
+	it('shift by 1 hour: [T0,T1) becomes [T1,T2)', () => {
+		const s = TsTzSpan.fromString(`[${T0}, ${T1})`);
+		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
+		const r = s.shiftScale(interv, 0);
+		assert.equal(r.toString(), `[${T1}, ${T2})`);
+		s.free();
+		r.free();
+		meos_free(interv);
+	});
+
+	it('scale to 2h: width doubles', () => {
+		const s = TsTzSpan.fromString(`[${T0}, ${T1}]`); // 1h
+		const dur = interval_make(0, 0, 0, 0, 2, 0, 0);  // 2 hours
+		const r = s.shiftScale(0, dur);
+		// lower stays, upper moves to lower + 2h
+		assert.equal(r.lower(), s.lower());
+		assert.ok(r.upper() > s.upper());
+		s.free();
+		r.free();
+		meos_free(dur);
+	});
+});
+
+describe('TsTzSpan - expand', () => {
+	it('expands span by 1 hour on each side', () => {
+		const s = TsTzSpan.fromString(`[${T1}, ${T2})`); // [+1h, +2h)
+		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
+		const r = s.expand(interv);
+		// lower shrinks by 1h, upper grows by 1h
+		assert.ok(r.lower() < s.lower());
+		assert.ok(r.upper() > s.upper());
+		s.free();
+		r.free();
+		meos_free(interv);
+	});
+});
+
+describe('TsTzSpan - tprecision', () => {
+	it('returns a non-zero pointer', () => {
+		const s = TsTzSpan.fromString(`[${T0}, ${T3}]`);
+		const dur = interval_make(0, 0, 0, 0, 1, 0, 0); // 1-hour bucket
+		const r = s.tprecision(dur, s.lower());
+		assert.ok(r.inner !== 0);
+		s.free();
+		r.free();
+		meos_free(dur);
+	});
+});
+
+describe('TsTzSpan - toDateSpan', () => {
+	it('returns a non-zero pointer', () => {
+		const s = TsTzSpan.fromString(`[${T0}, ${T1}]`);
+		const ptr = s.toDateSpan();
+		assert.ok(ptr !== 0);
+		meos_free(ptr);
+		s.free();
+	});
 });

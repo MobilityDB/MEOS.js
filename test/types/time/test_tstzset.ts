@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos';
+import { interval_make, meos_free } from '../../../core/functions/functions.generated';
 import { TsTzSet } from '../../../core/types/time/TsTzSet';
 
 // These timestamps correspond to 2001-01-01, 2001-01-02, 2001-01-03 UTC.
@@ -268,5 +269,30 @@ describe('TsTzSet - Comparisons', () => {
 		assert.equal(a.ge(b), true);
 		a.free();
 		b.free();
+	});
+});
+
+describe('TsTzSet - shiftScale', () => {
+	it('shift by 1 day: all timestamps advance by 1 day', () => {
+		const s = TsTzSet.fromString(`{${TS1}, ${TS2}}`);
+		const interv = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const r = s.shiftScale(interv, 0);
+		assert.ok(r.inner !== 0);
+		assert.ok(r.startValue() > s.startValue());
+		s.free();
+		r.free();
+		meos_free(interv);
+	});
+});
+
+describe('TsTzSet - tprecision', () => {
+	it('returns a non-zero pointer', () => {
+		const s = TsTzSet.fromString(`{${TS1}, ${TS2}, ${TS3}}`);
+		const dur = interval_make(0, 0, 0, 1, 0, 0, 0); // 1-day bucket
+		const r = s.tprecision(dur, s.startValue());
+		assert.ok(r.inner !== 0);
+		s.free();
+		r.free();
+		meos_free(dur);
 	});
 });
