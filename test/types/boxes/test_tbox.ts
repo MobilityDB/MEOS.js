@@ -3,11 +3,11 @@ import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos';
 import { pg_timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated';
 import { TBox } from '../../../core/types/boxes/TBox';
-import { IntSpan } from '../../../core/types/number/IntSpan';
-import { FloatSpan } from '../../../core/types/number/FloatSpan';
-import { TsTzSpan } from '../../../core/types/time/TsTzSpan';
-import { IntSet } from '../../../core/types/number/IntSet';
-import { IntSpanSet } from '../../../core/types/number/IntSpanSet';
+import { IntSpan } from '../../../core/types/collections/number/IntSpan';
+import { FloatSpan } from '../../../core/types/collections/number/FloatSpan';
+import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan';
+import { IntSet } from '../../../core/types/collections/number/IntSet';
+import { IntSpanSet } from '../../../core/types/collections/number/IntSpanSet';
 
 before(async () => {
 	await initMeos();

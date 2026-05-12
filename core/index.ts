@@ -4,34 +4,43 @@
 
 export { initMeos, getModule } from './runtime/meos';
 export * from './functions/errors';
-export { Span } from './types/base/Span';
-export { SpanSet } from './types/base/SpanSet';
-export { MeosSet } from './types/base/MeosSet';
-export { TBool } from './types/base/TBool';
-export { TBoolInst } from './types/base/TBoolInst';
-export { TBoolSeq } from './types/base/TBoolSeq';
-export { TBoolSeqSet } from './types/base/TBoolSeqSet';
-export { TInt } from './types/base/TInt';
-export { TIntInst } from './types/base/TIntInst';
-export { TIntSeq } from './types/base/TIntSeq';
-export { TIntSeqSet } from './types/base/TIntSeqSet';
-export { TFloat } from './types/base/TFloat';
-export { TFloatInst } from './types/base/TFloatInst';
-export { TFloatSeq } from './types/base/TFloatSeq';
-export { TFloatSeqSet } from './types/base/TFloatSeqSet';
+export { Span } from './types/collections/base/Span';
+export { SpanSet } from './types/collections/base/SpanSet';
+export { MeosSet } from './types/collections/base/MeosSet';
+export { TBool } from './types/basic/tbool/TBool';
+export { TBoolInst } from './types/basic/tbool/TBoolInst';
+export { TBoolSeq } from './types/basic/tbool/TBoolSeq';
+export { TBoolSeqSet } from './types/basic/tbool/TBoolSeqSet';
+export { TInt } from './types/basic/tint/TInt';
+export { TIntInst } from './types/basic/tint/TIntInst';
+export { TIntSeq } from './types/basic/tint/TIntSeq';
+export { TIntSeqSet } from './types/basic/tint/TIntSeqSet';
+export { TFloat } from './types/basic/tfloat/TFloat';
+export { TFloatInst } from './types/basic/tfloat/TFloatInst';
+export { TFloatSeq } from './types/basic/tfloat/TFloatSeq';
+export { TFloatSeqSet } from './types/basic/tfloat/TFloatSeqSet';
+export { TText } from './types/basic/ttext/TText';
+export { TTextInst } from './types/basic/ttext/TTextInst';
+export { TTextSeq } from './types/basic/ttext/TTextSeq';
+export { TTextSeqSet } from './types/basic/ttext/TTextSeqSet';
 export { TInterpolation, TemporalType } from './types/temporal/Temporal';
-export { createTBool, createTInt, createTFloat } from './types/temporal/TemporalFactory';
-export type { TBoolSubtype, TIntSubtype, TFloatSubtype } from './types/temporal/TemporalFactory';
-export { IntSpan } from './types/number/IntSpan';
-export { IntSpanSet } from './types/number/IntSpanSet';
-export { IntSet } from './types/number/IntSet';
-export { FloatSpan } from './types/number/FloatSpan';
-export { FloatSpanSet } from './types/number/FloatSpanSet';
-export { FloatSet } from './types/number/FloatSet';
+export { createTBool, createTInt, createTFloat, createTText } from './types/temporal/TemporalFactory';
+export type {
+	TBoolSubtype,
+	TIntSubtype,
+	TFloatSubtype,
+	TTextSubtype,
+} from './types/temporal/TemporalFactory';
+export { IntSpan } from './types/collections/number/IntSpan';
+export { IntSpanSet } from './types/collections/number/IntSpanSet';
+export { IntSet } from './types/collections/number/IntSet';
+export { FloatSpan } from './types/collections/number/FloatSpan';
+export { FloatSpanSet } from './types/collections/number/FloatSpanSet';
+export { FloatSet } from './types/collections/number/FloatSet';
 export { TBox } from './types/boxes/TBox';
-export { DateSpan } from './types/time/DateSpan';
-export { DateSpanSet } from './types/time/DateSpanSet';
-export { DateSet } from './types/time/DateSet';
-export { TsTzSpan } from './types/time/TsTzSpan';
-export { TsTzSpanSet } from './types/time/TsTzSpanSet';
-export { TsTzSet } from './types/time/TsTzSet';
+export { DateSpan } from './types/collections/time/DateSpan';
+export { DateSpanSet } from './types/collections/time/DateSpanSet';
+export { DateSet } from './types/collections/time/DateSet';
+export { TsTzSpan } from './types/collections/time/TsTzSpan';
+export { TsTzSpanSet } from './types/collections/time/TsTzSpanSet';
+export { TsTzSet } from './types/collections/time/TsTzSet';

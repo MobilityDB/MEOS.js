@@ -48,10 +48,10 @@ import {
 	MEOS_ERR_GEOJSON_OUTPUT,
 	MEOS_ERROR,
 } from '../../core/functions/errors';
-import { IntSet } from '../../core/types/number/IntSet';
-import { IntSpan } from '../../core/types/number/IntSpan';
-import { FloatSet } from '../../core/types/number/FloatSet';
-import { TsTzSpan } from '../../core/types/time/TsTzSpan';
+import { IntSet } from '../../core/types/collections/number/IntSet';
+import { IntSpan } from '../../core/types/collections/number/IntSpan';
+import { FloatSet } from '../../core/types/collections/number/FloatSet';
+import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan';
 
 before(async () => {
 	await initMeos();
