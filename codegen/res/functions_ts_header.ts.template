@@ -223,4 +223,15 @@ export function tstzset_value_n(s: Ptr, n: number): TimestampTz {
 	return Number(call<bigint>('tstzset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
 }
 
+/*
+ * textset_value_n — bool+result with text* (varlena).
+ * The C wrapper converts text* to cstring, so JS receives a plain string.
+ * Returns null if n is out of range. n is 1-based (MEOS convention).
+ */
+export function textset_value_n(s: Ptr, n: number): string | null {
+	const _r = call<string>('textset_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
+	checkMeosError();
+	return _r ?? null;
+}
+
 // --- Generated wrappers ---

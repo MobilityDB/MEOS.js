@@ -223,6 +223,17 @@ export function tstzset_value_n(s: Ptr, n: number): TimestampTz {
 	return Number(call<bigint>('tstzset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
 }
 
+/*
+ * textset_value_n — bool+result with text* (varlena).
+ * The C wrapper converts text* to cstring, so JS receives a plain string.
+ * Returns null if n is out of range. n is 1-based (MEOS convention).
+ */
+export function textset_value_n(s: Ptr, n: number): string | null {
+	const _r = call<string>('textset_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
+	checkMeosError();
+	return _r ?? null;
+}
+
 // --- Generated wrappers ---
 
 // === meos.h ===
@@ -428,7 +439,7 @@ export function int32_cmp(l: number, r: number): number {
 }
 
 export function int64_cmp(l: number, r: number): number {
-	const _r = call<number>('int64_cmp_w', 'number', ['number', 'number'], [l, r]);
+	const _r = call<number>('int64_cmp_w', 'number', ['bigint', 'bigint'], [BigInt(l), BigInt(r)]);
 	checkMeosError();
 	return _r;
 }
@@ -602,7 +613,7 @@ export function bigintset_out(set: Ptr): string {
 }
 
 export function bigintspan_expand(s: Ptr, value: number): Ptr {
-	const _r = callPtr('bigintspan_expand_w', [ptrArgType(), 'number'], [ptrArgVal(s), value]);
+	const _r = callPtr('bigintspan_expand_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(value)]);
 	checkMeosError();
 	return _r;
 }
@@ -860,7 +871,7 @@ export function bigintset_make(values: Ptr, count: number): Ptr {
 }
 
 export function bigintspan_make(lower: number, upper: number, lower_inc: boolean, upper_inc: boolean): Ptr {
-	const _r = callPtr('bigintspan_make_w', ['number', 'number', 'number', 'number'], [lower, upper, lower_inc ? 1 : 0, upper_inc ? 1 : 0]);
+	const _r = callPtr('bigintspan_make_w', ['bigint', 'bigint', 'number', 'number'], [BigInt(lower), BigInt(upper), lower_inc ? 1 : 0, upper_inc ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -944,7 +955,7 @@ export function tstzspan_make(lower: TimestampTz, upper: TimestampTz, lower_inc:
 }
 
 export function bigint_to_set(i: number): Ptr {
-	const _r = callPtr('bigint_to_set_w', ['number'], [i]);
+	const _r = callPtr('bigint_to_set_w', ['bigint'], [BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -1130,19 +1141,19 @@ export function tstzspanset_to_datespanset(ss: Ptr): Ptr {
 }
 
 export function bigintset_end_value(s: Ptr): number {
-	const _r = call<number>('bigintset_end_value_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	const _r = Number(call<bigint>('bigintset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintset_start_value(s: Ptr): number {
-	const _r = call<number>('bigintset_start_value_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	const _r = Number(call<bigint>('bigintset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintset_value_n(s: Ptr, n: number): number {
-	const _r = call<number>('bigintset_value_n_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
+	const _r = Number(call<bigint>('bigintset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
 	checkMeosError();
 	return _r;
 }
@@ -1154,37 +1165,37 @@ export function bigintset_values(s: Ptr): Ptr {
 }
 
 export function bigintspan_lower(s: Ptr): number {
-	const _r = call<number>('bigintspan_lower_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	const _r = Number(call<bigint>('bigintspan_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspan_upper(s: Ptr): number {
-	const _r = call<number>('bigintspan_upper_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	const _r = Number(call<bigint>('bigintspan_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspan_width(s: Ptr): number {
-	const _r = call<number>('bigintspan_width_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	const _r = Number(call<bigint>('bigintspan_width_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspanset_lower(ss: Ptr): number {
-	const _r = call<number>('bigintspanset_lower_w', 'number', [ptrArgType()], [ptrArgVal(ss)]);
+	const _r = Number(call<bigint>('bigintspanset_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspanset_upper(ss: Ptr): number {
-	const _r = call<number>('bigintspanset_upper_w', 'number', [ptrArgType()], [ptrArgVal(ss)]);
+	const _r = Number(call<bigint>('bigintspanset_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspanset_width(ss: Ptr, boundspan: boolean): number {
-	const _r = call<number>('bigintspanset_width_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), boundspan ? 1 : 0]);
+	const _r = Number(call<bigint>('bigintspanset_width_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(ss), boundspan ? 1 : 0]));
 	checkMeosError();
 	return _r;
 }
@@ -1394,7 +1405,7 @@ export function set_hash(s: Ptr): number {
 }
 
 export function set_hash_extended(s: Ptr, seed: number): number {
-	const _r = call<number>('set_hash_extended_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), seed]);
+	const _r = Number(call<bigint>('set_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
@@ -1412,7 +1423,7 @@ export function span_hash(s: Ptr): number {
 }
 
 export function span_hash_extended(s: Ptr, seed: number): number {
-	const _r = call<number>('span_hash_extended_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), seed]);
+	const _r = Number(call<bigint>('span_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
@@ -1442,7 +1453,7 @@ export function spanset_hash(ss: Ptr): number {
 }
 
 export function spanset_hash_extended(ss: Ptr, seed: number): number {
-	const _r = call<number>('spanset_hash_extended_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), seed]);
+	const _r = Number(call<bigint>('spanset_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
@@ -1501,12 +1512,6 @@ export function textset_start_value(s: Ptr): string {
 	return _r;
 }
 
-export function textset_value_n(s: Ptr, n: number): Ptr {
-	const _r = callPtr('textset_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
-	checkMeosError();
-	return _r;
-}
-
 export function textset_values(s: Ptr): Ptr {
 	const _r = callPtr('textset_values_w', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
@@ -1538,19 +1543,19 @@ export function tstzspanset_timestamps(ss: Ptr): Ptr {
 }
 
 export function bigintset_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+	const _r = callPtr('bigintset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(s), BigInt(shift), BigInt(width), hasshift ? 1 : 0, haswidth ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspan_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintspan_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+	const _r = callPtr('bigintspan_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(s), BigInt(shift), BigInt(width), hasshift ? 1 : 0, haswidth ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspanset_shift_scale(ss: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintspanset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(ss), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+	const _r = callPtr('bigintspanset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(ss), BigInt(shift), BigInt(width), hasshift ? 1 : 0, haswidth ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -1928,7 +1933,7 @@ export function spanset_split_n_spans(ss: Ptr, span_count: number, count: Ptr): 
 }
 
 export function adjacent_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('adjacent_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('adjacent_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -1964,7 +1969,7 @@ export function adjacent_span_timestamptz(s: Ptr, t: TimestampTz): boolean {
 }
 
 export function adjacent_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('adjacent_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('adjacent_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2006,19 +2011,19 @@ export function adjacent_spanset_spanset(ss1: Ptr, ss2: Ptr): boolean {
 }
 
 export function contained_bigint_set(i: number, s: Ptr): boolean {
-	const _r = call<number>('contained_bigint_set_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('contained_bigint_set_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function contained_bigint_span(i: number, s: Ptr): boolean {
-	const _r = call<number>('contained_bigint_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('contained_bigint_span_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function contained_bigint_spanset(i: number, ss: Ptr): boolean {
-	const _r = call<number>('contained_bigint_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	const _r = call<number>('contained_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2132,7 +2137,7 @@ export function contained_timestamptz_spanset(t: TimestampTz, ss: Ptr): boolean 
 }
 
 export function contains_set_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('contains_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('contains_set_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2174,7 +2179,7 @@ export function contains_set_timestamptz(s: Ptr, t: TimestampTz): boolean {
 }
 
 export function contains_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('contains_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('contains_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2216,7 +2221,7 @@ export function contains_span_timestamptz(s: Ptr, t: TimestampTz): boolean {
 }
 
 export function contains_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('contains_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('contains_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2432,19 +2437,19 @@ export function before_timestamptz_spanset(t: TimestampTz, ss: Ptr): boolean {
 }
 
 export function left_bigint_set(i: number, s: Ptr): boolean {
-	const _r = call<number>('left_bigint_set_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('left_bigint_set_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function left_bigint_span(i: number, s: Ptr): boolean {
-	const _r = call<number>('left_bigint_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('left_bigint_span_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function left_bigint_spanset(i: number, ss: Ptr): boolean {
-	const _r = call<number>('left_bigint_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	const _r = call<number>('left_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2486,7 +2491,7 @@ export function left_int_spanset(i: number, ss: Ptr): boolean {
 }
 
 export function left_set_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('left_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('left_set_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2516,7 +2521,7 @@ export function left_set_text(s: Ptr, txt: string): boolean {
 }
 
 export function left_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('left_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('left_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2546,7 +2551,7 @@ export function left_span_spanset(s: Ptr, ss: Ptr): boolean {
 }
 
 export function left_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('left_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('left_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2726,19 +2731,19 @@ export function overbefore_timestamptz_spanset(t: TimestampTz, ss: Ptr): boolean
 }
 
 export function overleft_bigint_set(i: number, s: Ptr): boolean {
-	const _r = call<number>('overleft_bigint_set_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('overleft_bigint_set_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function overleft_bigint_span(i: number, s: Ptr): boolean {
-	const _r = call<number>('overleft_bigint_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('overleft_bigint_span_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function overleft_bigint_spanset(i: number, ss: Ptr): boolean {
-	const _r = call<number>('overleft_bigint_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	const _r = call<number>('overleft_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2780,7 +2785,7 @@ export function overleft_int_spanset(i: number, ss: Ptr): boolean {
 }
 
 export function overleft_set_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('overleft_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('overleft_set_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2810,7 +2815,7 @@ export function overleft_set_text(s: Ptr, txt: string): boolean {
 }
 
 export function overleft_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('overleft_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('overleft_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2840,7 +2845,7 @@ export function overleft_span_spanset(s: Ptr, ss: Ptr): boolean {
 }
 
 export function overleft_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('overleft_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('overleft_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2876,19 +2881,19 @@ export function overleft_text_set(txt: string, s: Ptr): boolean {
 }
 
 export function overright_bigint_set(i: number, s: Ptr): boolean {
-	const _r = call<number>('overright_bigint_set_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('overright_bigint_set_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function overright_bigint_span(i: number, s: Ptr): boolean {
-	const _r = call<number>('overright_bigint_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('overright_bigint_span_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function overright_bigint_spanset(i: number, ss: Ptr): boolean {
-	const _r = call<number>('overright_bigint_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	const _r = call<number>('overright_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2930,7 +2935,7 @@ export function overright_int_spanset(i: number, ss: Ptr): boolean {
 }
 
 export function overright_set_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('overright_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('overright_set_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2960,7 +2965,7 @@ export function overright_set_text(s: Ptr, txt: string): boolean {
 }
 
 export function overright_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('overright_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('overright_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2990,7 +2995,7 @@ export function overright_span_spanset(s: Ptr, ss: Ptr): boolean {
 }
 
 export function overright_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('overright_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('overright_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3026,19 +3031,19 @@ export function overright_text_set(txt: string, s: Ptr): boolean {
 }
 
 export function right_bigint_set(i: number, s: Ptr): boolean {
-	const _r = call<number>('right_bigint_set_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('right_bigint_set_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function right_bigint_span(i: number, s: Ptr): boolean {
-	const _r = call<number>('right_bigint_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
+	const _r = call<number>('right_bigint_span_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function right_bigint_spanset(i: number, ss: Ptr): boolean {
-	const _r = call<number>('right_bigint_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	const _r = call<number>('right_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3080,7 +3085,7 @@ export function right_int_spanset(i: number, ss: Ptr): boolean {
 }
 
 export function right_set_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('right_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('right_set_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3110,7 +3115,7 @@ export function right_set_text(s: Ptr, txt: string): boolean {
 }
 
 export function right_span_bigint(s: Ptr, i: number): boolean {
-	const _r = call<number>('right_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	const _r = call<number>('right_span_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3140,7 +3145,7 @@ export function right_span_spanset(s: Ptr, ss: Ptr): boolean {
 }
 
 export function right_spanset_bigint(ss: Ptr, i: number): boolean {
-	const _r = call<number>('right_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]) !== 0;
+	const _r = call<number>('right_spanset_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3176,7 +3181,7 @@ export function right_text_set(txt: string, s: Ptr): boolean {
 }
 
 export function intersection_bigint_set(i: number, s: Ptr): Ptr {
-	const _r = callPtr('intersection_bigint_set_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	const _r = callPtr('intersection_bigint_set_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
@@ -3200,7 +3205,7 @@ export function intersection_int_set(i: number, s: Ptr): Ptr {
 }
 
 export function intersection_set_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('intersection_set_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('intersection_set_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3242,7 +3247,7 @@ export function intersection_set_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function intersection_span_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('intersection_span_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('intersection_span_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3284,7 +3289,7 @@ export function intersection_span_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function intersection_spanset_bigint(ss: Ptr, i: number): Ptr {
-	const _r = callPtr('intersection_spanset_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(ss), i]);
+	const _r = callPtr('intersection_spanset_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3338,19 +3343,19 @@ export function intersection_timestamptz_set(t: TimestampTz, s: Ptr): Ptr {
 }
 
 export function minus_bigint_set(i: number, s: Ptr): Ptr {
-	const _r = callPtr('minus_bigint_set_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	const _r = callPtr('minus_bigint_set_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
 
 export function minus_bigint_span(i: number, s: Ptr): Ptr {
-	const _r = callPtr('minus_bigint_span_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	const _r = callPtr('minus_bigint_span_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
 
 export function minus_bigint_spanset(i: number, ss: Ptr): Ptr {
-	const _r = callPtr('minus_bigint_spanset_w', ['number', ptrArgType()], [i, ptrArgVal(ss)]);
+	const _r = callPtr('minus_bigint_spanset_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -3410,7 +3415,7 @@ export function minus_int_spanset(i: number, ss: Ptr): Ptr {
 }
 
 export function minus_set_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('minus_set_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('minus_set_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3452,7 +3457,7 @@ export function minus_set_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function minus_span_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('minus_span_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('minus_span_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3494,7 +3499,7 @@ export function minus_span_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function minus_spanset_bigint(ss: Ptr, i: number): Ptr {
-	const _r = callPtr('minus_spanset_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(ss), i]);
+	const _r = callPtr('minus_spanset_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3560,19 +3565,19 @@ export function minus_timestamptz_spanset(t: TimestampTz, ss: Ptr): Ptr {
 }
 
 export function union_bigint_set(i: number, s: Ptr): Ptr {
-	const _r = callPtr('union_bigint_set_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	const _r = callPtr('union_bigint_set_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
 
 export function union_bigint_span(s: Ptr, i: number): Ptr {
-	const _r = callPtr('union_bigint_span_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('union_bigint_span_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
 
 export function union_bigint_spanset(i: number, ss: Ptr): Ptr {
-	const _r = callPtr('union_bigint_spanset_w', ['number', ptrArgType()], [i, ptrArgVal(ss)]);
+	const _r = callPtr('union_bigint_spanset_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -3632,7 +3637,7 @@ export function union_int_spanset(i: number, ss: Ptr): Ptr {
 }
 
 export function union_set_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('union_set_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('union_set_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3674,7 +3679,7 @@ export function union_set_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function union_span_bigint(s: Ptr, i: number): Ptr {
-	const _r = callPtr('union_span_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = callPtr('union_span_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3716,7 +3721,7 @@ export function union_span_timestamptz(s: Ptr, t: TimestampTz): Ptr {
 }
 
 export function union_spanset_bigint(ss: Ptr, i: number): Ptr {
-	const _r = callPtr('union_spanset_bigint_w', [ptrArgType(), 'number'], [ptrArgVal(ss), i]);
+	const _r = callPtr('union_spanset_bigint_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -3782,25 +3787,25 @@ export function union_timestamptz_spanset(t: TimestampTz, ss: Ptr): Ptr {
 }
 
 export function distance_bigintset_bigintset(s1: Ptr, s2: Ptr): number {
-	const _r = call<number>('distance_bigintset_bigintset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+	const _r = Number(call<bigint>('distance_bigintset_bigintset_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]));
 	checkMeosError();
 	return _r;
 }
 
 export function distance_bigintspan_bigintspan(s1: Ptr, s2: Ptr): number {
-	const _r = call<number>('distance_bigintspan_bigintspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+	const _r = Number(call<bigint>('distance_bigintspan_bigintspan_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]));
 	checkMeosError();
 	return _r;
 }
 
 export function distance_bigintspanset_bigintspan(ss: Ptr, s: Ptr): number {
-	const _r = call<number>('distance_bigintspanset_bigintspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(s)]);
+	const _r = Number(call<bigint>('distance_bigintspanset_bigintspan_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
 
 export function distance_bigintspanset_bigintspanset(ss1: Ptr, ss2: Ptr): number {
-	const _r = call<number>('distance_bigintspanset_bigintspanset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ss1), ptrArgVal(ss2)]);
+	const _r = Number(call<bigint>('distance_bigintspanset_bigintspanset_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(ss1), ptrArgVal(ss2)]));
 	checkMeosError();
 	return _r;
 }
@@ -3878,7 +3883,7 @@ export function distance_intspanset_intspanset(ss1: Ptr, ss2: Ptr): number {
 }
 
 export function distance_set_bigint(s: Ptr, i: number): number {
-	const _r = call<number>('distance_set_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = Number(call<bigint>('distance_set_bigint_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]));
 	checkMeosError();
 	return _r;
 }
@@ -3908,7 +3913,7 @@ export function distance_set_timestamptz(s: Ptr, t: TimestampTz): number {
 }
 
 export function distance_span_bigint(s: Ptr, i: number): number {
-	const _r = call<number>('distance_span_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]);
+	const _r = Number(call<bigint>('distance_span_bigint_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(i)]));
 	checkMeosError();
 	return _r;
 }
@@ -3938,7 +3943,7 @@ export function distance_span_timestamptz(s: Ptr, t: TimestampTz): number {
 }
 
 export function distance_spanset_bigint(ss: Ptr, i: number): number {
-	const _r = call<number>('distance_spanset_bigint_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(ss), i]);
+	const _r = Number(call<bigint>('distance_spanset_bigint_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(i)]));
 	checkMeosError();
 	return _r;
 }
@@ -3992,13 +3997,13 @@ export function distance_tstzspanset_tstzspanset(ss1: Ptr, ss2: Ptr): number {
 }
 
 export function bigint_extent_transfn(state: Ptr, i: number): Ptr {
-	const _r = callPtr('bigint_extent_transfn_w', [ptrArgType(), 'number'], [ptrArgVal(state), i]);
+	const _r = callPtr('bigint_extent_transfn_w', [ptrArgType(), 'bigint'], [ptrArgVal(state), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
 
 export function bigint_union_transfn(state: Ptr, i: number): Ptr {
-	const _r = callPtr('bigint_union_transfn_w', [ptrArgType(), 'number'], [ptrArgVal(state), i]);
+	const _r = callPtr('bigint_union_transfn_w', [ptrArgType(), 'bigint'], [ptrArgVal(state), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -4106,19 +4111,19 @@ export function timestamptz_union_transfn(state: Ptr, t: TimestampTz): Ptr {
 }
 
 export function bigint_get_bin(value: number, vsize: number, vorigin: number): number {
-	const _r = call<number>('bigint_get_bin_w', 'number', ['number', 'number', 'number'], [value, vsize, vorigin]);
+	const _r = Number(call<bigint>('bigint_get_bin_w', 'bigint', ['bigint', 'bigint', 'bigint'], [BigInt(value), BigInt(vsize), BigInt(vorigin)]));
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspan_bins(s: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('bigintspan_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(s), vsize, vorigin, ptrArgVal(count)]);
+	const _r = callPtr('bigintspan_bins_w', [ptrArgType(), 'bigint', 'bigint', ptrArgType()], [ptrArgVal(s), BigInt(vsize), BigInt(vorigin), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
 export function bigintspanset_bins(ss: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('bigintspanset_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(ss), vsize, vorigin, ptrArgVal(count)]);
+	const _r = callPtr('bigintspanset_bins_w', [ptrArgType(), 'bigint', 'bigint', ptrArgType()], [ptrArgVal(ss), BigInt(vsize), BigInt(vorigin), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4340,7 +4345,7 @@ export function tbox_hash(box: Ptr): number {
 }
 
 export function tbox_hash_extended(box: Ptr, seed: number): number {
-	const _r = call<number>('tbox_hash_extended_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(box), seed]);
+	const _r = Number(call<bigint>('tbox_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(box), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
@@ -8417,7 +8422,7 @@ export function stbox_hash(box: Ptr): number {
 }
 
 export function stbox_hash_extended(box: Ptr, seed: number): number {
-	const _r = call<number>('stbox_hash_extended_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(box), seed]);
+	const _r = Number(call<bigint>('stbox_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(box), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }

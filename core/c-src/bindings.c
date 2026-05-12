@@ -271,6 +271,18 @@ long long tstzset_value_n_w(const Set *s, int n) {
     return (long long) r;
 }
 
+/*
+ * textset_value_n — bool+result with text*.
+ * Converts the varlena text* to a plain C string so JS receives a string.
+ * Returns NULL if n is out of range. n is 1-based (MEOS convention).
+ */
+EMSCRIPTEN_KEEPALIVE
+char * textset_value_n_w(const Set *s, int n) {
+    text *r;
+    if (!textset_value_n(s, n, &r)) return NULL;
+    return text2cstring(r);
+}
+
 /* --- Generated wrappers --- */
 /* === meos.h === */
 
@@ -1363,13 +1375,6 @@ char * textset_start_value_w(const Set * s) {
   text *_t = textset_start_value(s);
   if (!_t) return NULL;
   return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-text * textset_value_n_w(const Set * s, int n) {
-  text * r;
-  if (!textset_value_n(s, n, &r)) return NULL;
-  return r;
 }
 
 EMSCRIPTEN_KEEPALIVE

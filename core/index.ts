@@ -25,18 +25,17 @@ export { TTextSeq } from './types/basic/ttext/TTextSeq';
 export { TTextSeqSet } from './types/basic/ttext/TTextSeqSet';
 export { TInterpolation, TemporalType } from './types/temporal/Temporal';
 export { createTBool, createTInt, createTFloat, createTText } from './types/temporal/TemporalFactory';
-export type {
-	TBoolSubtype,
-	TIntSubtype,
-	TFloatSubtype,
-	TTextSubtype,
-} from './types/temporal/TemporalFactory';
+export type { TBoolSubtype, TIntSubtype, TFloatSubtype, TTextSubtype } from './types/temporal/TemporalFactory';
 export { IntSpan } from './types/collections/number/IntSpan';
 export { IntSpanSet } from './types/collections/number/IntSpanSet';
 export { IntSet } from './types/collections/number/IntSet';
 export { FloatSpan } from './types/collections/number/FloatSpan';
 export { FloatSpanSet } from './types/collections/number/FloatSpanSet';
 export { FloatSet } from './types/collections/number/FloatSet';
+export { BigIntSpan } from './types/collections/number/BigIntSpan';
+export { BigIntSpanSet } from './types/collections/number/BigIntSpanSet';
+export { BigIntSet } from './types/collections/number/BigIntSet';
+export { TextSet } from './types/collections/text/TextSet';
 export { TBox } from './types/boxes/TBox';
 export { DateSpan } from './types/collections/time/DateSpan';
 export { DateSpanSet } from './types/collections/time/DateSpanSet';

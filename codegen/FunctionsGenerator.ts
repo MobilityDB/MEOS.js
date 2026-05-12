@@ -127,6 +127,8 @@ const MANUAL_FUNCTIONS = new Set([
 	'tstzset_end_value',
 	// tstzset_value_n uses bool+result pattern with int64; custom wrapper.
 	'tstzset_value_n',
+	// textset_value_n returns text* (PostgreSQL varlena); custom wrapper converts to cstring.
+	'textset_value_n',
 	// Declared in MEOS headers but not implemented in libmeos.a.
 	'tfloat_avg_value',
 	'geog_from_binary',
@@ -162,6 +164,10 @@ const isTsTz = (t: string)		=> clean(t) === 'TimestampTz';
 const isTs = (t: string) 		=> clean(t) === 'Timestamp';
 const isDateADT = (t: string) 	=> clean(t) === 'DateADT';
 const isVoid = (t: string) 		=> clean(t) === 'void';
+const isInt64 = (t: string) => {
+	const c = clean(t);
+	return c === 'int64' || c === 'int64_t' || c === 'uint64' || c === 'uint64_t';
+};
 
 const isString = (t: string) => {
 	const c = clean(t);
@@ -532,7 +538,7 @@ type EmType = 'number' | 'string' | 'bigint' | null;
 
 function emArgType(cType: string): EmType {
 	if (isString(cType) || isTextSingle(cType)) return 'string';
-	if (isTsTz(cType) || isTs(cType)) return 'bigint';
+	if (isTsTz(cType) || isTs(cType) || isInt64(cType)) return 'bigint';
 	if (isVoid(cType)) return null;
 	return 'number';
 }
@@ -547,6 +553,7 @@ function emArgType(cType: string): EmType {
 function emRetType(cType: string): EmType {
 	if (isVoid(cType)) return null;
 	if (isString(cType) || isTextSingle(cType)) return 'string';
+	if (isInt64(cType)) return 'bigint';
 	return 'number';
 }
 
@@ -620,7 +627,7 @@ function tsRetType(cType: string): string {
  */
 function toCallArg(name: string, cType: string): string {
 	if (isBool(cType)) return `${name} ? 1 : 0`;
-	if (isTsTz(cType) || isTs(cType)) return `BigInt(${name})`;
+	if (isTsTz(cType) || isTs(cType) || isInt64(cType)) return `BigInt(${name})`;
 	return name;
 }
 
@@ -727,12 +734,17 @@ function generateTsWrapper(fn: IdlFunction): string {
 			if (tsParamType(p.cType) === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
 			return toCallArg(safeName(p.name), p.cType);
 		}).join(', ')}]`;
+		const { resultBaseType } = boolResult;
 		const lines = [`export function ${fn.name}(${params}): ${tsWrapRet} {`];
 		if (tsWrapRet === 'Ptr') {
 			lines.push(`\tconst _r = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
 		} else if (tsWrapRet === 'boolean') {
 			lines.push(
 				`\tconst _r = call<number>('${fn.name}_w', 'number', ${argTypes}, ${argVals}) !== 0;`
+			);
+		} else if (isInt64(resultBaseType)) {
+			lines.push(
+				`\tconst _r = Number(call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals}));`
 			);
 		} else {
 			lines.push(
@@ -784,6 +796,12 @@ function generateTsWrapper(fn: IdlFunction): string {
 		lines.push(`\treturn _r;`);
 	} else if (retTs === 'Ptr') {
 		lines.push(`\tconst _r = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
+		lines.push(`\tcheckMeosError();`);
+		lines.push(`\treturn _r;`);
+	} else if (isInt64(ret)) {
+		lines.push(
+			`\tconst _r = Number(call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals}));`
+		);
 		lines.push(`\tcheckMeosError();`);
 		lines.push(`\treturn _r;`);
 	} else {
