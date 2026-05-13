@@ -138,20 +138,22 @@ describe('BigIntSet - Set operations', () => {
 		b.free();
 	});
 
-	it('union returns non-zero ptr', () => {
+	it('union contains elements from both', () => {
 		const a = BigIntSet.fromString('{1, 3}');
 		const b = BigIntSet.fromString('{7, 15}');
-		const ptr = a.union(b);
-		assert.ok(ptr !== 0);
+		const r = a.union(b);
+		assert.equal(r.numValues(), 4);
+		r.free();
 		a.free();
 		b.free();
 	});
 
-	it('minus returns non-zero ptr', () => {
+	it('minus removes elements present in other', () => {
 		const a = BigIntSet.fromString('{1, 3, 7}');
 		const b = BigIntSet.fromString('{3}');
-		const ptr = a.minus(b);
-		assert.ok(ptr !== 0);
+		const r = a.minus(b);
+		assert.equal(r!.numValues(), 2);
+		r!.free();
 		a.free();
 		b.free();
 	});

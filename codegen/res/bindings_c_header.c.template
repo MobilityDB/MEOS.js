@@ -283,4 +283,11 @@ char * textset_value_n_w(const Set *s, int n) {
     return text2cstring(r);
 }
 
+EMSCRIPTEN_KEEPALIVE
+char * ttext_value_n_w(const Temporal *temp, int n) {
+    text *r;
+    if (!ttext_value_n(temp, n, &r)) return NULL;
+    return text2cstring(r);
+}
+
 /* --- Generated wrappers --- */

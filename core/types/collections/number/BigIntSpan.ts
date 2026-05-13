@@ -7,6 +7,7 @@ import {
 	bigintspan_upper,
 	bigintspan_width,
 	span_from_hexwkb,
+	adjacent_span_span,
 	distance_bigintspan_bigintspan,
 	bigintspan_expand,
 	bigintspan_shift_scale,
@@ -100,10 +101,7 @@ export class BigIntSpan extends Span {
 	 * `true` if `this` and `other` touch at exactly one boundary point without overlapping.
 	 */
 	isAdjacent(other: this): boolean {
-		return (
-			(this.upper() === other.lower() && this.upperInc() !== other.lowerInc()) ||
-			(other.upper() === this.lower() && other.upperInc() !== this.lowerInc())
-		);
+		return adjacent_span_span(this._inner, other.inner);
 	}
 
 	// -------------------------------------------------------------------------

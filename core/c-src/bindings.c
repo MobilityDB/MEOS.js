@@ -283,6 +283,13 @@ char * textset_value_n_w(const Set *s, int n) {
     return text2cstring(r);
 }
 
+EMSCRIPTEN_KEEPALIVE
+char * ttext_value_n_w(const Temporal *temp, int n) {
+    text *r;
+    if (!ttext_value_n(temp, n, &r)) return NULL;
+    return text2cstring(r);
+}
+
 /* --- Generated wrappers --- */
 /* === meos.h === */
 
@@ -4485,13 +4492,6 @@ char * ttext_start_value_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 int ttext_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, text ** value) {
   return (int) ttext_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
-}
-
-EMSCRIPTEN_KEEPALIVE
-text * ttext_value_n_w(const Temporal * temp, int n) {
-  text * r;
-  if (!ttext_value_n(temp, n, &r)) return NULL;
-  return r;
 }
 
 EMSCRIPTEN_KEEPALIVE

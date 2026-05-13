@@ -132,7 +132,7 @@ export abstract class MeosSet<T> {
 	 * Returns the n-th value (0-based index).
 	 * @param n 0-based index (MEOS internally uses 1-based indexing).
 	 */
-	abstract valueN(n: number): T;
+	abstract valueN(n: number): T | null;
 
 	// -------------------------------------------------------------------------
 	// TOPOLOGICAL PREDICATES

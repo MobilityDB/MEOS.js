@@ -127,8 +127,9 @@ const MANUAL_FUNCTIONS = new Set([
 	'tstzset_end_value',
 	// tstzset_value_n uses bool+result pattern with int64; custom wrapper.
 	'tstzset_value_n',
-	// textset_value_n returns text* (PostgreSQL varlena); custom wrapper converts to cstring.
+	// textset_value_n / ttext_value_n return text* (PostgreSQL varlena); custom wrapper converts to cstring.
 	'textset_value_n',
+	'ttext_value_n',
 	// Declared in MEOS headers but not implemented in libmeos.a.
 	'tfloat_avg_value',
 	'geog_from_binary',
@@ -301,10 +302,7 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
 
 	// Map the dereferenced C base type to its C wrapper return type.
 	let cRet: string;
-	if (base === 'int64' || base === 'int64_t') 
-		cRet = 'long long';
-
-	else if (base === 'TimestampTz' || base === 'Timestamp') 
+	if (isInt64(base) || isTsTz(base) || isTs(base))
 		cRet = 'long long';
 
 	else if (base === 'double' || base === 'float8') 
@@ -473,12 +471,7 @@ function generateCWrapper(fn: IdlFunction): string {
 			.join(', ');
 		const zeroVal = cWrapRet === 'double' ? '0.0' : cWrapRet.endsWith('*') ? 'NULL' : '0';
 		let castRet = 'r';
-		if (
-			resultBaseType === 'int64' ||
-			resultBaseType === 'int64_t' ||
-			resultBaseType === 'TimestampTz' ||
-			resultBaseType === 'Timestamp'
-		)
+		if (isInt64(resultBaseType) || isTsTz(resultBaseType) || isTs(resultBaseType))
 			castRet = '(long long) r';
 		else if (resultBaseType === 'bool') castRet = '(int) r';
 		const lines = [
@@ -848,10 +841,11 @@ function main(): void {
 		}
 
 		const key = `${fn.name}#${fn.params.length}`;
-		if (!seen.add(key)) {
+		if (seen.has(key)) {
 			stats.duplicates++;
 			continue;
 		}
+		seen.add(key);
 
 		const reason = shouldSkip(fn);
 		if (reason) {

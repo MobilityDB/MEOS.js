@@ -83,6 +83,15 @@ export class TextSet extends MeosSet<string> {
 	}
 
 	// -------------------------------------------------------------------------
+	// DISTANCE
+	// -------------------------------------------------------------------------
+
+	/** MEOS does not support text distance — always throws. */
+	distance(_other: this): never {
+		throw new Error('distance is not supported for TextSet');
+	}
+
+	// -------------------------------------------------------------------------
 	// TEXT OPERATIONS
 	// -------------------------------------------------------------------------
 

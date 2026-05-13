@@ -128,11 +128,12 @@ describe('BigIntSpanSet - Set operations', () => {
 		ss.free(); s.free(); r!.free();
 	});
 
-	it('union returns non-zero ptr', () => {
+	it('union contains elements from both', () => {
 		const ss = BigIntSpanSet.fromString(WKT_AB);
 		const s = BigIntSpan.fromString('[20, 25)');
-		const ptr = ss.union(s);
-		assert.ok(ptr !== 0);
+		const r = ss.union(s);
+		assert.ok(r.numSpans() >= 2);
+		r.free();
 		ss.free();
 		s.free();
 	});

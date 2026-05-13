@@ -234,6 +234,17 @@ export function textset_value_n(s: Ptr, n: number): string | null {
 	return _r ?? null;
 }
 
+/*
+ * ttext_value_n — bool+result with text* (varlena).
+ * The C wrapper converts text* to cstring, so JS receives a plain string.
+ * Returns null if n is out of range. n is 1-based (MEOS convention).
+ */
+export function ttext_value_n(temp: Ptr, n: number): string | null {
+	const _r = call<string>('ttext_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	checkMeosError();
+	return _r ?? null;
+}
+
 // --- Generated wrappers ---
 
 // === meos.h ===
@@ -5192,12 +5203,6 @@ export function ttext_start_value(temp: Ptr): string {
 
 export function ttext_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('ttext_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
-export function ttext_value_n(temp: Ptr, n: number): Ptr {
-	const _r = callPtr('ttext_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
 	return _r;
 }

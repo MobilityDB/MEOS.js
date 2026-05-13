@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../../core/runtime/meos';
 import { BigIntSpan } from '../../../../core/types/collections/number/BigIntSpan';
+import { meos_free } from '../../../../core/functions/functions.generated';
 
 before(async () => {
 	await initMeos();
@@ -206,6 +207,7 @@ describe('BigIntSpan - Set operations', () => {
 		const b = BigIntSpan.fromString('[4, 7)');
 		const ptr = a.minus(b);
 		assert.ok(ptr !== 0);
+		meos_free(ptr);
 		a.free();
 		b.free();
 	});
@@ -215,6 +217,7 @@ describe('BigIntSpan - Set operations', () => {
 		const b = BigIntSpan.fromString('[3, 8)');
 		const ptr = a.union(b);
 		assert.ok(ptr !== 0);
+		meos_free(ptr);
 		a.free();
 		b.free();
 	});

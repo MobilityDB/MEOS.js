@@ -16,8 +16,9 @@ describe('TextSet - Construction', () => {
 
 	it('toString round-trips WKT', () => {
 		const s = TextSet.fromString('{"apple", "banana", "cherry"}');
-		assert.ok(s.toString().includes('apple'));
-		assert.ok(s.toString().includes('banana'));
+		const wkt = s.toString();
+		assert.ok(wkt.includes('apple'));
+		assert.ok(wkt.includes('banana'));
 		s.free();
 	});
 
@@ -121,8 +122,9 @@ describe('TextSet - Set operations', () => {
 		const b = TextSet.fromString('{"banana", "cherry", "date"}');
 		const r = a.intersection(b);
 		assert.ok(r !== null);
-		assert.ok(r!.toString().includes('banana'));
-		assert.ok(r!.toString().includes('cherry'));
+		const wkt = r!.toString();
+		assert.ok(wkt.includes('banana'));
+		assert.ok(wkt.includes('cherry'));
 		a.free();
 		b.free();
 		r!.free();
@@ -136,20 +138,22 @@ describe('TextSet - Set operations', () => {
 		b.free();
 	});
 
-	it('union returns non-zero ptr', () => {
+	it('union contains elements from both', () => {
 		const a = TextSet.fromString('{"apple"}');
 		const b = TextSet.fromString('{"cherry"}');
-		const ptr = a.union(b);
-		assert.ok(ptr !== 0);
+		const r = a.union(b);
+		assert.equal(r.numValues(), 2);
+		r.free();
 		a.free();
 		b.free();
 	});
 
-	it('minus returns non-zero ptr', () => {
+	it('minus removes elements present in other', () => {
 		const a = TextSet.fromString('{"apple", "banana", "cherry"}');
 		const b = TextSet.fromString('{"banana"}');
-		const ptr = a.minus(b);
-		assert.ok(ptr !== 0);
+		const r = a.minus(b);
+		assert.equal(r!.numValues(), 2);
+		r!.free();
 		a.free();
 		b.free();
 	});
@@ -195,8 +199,9 @@ describe('TextSet - Text operations', () => {
 	it('lower() lowercases all strings', () => {
 		const s = TextSet.fromString('{"Apple", "BANANA"}');
 		const lo = s.lower();
-		assert.ok(lo.toString().includes('apple'));
-		assert.ok(lo.toString().includes('banana'));
+		const wkt = lo.toString();
+		assert.ok(wkt.includes('apple'));
+		assert.ok(wkt.includes('banana'));
 		s.free();
 		lo.free();
 	});
@@ -204,8 +209,9 @@ describe('TextSet - Text operations', () => {
 	it('upper() uppercases all strings', () => {
 		const s = TextSet.fromString('{"apple", "banana"}');
 		const up = s.upper();
-		assert.ok(up.toString().includes('APPLE'));
-		assert.ok(up.toString().includes('BANANA'));
+		const wkt = up.toString();
+		assert.ok(wkt.includes('APPLE'));
+		assert.ok(wkt.includes('BANANA'));
 		s.free();
 		up.free();
 	});
@@ -213,8 +219,9 @@ describe('TextSet - Text operations', () => {
 	it('initcap() capitalizes first letter of each word', () => {
 		const s = TextSet.fromString('{"hello world", "foo bar"}');
 		const ic = s.initcap();
-		assert.ok(ic.toString().includes('Hello World'));
-		assert.ok(ic.toString().includes('Foo Bar'));
+		const wkt = ic.toString();
+		assert.ok(wkt.includes('Hello World'));
+		assert.ok(wkt.includes('Foo Bar'));
 		s.free();
 		ic.free();
 	});

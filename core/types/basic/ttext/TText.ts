@@ -138,10 +138,10 @@ export class TText extends Temporal<string> {
 	}
 
 	/**
-	 * Returns the n-th distinct value (0-based index).
+	 * Returns the n-th distinct value (0-based index), or `null` if out of range.
 	 * MEOS: ttext_value_n
 	 */
-	valueN(n: number): string {
+	valueN(n: number): string | null {
 		return ttext_value_n(this._inner, n + 1);
 	}
 
