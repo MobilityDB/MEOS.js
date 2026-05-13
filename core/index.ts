@@ -37,6 +37,7 @@ export { BigIntSpanSet } from './types/collections/number/BigIntSpanSet';
 export { BigIntSet } from './types/collections/number/BigIntSet';
 export { TextSet } from './types/collections/text/TextSet';
 export { TBox } from './types/boxes/TBox';
+export { STBox } from './types/boxes/STBox';
 export { DateSpan } from './types/collections/time/DateSpan';
 export { DateSpanSet } from './types/collections/time/DateSpanSet';
 export { DateSet } from './types/collections/time/DateSet';

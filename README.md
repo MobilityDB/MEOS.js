@@ -2,19 +2,21 @@
 
 TypeScript/JavaScript bindings for [MEOS](https://libmeos.org/), the C library that powers [MobilityDB](https://mobilitydb.com/) spatiotemporal types.
 
-MEOS is compiled to WebAssembly via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values (spans, span sets, sets, bounding boxes) in Node.js or the browser.
+MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values, spans, sets, and bounding boxes in Node.js or the browser.
 
 **Documentation:** https://nyuke235.github.io/MEOS.js/
 
 ## Table of contents
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Quick start](#quick-start)
 - [Memory management](#memory-management)
 - [Implemented types](#implemented-types)
+- [Not yet implemented](#not-yet-implemented)
 
 ## Requirements
 
-- **Node.js** 18+
+- **Node.js** 22+ (wasm64/MEMORY64 requires a recent V8)
 - **Docker**: required only to build the WASM module from source; not needed if you use the prebuilt files
 
 ## Installation
@@ -27,7 +29,7 @@ npm install
 
 ### 2. Get the WASM module
 
-**Option A - build from source (Docker)**
+**Option A build from source (Docker)**
 
 ```bash
 docker build --output type=local,dest=./wasm --target wasm .
@@ -35,7 +37,7 @@ docker build --output type=local,dest=./wasm --target wasm .
 
 This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
 
-**Option B - use the prebuilt files**
+**Option B use the prebuilt files**
 
 *todo*
 
@@ -43,6 +45,30 @@ This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a wh
 
 ```bash
 npm test
+```
+
+## Quick start
+
+```ts
+import { initMeos, TsTzSpan, IntSpan, TBox, STBox } from './core/index';
+
+await initMeos();
+
+// Timestamp span
+const period = TsTzSpan.fromString('[2020-01-01, 2021-01-01)');
+console.log(period.toString()); // [2020-01-01 00:00:00+00, 2021-01-01 00:00:00+00)
+period.free();
+
+// Integer span
+const range = IntSpan.fromBounds(1, 100);
+console.log(range.width()); // 99
+range.free();
+
+// Spatiotemporal bounding box
+const box = STBox.fromString('STBOX XT(((0,0),(10,10)),[2020-01-01,2020-12-31])');
+console.log(box.hasX()); // true
+console.log(box.hasT()); // true
+box.free();
 ```
 
 ## Memory management
@@ -72,7 +98,7 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 
 ## Implemented types
 
-### Base classes (`core/types/base/`)
+### Base classes
 
 | Class | Description |
 |---|---|
@@ -80,68 +106,58 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 | `Span` | Abstract base for all span types |
 | `SpanSet<S>` | Abstract generic base for all span-set types |
 
-### Temporal types (`core/types/temporal/` & `core/types/base/`)
+### Number collections (`core/types/collections/number/`)
 
 | Class | Description | Tests |
 |---|---|---|
-| `TBool` | Temporal boolean | ✅ `test/temporal/test_tbool.ts` |
-| `TInt` | Temporal integer | ✅ `test/temporal/test_tint.ts` |
-| `TFloat` | Temporal float | ✅ `test/temporal/test_tfloat.ts` |
+| `IntSpan` | Span of integers | ✅ |
+| `IntSpanSet` | Set of integer spans | ✅ |
+| `IntSet` | Set of integers | ✅ |
+| `FloatSpan` | Span of floats | ✅ |
+| `FloatSpanSet` | Set of float spans | ✅ |
+| `FloatSet` | Set of floats | ✅ |
+| `BigIntSpan` | Span of 64-bit integers | ✅ |
+| `BigIntSpanSet` | Set of 64-bit integer spans | ✅ |
+| `BigIntSet` | Set of 64-bit integers | ✅ |
 
-### Number types (`core/types/number/`)
-
-| Class | Description | Tests |
-|---|---|---|
-| `IntSpan` | Span of integers | ✅ `test/number/test_intspan.ts` |
-| `IntSpanSet` | Set of integer spans | ✅ `test/number/test_intspanset.ts` |
-| `IntSet` | Set of integers | ✅ `test/number/test_intset.ts` |
-| `FloatSpan` | Span of floats | ✅ `test/number/test_floatspan.ts` |
-| `FloatSpanSet` | Set of float spans | ✅ `test/number/test_floatspanset.ts` |
-| `FloatSet` | Set of floats | ✅ `test/number/test_floatset.ts` |
-
-### Time types (`core/types/time/`)
+### Text collections (`core/types/collections/text/`)
 
 | Class | Description | Tests |
 |---|---|---|
-| `TsTzSpan` | Timestamptz span | ✅ `test/time/test_tstzspan.ts` |
-| `TsTzSpanSet` | Set of timestamptz spans | ✅ `test/time/test_tstzspanset.ts` |
-| `TsTzSet` | Set of timestamptz values | ✅ `test/time/test_tstzset.ts` |
-| `DateSpan` | Date span | ✅ `test/time/test_datespan.ts` |
-| `DateSpanSet` | Set of date spans | ✅ `test/time/test_datespanset.ts` |
-| `DateSet` | Set of dates | ✅ `test/time/test_dateset.ts` |
+| `TextSet` | Ordered set of distinct text strings | ✅ |
 
-### Boxes (`core/types/boxes/`)
+### Time collections (`core/types/collections/time/`)
 
 | Class | Description | Tests |
 |---|---|---|
-| `TBox` | Numeric x temporal bounding box | ✅ `test/boxes/test_tbox.ts` |
+| `TsTzSpan` | Timestamptz span | ✅ |
+| `TsTzSpanSet` | Set of timestamptz spans | ✅ |
+| `TsTzSet` | Set of timestamptz values | ✅ |
+| `DateSpan` | Date span | ✅ |
+| `DateSpanSet` | Set of date spans | ✅ |
+| `DateSet` | Set of dates | ✅ |
 
+### Bounding boxes (`core/types/boxes/`)
 
-## Types not yet implemented
+| Class | Description | Tests |
+|---|---|---|
+| `TBox` | Numeric × temporal bounding box | ✅ |
+| `STBox` | Spatiotemporal bounding box (XYZ + T) | ✅ |
 
-### BigInt types (`core/types/number/`)
+### Temporal types (`core/types/basic/`)
 
-| Class | Description |
-|---|---|
-| `BigIntSpan` | Span of 64-bit integers |
-| `BigIntSpanSet` | Set of `BigIntSpan` values |
-| `BigIntSet` | Ordered set of distinct 64-bit integers |
+| Class | Subtypes | Description | Tests |
+|---|---|---|---|
+| `TBool` | `TBoolInst`, `TBoolSeq`, `TBoolSeqSet` | Temporal boolean | ✅ |
+| `TInt` | `TIntInst`, `TIntSeq`, `TIntSeqSet` | Temporal integer | ✅ |
+| `TFloat` | `TFloatInst`, `TFloatSeq`, `TFloatSeqSet` | Temporal float | ✅ |
+| `TText` | `TTextInst`, `TTextSeq`, `TTextSeqSet` | Temporal text | ✅ |
 
-### Spatiotemporal bounding box (`core/types/boxes/`)
+Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText` dispatch to the right subtype automatically.
 
-| Class | Description |
-|---|---|
-| `STBox` | Spatiotemporal bounding box (X, Y, Z spatial axes + T temporal axis) |
-
-### Temporal text (`core/types/temporal/`)
-
-| Class | Description |
-|---|---|
-| `TText` | Temporal text (instant, sequence, sequence set) |
-
-### Temporal geometry / geography (`core/types/temporal/`)
+## Not yet implemented
 
 | Class | Description |
 |---|---|
 | `TGeomPoint` | Temporal geometry point (2D/3D) |
-| `TGeogPoint` | Temporal geography point (2D/3D, geodesic) |
+| `TGeogPoint` | Temporal geography point (geodesic) |
