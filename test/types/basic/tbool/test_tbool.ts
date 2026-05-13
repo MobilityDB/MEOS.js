@@ -511,3 +511,42 @@ describe('Temporal - toSequenceSet', () => {
 		t.free(); r.free();
 	});
 });
+
+describe('TBool - whenTrue / whenFalse', () => {
+	it('whenTrue returns a TsTzSpanSet covering the true periods', () => {
+		const t = TBool.fromString('[t@2001-01-01, f@2001-01-02, t@2001-01-03, t@2001-01-04]');
+		const ss = t.whenTrue();
+		assert.ok(ss.inner !== 0);
+		assert.ok(ss.numSpans() >= 1);
+		t.free();
+		ss.free();
+	});
+
+	it('whenFalse returns a TsTzSpanSet covering the false periods', () => {
+		const t = TBool.fromString('[t@2001-01-01, f@2001-01-02, t@2001-01-03, t@2001-01-04]');
+		const ss = t.whenFalse();
+		assert.ok(ss.inner !== 0);
+		assert.ok(ss.numSpans() >= 1);
+		t.free();
+		ss.free();
+	});
+
+	it('whenTrue on always-true returns a single span covering the full domain', () => {
+		const t = TBool.fromString('[t@2001-01-01, t@2001-01-03]');
+		const ss = t.whenTrue();
+		assert.equal(ss.numSpans(), 1);
+		t.free();
+		ss.free();
+	});
+
+	it('whenTrue and whenFalse are disjoint', () => {
+		const t = TBool.fromString('{t@2001-01-01, f@2001-01-02, t@2001-01-03}');
+		const wt = t.whenTrue();
+		const wf = t.whenFalse();
+		assert.ok(wt.inner !== 0);
+		assert.ok(wf.inner !== 0);
+		t.free();
+		wt.free();
+		wf.free();
+	});
+});

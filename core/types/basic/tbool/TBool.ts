@@ -1,4 +1,5 @@
 import { Temporal } from '../../temporal/Temporal';
+import { TsTzSpanSet } from '../../collections/time/TsTzSpanSet';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
 import {
 	tbool_in,
@@ -96,11 +97,18 @@ export class TBool extends Temporal<boolean> {
 	 * Accepts a raw Ptr to a TsTzSet, TsTzSpan, or TsTzSpanSet.
 	 * MEOS: tboolseq_from_base_tstzset / tstzspan / tboolseqset_from_base_tstzspanset
 	 */
-	static fromBaseTime(b: boolean, time: Ptr, type: 'tstzset' | 'tstzspan' | 'tstzspanset'): TBool {
+	static fromBaseTime(
+		b: boolean,
+		time: Ptr,
+		type: 'tstzset' | 'tstzspan' | 'tstzspanset'
+	): TBool {
 		switch (type) {
-			case 'tstzset':     return new TBool(tboolseq_from_base_tstzset(b, time));
-			case 'tstzspan':    return new TBool(tboolseq_from_base_tstzspan(b, time));
-			case 'tstzspanset': return new TBool(tboolseqset_from_base_tstzspanset(b, time));
+			case 'tstzset':
+				return new TBool(tboolseq_from_base_tstzset(b, time));
+			case 'tstzspan':
+				return new TBool(tboolseq_from_base_tstzspan(b, time));
+			case 'tstzspanset':
+				return new TBool(tboolseqset_from_base_tstzspanset(b, time));
 		}
 	}
 
@@ -260,28 +268,22 @@ export class TBool extends Temporal<boolean> {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Returns a raw pointer to the TsTzSpanSet of time periods where this is true.
-	 *
-	 * Returns Ptr rather than a TsTzSpanSet object because that type is not yet
-	 * implemented. Cast the pointer manually once TsTzSpanSet is available.
-	 *
+	 * Returns the set of time periods where this temporal is true.
 	 * MEOS: tbool_when_true
 	 */
-	whenTrue(): Ptr {
-		return tbool_when_true(this._inner);
+	whenTrue(): TsTzSpanSet {
+		return new TsTzSpanSet(tbool_when_true(this._inner));
 	}
 
 	/**
-	 * Returns a raw pointer to the TsTzSpanSet of time periods where this is false.
-	 *
-	 * Implemented as whenTrue() applied to the logical negation of this temporal.
-	 * Note: tnot_tbool allocates a new MEOS object that is not freed here - the
-	 * caller is responsible for freeing the returned Ptr.
-	 *
+	 * Returns the set of time periods where this temporal is false.
 	 * MEOS: tnot_tbool + tbool_when_true
 	 */
-	whenFalse(): Ptr {
-		return tbool_when_true(tnot_tbool(this._inner));
+	whenFalse(): TsTzSpanSet {
+		const negated = tnot_tbool(this._inner);
+		const ptr = tbool_when_true(negated);
+		meos_free(negated);
+		return new TsTzSpanSet(ptr);
 	}
 
 	// -------------------------------------------------------------------------

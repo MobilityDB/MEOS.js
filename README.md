@@ -12,7 +12,6 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 - [Quick start](#quick-start)
 - [Memory management](#memory-management)
 - [Implemented types](#implemented-types)
-- [Not yet implemented](#not-yet-implemented)
 
 ## Requirements
 
@@ -98,66 +97,73 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 
 ## Implemented types
 
-### Base classes
+Click any type name to open its API reference.
 
-| Class | Description |
-|---|---|
-| `MeosSet<T>` | Abstract generic base for all set types |
-| `Span` | Abstract base for all span types |
-| `SpanSet<S>` | Abstract generic base for all span-set types |
+**Abstract bases** — [`Span`][Span] · [`SpanSet`][SpanSet]
 
-### Number collections (`core/types/collections/number/`)
+**Number spans & sets** — [`IntSpan`][IntSpan] · [`IntSpanSet`][IntSpanSet] · [`IntSet`][IntSet] · [`FloatSpan`][FloatSpan] · [`FloatSpanSet`][FloatSpanSet] · [`FloatSet`][FloatSet] · [`BigIntSpan`][BigIntSpan] · [`BigIntSpanSet`][BigIntSpanSet] · [`BigIntSet`][BigIntSet]
 
-| Class | Description | Tests |
-|---|---|---|
-| `IntSpan` | Span of integers | ✅ |
-| `IntSpanSet` | Set of integer spans | ✅ |
-| `IntSet` | Set of integers | ✅ |
-| `FloatSpan` | Span of floats | ✅ |
-| `FloatSpanSet` | Set of float spans | ✅ |
-| `FloatSet` | Set of floats | ✅ |
-| `BigIntSpan` | Span of 64-bit integers | ✅ |
-| `BigIntSpanSet` | Set of 64-bit integer spans | ✅ |
-| `BigIntSet` | Set of 64-bit integers | ✅ |
+**Text** — [`TextSet`][TextSet]
 
-### Text collections (`core/types/collections/text/`)
+**Time** — [`TsTzSpan`][TsTzSpan] · [`TsTzSpanSet`][TsTzSpanSet] · [`TsTzSet`][TsTzSet] · [`DateSpan`][DateSpan] · [`DateSpanSet`][DateSpanSet] · [`DateSet`][DateSet]
 
-| Class | Description | Tests |
-|---|---|---|
-| `TextSet` | Ordered set of distinct text strings | ✅ |
+**Bounding boxes** — [`TBox`][TBox] · [`STBox`][STBox]
 
-### Time collections (`core/types/collections/time/`)
+**Temporal booleans** — [`TBool`][TBool] · [`TBoolInst`][TBoolInst] · [`TBoolSeq`][TBoolSeq] · [`TBoolSeqSet`][TBoolSeqSet]
 
-| Class | Description | Tests |
-|---|---|---|
-| `TsTzSpan` | Timestamptz span | ✅ |
-| `TsTzSpanSet` | Set of timestamptz spans | ✅ |
-| `TsTzSet` | Set of timestamptz values | ✅ |
-| `DateSpan` | Date span | ✅ |
-| `DateSpanSet` | Set of date spans | ✅ |
-| `DateSet` | Set of dates | ✅ |
+**Temporal integers** — [`TInt`][TInt] · [`TIntInst`][TIntInst] · [`TIntSeq`][TIntSeq] · [`TIntSeqSet`][TIntSeqSet]
 
-### Bounding boxes (`core/types/boxes/`)
+**Temporal floats** — [`TFloat`][TFloat] · [`TFloatInst`][TFloatInst] · [`TFloatSeq`][TFloatSeq] · [`TFloatSeqSet`][TFloatSeqSet]
 
-| Class | Description | Tests |
-|---|---|---|
-| `TBox` | Numeric × temporal bounding box | ✅ |
-| `STBox` | Spatiotemporal bounding box (XYZ + T) | ✅ |
+**Temporal text** — [`TText`][TText] · [`TTextInst`][TTextInst] · [`TTextSeq`][TTextSeq] · [`TTextSeqSet`][TTextSeqSet]
 
-### Temporal types (`core/types/basic/`)
+**Temporal geometry point** (planar, 2D/3D) — [`TGeomPoint`][TGeomPoint] · [`TGeomPointInst`][TGeomPointInst] · [`TGeomPointSeq`][TGeomPointSeq] · [`TGeomPointSeqSet`][TGeomPointSeqSet]
 
-| Class | Subtypes | Description | Tests |
-|---|---|---|---|
-| `TBool` | `TBoolInst`, `TBoolSeq`, `TBoolSeqSet` | Temporal boolean | ✅ |
-| `TInt` | `TIntInst`, `TIntSeq`, `TIntSeqSet` | Temporal integer | ✅ |
-| `TFloat` | `TFloatInst`, `TFloatSeq`, `TFloatSeqSet` | Temporal float | ✅ |
-| `TText` | `TTextInst`, `TTextSeq`, `TTextSeqSet` | Temporal text | ✅ |
+**Temporal geography point** (geodetic, 2D/3D) — [`TGeogPoint`][TGeogPoint] · [`TGeogPointInst`][TGeogPointInst] · [`TGeogPointSeq`][TGeogPointSeq] · [`TGeogPointSeqSet`][TGeogPointSeqSet]
 
-Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText` dispatch to the right subtype automatically.
+Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
 
-## Not yet implemented
-
-| Class | Description |
-|---|---|
-| `TGeomPoint` | Temporal geometry point (2D/3D) |
-| `TGeogPoint` | Temporal geography point (geodesic) |
+[Span]: https://nyuke235.github.io/MEOS.js/api/classes/Span
+[SpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/SpanSet
+[IntSpan]: https://nyuke235.github.io/MEOS.js/api/classes/IntSpan
+[IntSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/IntSpanSet
+[IntSet]: https://nyuke235.github.io/MEOS.js/api/classes/IntSet
+[FloatSpan]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSpan
+[FloatSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSpanSet
+[FloatSet]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSet
+[BigIntSpan]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSpan
+[BigIntSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSpanSet
+[BigIntSet]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSet
+[TextSet]: https://nyuke235.github.io/MEOS.js/api/classes/TextSet
+[TsTzSpan]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSpan
+[TsTzSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSpanSet
+[TsTzSet]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSet
+[DateSpan]: https://nyuke235.github.io/MEOS.js/api/classes/DateSpan
+[DateSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/DateSpanSet
+[DateSet]: https://nyuke235.github.io/MEOS.js/api/classes/DateSet
+[TBox]: https://nyuke235.github.io/MEOS.js/api/classes/TBox
+[STBox]: https://nyuke235.github.io/MEOS.js/api/classes/STBox
+[TBool]: https://nyuke235.github.io/MEOS.js/api/classes/TBool
+[TBoolInst]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolInst
+[TBoolSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolSeq
+[TBoolSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolSeqSet
+[TInt]: https://nyuke235.github.io/MEOS.js/api/classes/TInt
+[TIntInst]: https://nyuke235.github.io/MEOS.js/api/classes/TIntInst
+[TIntSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TIntSeq
+[TIntSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TIntSeqSet
+[TFloat]: https://nyuke235.github.io/MEOS.js/api/classes/TFloat
+[TFloatInst]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatInst
+[TFloatSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatSeq
+[TFloatSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatSeqSet
+[TText]: https://nyuke235.github.io/MEOS.js/api/classes/TText
+[TTextInst]: https://nyuke235.github.io/MEOS.js/api/classes/TTextInst
+[TTextSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TTextSeq
+[TTextSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TTextSeqSet
+[TGeomPoint]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPoint
+[TGeomPointInst]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointInst
+[TGeomPointSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointSeq
+[TGeomPointSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointSeqSet
+[TGeogPoint]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPoint
+[TGeogPointInst]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointInst
+[TGeogPointSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointSeq
+[TGeogPointSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointSeqSet

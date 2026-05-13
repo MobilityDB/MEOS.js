@@ -230,6 +230,8 @@ RUN case "$TARGET" in \
         -I/root/MobilityDB/postgis/liblwgeom \
         -I/root/PROJ/src \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
+        --embed-file /root/MobilityDB/meos/src/geo/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
+        --embed-file /root/PROJ/build/data/proj.db@/usr/local/share/proj/proj.db \
         -o /app/wasm/meos.js \
         -s MODULARIZE=1 \
         -s EXPORT_NAME="createMeosModule" \

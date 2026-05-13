@@ -21,7 +21,9 @@
 import { getModule } from '../../runtime/meos';
 import type { Ptr, TimestampTz } from '../../functions/functions.generated';
 import {
-	ptrArgType, ptrArgVal, callPtr,
+	ptrArgType,
+	ptrArgVal,
+	callPtr,
 	temporal_at_min,
 	temporal_at_max,
 	temporal_minus_min,
@@ -396,48 +398,72 @@ export abstract class Temporal<V> {
 	// -------------------------------------------------------------------------
 
 	/** Restricts to instants where the value is the minimum. MEOS: temporal_at_min */
-	atMin(): this { return this._fromInner(temporal_at_min(this._inner)); }
+	atMin(): this {
+		return this._fromInner(temporal_at_min(this._inner));
+	}
 
 	/** Restricts to instants where the value is the maximum. MEOS: temporal_at_max */
-	atMax(): this { return this._fromInner(temporal_at_max(this._inner)); }
+	atMax(): this {
+		return this._fromInner(temporal_at_max(this._inner));
+	}
 
 	/** Excludes instants where the value is the minimum. MEOS: temporal_minus_min */
-	minusMin(): this { return this._fromInner(temporal_minus_min(this._inner)); }
+	minusMin(): this {
+		return this._fromInner(temporal_minus_min(this._inner));
+	}
 
 	/** Excludes instants where the value is the maximum. MEOS: temporal_minus_max */
-	minusMax(): this { return this._fromInner(temporal_minus_max(this._inner)); }
+	minusMax(): this {
+		return this._fromInner(temporal_minus_max(this._inner));
+	}
 
 	// -------------------------------------------------------------------------
 	// RESTRICTIONS — at/minus time objects
 	// -------------------------------------------------------------------------
 
 	/** Restricts to the given timestamp set. MEOS: temporal_at_tstzset */
-	atTsTzSet(s: Ptr): this { return this._fromInner(temporal_at_tstzset(this._inner, s)); }
+	atTsTzSet(s: Ptr): this {
+		return this._fromInner(temporal_at_tstzset(this._inner, s));
+	}
 
 	/** Restricts to the given timestamp span. MEOS: temporal_at_tstzspan */
-	atTsTzSpan(s: Ptr): this { return this._fromInner(temporal_at_tstzspan(this._inner, s)); }
+	atTsTzSpan(s: Ptr): this {
+		return this._fromInner(temporal_at_tstzspan(this._inner, s));
+	}
 
 	/** Restricts to the given timestamp span set. MEOS: temporal_at_tstzspanset */
-	atTsTzSpanSet(ss: Ptr): this { return this._fromInner(temporal_at_tstzspanset(this._inner, ss)); }
+	atTsTzSpanSet(ss: Ptr): this {
+		return this._fromInner(temporal_at_tstzspanset(this._inner, ss));
+	}
 
 	/** Excludes the given timestamp set. MEOS: temporal_minus_tstzset */
-	minusTsTzSet(s: Ptr): this { return this._fromInner(temporal_minus_tstzset(this._inner, s)); }
+	minusTsTzSet(s: Ptr): this {
+		return this._fromInner(temporal_minus_tstzset(this._inner, s));
+	}
 
 	/** Excludes the given timestamp span. MEOS: temporal_minus_tstzspan */
-	minusTsTzSpan(s: Ptr): this { return this._fromInner(temporal_minus_tstzspan(this._inner, s)); }
+	minusTsTzSpan(s: Ptr): this {
+		return this._fromInner(temporal_minus_tstzspan(this._inner, s));
+	}
 
 	/** Excludes the given timestamp span set. MEOS: temporal_minus_tstzspanset */
-	minusTsTzSpanSet(ss: Ptr): this { return this._fromInner(temporal_minus_tstzspanset(this._inner, ss)); }
+	minusTsTzSpanSet(ss: Ptr): this {
+		return this._fromInner(temporal_minus_tstzspanset(this._inner, ss));
+	}
 
 	// -------------------------------------------------------------------------
 	// TRANSFORMATIONS — time shift/scale/interp/subtype
 	// -------------------------------------------------------------------------
 
 	/** Shifts the temporal domain by the given interval pointer. MEOS: temporal_shift_time */
-	shiftTime(shift: Ptr): this { return this._fromInner(temporal_shift_time(this._inner, shift)); }
+	shiftTime(shift: Ptr): this {
+		return this._fromInner(temporal_shift_time(this._inner, shift));
+	}
 
 	/** Scales the temporal domain to the given duration interval pointer. MEOS: temporal_scale_time */
-	scaleTime(duration: Ptr): this { return this._fromInner(temporal_scale_time(this._inner, duration)); }
+	scaleTime(duration: Ptr): this {
+		return this._fromInner(temporal_scale_time(this._inner, duration));
+	}
 
 	/** Shifts and scales the temporal domain. MEOS: temporal_shift_scale_time */
 	shiftScaleTime(shift: Ptr, duration: Ptr): this {
@@ -460,7 +486,9 @@ export abstract class Temporal<V> {
 	}
 
 	/** Converts to TInstant (must already be an instant). MEOS: temporal_to_tinstant */
-	toInstant(): this { return this._fromInner(temporal_to_tinstant(this._inner)); }
+	toInstant(): this {
+		return this._fromInner(temporal_to_tinstant(this._inner));
+	}
 
 	/** Converts to TSequence with the given interpolation. MEOS: temporal_to_tsequence */
 	toSequence(interp: TInterpolation): this {

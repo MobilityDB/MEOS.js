@@ -22,13 +22,26 @@ export default defineConfig({
 					items: [{ text: 'Getting Started', link: '/guide/getting-started' }],
 				},
 				{
-					text: 'Core Types',
+					text: 'Collections',
 					items: [
 						{ text: 'Spans', link: '/guide/spans' },
 						{ text: 'Span Sets', link: '/guide/spansets' },
 						{ text: 'Sets', link: '/guide/sets' },
 						{ text: 'Time Types', link: '/guide/time' },
-						{ text: 'Temporal Bounding Box', link: '/guide/tbox' },
+					],
+				},
+				{
+					text: 'Bounding Boxes',
+					items: [
+						{ text: 'TBox', link: '/guide/tbox' },
+						{ text: 'STBox', link: '/guide/stbox' },
+					],
+				},
+				{
+					text: 'Temporal Types',
+					items: [
+						{ text: 'Temporal Scalars', link: '/guide/temporal' },
+						{ text: 'Temporal Points', link: '/guide/tpoints' },
 					],
 				},
 				{
@@ -49,7 +62,6 @@ export default defineConfig({
 					items: [
 						{ text: 'Span', link: '/api/classes/Span' },
 						{ text: 'SpanSet', link: '/api/classes/SpanSet' },
-						{ text: 'MeosSet', link: '/api/classes/MeosSet' },
 					],
 				},
 				{
@@ -61,6 +73,15 @@ export default defineConfig({
 						{ text: 'FloatSpan', link: '/api/classes/FloatSpan' },
 						{ text: 'FloatSpanSet', link: '/api/classes/FloatSpanSet' },
 						{ text: 'FloatSet', link: '/api/classes/FloatSet' },
+						{ text: 'BigIntSpan', link: '/api/classes/BigIntSpan' },
+						{ text: 'BigIntSpanSet', link: '/api/classes/BigIntSpanSet' },
+						{ text: 'BigIntSet', link: '/api/classes/BigIntSet' },
+					],
+				},
+				{
+					text: 'Text',
+					items: [
+						{ text: 'TextSet', link: '/api/classes/TextSet' },
 					],
 				},
 				{
@@ -75,15 +96,70 @@ export default defineConfig({
 					],
 				},
 				{
-					text: 'Bounding Box',
-					items: [{ text: 'TBox', link: '/api/classes/TBox' }],
+					text: 'Bounding Boxes',
+					items: [
+						{ text: 'TBox', link: '/api/classes/TBox' },
+						{ text: 'STBox', link: '/api/classes/STBox' },
+					],
 				},
 				{
-					text: 'Temporal',
+					text: 'TBool',
+					collapsed: true,
 					items: [
 						{ text: 'TBool', link: '/api/classes/TBool' },
+						{ text: 'TBoolInst', link: '/api/classes/TBoolInst' },
+						{ text: 'TBoolSeq', link: '/api/classes/TBoolSeq' },
+						{ text: 'TBoolSeqSet', link: '/api/classes/TBoolSeqSet' },
+					],
+				},
+				{
+					text: 'TInt',
+					collapsed: true,
+					items: [
 						{ text: 'TInt', link: '/api/classes/TInt' },
+						{ text: 'TIntInst', link: '/api/classes/TIntInst' },
+						{ text: 'TIntSeq', link: '/api/classes/TIntSeq' },
+						{ text: 'TIntSeqSet', link: '/api/classes/TIntSeqSet' },
+					],
+				},
+				{
+					text: 'TFloat',
+					collapsed: true,
+					items: [
 						{ text: 'TFloat', link: '/api/classes/TFloat' },
+						{ text: 'TFloatInst', link: '/api/classes/TFloatInst' },
+						{ text: 'TFloatSeq', link: '/api/classes/TFloatSeq' },
+						{ text: 'TFloatSeqSet', link: '/api/classes/TFloatSeqSet' },
+					],
+				},
+				{
+					text: 'TText',
+					collapsed: true,
+					items: [
+						{ text: 'TText', link: '/api/classes/TText' },
+						{ text: 'TTextInst', link: '/api/classes/TTextInst' },
+						{ text: 'TTextSeq', link: '/api/classes/TTextSeq' },
+						{ text: 'TTextSeqSet', link: '/api/classes/TTextSeqSet' },
+					],
+				},
+				{
+					text: 'TGeomPoint',
+					collapsed: true,
+					items: [
+						{ text: 'TGeomPoint', link: '/api/classes/TGeomPoint' },
+						{ text: 'TGeomPointInst', link: '/api/classes/TGeomPointInst' },
+						{ text: 'TGeomPointSeq', link: '/api/classes/TGeomPointSeq' },
+						{ text: 'TGeomPointSeqSet', link: '/api/classes/TGeomPointSeqSet' },
+					],
+				},
+				{
+					text: 'TGeogPoint',
+					collapsed: true,
+					items: [
+						{ text: 'TGeogPoint', link: '/api/classes/TGeogPoint' },
+						{ text: 'TGeogPointInst', link: '/api/classes/TGeogPointInst' },
+						{ text: 'TGeogPointSeq', link: '/api/classes/TGeogPointSeq' },
+						{ text: 'TGeogPointSeqSet', link: '/api/classes/TGeogPointSeqSet' },
 					],
 				},
 				{

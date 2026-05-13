@@ -12,11 +12,19 @@ import { TFloatSeqSet } from '../basic/tfloat/TFloatSeqSet';
 import { TTextInst } from '../basic/ttext/TTextInst';
 import { TTextSeq } from '../basic/ttext/TTextSeq';
 import { TTextSeqSet } from '../basic/ttext/TTextSeqSet';
+import { TGeomPointInst } from '../basic/tgeompoint/TGeomPointInst';
+import { TGeomPointSeq } from '../basic/tgeompoint/TGeomPointSeq';
+import { TGeomPointSeqSet } from '../basic/tgeompoint/TGeomPointSeqSet';
+import { TGeogPointInst } from '../basic/tgeogpoint/TGeogPointInst';
+import { TGeogPointSeq } from '../basic/tgeogpoint/TGeogPointSeq';
+import { TGeogPointSeqSet } from '../basic/tgeogpoint/TGeogPointSeqSet';
 
 export type TBoolSubtype = TBoolInst | TBoolSeq | TBoolSeqSet;
 export type TIntSubtype = TIntInst | TIntSeq | TIntSeqSet;
 export type TFloatSubtype = TFloatInst | TFloatSeq | TFloatSeqSet;
 export type TTextSubtype = TTextInst | TTextSeq | TTextSeqSet;
+export type TGeomPointSubtype = TGeomPointInst | TGeomPointSeq | TGeomPointSeqSet;
+export type TGeogPointSubtype = TGeogPointInst | TGeogPointSeq | TGeogPointSeqSet;
 
 function sub(ptr: Ptr): string {
 	return temporal_subtype(ptr);
@@ -52,4 +60,20 @@ export function createTText(ptr: Ptr): TTextSubtype {
 	if (s === 'Instant') return new TTextInst(ptr);
 	if (s === 'Sequence') return new TTextSeq(ptr);
 	return new TTextSeqSet(ptr);
+}
+
+/** Routes a raw TGeomPoint pointer to TGeomPointInst | TGeomPointSeq | TGeomPointSeqSet. */
+export function createTGeomPoint(ptr: Ptr): TGeomPointSubtype {
+	const s = sub(ptr);
+	if (s === 'Instant') return new TGeomPointInst(ptr);
+	if (s === 'Sequence') return new TGeomPointSeq(ptr);
+	return new TGeomPointSeqSet(ptr);
+}
+
+/** Routes a raw TGeogPoint pointer to TGeogPointInst | TGeogPointSeq | TGeogPointSeqSet. */
+export function createTGeogPoint(ptr: Ptr): TGeogPointSubtype {
+	const s = sub(ptr);
+	if (s === 'Instant') return new TGeogPointInst(ptr);
+	if (s === 'Sequence') return new TGeogPointSeq(ptr);
+	return new TGeogPointSeqSet(ptr);
 }
