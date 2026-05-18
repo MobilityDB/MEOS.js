@@ -10,7 +10,7 @@
     "build:ts": "tsc",
     "build": "npm run build:ts",
     "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
-    "play": "node --import tsx/esm test/playground.ts",
+    "play": "node --import tsx/esm scripts/playground.ts",
     "docs:api": "typedoc",
     "docs:dev": "npm run docs:api && vitepress dev docs",
     "docs:build": "npm run docs:api && vitepress build docs",
