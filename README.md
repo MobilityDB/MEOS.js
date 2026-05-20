@@ -15,20 +15,20 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 
 ## Requirements
 
-- **Node.js** 22+ (wasm64/MEMORY64 requires a recent V8)
-- **Docker**: required only to build the WASM module from source; not needed if you use the prebuilt files
+- **Docker**: only needed to build the WASM module from source. Not needed if you use the prebuilt files.
+- **A JS engine with WebAssembly MEMORY64 support**: needed to *run* MEOS.js, because `meos.wasm` is compiled with `-sMEMORY64=1`. In practice:
+    - server-side: **Node.js 22+**
+    - browser-side: recent Chromium-based browsers or Firefox with the MEMORY64 proposal enabled
+
+  `initMeos()` probes for MEMORY64 at startup and throws a clear error if the engine doesn't support it.
+
+> **Node.js 22+** is additionally required to run the tests, the code generator, the TypeScript build and the docs. Not needed for the WASM build itself.
 
 ## Installation
 
-### 1. Install Node dependencies
+### 1. Get the WASM module
 
-```bash
-npm install
-```
-
-### 2. Get the WASM module
-
-**Option A build from source (Docker)**
+**Option A build from source (Docker only)**
 
 ```bash
 docker build --output type=local,dest=./wasm --target wasm .
@@ -40,11 +40,19 @@ This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a wh
 
 *todo*
 
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
 ### 3. Run the tests
 
 ```bash
 npm test
 ```
+
+> **Coming soon**: MEOS.js is supposed to be published on npm so you can just `npm install meos.js` and skip the WASM build and source checkout entirely.
 
 ## Quick start
 
@@ -99,27 +107,27 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 
 Click any type name to open its API reference.
 
-**Abstract bases** — [`Span`][Span] · [`SpanSet`][SpanSet]
+**Abstract bases**: [`Span`][Span] · [`SpanSet`][SpanSet]
 
-**Number spans & sets** — [`IntSpan`][IntSpan] · [`IntSpanSet`][IntSpanSet] · [`IntSet`][IntSet] · [`FloatSpan`][FloatSpan] · [`FloatSpanSet`][FloatSpanSet] · [`FloatSet`][FloatSet] · [`BigIntSpan`][BigIntSpan] · [`BigIntSpanSet`][BigIntSpanSet] · [`BigIntSet`][BigIntSet]
+**Number spans & sets**: [`IntSpan`][IntSpan] · [`IntSpanSet`][IntSpanSet] · [`IntSet`][IntSet] · [`FloatSpan`][FloatSpan] · [`FloatSpanSet`][FloatSpanSet] · [`FloatSet`][FloatSet] · [`BigIntSpan`][BigIntSpan] · [`BigIntSpanSet`][BigIntSpanSet] · [`BigIntSet`][BigIntSet]
 
-**Text** — [`TextSet`][TextSet]
+**Text**: [`TextSet`][TextSet]
 
-**Time** — [`TsTzSpan`][TsTzSpan] · [`TsTzSpanSet`][TsTzSpanSet] · [`TsTzSet`][TsTzSet] · [`DateSpan`][DateSpan] · [`DateSpanSet`][DateSpanSet] · [`DateSet`][DateSet]
+**Time**: [`TsTzSpan`][TsTzSpan] · [`TsTzSpanSet`][TsTzSpanSet] · [`TsTzSet`][TsTzSet] · [`DateSpan`][DateSpan] · [`DateSpanSet`][DateSpanSet] · [`DateSet`][DateSet]
 
-**Bounding boxes** — [`TBox`][TBox] · [`STBox`][STBox]
+**Bounding boxes**: [`TBox`][TBox] · [`STBox`][STBox]
 
-**Temporal booleans** — [`TBool`][TBool] · [`TBoolInst`][TBoolInst] · [`TBoolSeq`][TBoolSeq] · [`TBoolSeqSet`][TBoolSeqSet]
+**Temporal booleans**: [`TBool`][TBool] · [`TBoolInst`][TBoolInst] · [`TBoolSeq`][TBoolSeq] · [`TBoolSeqSet`][TBoolSeqSet]
 
-**Temporal integers** — [`TInt`][TInt] · [`TIntInst`][TIntInst] · [`TIntSeq`][TIntSeq] · [`TIntSeqSet`][TIntSeqSet]
+**Temporal integers**: [`TInt`][TInt] · [`TIntInst`][TIntInst] · [`TIntSeq`][TIntSeq] · [`TIntSeqSet`][TIntSeqSet]
 
-**Temporal floats** — [`TFloat`][TFloat] · [`TFloatInst`][TFloatInst] · [`TFloatSeq`][TFloatSeq] · [`TFloatSeqSet`][TFloatSeqSet]
+**Temporal floats**: [`TFloat`][TFloat] · [`TFloatInst`][TFloatInst] · [`TFloatSeq`][TFloatSeq] · [`TFloatSeqSet`][TFloatSeqSet]
 
-**Temporal text** — [`TText`][TText] · [`TTextInst`][TTextInst] · [`TTextSeq`][TTextSeq] · [`TTextSeqSet`][TTextSeqSet]
+**Temporal text**: [`TText`][TText] · [`TTextInst`][TTextInst] · [`TTextSeq`][TTextSeq] · [`TTextSeqSet`][TTextSeqSet]
 
-**Temporal geometry point** (planar, 2D/3D) — [`TGeomPoint`][TGeomPoint] · [`TGeomPointInst`][TGeomPointInst] · [`TGeomPointSeq`][TGeomPointSeq] · [`TGeomPointSeqSet`][TGeomPointSeqSet]
+**Temporal geometry point** (planar, 2D/3D): [`TGeomPoint`][TGeomPoint] · [`TGeomPointInst`][TGeomPointInst] · [`TGeomPointSeq`][TGeomPointSeq] · [`TGeomPointSeqSet`][TGeomPointSeqSet]
 
-**Temporal geography point** (geodetic, 2D/3D) — [`TGeogPoint`][TGeogPoint] · [`TGeogPointInst`][TGeogPointInst] · [`TGeogPointSeq`][TGeogPointSeq] · [`TGeogPointSeqSet`][TGeogPointSeqSet]
+**Temporal geography point** (geodetic, 2D/3D): [`TGeogPoint`][TGeogPoint] · [`TGeogPointInst`][TGeogPointInst] · [`TGeogPointSeq`][TGeogPointSeq] · [`TGeogPointSeqSet`][TGeogPointSeqSet]
 
 Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
 
