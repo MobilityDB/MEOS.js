@@ -5,6 +5,10 @@
 #include <utils/timestamp.h>
 #include <meos.h>
 #include <meos_geo.h>
+#include <meos_cbuffer.h>
+#include <meos_npoint.h>
+#include <meos_pose.h>
+#include <meos_rgeo.h>
 #include <emscripten.h>
 
 /*

@@ -16,11 +16,11 @@ import {
 	tint_to_tfloat,
 	add_tint_int,
 	sub_tint_int,
-	mult_tint_int,
+	mul_tint_int,
 	div_tint_int,
 	add_int_tint,
 	sub_int_tint,
-	mult_int_tint,
+	mul_int_tint,
 	div_int_tint,
 	tint_at_value,
 	tint_minus_value,
@@ -216,10 +216,10 @@ export class TInt extends TNumber {
 
 	/**
 	 * Multiply every instant by a constant integer.
-	 * MEOS: mult_tint_int
+	 * MEOS: mul_tint_int
 	 */
 	mult(i: number): TInt {
-		return new TInt(mult_tint_int(this._inner, i));
+		return new TInt(mul_tint_int(this._inner, i));
 	}
 
 	/**
@@ -397,7 +397,7 @@ export class TInt extends TNumber {
 
 	protected _raddScalar(i: number): Ptr  { return add_int_tint(i, this._inner); }
 	protected _rsubScalar(i: number): Ptr  { return sub_int_tint(i, this._inner); }
-	protected _rmulScalar(i: number): Ptr  { return mult_int_tint(i, this._inner); }
+	protected _rmulScalar(i: number): Ptr  { return mul_int_tint(i, this._inner); }
 	protected _rdivScalar(i: number): Ptr  { return div_int_tint(i, this._inner); }
 	protected _distanceScalar(i: number): Ptr        { return tdistance_tint_int(this._inner, i); }
 	protected _nadScalar(i: number): number          { return nad_tint_int(this._inner, i); }
