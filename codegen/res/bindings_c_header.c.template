@@ -1,0 +1,293 @@
+/* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
+
+#include <stdlib.h>
+#include <postgres.h>
+#include <utils/timestamp.h>
+#include <meos.h>
+#include <meos_geo.h>
+#include <emscripten.h>
+
+/*
+ * Implementations of Int64GetDatum and Float8GetDatum required when
+ * USE_FLOAT8_BYVAL is disabled (by-reference mode for 64-bit types).
+ */
+#ifndef USE_FLOAT8_BYVAL
+Datum Int64GetDatum(int64 X) {
+    int64 *ptr = (int64 *) malloc(sizeof(int64));
+    *ptr = X;
+    return PointerGetDatum(ptr);
+}
+
+Datum Float8GetDatum(float8 X) {
+    float8 *ptr = (float8 *) malloc(sizeof(float8));
+    *ptr = X;
+    return PointerGetDatum(ptr);
+}
+#endif
+
+/* --- Error handler --- */
+/*
+ * A static C error handler stores the last errlevel/errcode/errmsg produced
+ * by any MEOS call.  JS reads these globals via meos_err_* accessors after
+ * every generated wrapper call and throws a MeosError if errcode != 0.
+ * This mirrors the MeosErrorHandler.checkError() pattern in JMEOS.
+ */
+static int  _meos_last_errcode  = 0;
+static int  _meos_last_errlevel = 0;
+static char _meos_last_errmsg[512] = {0};
+
+static void _meos_error_handler(int errlevel, int errcode, const char *errmsg) {
+    _meos_last_errcode  = errcode;
+    _meos_last_errlevel = errlevel;
+    if (errmsg)
+        strncpy(_meos_last_errmsg, errmsg, sizeof(_meos_last_errmsg) - 1);
+    else
+        _meos_last_errmsg[0] = '\0';
+}
+
+EMSCRIPTEN_KEEPALIVE int         meos_err_code()  { return _meos_last_errcode; }
+EMSCRIPTEN_KEEPALIVE int         meos_err_level() { return _meos_last_errlevel; }
+EMSCRIPTEN_KEEPALIVE const char *meos_err_msg()   { return _meos_last_errmsg; }
+EMSCRIPTEN_KEEPALIVE void        meos_err_clear() {
+    _meos_last_errcode  = 0;
+    _meos_last_errlevel = 0;
+    _meos_last_errmsg[0] = '\0';
+}
+
+/* --- Init --- */
+EMSCRIPTEN_KEEPALIVE
+void meos_init_lib() {
+    meos_initialize();
+    meos_initialize_timezone("UTC");
+    meos_initialize_error_handler(_meos_error_handler);
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char *meos_ping() { return "pong"; }
+
+/* --- Memory helpers --- */
+EMSCRIPTEN_KEEPALIVE
+void meos_free(void *ptr) { free(ptr); }
+
+/* --- Hand-written wrappers (special logic) --- */
+
+/*
+ * temporal_as_hexwkb: collapses variant + size_out.
+ * variant -1 (0xFF) = WKB_EXTENDED, native endian.
+ */
+EMSCRIPTEN_KEEPALIVE
+char *temporal_as_hexwkb_w(Temporal *temp) {
+    size_t sz;
+    return temporal_as_hexwkb(temp, (uint8) -1, &sz);
+}
+
+/* temporal_as_mfjson: srs "" is treated as NULL. */
+EMSCRIPTEN_KEEPALIVE
+char *temporal_as_mfjson_w(Temporal *temp, int with_bbox, int flags,
+                            int precision, const char *srs) {
+  return temporal_as_mfjson(temp, (bool) with_bbox, flags, precision,
+                             (srs && srs[0]) ? srs : NULL);
+}
+
+/* n is 0-based from JS; MEOS expects 1-based. */
+EMSCRIPTEN_KEEPALIVE
+Temporal *temporal_instant_n_w(Temporal *temp, int n) {
+  return (Temporal *) temporal_instant_n(temp, n + 1);
+}
+
+/*
+ * temporal_duration returns a PostgreSQL Interval*.
+ * Converted to total microseconds so JS receives a plain number.
+ * Month approximated as 30 days (same as JMEOS).
+ */
+EMSCRIPTEN_KEEPALIVE
+double temporal_duration_us_w(Temporal *temp, int ignore_gaps) {
+  Interval *iv = temporal_duration(temp, (bool) ignore_gaps);
+  if (!iv) return 0.0;
+  double us = (double) iv->time
+            + (double) iv->day   * 86400000000.0
+            + (double) iv->month * 30.0 * 86400000000.0;
+  free(iv);
+  return us;
+}
+
+/* span_as_hexwkb: allocates size_out on the stack (caller does not need it). */
+EMSCRIPTEN_KEEPALIVE
+char * span_as_hexwkb_w(const Span * s, uint8_t variant) {
+  size_t sz;
+  return span_as_hexwkb(s, variant, &sz);
+}
+
+/*
+ * tstzspan_lower / tstzspan_upper - WASM32 Datum workaround.
+ *
+ * In WASM32 builds without USE_FLOAT8_BYVAL, TimestampTz (int64) is stored
+ * in Datum as a malloc'd pointer (Datum = uintptr_t = 32 bits, too small
+ * for int64).  The public tstzspan_lower() calls TimestampTzGetDatum(s->lower)
+ * which in turn calls Int64GetDatum on an already-Datum value, producing a
+ * double-wrapped pointer.
+ *
+ * We bypass the public API and directly dereference s->lower (the Datum
+ * storing the pointer to the int64 timestamp) using DatumGetTimestampTz.
+ * The Span struct fields lower/upper are declared in the public meos.h.
+ */
+EMSCRIPTEN_KEEPALIVE
+long long tstzspan_lower_w(const Span * s) {
+  return (long long) DatumGetTimestampTz(s->lower);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspan_upper_w(const Span * s) {
+  return (long long) DatumGetTimestampTz(s->upper);
+}
+
+/*
+ * span_eq / span_ne - WASM32 Datum workaround.
+ *
+ * span_eq() compares s1->lower != s2->lower directly (Datum equality).
+ * In WASM32 this is a pointer comparison; two spans with identical timestamps
+ * but separately allocated will always be unequal.  span_cmp() correctly
+ * dereferences the Datum via datum_cmp(), so we delegate to it.
+ */
+EMSCRIPTEN_KEEPALIVE
+int span_eq_w(const Span * s1, const Span * s2) {
+  return (span_cmp(s1, s2) == 0) ? 1 : 0;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int span_ne_w(const Span * s1, const Span * s2) {
+  return (span_cmp(s1, s2) != 0) ? 1 : 0;
+}
+
+/*
+ * adjacent_span_span - WASM32 Datum workaround.
+ *
+ * The MEOS implementation uses datum_eq() which for T_TIMESTAMPTZ does
+ * `l == r` (Datum pointer equality).  In WASM32 that is always false for
+ * separately created spans even if the timestamps are identical.
+ *
+ * We replicate the adjacency logic by directly dereferencing the Datum
+ * fields of the Span structs (accessible via the public meos.h declaration).
+ */
+EMSCRIPTEN_KEEPALIVE
+int adjacent_span_span_w(const Span * s1, const Span * s2) {
+  long long s1_upper = (long long) DatumGetTimestampTz(s1->upper);
+  long long s2_lower = (long long) DatumGetTimestampTz(s2->lower);
+  long long s2_upper = (long long) DatumGetTimestampTz(s2->upper);
+  long long s1_lower = (long long) DatumGetTimestampTz(s1->lower);
+
+  return (
+    (s1_upper == s2_lower && s1->upper_inc != s2->lower_inc) ||
+    (s2_upper == s1_lower && s2->upper_inc != s1->lower_inc)
+  ) ? 1 : 0;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int meos_pointer_size() { return (int) sizeof(void *); }
+
+/*
+ * tstzspanset_lower / tstzspanset_upper — Datum workaround (same as tstzspan).
+ * ss->elems[i].lower/upper are Datums storing pointers to int64 timestamps.
+ * We dereference directly via DatumGetTimestampTz to get the actual int64.
+ */
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_lower_w(const SpanSet *ss) {
+    return (long long) DatumGetTimestampTz(ss->elems[0].lower);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_upper_w(const SpanSet *ss) {
+    return (long long) DatumGetTimestampTz(ss->elems[ss->count - 1].upper);
+}
+
+/* spanset_as_hexwkb: collapses size_out. */
+EMSCRIPTEN_KEEPALIVE
+char *spanset_as_hexwkb_w(const SpanSet *ss, uint8_t variant) {
+    size_t sz;
+    return spanset_as_hexwkb(ss, variant, &sz);
+}
+
+/*
+ * tstzspanset_duration_us: converts the Interval* returned by
+ * tstzspanset_duration to total microseconds (same formula as temporal_duration_us_w).
+ * boundSpan=false -> sum of span durations (gaps ignored).
+ * boundSpan=true  -> duration of the bounding span (gaps included).
+ */
+EMSCRIPTEN_KEEPALIVE
+double tstzspanset_duration_us_w(const SpanSet *ss, int bound_span) {
+    Interval *iv = tstzspanset_duration(ss, (bool) bound_span);
+    if (!iv) return 0.0;
+    double us = (double) iv->time
+              + (double) iv->day   * 86400000000.0
+              + (double) iv->month * 30.0 * 86400000000.0;
+    free(iv);
+    return us;
+}
+
+/*
+ * tstzspanset_timestamptz_n — bool+result with int64.
+ * The auto-generator would use 'number' for the ccall return type, truncating
+ * the 64-bit timestamp. We return long long and expose it as 'bigint' in JS.
+ * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
+ */
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_timestamptz_n_w(const SpanSet *ss, int n) {
+    TimestampTz r;
+    if (!tstzspanset_timestamptz_n(ss, n, &r)) return 0;
+    return (long long) r;
+}
+
+/* set_as_hexwkb_w: collapses size_out (int * in set_as_hexwkb signature). */
+EMSCRIPTEN_KEEPALIVE
+char *set_as_hexwkb_w(const Set *s, uint8_t variant) {
+    int sz;
+    return set_as_hexwkb(s, variant, &sz);
+}
+
+/*
+ * tstzset_start_value / tstzset_end_value — return TimestampTz (int64).
+ * The auto-generator would use 'number' (truncates 64-bit). We use long long
+ * so the JS side can use 'bigint'.
+ */
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_start_value_w(const Set *s) {
+    return (long long) tstzset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_end_value_w(const Set *s) {
+    return (long long) tstzset_end_value(s);
+}
+
+/*
+ * tstzset_value_n — bool+result with TimestampTz*.
+ * Returns 0 if n is out of range; JS callers must bounds-check.
+ * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
+ */
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_value_n_w(const Set *s, int n) {
+    TimestampTz r;
+    if (!tstzset_value_n(s, n, &r)) return 0;
+    return (long long) r;
+}
+
+/*
+ * textset_value_n — bool+result with text*.
+ * Converts the varlena text* to a plain C string so JS receives a string.
+ * Returns NULL if n is out of range. n is 1-based (MEOS convention).
+ */
+EMSCRIPTEN_KEEPALIVE
+char * textset_value_n_w(const Set *s, int n) {
+    text *r;
+    if (!textset_value_n(s, n, &r)) return NULL;
+    return text2cstring(r);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * ttext_value_n_w(const Temporal *temp, int n) {
+    text *r;
+    if (!ttext_value_n(temp, n, &r)) return NULL;
+    return text2cstring(r);
+}
+
+/* --- Generated wrappers --- */

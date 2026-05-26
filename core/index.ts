@@ -1,0 +1,54 @@
+/**
+ * Public API surface for MEOS.js.
+ */
+
+export { initMeos, getModule } from './runtime/meos';
+export * from './functions/errors';
+export { Span } from './types/collections/base/Span';
+export { SpanSet } from './types/collections/base/SpanSet';
+export { MeosSet } from './types/collections/base/MeosSet';
+export { TBool } from './types/basic/tbool/TBool';
+export { TBoolInst } from './types/basic/tbool/TBoolInst';
+export { TBoolSeq } from './types/basic/tbool/TBoolSeq';
+export { TBoolSeqSet } from './types/basic/tbool/TBoolSeqSet';
+export { TInt } from './types/basic/tint/TInt';
+export { TIntInst } from './types/basic/tint/TIntInst';
+export { TIntSeq } from './types/basic/tint/TIntSeq';
+export { TIntSeqSet } from './types/basic/tint/TIntSeqSet';
+export { TFloat } from './types/basic/tfloat/TFloat';
+export { TFloatInst } from './types/basic/tfloat/TFloatInst';
+export { TFloatSeq } from './types/basic/tfloat/TFloatSeq';
+export { TFloatSeqSet } from './types/basic/tfloat/TFloatSeqSet';
+export { TText } from './types/basic/ttext/TText';
+export { TTextInst } from './types/basic/ttext/TTextInst';
+export { TTextSeq } from './types/basic/ttext/TTextSeq';
+export { TTextSeqSet } from './types/basic/ttext/TTextSeqSet';
+export { TInterpolation, TemporalType } from './types/temporal/Temporal';
+export { createTBool, createTInt, createTFloat, createTText, createTGeomPoint, createTGeogPoint } from './types/temporal/TemporalFactory';
+export type { TBoolSubtype, TIntSubtype, TFloatSubtype, TTextSubtype, TGeomPointSubtype, TGeogPointSubtype } from './types/temporal/TemporalFactory';
+export { IntSpan } from './types/collections/number/IntSpan';
+export { IntSpanSet } from './types/collections/number/IntSpanSet';
+export { IntSet } from './types/collections/number/IntSet';
+export { FloatSpan } from './types/collections/number/FloatSpan';
+export { FloatSpanSet } from './types/collections/number/FloatSpanSet';
+export { FloatSet } from './types/collections/number/FloatSet';
+export { BigIntSpan } from './types/collections/number/BigIntSpan';
+export { BigIntSpanSet } from './types/collections/number/BigIntSpanSet';
+export { BigIntSet } from './types/collections/number/BigIntSet';
+export { TextSet } from './types/collections/text/TextSet';
+export { TBox } from './types/boxes/TBox';
+export { STBox } from './types/boxes/STBox';
+export { TGeomPoint } from './types/basic/tgeompoint/TGeomPoint';
+export { TGeomPointInst } from './types/basic/tgeompoint/TGeomPointInst';
+export { TGeomPointSeq } from './types/basic/tgeompoint/TGeomPointSeq';
+export { TGeomPointSeqSet } from './types/basic/tgeompoint/TGeomPointSeqSet';
+export { TGeogPoint } from './types/basic/tgeogpoint/TGeogPoint';
+export { TGeogPointInst } from './types/basic/tgeogpoint/TGeogPointInst';
+export { TGeogPointSeq } from './types/basic/tgeogpoint/TGeogPointSeq';
+export { TGeogPointSeqSet } from './types/basic/tgeogpoint/TGeogPointSeqSet';
+export { DateSpan } from './types/collections/time/DateSpan';
+export { DateSpanSet } from './types/collections/time/DateSpanSet';
+export { DateSet } from './types/collections/time/DateSet';
+export { TsTzSpan } from './types/collections/time/TsTzSpan';
+export { TsTzSpanSet } from './types/collections/time/TsTzSpanSet';
+export { TsTzSet } from './types/collections/time/TsTzSet';

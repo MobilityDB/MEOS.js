@@ -1,0 +1,35 @@
+# NODE & BUILD
+_prebuilt_wasm
+node_modules
+dist
+
+# WASM BUILD, REGENERATE WITH: npm run build:wasm
+# meos.d.ts is hand-written and should be commited!
+wasm/*.wasm
+wasm/*.js
+
+# CODE FORMATTER
+.prettierrc
+.prettierignore
+
+# IDE & OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# JAVA REP
+JMEOS-fix-tests-using-docker
+
+# LOCAL SCRIPTS / PLAYGROUND
+scripts/
+
+# DOCUMENTATION
+docs/api/
+docs/.vitepress/dist/
+docs/.vitepress/cache/

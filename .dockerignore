@@ -1,0 +1,24 @@
+# Build outputs / generated files
+node_modules/
+wasm/
+core/c-src/bindings.c
+dist/
+coverage/
+
+# Docs / tests are not needed for the WASM build
+docs/
+test/
+
+# Editor / git / OS
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+
+# Markdown / config files unused by the build
+README.md
+*.md

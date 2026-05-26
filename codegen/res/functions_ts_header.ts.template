@@ -1,0 +1,248 @@
+/* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
+import { getModule } from '../runtime/meos';
+
+// WASM linear memory address, held as a JS number (safe up to 2^53).
+export type Ptr = number;
+
+// PostgreSQL TimestampTz - microseconds since 2000-01-01 UTC
+export type TimestampTz = number;
+
+// PostgreSQL DateADT - days since 2000-01-01
+export type DateADT = number;
+
+function call<T>(
+	name: string,
+	ret: 'number' | 'bigint' | 'string' | 'boolean' | null,
+	argTypes: ('number' | 'string' | 'boolean' | 'bigint')[],
+	args: unknown[]
+): T {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return getModule().ccall(name, ret as any, argTypes as any, args) as T;
+}
+
+// --- wasm64 pointer support ---
+//
+// MEOS.js targets wasm64 (MEMORY64=1) exclusively. Emscripten represents
+// pointer arguments and return values as JS BigInt with ccall. The helpers
+// below centralise that conversion so every generated wrapper stays uniform.
+
+/** ccall arg-type tag for a Ptr parameter (always 'bigint' in wasm64). */
+export function ptrArgType(): 'bigint' { return 'bigint'; }
+
+/** Converts a Ptr to the BigInt value ccall expects in wasm64. */
+export function ptrArgVal(p: Ptr): bigint { return BigInt(p); }
+
+/** Calls a MEOS function that returns a Ptr (BigInt from ccall → number). */
+export function callPtr(
+	name: string,
+	argTypes: ('number' | 'string' | 'boolean' | 'bigint')[],
+	args: unknown[]
+): Ptr {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return Number(getModule().ccall(name, 'bigint' as any, argTypes as any, args) as bigint);
+}
+
+// --- Error handling ---
+//
+// errlevel mirrors PostgreSQL severity constants: NOTICE=18, WARNING=19, ERROR=21.
+// After every generated wrapper call, checkMeosError() reads the C globals written
+// by _meos_error_handler (registered in meos_init_lib) and throws if errcode != 0.
+//
+// Typed exceptions (MeosInternalError, MeosInvalidArgError, …) are defined in
+// src/errors.ts and dispatched via makeMeosException().
+
+import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from './errors';
+export * from './errors';
+
+// MeosError kept as alias for backward compatibility.
+export { MeosException as MeosError };
+
+export function checkMeosError(): void {
+	const code  = call<number>('meos_err_code',  'number', [], []);
+	const level = call<number>('meos_err_level', 'number', [], []);
+	if (code === 0 && level === 0) return;
+	const msg = call<string>('meos_err_msg', 'string', [], []);
+	call<void>('meos_err_clear', null, [], []);
+	if (level === MEOS_NOTICE) {
+		console.info(`MEOS notice [${code}]: ${msg}`);
+	} else if (level === MEOS_WARNING) {
+		console.warn(`MEOS warning [${code}]: ${msg}`);
+	} else {
+		throw makeMeosException(code, level, msg);
+	}
+}
+
+// --- Hand-written wrappers (special logic) ---
+
+/** Free a MEOS-allocated pointer. */
+export function meos_free(ptr: Ptr): void {
+	call<void>('meos_free', null, [ptrArgType()], [ptrArgVal(ptr)]);
+}
+
+/** Extended hex-WKB; discards variant + size_out. */
+export function temporal_as_hexwkb(temp: Ptr): string {
+	const _r = call<string>('temporal_as_hexwkb_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+/** Pass empty string for srs to use NULL. */
+export function temporal_as_mfjson(
+	temp: Ptr, withBbox: boolean, flags: number, precision: number, srs: string
+): string {
+	const _r = call<string>(
+		'temporal_as_mfjson_w', 'string',
+		[ptrArgType(), 'number', 'number', 'number', 'string'],
+		[ptrArgVal(temp), withBbox ? 1 : 0, flags, precision, srs]
+	);
+	checkMeosError();
+	return _r;
+}
+
+/** 0-based index (MEOS is 1-based internally). */
+export function temporal_instant_n(temp: Ptr, n: number): Ptr {
+	const _r = callPtr('temporal_instant_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	checkMeosError();
+	return _r;
+}
+
+/** Duration as total microseconds (month ≈ 30 days). */
+export function temporal_duration_us(temp: Ptr, ignoreGaps: boolean): number {
+	const _r = call<number>(
+		'temporal_duration_us_w', 'number',
+		[ptrArgType(), 'number'],
+		[ptrArgVal(temp), ignoreGaps ? 1 : 0]
+	);
+	checkMeosError();
+	return _r;
+}
+
+/** Serialise a Span to hex-encoded WKB; discards size_out. */
+export function span_as_hexwkb(s: Ptr, variant: number): string {
+	const _r = call<string>('span_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);
+	checkMeosError();
+	return _r;
+}
+
+/*
+ * tstzspan_lower / tstzspan_upper - Datum workaround.
+ * The C wrappers dereference the Int64GetDatum pointer and return the
+ * actual microsecond timestamp as long long (i64).
+ * ccall returns i64 as BigInt; we convert to JS number (safe for dates
+ * within ~285 years of the 2000-01-01 epoch).
+ */
+export function tstzspan_lower(s: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzspan_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+}
+
+export function tstzspan_upper(s: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzspan_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+}
+
+/*
+ * span_eq / span_ne - Datum workaround.
+ * The C wrappers use span_cmp() which correctly dereferences Datum.
+ */
+export function span_eq(s1: Ptr, s2: Ptr): boolean {
+	return call<number>('span_eq_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+}
+
+export function span_ne(s1: Ptr, s2: Ptr): boolean {
+	return call<number>('span_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+}
+
+/*
+ * adjacent_span_span - Datum workaround.
+ * The C wrapper uses dereferenced timestamp values instead of datum_eq().
+ */
+export function adjacent_span_span(s1: Ptr, s2: Ptr): boolean {
+	return call<number>('adjacent_span_span_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+}
+
+/*
+ * tstzspanset_lower / tstzspanset_upper - Datum workaround (same as tstzspan).
+ * ss->elems[i].lower/upper are Datums storing pointers to int64 timestamps.
+ * We dereference directly via DatumGetTimestampTz.
+ */
+export function tstzspanset_lower(ss: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzspanset_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
+}
+
+export function tstzspanset_upper(ss: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzspanset_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
+}
+
+/** Serialise a SpanSet to hex-encoded WKB; discards size_out. */
+export function spanset_as_hexwkb(ss: Ptr, variant: number): string {
+	const _r = call<string>('spanset_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(ss), variant]);
+	checkMeosError();
+	return _r;
+}
+
+/** Duration of a TsTzSpanSet as total microseconds (month ≈ 30 days). */
+export function tstzspanset_duration_us(ss: Ptr, boundSpan: boolean): number {
+	const _r = call<number>(
+		'tstzspanset_duration_us_w', 'number',
+		[ptrArgType(), 'number'],
+		[ptrArgVal(ss), boundSpan ? 1 : 0]
+	);
+	checkMeosError();
+	return _r;
+}
+
+/*
+ * tstzspanset_timestamptz_n - bool+result with int64.
+ * Returns 0 if n is out of range; JS callers must bounds-check.
+ * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
+ */
+export function tstzspanset_timestamptz_n(ss: Ptr, n: number): TimestampTz {
+	return Number(call<bigint>('tstzspanset_timestamptz_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(ss), n]));
+}
+
+/** Serialise a Set to hex-encoded WKB; discards size_out. */
+export function set_as_hexwkb(s: Ptr, variant: number): string {
+	const _r = call<string>('set_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzset_start_value(s: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+}
+
+export function tstzset_end_value(s: Ptr): TimestampTz {
+	return Number(call<bigint>('tstzset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+}
+
+/*
+ * tstzset_value_n — bool+result with TimestampTz (int64).
+ * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
+ * Returns 0 if n is out of range; callers must bounds-check.
+ */
+export function tstzset_value_n(s: Ptr, n: number): TimestampTz {
+	return Number(call<bigint>('tstzset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
+}
+
+/*
+ * textset_value_n — bool+result with text* (varlena).
+ * The C wrapper converts text* to cstring, so JS receives a plain string.
+ * Returns null if n is out of range. n is 1-based (MEOS convention).
+ */
+export function textset_value_n(s: Ptr, n: number): string | null {
+	const _r = call<string>('textset_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
+	checkMeosError();
+	return _r ?? null;
+}
+
+/*
+ * ttext_value_n — bool+result with text* (varlena).
+ * The C wrapper converts text* to cstring, so JS receives a plain string.
+ * Returns null if n is out of range. n is 1-based (MEOS convention).
+ */
+export function ttext_value_n(temp: Ptr, n: number): string | null {
+	const _r = call<string>('ttext_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	checkMeosError();
+	return _r ?? null;
+}
+
+// --- Generated wrappers ---

@@ -1,0 +1,30 @@
+{
+  "name": "meos.js",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "JavaScript/TypeScript bindings for MobilityDB MEOS via WebAssembly",
+  "main": "core/index.js",
+  "scripts": {
+    "generate": "npx tsx codegen/FunctionsGenerator.ts",
+    "build:wasm": "docker build --output type=local,dest=./wasm --target wasm .",
+    "build:ts": "tsc",
+    "build": "npm run build:ts",
+    "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
+    "play": "node --import tsx/esm scripts/playground.ts",
+    "docs:api": "typedoc",
+    "docs:dev": "npm run docs:api && vitepress dev docs",
+    "docs:build": "npm run docs:api && vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
+    "typescript": "^6.0.2",
+    "vitepress": "^2.0.0-alpha.17"
+  }
+}
