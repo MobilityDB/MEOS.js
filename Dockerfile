@@ -4,11 +4,11 @@
 #   docker build --output type=local,dest=./wasm --target wasm .
 #
 # Versions:
-#   emsdk 5.0.6       |  MobilityDB ee27da1  |  GEOS 3.14.1
+#   emsdk 5.0.6       |  MobilityDB 2c4243a  |  GEOS 3.14.1
 #   PROJ 9.8.1        |  SQLite 3.46.1       |  JSON-C 0.18  |  GSL 2.8
 
 # Pinned MobilityDB commit — update together with meos-idl.json when upgrading.
-ARG MOBILITYDB_COMMIT=ee27da1a6d2f6cdbdd226bd66a1e7fea86c2832b
+ARG MOBILITYDB_COMMIT=2c4243a2656fcef27fa0a2557234593e3e9b125b
 
 # EMSCRIPTEN & EVERY NEEDED TOOL
 FROM emscripten/emsdk:5.0.6 AS base
@@ -143,6 +143,10 @@ RUN npm run generate
 RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-install/include -I/root/json-c-install/include/json-c" \
     && emcmake cmake -S /root/MobilityDB -B /root/MobilityDB/build \
         -DMEOS=ON \
+        -DCBUFFER=ON \
+        -DNPOINT=ON \
+        -DPOSE=ON \
+        -DRGEO=ON \
         -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_BUILD_TYPE=Release \
         -DGEOS_INCLUDE_DIR=/root/geos/build/capi \
@@ -212,6 +216,8 @@ RUN mkdir -p /app/wasm \
         -I/root/MobilityDB/postgis \
         -I/root/MobilityDB/postgis/liblwgeom \
         -I/root/PROJ/src \
+        -I/root/json-c-install/include \
+        -I/root/gsl-wasm/include \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
         --embed-file /root/MobilityDB/meos/src/geo/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
         --embed-file /root/PROJ/build/data/proj.db@/usr/local/share/proj/proj.db \

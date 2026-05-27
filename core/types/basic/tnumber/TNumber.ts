@@ -17,7 +17,7 @@ import {
 	tnumber_minus_tbox,
 	add_tnumber_tnumber,
 	sub_tnumber_tnumber,
-	mult_tnumber_tnumber,
+	mul_tnumber_tnumber,
 	div_tnumber_tnumber,
 	tdistance_tnumber_tnumber,
 } from '../../../functions/functions.generated';
@@ -41,7 +41,7 @@ export abstract class TNumber extends Temporal<number> {
 	protected abstract _raddScalar(scalar: number): Ptr;
 	/** Calls sub_int_tint or sub_float_tfloat. */
 	protected abstract _rsubScalar(scalar: number): Ptr;
-	/** Calls mult_int_tint or mult_float_tfloat. */
+	/** Calls mul_int_tint or mul_float_tfloat. */
 	protected abstract _rmulScalar(scalar: number): Ptr;
 	/** Calls div_int_tint or div_float_tfloat. */
 	protected abstract _rdivScalar(scalar: number): Ptr;
@@ -138,9 +138,9 @@ export abstract class TNumber extends Temporal<number> {
 		return this._fromInner(sub_tnumber_tnumber(this._inner, other._inner));
 	}
 
-	/** Multiplies this by another TNumber. MEOS: mult_tnumber_tnumber */
+	/** Multiplies this by another TNumber. MEOS: mul_tnumber_tnumber */
 	multTemporal(other: TNumber): this {
-		return this._fromInner(mult_tnumber_tnumber(this._inner, other._inner));
+		return this._fromInner(mul_tnumber_tnumber(this._inner, other._inner));
 	}
 
 	/** Divides this by another TNumber. MEOS: div_tnumber_tnumber */
@@ -158,7 +158,7 @@ export abstract class TNumber extends Temporal<number> {
 	/** Returns `scalar - this` instant-by-instant. MEOS: sub_int_tint / sub_float_tfloat */
 	rsub(scalar: number): this { return this._fromInner(this._rsubScalar(scalar)); }
 
-	/** Returns `scalar * this` instant-by-instant. MEOS: mult_int_tint / mult_float_tfloat */
+	/** Returns `scalar * this` instant-by-instant. MEOS: mul_int_tint / mul_float_tfloat */
 	rmul(scalar: number): this { return this._fromInner(this._rmulScalar(scalar)); }
 
 	/** Returns `scalar / this` instant-by-instant. MEOS: div_int_tint / div_float_tfloat */

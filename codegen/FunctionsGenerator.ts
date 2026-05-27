@@ -204,6 +204,19 @@ const isRawBytes = (t: string) => {
 const isInterval = (t: string) => clean(t) === 'Interval';
 
 /**
+ * True for the PostgreSQL Datum tagged value in any pointer arity
+ * (Datum, Datum *, const Datum, ...).  A Datum is an opaque uintptr_t whose
+ * interpretation depends on the runtime base type: for Float8 / text / geometry
+ * it holds a *pointer*, not the value (and is only 32-bit under WASM32), so it
+ * can never be marshalled safely to a JS scalar.  Datum only ever appears on
+ * INTERNAL functions (meos_internal.h); the user-facing API is the typed
+ * *_meos.c wrappers declared in the public headers, e.g.
+ *   temporal_start_value(Datum, internal) -> tint_start_value / tfloat_start_value / ttext_start_value
+ * Functions whose signature mentions Datum are therefore skipped entirely.
+ */
+const isDatum = (t: string) => /\bDatum\b/.test(clean(t));
+
+/**
  * True for the PostgreSQL text type passed as a single pointer (text *).
  * These require cstring2text / text2cstring conversion in the C wrapper
  * so that the JS side always works with plain char* strings.
@@ -352,6 +365,10 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
  *
  * The only cases that remain un-generatable are:
  *
+ *   - Datum return or param: Datum is an opaque, internal-only tagged value
+ *     (see isDatum) that cannot be marshalled to a JS scalar.  It appears only
+ *     on internal functions; the user-facing API is the typed *_meos.c wrapper.
+ *
  *   - Function-pointer params: Emscripten cannot marshal C function pointers
  *     automatically.  These require hand-written wrappers using
  *     Module.addFunction() and are listed in MANUAL_FUNCTIONS if needed.
@@ -361,7 +378,11 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
  *     handled normally as Ptr.
  */
 function shouldSkip(fn: IdlFunction): string | null {
+	if (isDatum(fn.returnType.c))
+		return 'internal Datum return — use the typed *_meos.c wrapper';
 	for (const p of fn.params) {
+		if (isDatum(p.cType))
+			return `internal Datum param '${p.name}' — use the typed *_meos.c wrapper`;
 		if (isFuncPtr(p.cType)) return `function-pointer param '${p.name}'`;
 		if (isInterval(p.cType)) return `Interval by-value param '${p.name}'`;
 	}
@@ -819,7 +840,21 @@ function main(): void {
 
 	console.log('Reading IDL:', idlPath);
 	const idl: Idl = JSON.parse(fs.readFileSync(idlPath, 'utf-8'));
-	const fns: IdlFunction[] = idl.functions ?? [];
+
+	// The binding mirrors the PUBLIC MEOS API only. Exclude functions declared in
+	// non-API headers: the internal headers (meos_internal.h / meos_internal_geo.h
+	// — not user-facing, nothing in core/types calls them, many take/return the
+	// opaque Datum, see isDatum / shouldSkip) and the bundled liblwgeom external
+	// definitions (postgis_ext_defs.in.h — PostGIS glue, not MEOS API). The public
+	// meos*.h headers, and the typed *_meos.c wrappers they declare, are the API.
+	const NON_API_HEADERS = new Set([
+		'meos_internal.h',
+		'meos_internal_geo.h',
+		'postgis_ext_defs.in.h',
+	]);
+	const fns: IdlFunction[] = (idl.functions ?? []).filter(
+		f => !NON_API_HEADERS.has(f.file)
+	);
 
 	let cOut = fs.readFileSync(
 		path.resolve(__dirname, 'res/bindings_c_header.c.template'),

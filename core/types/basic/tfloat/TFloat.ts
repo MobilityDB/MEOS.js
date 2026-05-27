@@ -15,11 +15,11 @@ import {
 	tfloat_to_tint,
 	add_tfloat_float,
 	sub_tfloat_float,
-	mult_tfloat_float,
+	mul_tfloat_float,
 	div_tfloat_float,
 	add_float_tfloat,
 	sub_float_tfloat,
-	mult_float_tfloat,
+	mul_float_tfloat,
 	div_float_tfloat,
 	tfloat_at_value,
 	tfloat_minus_value,
@@ -234,10 +234,10 @@ export class TFloat extends TNumber {
 
 	/**
 	 * Multiply every instant by a constant float.
-	 * MEOS: mult_tfloat_float
+	 * MEOS: mul_tfloat_float
 	 */
 	mult(d: number): TFloat {
-		return new TFloat(mult_tfloat_float(this._inner, d));
+		return new TFloat(mul_tfloat_float(this._inner, d));
 	}
 
 	/**
@@ -458,7 +458,7 @@ export class TFloat extends TNumber {
 
 	protected _raddScalar(d: number): Ptr  { return add_float_tfloat(d, this._inner); }
 	protected _rsubScalar(d: number): Ptr  { return sub_float_tfloat(d, this._inner); }
-	protected _rmulScalar(d: number): Ptr  { return mult_float_tfloat(d, this._inner); }
+	protected _rmulScalar(d: number): Ptr  { return mul_float_tfloat(d, this._inner); }
 	protected _rdivScalar(d: number): Ptr  { return div_float_tfloat(d, this._inner); }
 	protected _distanceScalar(d: number): Ptr        { return tdistance_tfloat_float(this._inner, d); }
 	protected _nadScalar(d: number): number          { return nad_tfloat_float(this._inner, d); }
