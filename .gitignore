@@ -23,8 +23,10 @@ Thumbs.db
 *.sln
 *.sw?
 
-# JAVA REP
+# REPS
 JMEOS-fix-tests-using-docker
+MEOS-API
+MobilityDeck
 
 # LOCAL SCRIPTS / PLAYGROUND
 scripts/

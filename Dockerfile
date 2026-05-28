@@ -4,11 +4,19 @@
 #   docker build --output type=local,dest=./wasm --target wasm .
 #
 # Versions:
-#   emsdk 5.0.6       |  MobilityDB 2c4243a  |  GEOS 3.14.1
-#   PROJ 9.8.1        |  SQLite 3.46.1       |  JSON-C 0.18  |  GSL 2.8
+#   emsdk 5.0.6       |  MobilityDB 7d5521b (estebanzimanyi fork, see TODO below)
+#   GEOS 3.14.1       |  PROJ 9.8.1         |  SQLite 3.46.1
+#   JSON-C 0.18       |  GSL 2.8
 
-# Pinned MobilityDB commit — update together with meos-idl.json when upgrading.
-ARG MOBILITYDB_COMMIT=2c4243a2656fcef27fa0a2557234593e3e9b125b
+# TODO: revert to MobilityDB/MobilityDB master once MobilityDB#1124 lands.
+#   Currently pinned to estebanzimanyi's fork because master `2c4243a` declares
+#   5 trgeo accessors (trgeo_points/rotation/segments/traversed_area,
+#   nad_stbox_trgeo) in meos_rgeo.h but never implements them — wasm-ld fails
+#   with "undefined symbol". The fork commit only adds those 5 implementations
+#   (no header changes), so the committed codegen/res/meos-idl.json stays valid.
+ARG MOBILITYDB_REPO=https://github.com/estebanzimanyi/MobilityDB.git
+ARG MOBILITYDB_BRANCH=fix/trgeo-accessors-undefined
+ARG MOBILITYDB_COMMIT=7d5521b2141778cdc4f71106a6d7a136e62f2804
 
 # EMSCRIPTEN & EVERY NEEDED TOOL
 FROM emscripten/emsdk:5.0.6 AS base
@@ -114,9 +122,11 @@ RUN cp /usr/share/automake-*/config.sub config.sub \
 
 # MOBILITYDB SOURCE (separate stage so /app/ changes don't invalidate the clone)
 FROM base AS mobilitydb_src
+ARG MOBILITYDB_REPO
+ARG MOBILITYDB_BRANCH
 ARG MOBILITYDB_COMMIT
 
-RUN git clone https://github.com/MobilityDB/MobilityDB.git /root/MobilityDB \
+RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB \
     && git -C /root/MobilityDB checkout ${MOBILITYDB_COMMIT}
 
 # BUILDING WASM
