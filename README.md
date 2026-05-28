@@ -8,10 +8,15 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 
 ## Table of contents
 - [Requirements](#requirements)
+- [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Memory management](#memory-management)
 - [Implemented types](#implemented-types)
+- [Code Generation](#code-generation)
+- [Tests](#tests)
+- [Doc](#doc)
+- [Use Case Examples](#use-case-examples)
 
 ## Requirements
 
@@ -23,6 +28,43 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
   `initMeos()` probes for MEMORY64 at startup and throws a clear error if the engine doesn't support it.
 
 > **Node.js 22+** is additionally required to run the tests, the code generator, the TypeScript build and the docs. Not needed for the WASM build itself.
+
+## Project Structure
+
+```
+MEOS.js/
+├── codegen/                         ← Code generator
+│   ├── res/
+│   │   ├── meos-idl.json            ← MEOS API description (input for generator)
+│   │   ├── meos.h, meos_geo.h       ← Cached upstream headers (for reference)
+│   │   ├── bindings_c_header.c.template
+│   │   └── functions_ts_header.ts.template
+│   └── FunctionsGenerator.ts        ← Reads the IDL, emits the C glue + TS bindings
+├── core/
+│   ├── c-src/
+│   │   └── bindings.c               ← Generated C glue (shouldn't be edited manually)
+│   ├── functions/
+│   │   ├── functions.generated.ts   ← Generated TS bindings (shouldn't be edited manually)
+│   │   ├── errors.ts                ← MEOS error code handling
+│   │   └── ptr_array.ts             ← Pointer-array marshalling helpers
+│   ├── runtime/
+│   │   └── meos.ts                  ← WASM module loader + MEMORY64 probe
+│   ├── types/                       ← High-level typed wrappers
+│   │   ├── basic/                   ← TBool, TInt, TFloat, TText, TGeomPoint, TGeogPoint
+│   │   ├── boxes/                   ← TBox, STBox
+│   │   ├── collections/             ← Span, SpanSet, MeoSet, number/text/time variants
+│   │   └── temporal/                ← Temporal base class + factory
+│   └── index.ts                     ← Public exports
+├── wasm/                            ← Build output (meos.js, meos.wasm, meos.d.ts)
+├── test/                            ← Unit tests (node:test + tsx)
+├── docs/                            ← TypeDoc + VitePress sources & HTML
+├── Dockerfile                       ← Multi-stage build: MEOS → WASM
+└── package.json
+```
+
+The two-layer architecture consists of:
+- **`codegen/`**: reads `codegen/res/meos-idl.json` and generates `core/c-src/bindings.c` and `core/functions/functions.generated.ts`.
+- **`core/`**: implements the high-level typed wrappers on top of the generated bindings, plus the runtime that loads the WASM module.
 
 ## Installation
 
@@ -130,6 +172,95 @@ Click any type name to open its API reference.
 **Temporal geography point** (geodetic, 2D/3D): [`TGeogPoint`][TGeogPoint] · [`TGeogPointInst`][TGeogPointInst] · [`TGeogPointSeq`][TGeogPointSeq] · [`TGeogPointSeqSet`][TGeogPointSeqSet]
 
 Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
+
+## Code Generation
+
+The `codegen/` directory contains the generator that produces `core/c-src/bindings.c` and `core/functions/functions.generated.ts` from the MEOS API description file (`codegen/res/meos-idl.json`).
+
+**When to regenerate**: whenever `meos-idl.json` is updated (e.g. after a MEOS version upgrade) or whenever `FunctionsGenerator.ts` / the templates change.
+
+### Run the generator
+
+```bash
+npm run generate
+```
+
+This reads `codegen/res/meos-idl.json`, applies the templates in `codegen/res/`, and overwrites both generated files.
+
+> **Do not edit `bindings.c` or `functions.generated.ts` manually**: any change will be lost the next time the generator runs. Manual overrides live in the templates (`codegen/res/*_header.*.template`).
+
+### Update the input file
+
+The canonical `meos-idl.json` is produced by [MEOS-API](https://github.com/MobilityDB/MEOS-API). To refresh against a newer MEOS surface:
+
+```bash
+# in a MEOS-API checkout
+python setup.py
+python run.py
+cp output/meos-idl.json /path/to/MEOS.js/codegen/res/meos-idl.json
+# back in MEOS.js
+npm run generate
+```
+
+Bump the `MOBILITYDB_COMMIT` pin in the `Dockerfile` together with the IDL refresh so the WASM build stays in sync with the bindings.
+
+## Tests
+
+Unit tests live in `test/` and use Node's built-in test runner with `tsx` for on-the-fly TypeScript transpilation — no separate test framework.
+
+### Run all tests
+
+```bash
+npm test
+```
+
+### Run a specific test file
+
+```bash
+node --import tsx/esm --test test/types/boxes/test_TBox.ts
+```
+
+### Run a specific test by name
+
+```bash
+node --import tsx/esm --test --test-name-pattern="fromString" test/types/boxes/test_TBox.ts
+```
+
+## Doc
+
+The API reference is generated by [TypeDoc](https://typedoc.org/) and served by [VitePress](https://vitepress.dev/). The published site lives at **https://mobilitydb.github.io/MEOS.js/** and is rebuilt by `.github/workflows/docs.yml` on every push to `main`.
+
+### Build the API reference only
+
+```bash
+npm run docs:api
+```
+
+This invokes TypeDoc with the config in `typedoc.json` and writes Markdown pages to `docs/api/`.
+
+### Run the docs site locally (with hot reload)
+
+```bash
+npm run docs:dev
+```
+
+### Build the static docs site
+
+```bash
+npm run docs:build
+```
+
+The output is placed under `docs/.vitepress/dist/`, which is what the GitHub Pages workflow deploys.
+
+### Preview the built site
+
+```bash
+npm run docs:preview
+```
+
+## Use Case Examples
+
+*Coming soon — a dedicated examples repository / section will walk through end-to-end workflows: ingesting GPS trajectories, computing temporal aggregates, and integrating with visualization tools such as deck.gl.*
 
 [Span]: https://mobilitydb.github.io/MEOS.js/api/classes/Span
 [SpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/SpanSet
