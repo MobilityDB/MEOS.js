@@ -11,7 +11,7 @@ export default defineConfig({
 			{ text: 'API', link: '/api/' },
 			{
 				text: 'GitHub',
-				link: 'https://github.com/Nyuke235/MEOS.js',
+				link: 'https://github.com/MobilityDB/MEOS.js',
 			},
 		],
 

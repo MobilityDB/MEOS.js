@@ -4,7 +4,7 @@ TypeScript/JavaScript bindings for [MEOS](https://libmeos.org/), the C library t
 
 MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values, spans, sets, and bounding boxes in Node.js or the browser.
 
-**Documentation:** https://nyuke235.github.io/MEOS.js/
+**Documentation:** https://mobilitydb.github.io/MEOS.js/
 
 ## Table of contents
 - [Requirements](#requirements)
@@ -131,47 +131,47 @@ Click any type name to open its API reference.
 
 Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
 
-[Span]: https://nyuke235.github.io/MEOS.js/api/classes/Span
-[SpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/SpanSet
-[IntSpan]: https://nyuke235.github.io/MEOS.js/api/classes/IntSpan
-[IntSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/IntSpanSet
-[IntSet]: https://nyuke235.github.io/MEOS.js/api/classes/IntSet
-[FloatSpan]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSpan
-[FloatSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSpanSet
-[FloatSet]: https://nyuke235.github.io/MEOS.js/api/classes/FloatSet
-[BigIntSpan]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSpan
-[BigIntSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSpanSet
-[BigIntSet]: https://nyuke235.github.io/MEOS.js/api/classes/BigIntSet
-[TextSet]: https://nyuke235.github.io/MEOS.js/api/classes/TextSet
-[TsTzSpan]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSpan
-[TsTzSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSpanSet
-[TsTzSet]: https://nyuke235.github.io/MEOS.js/api/classes/TsTzSet
-[DateSpan]: https://nyuke235.github.io/MEOS.js/api/classes/DateSpan
-[DateSpanSet]: https://nyuke235.github.io/MEOS.js/api/classes/DateSpanSet
-[DateSet]: https://nyuke235.github.io/MEOS.js/api/classes/DateSet
-[TBox]: https://nyuke235.github.io/MEOS.js/api/classes/TBox
-[STBox]: https://nyuke235.github.io/MEOS.js/api/classes/STBox
-[TBool]: https://nyuke235.github.io/MEOS.js/api/classes/TBool
-[TBoolInst]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolInst
-[TBoolSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolSeq
-[TBoolSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TBoolSeqSet
-[TInt]: https://nyuke235.github.io/MEOS.js/api/classes/TInt
-[TIntInst]: https://nyuke235.github.io/MEOS.js/api/classes/TIntInst
-[TIntSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TIntSeq
-[TIntSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TIntSeqSet
-[TFloat]: https://nyuke235.github.io/MEOS.js/api/classes/TFloat
-[TFloatInst]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatInst
-[TFloatSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatSeq
-[TFloatSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TFloatSeqSet
-[TText]: https://nyuke235.github.io/MEOS.js/api/classes/TText
-[TTextInst]: https://nyuke235.github.io/MEOS.js/api/classes/TTextInst
-[TTextSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TTextSeq
-[TTextSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TTextSeqSet
-[TGeomPoint]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPoint
-[TGeomPointInst]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointInst
-[TGeomPointSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointSeq
-[TGeomPointSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TGeomPointSeqSet
-[TGeogPoint]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPoint
-[TGeogPointInst]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointInst
-[TGeogPointSeq]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointSeq
-[TGeogPointSeqSet]: https://nyuke235.github.io/MEOS.js/api/classes/TGeogPointSeqSet
+[Span]: https://mobilitydb.github.io/MEOS.js/api/classes/Span
+[SpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/SpanSet
+[IntSpan]: https://mobilitydb.github.io/MEOS.js/api/classes/IntSpan
+[IntSpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/IntSpanSet
+[IntSet]: https://mobilitydb.github.io/MEOS.js/api/classes/IntSet
+[FloatSpan]: https://mobilitydb.github.io/MEOS.js/api/classes/FloatSpan
+[FloatSpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/FloatSpanSet
+[FloatSet]: https://mobilitydb.github.io/MEOS.js/api/classes/FloatSet
+[BigIntSpan]: https://mobilitydb.github.io/MEOS.js/api/classes/BigIntSpan
+[BigIntSpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/BigIntSpanSet
+[BigIntSet]: https://mobilitydb.github.io/MEOS.js/api/classes/BigIntSet
+[TextSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TextSet
+[TsTzSpan]: https://mobilitydb.github.io/MEOS.js/api/classes/TsTzSpan
+[TsTzSpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TsTzSpanSet
+[TsTzSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TsTzSet
+[DateSpan]: https://mobilitydb.github.io/MEOS.js/api/classes/DateSpan
+[DateSpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/DateSpanSet
+[DateSet]: https://mobilitydb.github.io/MEOS.js/api/classes/DateSet
+[TBox]: https://mobilitydb.github.io/MEOS.js/api/classes/TBox
+[STBox]: https://mobilitydb.github.io/MEOS.js/api/classes/STBox
+[TBool]: https://mobilitydb.github.io/MEOS.js/api/classes/TBool
+[TBoolInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TBoolInst
+[TBoolSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TBoolSeq
+[TBoolSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TBoolSeqSet
+[TInt]: https://mobilitydb.github.io/MEOS.js/api/classes/TInt
+[TIntInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TIntInst
+[TIntSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TIntSeq
+[TIntSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TIntSeqSet
+[TFloat]: https://mobilitydb.github.io/MEOS.js/api/classes/TFloat
+[TFloatInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TFloatInst
+[TFloatSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TFloatSeq
+[TFloatSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TFloatSeqSet
+[TText]: https://mobilitydb.github.io/MEOS.js/api/classes/TText
+[TTextInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TTextInst
+[TTextSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TTextSeq
+[TTextSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TTextSeqSet
+[TGeomPoint]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeomPoint
+[TGeomPointInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeomPointInst
+[TGeomPointSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeomPointSeq
+[TGeomPointSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeomPointSeqSet
+[TGeogPoint]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeogPoint
+[TGeogPointInst]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeogPointInst
+[TGeogPointSeq]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeogPointSeq
+[TGeogPointSeqSet]: https://mobilitydb.github.io/MEOS.js/api/classes/TGeogPointSeqSet
