@@ -10,12 +10,12 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 - [Requirements](#requirements)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
-- [Quick start](#quick-start)
-- [Memory management](#memory-management)
-- [Implemented types](#implemented-types)
+- [Using from JavaScript](#using-from-javascript)
 - [Code Generation](#code-generation)
 - [Tests](#tests)
 - [Doc](#doc)
+- [Memory management](#memory-management)
+- [Implemented types](#implemented-types)
 - [Use Case Examples](#use-case-examples)
 
 ## Requirements
@@ -95,6 +95,25 @@ npm test
 ```
 
 > **Coming soon**: MEOS.js is supposed to be published on npm so you can just `npm install meos.js` and skip the WASM build and source checkout entirely.
+
+## Using from JavaScript
+
+MEOS.js is written in TypeScript for maintainability but ships as **plain JavaScript** (ES2022 / ESM) with bundled type declarations. You can use it from any JavaScript project without TypeScript in your toolchain.
+
+`npm run build:ts` emits `dist/core/*.js` (the runtime) plus `dist/core/*.d.ts` (the types). From a plain JS file:
+
+```js
+import { initMeos, TsTzSpan } from 'meos.js';
+
+await initMeos();
+const span = TsTzSpan.fromString('[2020-01-01, 2021-01-01)');
+console.log(span.toString());
+span.free();
+```
+
+Everything works identically: every class (`TBool`, `TInt`, `TFloat`, `TGeomPoint`, ...), the factory functions, the `using` / `[Symbol.dispose]` lifecycle (ES2023, not TS-specific). The bundled `.d.ts` files also give you IDE autocompletion and hover-docs in `.js` files — VS Code picks them up automatically. Add `// @ts-check` at the top of a `.js` file to opt into type checking via JSDoc as well.
+
+The only thing TypeScript users get extra is **compile-time type checking at write-time**; the runtime surface is the same.
 
 ## Code Generation
 
