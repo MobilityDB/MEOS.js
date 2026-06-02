@@ -4,6 +4,10 @@
   "type": "module",
   "description": "JavaScript/TypeScript bindings for MobilityDB MEOS via WebAssembly",
   "main": "core/index.js",
+  "exports": {
+    ".": "./core/index.js",
+    "./deckgl": "./deckgl/index.js"
+  },
   "scripts": {
     "generate": "npx tsx codegen/FunctionsGenerator.ts",
     "build:wasm": "docker build --output type=local,dest=./wasm --target wasm .",
