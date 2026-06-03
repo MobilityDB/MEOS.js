@@ -28,7 +28,7 @@
     "build:ts": "tsc",
     "copy:wasm": "shx cp -r wasm dist/wasm",
     "build": "npm run build:ts && npm run copy:wasm",
-    "prepublishOnly": "npm run build",
+    "prepack": "npm run build",
     "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
     "play": "node --import tsx/esm scripts/playground.ts",
     "docs:api": "typedoc",
