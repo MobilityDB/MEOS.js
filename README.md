@@ -1,10 +1,20 @@
 # MEOS.js
 
+[![npm version](https://img.shields.io/npm/v/meos.js)](https://www.npmjs.com/package/meos.js)
+[![docs](https://img.shields.io/badge/docs-mobilitydb.github.io-1f6feb)](https://mobilitydb.github.io/MEOS.js/)
+[![WebAssembly Memory64](https://img.shields.io/badge/WebAssembly-Memory64-654ff0)](#requirements)
+
 TypeScript/JavaScript bindings for [MEOS](https://libmeos.org/), the C library that powers [MobilityDB](https://mobilitydb.com/) spatiotemporal types.
 
 MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values, spans, sets, and bounding boxes in Node.js or the browser.
 
-**Documentation:** https://mobilitydb.github.io/MEOS.js/
+```bash
+npm install meos.js
+```
+
+**[Documentation](https://mobilitydb.github.io/MEOS.js/) · [Examples](https://github.com/MobilityDB/MEOS.js-examples) · [MobilityDB](https://mobilitydb.com/)**
+
+> Requires a runtime with WebAssembly MEMORY64 (Node.js 22+, or a recent browser).
 
 ## Table of contents
 - [Requirements](#requirements)
@@ -15,7 +25,6 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 - [Tests](#tests)
 - [Doc](#doc)
 - [Memory management](#memory-management)
-- [Implemented types](#implemented-types)
 - [DeckGL integration](#deckgl-integration)
 - [Use Case Examples](#use-case-examples)
 
@@ -69,9 +78,21 @@ The two-layer architecture consists of:
 
 ## Installation
 
-### 1. Get the WASM module
+### Use meos.js in your project
 
-**Option A build from source (Docker only)**
+```bash
+npm install meos.js
+```
+
+The published package bundles the compiled WASM module, so you need neither Docker nor a source checkout. The optional deck.gl integration is available under `meos.js/deckgl` (see [DeckGL integration](#deckgl-integration)).
+
+> Requires a runtime with WebAssembly MEMORY64 (Node.js 22+, or a recent browser). See [Requirements](#requirements).
+
+### Develop MEOS.js from source
+
+Only needed to work on MEOS.js itself.
+
+#### 1. Get the WASM module
 
 ```bash
 docker build --output type=local,dest=./wasm --target wasm .
@@ -79,23 +100,17 @@ docker build --output type=local,dest=./wasm --target wasm .
 
 This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
 
-**Option B use the prebuilt files**
-
-*todo*
-
-### 2. Install dependencies
+#### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Run the tests
+#### 3. Run the tests
 
 ```bash
 npm test
 ```
-
-> **Coming soon**: MEOS.js is supposed to be published on npm so you can just `npm install meos.js` and skip the WASM build and source checkout entirely.
 
 ## Using from JavaScript
 
@@ -118,11 +133,11 @@ The only thing TypeScript users get extra is **compile-time type checking at wri
 
 ## Code Generation
 
-The `codegen/` directory contains the generator that produces `core/c-src/bindings.c` and `core/functions/functions.generated.ts` from the MEOS API description file (`codegen/res/meos-idl.json`).
+The `codegen/` directory contains the generator that produces `core/c-src/bindings.c` and `core/functions/functions.generated.ts` from the [MEOS API](https://github.com/MobilityDB/MEOS-API) description file (`codegen/res/meos-idl.json`).
 
 **When to regenerate**: whenever `meos-idl.json` is updated (e.g. after a MEOS version upgrade) or whenever `FunctionsGenerator.ts` / the templates change.
 
-### Run the generator
+### Running the generator
 
 ```bash
 npm run generate
@@ -132,7 +147,7 @@ This reads `codegen/res/meos-idl.json`, applies the templates in `codegen/res/`,
 
 > **Do not edit `bindings.c` or `functions.generated.ts` manually**: any change will be lost the next time the generator runs. Manual overrides live in the templates (`codegen/res/*_header.*.template`).
 
-### Update the input file
+### Updating the input file
 
 The canonical `meos-idl.json` is produced by [MEOS-API](https://github.com/MobilityDB/MEOS-API). To refresh against a newer MEOS surface:
 
@@ -213,7 +228,7 @@ const span = TsTzSpan.fromString('[2020-01-01, 2021-01-01)');
 span.free();
 ```
 
-**Option 2: `using` (recommended)**
+**Option 2: `using`**
 
 All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management) syntax. The object is freed automatically when the block exits, even if an exception is thrown.
 
@@ -225,34 +240,6 @@ All types implement `[Symbol.dispose]()`, so you can use the [Explicit Resource 
 ```
 
 > `using` requires TypeScript 5.2+ with `"lib": ["ES2022"]` or `"ESNext"` in `tsconfig.json`.
-
-## Implemented types
-
-Click any type name to open its API reference.
-
-**Abstract bases**: [`Span`][Span] · [`SpanSet`][SpanSet]
-
-**Number spans & sets**: [`IntSpan`][IntSpan] · [`IntSpanSet`][IntSpanSet] · [`IntSet`][IntSet] · [`FloatSpan`][FloatSpan] · [`FloatSpanSet`][FloatSpanSet] · [`FloatSet`][FloatSet] · [`BigIntSpan`][BigIntSpan] · [`BigIntSpanSet`][BigIntSpanSet] · [`BigIntSet`][BigIntSet]
-
-**Text**: [`TextSet`][TextSet]
-
-**Time**: [`TsTzSpan`][TsTzSpan] · [`TsTzSpanSet`][TsTzSpanSet] · [`TsTzSet`][TsTzSet] · [`DateSpan`][DateSpan] · [`DateSpanSet`][DateSpanSet] · [`DateSet`][DateSet]
-
-**Bounding boxes**: [`TBox`][TBox] · [`STBox`][STBox]
-
-**Temporal booleans**: [`TBool`][TBool] · [`TBoolInst`][TBoolInst] · [`TBoolSeq`][TBoolSeq] · [`TBoolSeqSet`][TBoolSeqSet]
-
-**Temporal integers**: [`TInt`][TInt] · [`TIntInst`][TIntInst] · [`TIntSeq`][TIntSeq] · [`TIntSeqSet`][TIntSeqSet]
-
-**Temporal floats**: [`TFloat`][TFloat] · [`TFloatInst`][TFloatInst] · [`TFloatSeq`][TFloatSeq] · [`TFloatSeqSet`][TFloatSeqSet]
-
-**Temporal text**: [`TText`][TText] · [`TTextInst`][TTextInst] · [`TTextSeq`][TTextSeq] · [`TTextSeqSet`][TTextSeqSet]
-
-**Temporal geometry point** (planar, 2D/3D): [`TGeomPoint`][TGeomPoint] · [`TGeomPointInst`][TGeomPointInst] · [`TGeomPointSeq`][TGeomPointSeq] · [`TGeomPointSeqSet`][TGeomPointSeqSet]
-
-**Temporal geography point** (geodetic, 2D/3D): [`TGeogPoint`][TGeogPoint] · [`TGeogPointInst`][TGeogPointInst] · [`TGeogPointSeq`][TGeogPointSeq] · [`TGeogPointSeqSet`][TGeogPointSeqSet]
-
-Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
 
 ## DeckGL integration
 
