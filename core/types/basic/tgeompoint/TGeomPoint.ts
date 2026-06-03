@@ -467,10 +467,13 @@ export class TGeomPoint extends Temporal<string> {
 
 	/**
 	 * Restrict to instants inside geometry `wkt`.
+	 *
+	 * `srid` defaults to this temporal's own SRID so the geometry and the
+	 * trajectory share a coordinate system (MEOS rejects mixed-SRID operands).
 	 * MEOS: tpoint_at_geom
 	 */
-	atGeom(wkt: string): TGeomPoint | null {
-		const gs = geo_from_text(wkt, 0);
+	atGeom(wkt: string, srid: number = this.srid()): TGeomPoint | null {
+		const gs = geo_from_text(wkt, srid);
 		const r = tpoint_at_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);
@@ -478,10 +481,12 @@ export class TGeomPoint extends Temporal<string> {
 
 	/**
 	 * Restrict to instants outside geometry `wkt`.
+	 *
+	 * `srid` defaults to this temporal's own SRID (see {@link atGeom}).
 	 * MEOS: tpoint_minus_geom
 	 */
-	minusGeom(wkt: string): TGeomPoint | null {
-		const gs = geo_from_text(wkt, 0);
+	minusGeom(wkt: string, srid: number = this.srid()): TGeomPoint | null {
+		const gs = geo_from_text(wkt, srid);
 		const r = tpoint_minus_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);
@@ -489,10 +494,12 @@ export class TGeomPoint extends Temporal<string> {
 
 	/**
 	 * Restrict to instants where the geometry equals `wkt`.
+	 *
+	 * `srid` defaults to this temporal's own SRID (see {@link atGeom}).
 	 * MEOS: tgeo_at_geom
 	 */
-	atGeo(wkt: string): TGeomPoint | null {
-		const gs = geo_from_text(wkt, 0);
+	atGeo(wkt: string, srid: number = this.srid()): TGeomPoint | null {
+		const gs = geo_from_text(wkt, srid);
 		const r = tgeo_at_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);
@@ -500,10 +507,12 @@ export class TGeomPoint extends Temporal<string> {
 
 	/**
 	 * Restrict to instants where the geometry differs from `wkt`.
+	 *
+	 * `srid` defaults to this temporal's own SRID (see {@link atGeom}).
 	 * MEOS: tgeo_minus_geom
 	 */
-	minusGeo(wkt: string): TGeomPoint | null {
-		const gs = geo_from_text(wkt, 0);
+	minusGeo(wkt: string, srid: number = this.srid()): TGeomPoint | null {
+		const gs = geo_from_text(wkt, srid);
 		const r = tgeo_minus_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);

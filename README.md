@@ -111,7 +111,7 @@ console.log(span.toString());
 span.free();
 ```
 
-Everything works identically: every class (`TBool`, `TInt`, `TFloat`, `TGeomPoint`, ...), the factory functions, the `using` / `[Symbol.dispose]` lifecycle (ES2023, not TS-specific). The bundled `.d.ts` files also give you IDE autocompletion and hover-docs in `.js` files — VS Code picks them up automatically. Add `// @ts-check` at the top of a `.js` file to opt into type checking via JSDoc as well.
+Everything works identically: every class (`TBool`, `TInt`, `TFloat`, `TGeomPoint`, ...), the factory functions, the `using` / `[Symbol.dispose]` lifecycle (ES2023, not TS-specific). The bundled `.d.ts` files also give you IDE autocompletion and hover-docs in `.js` files.
 
 The only thing TypeScript users get extra is **compile-time type checking at write-time**; the runtime surface is the same.
 

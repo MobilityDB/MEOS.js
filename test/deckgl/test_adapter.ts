@@ -30,8 +30,14 @@ describe('mfjsonDatetimeToMs', () => {
 	});
 
 	it('parses "Z" and fractional/offset variants', () => {
-		assert.equal(mfjsonDatetimeToMs('2024-01-15T09:00:00Z'), Date.parse('2024-01-15T09:00:00Z'));
-		assert.equal(mfjsonDatetimeToMs('2024-01-15T09:00:00+00:00'), Date.parse('2024-01-15T09:00:00Z'));
+		assert.equal(
+			mfjsonDatetimeToMs('2024-01-15T09:00:00Z'),
+			Date.parse('2024-01-15T09:00:00Z')
+		);
+		assert.equal(
+			mfjsonDatetimeToMs('2024-01-15T09:00:00+00:00'),
+			Date.parse('2024-01-15T09:00:00Z')
+		);
 	});
 
 	it('throws on unparseable input rather than returning NaN', () => {
@@ -92,7 +98,7 @@ describe('tgeompointsToTrips - shared clock', () => {
 	it('aligns multiple trips on one origin and reports the range', () => {
 		using a = TGeomPoint.fromString(SEQ); // 09:00 → 09:10
 		using b = TGeomPoint.fromString(
-			`SRID=4326;[POINT(4.30 50.80)@2024-01-15 09:03:00+00, POINT(4.31 50.81)@2024-01-15 09:30:00+00]`,
+			`SRID=4326;[POINT(4.30 50.80)@2024-01-15 09:03:00+00, POINT(4.31 50.81)@2024-01-15 09:30:00+00]`
 		);
 		const { trips, timeOrigin, timeRange } = tgeompointsToTrips([a, b]);
 		assert.equal(trips.length, 2);
