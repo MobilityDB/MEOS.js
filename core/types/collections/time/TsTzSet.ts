@@ -1,4 +1,4 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tstzset_in,
 	tstzset_out,
@@ -10,8 +10,8 @@ import {
 	tstzset_to_dateset,
 	tstzset_shift_scale,
 	tstzset_tprecision,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct timestamps with timezone.

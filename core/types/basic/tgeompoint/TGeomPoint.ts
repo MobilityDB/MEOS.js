@@ -1,5 +1,5 @@
-import { Temporal } from '../../temporal/Temporal';
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import { Temporal } from '../../temporal/Temporal.js';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tgeompoint_in,
 	tgeompoint_from_mfjson,
@@ -75,9 +75,9 @@ import {
 	temporal_at_timestamptz,
 	bearing_tpoint_point,
 	bearing_tpoint_tpoint,
-} from '../../../functions/functions.generated';
-import type { TFloat } from '../tfloat/TFloat';
-import type { TBool } from '../tbool/TBool';
+} from '../../../functions/functions.generated.js';
+import type { TFloat } from '../tfloat/TFloat.js';
+import type { TBool } from '../tbool/TBool.js';
 
 /**
  * Temporal geometry point type.

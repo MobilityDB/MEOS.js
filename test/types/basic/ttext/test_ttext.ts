@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { TText } from '../../../../core/types/basic/ttext/TText';
-import { TTextInst } from '../../../../core/types/basic/ttext/TTextInst';
-import { TTextSeq } from '../../../../core/types/basic/ttext/TTextSeq';
-import { TTextSeqSet } from '../../../../core/types/basic/ttext/TTextSeqSet';
-import { TInterpolation } from '../../../../core/types/temporal/Temporal';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet';
-import { createTText } from '../../../../core/types/temporal/TemporalFactory';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { TText } from '../../../../core/types/basic/ttext/TText.js';
+import { TTextInst } from '../../../../core/types/basic/ttext/TTextInst.js';
+import { TTextSeq } from '../../../../core/types/basic/ttext/TTextSeq.js';
+import { TTextSeqSet } from '../../../../core/types/basic/ttext/TTextSeqSet.js';
+import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
+import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
+import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
+import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
+import { createTText } from '../../../../core/types/temporal/TemporalFactory.js';
 
 // µs offsets from 2000-01-01 UTC
 const T1 = 60_000_000;   // +1 min

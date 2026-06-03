@@ -1,4 +1,4 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tstzspan_in,
 	tstzspan_out,
@@ -12,8 +12,8 @@ import {
 	tstzspan_expand,
 	tstzspan_tprecision,
 	tstzspan_to_datespan,
-} from '../../../functions/functions.generated';
-import { Span } from '../base/Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from '../base/Span.js';
 
 /**
  * A contiguous range of timestamps with timezone.

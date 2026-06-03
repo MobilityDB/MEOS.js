@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	textset_in,
 	textset_out,
@@ -9,8 +9,8 @@ import {
 	textset_lower,
 	textset_upper,
 	textset_initcap,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct text strings.

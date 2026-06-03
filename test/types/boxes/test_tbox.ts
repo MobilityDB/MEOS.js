@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../core/runtime/meos';
-import { pg_timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated';
-import { TBox } from '../../../core/types/boxes/TBox';
-import { IntSpan } from '../../../core/types/collections/number/IntSpan';
-import { FloatSpan } from '../../../core/types/collections/number/FloatSpan';
-import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan';
-import { IntSet } from '../../../core/types/collections/number/IntSet';
-import { IntSpanSet } from '../../../core/types/collections/number/IntSpanSet';
+import { initMeos } from '../../../core/runtime/meos.js';
+import { pg_timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated.js';
+import { TBox } from '../../../core/types/boxes/TBox.js';
+import { IntSpan } from '../../../core/types/collections/number/IntSpan.js';
+import { FloatSpan } from '../../../core/types/collections/number/FloatSpan.js';
+import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan.js';
+import { IntSet } from '../../../core/types/collections/number/IntSet.js';
+import { IntSpanSet } from '../../../core/types/collections/number/IntSpanSet.js';
 
 before(async () => {
 	await initMeos();

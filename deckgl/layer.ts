@@ -17,7 +17,7 @@ import {
 	type TripCollection,
 	type ToTripsOptions,
 	type MfjsonSource,
-} from './adapter';
+} from './adapter.js';
 
 /** TripsLayer props except `data`, which the factory derives from the trips. */
 export type MobilityTripsLayerProps = Partial<Omit<TripsLayerProps<Trip>, 'data'>>;

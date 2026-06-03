@@ -18,8 +18,8 @@
  * temporal_as_mfjson_w, temporal_instant_n_w, temporal_duration_us_w).
  */
 
-import { getModule } from '../../runtime/meos';
-import type { Ptr, TimestampTz } from '../../functions/functions.generated';
+import { getModule } from '../../runtime/meos.js';
+import type { Ptr, TimestampTz } from '../../functions/functions.generated.js';
 import {
 	ptrArgType,
 	ptrArgVal,
@@ -44,7 +44,7 @@ import {
 	temporal_append_tinstant,
 	temporal_append_tsequence,
 	temporal_merge,
-} from '../../functions/functions.generated';
+} from '../../functions/functions.generated.js';
 
 function call<T>(
 	name: string,

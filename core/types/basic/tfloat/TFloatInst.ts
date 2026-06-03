@@ -1,6 +1,6 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
-import { tfloatinst_make } from '../../../functions/functions.generated';
-import { TFloat } from './TFloat';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
+import { tfloatinst_make } from '../../../functions/functions.generated.js';
+import { TFloat } from './TFloat.js';
 
 /**
  * Temporal float — Instant subtype.

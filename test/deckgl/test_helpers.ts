@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../core/runtime/meos';
-import { TGeomPoint } from '../../core/types/basic/tgeompoint/TGeomPoint';
-import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan';
-import { atGeometry, atTime, speedSeries, tripsWithSpeed } from '../../deckgl/helpers';
+import { initMeos } from '../../core/runtime/meos.js';
+import { TGeomPoint } from '../../core/types/basic/tgeompoint/TGeomPoint.js';
+import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan.js';
+import { atGeometry, atTime, speedSeries, tripsWithSpeed } from '../../deckgl/helpers.js';
 
 const T0 = '2024-01-15 09:00:00+00';
 const T1 = '2024-01-15 09:05:00+00';

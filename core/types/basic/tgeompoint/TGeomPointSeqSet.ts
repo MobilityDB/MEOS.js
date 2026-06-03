@@ -1,7 +1,7 @@
-import type { Ptr } from '../../../functions/functions.generated';
-import { tsequenceset_make } from '../../../functions/functions.generated';
-import { withPtrArray } from '../../../functions/ptr_array';
-import { TGeomPoint } from './TGeomPoint';
+import type { Ptr } from '../../../functions/functions.generated.js';
+import { tsequenceset_make } from '../../../functions/functions.generated.js';
+import { withPtrArray } from '../../../functions/ptr_array.js';
+import { TGeomPoint } from './TGeomPoint.js';
 
 /**
  * Temporal geometry point - SequenceSet subtype.

@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	bigintspan_in,
 	bigintspan_out,
@@ -11,8 +11,8 @@ import {
 	distance_bigintspan_bigintspan,
 	bigintspan_expand,
 	bigintspan_shift_scale,
-} from '../../../functions/functions.generated';
-import { Span } from '../base/Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from '../base/Span.js';
 
 /**
  * A contiguous range of 64-bit integers, stored internally as a half-open interval `[lower, upper)`.

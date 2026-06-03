@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../core/runtime/meos';
-import { TGeomPoint } from '../../core/types/basic/tgeompoint/TGeomPoint';
-import { tgeompointsToTrips, type Trip } from '../../deckgl/adapter';
-import { tripsLayer, tripsLayerFromTGeompoints } from '../../deckgl/layer';
+import { initMeos } from '../../core/runtime/meos.js';
+import { TGeomPoint } from '../../core/types/basic/tgeompoint/TGeomPoint.js';
+import { tgeompointsToTrips, type Trip } from '../../deckgl/adapter.js';
+import { tripsLayer, tripsLayerFromTGeompoints } from '../../deckgl/layer.js';
 
 const SEQ =
 	'SRID=4326;[POINT(4.35 50.85)@2024-01-15 09:00:00+00, POINT(4.36 50.86)@2024-01-15 09:05:00+00]';

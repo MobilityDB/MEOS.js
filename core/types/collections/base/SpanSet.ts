@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	spanset_copy,
 	spanset_as_hexwkb,
@@ -39,8 +39,8 @@ import {
 	spanset_gt,
 	spanset_ge,
 	meos_free,
-} from '../../../functions/functions.generated';
-import { Span } from './Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from './Span.js';
 
 /**
  * Abstract base class for all MEOS span-set types (ordered sets of disjoint spans).

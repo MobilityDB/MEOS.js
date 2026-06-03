@@ -1,5 +1,5 @@
-import { Temporal } from '../../temporal/Temporal';
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import { Temporal } from '../../temporal/Temporal.js';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	ttext_in,
 	ttext_out,
@@ -33,7 +33,7 @@ import {
 	textcat_ttext_ttext,
 	temporal_at_timestamptz,
 	meos_free,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Temporal text type.

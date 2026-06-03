@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { TGeomPoint } from '../../../../core/types/basic/tgeompoint/TGeomPoint';
-import { TGeomPointInst } from '../../../../core/types/basic/tgeompoint/TGeomPointInst';
-import { TGeomPointSeq } from '../../../../core/types/basic/tgeompoint/TGeomPointSeq';
-import { TGeomPointSeqSet } from '../../../../core/types/basic/tgeompoint/TGeomPointSeqSet';
-import { TInterpolation } from '../../../../core/types/temporal/Temporal';
-import { meos_free } from '../../../../core/functions/functions.generated';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { TGeomPoint } from '../../../../core/types/basic/tgeompoint/TGeomPoint.js';
+import { TGeomPointInst } from '../../../../core/types/basic/tgeompoint/TGeomPointInst.js';
+import { TGeomPointSeq } from '../../../../core/types/basic/tgeompoint/TGeomPointSeq.js';
+import { TGeomPointSeqSet } from '../../../../core/types/basic/tgeompoint/TGeomPointSeqSet.js';
+import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
+import { meos_free } from '../../../../core/functions/functions.generated.js';
 
 const T0 = '2001-01-01 00:00:00+00';
 const T1 = '2001-01-02 00:00:00+00';

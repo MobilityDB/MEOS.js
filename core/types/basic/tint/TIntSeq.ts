@@ -1,7 +1,7 @@
-import type { Ptr } from '../../../functions/functions.generated';
-import { tsequence_make } from '../../../functions/functions.generated';
-import { withPtrArray } from '../../../functions/ptr_array';
-import { TInt } from './TInt';
+import type { Ptr } from '../../../functions/functions.generated.js';
+import { tsequence_make } from '../../../functions/functions.generated.js';
+import { withPtrArray } from '../../../functions/ptr_array.js';
+import { TInt } from './TInt.js';
 
 /**
  * Temporal integer — Sequence subtype.

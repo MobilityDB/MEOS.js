@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../core/runtime/meos';
+import { initMeos } from '../../core/runtime/meos.js';
 import {
 	MeosException,
 	MeosInternalError,
@@ -47,11 +47,11 @@ import {
 	MEOS_ERR_GEOJSON_INPUT,
 	MEOS_ERR_GEOJSON_OUTPUT,
 	MEOS_ERROR,
-} from '../../core/functions/errors';
-import { IntSet } from '../../core/types/collections/number/IntSet';
-import { IntSpan } from '../../core/types/collections/number/IntSpan';
-import { FloatSet } from '../../core/types/collections/number/FloatSet';
-import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan';
+} from '../../core/functions/errors.js';
+import { IntSet } from '../../core/types/collections/number/IntSet.js';
+import { IntSpan } from '../../core/types/collections/number/IntSpan.js';
+import { FloatSet } from '../../core/types/collections/number/FloatSet.js';
+import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan.js';
 
 before(async () => {
 	await initMeos();

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../core/runtime/meos';
-import { STBox } from '../../../core/types/boxes/STBox';
-import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan';
+import { initMeos } from '../../../core/runtime/meos.js';
+import { STBox } from '../../../core/types/boxes/STBox.js';
+import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan.js';
 
 before(async () => {
 	await initMeos();

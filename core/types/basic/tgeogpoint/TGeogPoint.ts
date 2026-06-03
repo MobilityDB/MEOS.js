@@ -1,5 +1,5 @@
-import { Temporal } from '../../temporal/Temporal';
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import { Temporal } from '../../temporal/Temporal.js';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tgeogpoint_in,
 	tgeogpoint_from_mfjson,
@@ -75,7 +75,7 @@ import {
 	temporal_at_timestamptz,
 	bearing_tpoint_point,
 	bearing_tpoint_tpoint,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Temporal geography point type.

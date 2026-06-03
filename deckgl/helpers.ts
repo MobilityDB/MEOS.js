@@ -7,17 +7,17 @@
  * `react`. They own the WASM lifecycle of every intermediate value they create.
  */
 
-import { TGeomPoint } from '../core/types/basic/tgeompoint/TGeomPoint';
-import { TFloat } from '../core/types/basic/tfloat/TFloat';
-import { TsTzSpan } from '../core/types/collections/time/TsTzSpan';
-import type { Trip, ToTripsOptions } from './adapter';
-import { tgeompointToTrips } from './adapter';
+import { TGeomPoint } from '../core/types/basic/tgeompoint/TGeomPoint.js';
+import { TFloat } from '../core/types/basic/tfloat/TFloat.js';
+import { TsTzSpan } from '../core/types/collections/time/TsTzSpan.js';
+import type { Trip, ToTripsOptions } from './adapter.js';
+import { tgeompointToTrips } from './adapter.js';
 import {
 	extractSegments,
 	minTimestampMs,
 	divisorFor,
 	relativeTimestamps,
-} from './mfjson';
+} from './mfjson.js';
 
 /**
  * Restrict a trajectory to a geometry (a zone) and return the renderable trips.

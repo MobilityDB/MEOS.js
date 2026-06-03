@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	bigintset_in,
 	bigintset_out,
@@ -8,8 +8,8 @@ import {
 	bigintset_value_n,
 	distance_bigintset_bigintset,
 	bigintset_shift_scale,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct 64-bit integers.

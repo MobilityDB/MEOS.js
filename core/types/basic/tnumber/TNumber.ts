@@ -1,5 +1,5 @@
-import { Temporal } from '../../temporal/Temporal';
-import type { Ptr } from '../../../functions/functions.generated';
+import { Temporal } from '../../temporal/Temporal.js';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	tnumber_integral,
 	tnumber_avg_value,
@@ -20,7 +20,7 @@ import {
 	mul_tnumber_tnumber,
 	div_tnumber_tnumber,
 	tdistance_tnumber_tnumber,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Abstract base class for temporal numeric types (TInt, TFloat).

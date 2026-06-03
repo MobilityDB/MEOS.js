@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	intspanset_in,
 	intspanset_out,
@@ -11,9 +11,9 @@ import {
 	distance_intspanset_intspanset,
 	intspanset_to_floatspanset,
 	intspanset_shift_scale,
-} from '../../../functions/functions.generated';
-import { SpanSet } from '../base/SpanSet';
-import { IntSpan } from './IntSpan';
+} from '../../../functions/functions.generated.js';
+import { SpanSet } from '../base/SpanSet.js';
+import { IntSpan } from './IntSpan.js';
 
 /**
  * An ordered set of disjoint {@link IntSpan} values.

@@ -1,10 +1,10 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	geog_in,
 	tpointinst_make,
 	meos_free,
-} from '../../../functions/functions.generated';
-import { TGeogPoint } from './TGeogPoint';
+} from '../../../functions/functions.generated.js';
+import { TGeogPoint } from './TGeogPoint.js';
 
 /**
  * Temporal geography point - Instant subtype.

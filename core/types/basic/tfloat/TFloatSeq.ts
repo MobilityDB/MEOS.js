@@ -1,8 +1,8 @@
-import type { Ptr } from '../../../functions/functions.generated';
-import { tsequence_make } from '../../../functions/functions.generated';
-import { TInterpolation } from '../../temporal/Temporal';
-import { withPtrArray } from '../../../functions/ptr_array';
-import { TFloat } from './TFloat';
+import type { Ptr } from '../../../functions/functions.generated.js';
+import { tsequence_make } from '../../../functions/functions.generated.js';
+import { TInterpolation } from '../../temporal/Temporal.js';
+import { withPtrArray } from '../../../functions/ptr_array.js';
+import { TFloat } from './TFloat.js';
 
 /**
  * Temporal float — Sequence subtype.

@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	floatspan_in,
 	floatspan_out,
@@ -15,8 +15,8 @@ import {
 	floatspan_round,
 	floatspan_degrees,
 	floatspan_radians,
-} from '../../../functions/functions.generated';
-import { Span } from '../base/Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from '../base/Span.js';
 
 /**
  * A contiguous range of IEEE 754 double-precision floats.

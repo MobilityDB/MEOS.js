@@ -1,5 +1,5 @@
-import type { Ptr, TimestampTz } from '../../functions/functions.generated';
-import { getModule } from '../../runtime/meos';
+import type { Ptr, TimestampTz } from '../../functions/functions.generated.js';
+import { getModule } from '../../runtime/meos.js';
 import {
 	stbox_in,
 	stbox_out,
@@ -67,7 +67,7 @@ import {
 	tstzspan_to_stbox,
 	tstzspanset_to_stbox,
 	meos_free,
-} from '../../functions/functions.generated';
+} from '../../functions/functions.generated.js';
 
 /**
  * A spatio-temporal bounding box with an optional spatial (XYZ) dimension and an optional temporal (T) dimension.

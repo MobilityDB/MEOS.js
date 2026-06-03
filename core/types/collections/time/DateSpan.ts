@@ -1,4 +1,4 @@
-import type { Ptr, DateADT } from '../../../functions/functions.generated';
+import type { Ptr, DateADT } from '../../../functions/functions.generated.js';
 import {
 	datespan_in,
 	datespan_out,
@@ -9,8 +9,8 @@ import {
 	distance_datespan_datespan,
 	datespan_to_tstzspan,
 	datespan_shift_scale,
-} from '../../../functions/functions.generated';
-import { Span } from '../base/Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from '../base/Span.js';
 
 /**
  * A contiguous range of calendar dates.

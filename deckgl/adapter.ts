@@ -15,9 +15,9 @@ import {
 	divisorFor,
 	relativeTimestamps,
 	type RawSegment,
-} from './mfjson';
+} from './mfjson.js';
 
-export { mfjsonDatetimeToMs } from './mfjson';
+export { mfjsonDatetimeToMs } from './mfjson.js';
 
 // Anything that can serialize itself to MF-JSON — i.e. a MEOS.js `Temporal`.
 export interface MfjsonSource {

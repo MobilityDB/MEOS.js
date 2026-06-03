@@ -1,18 +1,18 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../core/runtime/meos';
-import { TInterpolation } from '../../../core/types/temporal/Temporal';
-import { TBool } from '../../../core/types/basic/tbool/TBool';
-import { TBoolInst } from '../../../core/types/basic/tbool/TBoolInst';
-import { TBoolSeq } from '../../../core/types/basic/tbool/TBoolSeq';
-import { TBoolSeqSet } from '../../../core/types/basic/tbool/TBoolSeqSet';
-import { TIntInst } from '../../../core/types/basic/tint/TIntInst';
-import { TIntSeq } from '../../../core/types/basic/tint/TIntSeq';
-import { TIntSeqSet } from '../../../core/types/basic/tint/TIntSeqSet';
-import { TFloatInst } from '../../../core/types/basic/tfloat/TFloatInst';
-import { TFloatSeq } from '../../../core/types/basic/tfloat/TFloatSeq';
-import { TFloatSeqSet } from '../../../core/types/basic/tfloat/TFloatSeqSet';
-import { createTBool, createTInt, createTFloat } from '../../../core/types/temporal/TemporalFactory';
+import { initMeos } from '../../../core/runtime/meos.js';
+import { TInterpolation } from '../../../core/types/temporal/Temporal.js';
+import { TBool } from '../../../core/types/basic/tbool/TBool.js';
+import { TBoolInst } from '../../../core/types/basic/tbool/TBoolInst.js';
+import { TBoolSeq } from '../../../core/types/basic/tbool/TBoolSeq.js';
+import { TBoolSeqSet } from '../../../core/types/basic/tbool/TBoolSeqSet.js';
+import { TIntInst } from '../../../core/types/basic/tint/TIntInst.js';
+import { TIntSeq } from '../../../core/types/basic/tint/TIntSeq.js';
+import { TIntSeqSet } from '../../../core/types/basic/tint/TIntSeqSet.js';
+import { TFloatInst } from '../../../core/types/basic/tfloat/TFloatInst.js';
+import { TFloatSeq } from '../../../core/types/basic/tfloat/TFloatSeq.js';
+import { TFloatSeqSet } from '../../../core/types/basic/tfloat/TFloatSeqSet.js';
+import { createTBool, createTInt, createTFloat } from '../../../core/types/temporal/TemporalFactory.js';
 
 // µs offsets from 2000-01-01 UTC
 const T1 = 60_000_000;   // +1 min

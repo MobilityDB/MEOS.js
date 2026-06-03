@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { interval_make, meos_free } from '../../../../core/functions/functions.generated';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { interval_make, meos_free } from '../../../../core/functions/functions.generated.js';
+import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
 
 // These timestamps correspond to 2001-01-01, 2001-01-02, 2001-01-03 UTC.
 // In MEOS TimestampTz = microseconds since 2000-01-01 UTC.

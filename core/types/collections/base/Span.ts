@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	span_lower_inc,
 	span_upper_inc,
@@ -23,7 +23,7 @@ import {
 	span_gt,
 	span_ge,
 	meos_free,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Abstract base class for all MEOS span types (contiguous ranges).

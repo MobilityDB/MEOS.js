@@ -1,6 +1,6 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
-import { tintinst_make } from '../../../functions/functions.generated';
-import { TInt } from './TInt';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
+import { tintinst_make } from '../../../functions/functions.generated.js';
+import { TInt } from './TInt.js';
 
 /**
  * Temporal integer — Instant subtype.

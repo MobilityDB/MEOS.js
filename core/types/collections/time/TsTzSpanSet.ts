@@ -1,4 +1,4 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tstzspanset_in,
 	tstzspanset_out,
@@ -14,9 +14,9 @@ import {
 	tstzspanset_shift_scale,
 	tstzspanset_tprecision,
 	tstzspanset_to_datespanset,
-} from '../../../functions/functions.generated';
-import { SpanSet } from '../base/SpanSet';
-import { TsTzSpan } from './TsTzSpan';
+} from '../../../functions/functions.generated.js';
+import { SpanSet } from '../base/SpanSet.js';
+import { TsTzSpan } from './TsTzSpan.js';
 
 /**
  * An ordered set of disjoint {@link TsTzSpan} values.
