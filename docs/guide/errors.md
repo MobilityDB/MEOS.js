@@ -1,7 +1,7 @@
 # Error Handling
 
-When MEOS encounters a problem — malformed input, an out-of-range index, an unsupported
-operation — it sets internal C globals that MEOS.js reads after every wrapper call.
+When MEOS encounters a problem (malformed input, an out-of-range index, an unsupported
+operation), it sets internal C globals that MEOS.js reads after every wrapper call.
 `checkMeosError()` translates those globals into a typed JavaScript exception and throws it.
 
 ## Exception hierarchy
@@ -10,29 +10,29 @@ All MEOS exceptions extend `MeosException`, which itself extends the standard `E
 
 ```
 Error
-└── MeosException          base class — carries .code and .level
-    ├── MeosInternalError              code 1  — unspecified internal error
-    ├── MeosInternalTypeError          code 2  — internal type mismatch
-    ├── MeosValueOutOfRangeError       code 3  — numeric value out of range
-    ├── MeosDivisionByZeroError        code 4  — division by zero
-    ├── MeosMemoryAllocError           code 5  — heap allocation failure
-    ├── MeosAggregationError           code 6  — temporal aggregation error
-    ├── MeosDirectoryError             code 7  — filesystem directory error
-    ├── MeosFileError                  code 8  — filesystem file error
+└── MeosException          base class - carries .code and .level
+    ├── MeosInternalError              code 1  - unspecified internal error
+    ├── MeosInternalTypeError          code 2  - internal type mismatch
+    ├── MeosValueOutOfRangeError       code 3  - numeric value out of range
+    ├── MeosDivisionByZeroError        code 4  - division by zero
+    ├── MeosMemoryAllocError           code 5  - heap allocation failure
+    ├── MeosAggregationError           code 6  - temporal aggregation error
+    ├── MeosDirectoryError             code 7  - filesystem directory error
+    ├── MeosFileError                  code 8  - filesystem file error
     ├── MeosArgumentError              abstract base for argument errors
-    │   ├── MeosInvalidArgError        code 10 — invalid argument
-    │   ├── MeosInvalidArgTypeError    code 11 — wrong argument type
-    │   └── MeosInvalidArgValueError   code 12 — argument value not accepted
-    ├── MeosFeatureNotSupported        code 13 — feature not implemented
+    │   ├── MeosInvalidArgError        code 10 - invalid argument
+    │   ├── MeosInvalidArgTypeError    code 11 - wrong argument type
+    │   └── MeosInvalidArgValueError   code 12 - argument value not accepted
+    ├── MeosFeatureNotSupported        code 13 - feature not implemented
     └── MeosIoError                    abstract base for I/O errors
-        ├── MeosMfJsonInputError       code 20 — MF-JSON parse error
-        ├── MeosMfJsonOutputError      code 21 — MF-JSON serialisation error
-        ├── MeosTextInputError         code 22 — WKT parse error
-        ├── MeosTextOutputError        code 23 — WKT serialisation error
-        ├── MeosWkbInputError          code 24 — WKB parse error
-        ├── MeosWkbOutputError         code 25 — WKB serialisation error
-        ├── MeosGeoJsonInputError      code 26 — GeoJSON parse error
-        └── MeosGeoJsonOutputError     code 27 — GeoJSON serialisation error
+        ├── MeosMfJsonInputError       code 20 - MF-JSON parse error
+        ├── MeosMfJsonOutputError      code 21 - MF-JSON serialisation error
+        ├── MeosTextInputError         code 22 - WKT parse error
+        ├── MeosTextOutputError        code 23 - WKT serialisation error
+        ├── MeosWkbInputError          code 24 - WKB parse error
+        ├── MeosWkbOutputError         code 25 - WKB serialisation error
+        ├── MeosGeoJsonInputError      code 26 - GeoJSON parse error
+        └── MeosGeoJsonOutputError     code 27 - GeoJSON serialisation error
 ```
 
 ## Catching errors
@@ -106,8 +106,8 @@ Not every MEOS message is a fatal error. MEOS uses PostgreSQL severity levels:
 
 | Level | Value | MEOS.js behaviour |
 |---|---|---|
-| NOTICE | 18 | `console.info(...)` — execution continues |
-| WARNING | 19 | `console.warn(...)` — execution continues |
+| NOTICE | 18 | `console.info(...)` - execution continues |
+| WARNING | 19 | `console.warn(...)` - execution continues |
 | ERROR | 21 | throws a `MeosException` subclass |
 
 Notices and warnings are logged automatically; you do not need to handle them.

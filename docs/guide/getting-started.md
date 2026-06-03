@@ -22,7 +22,7 @@ console.log(s.upper()); // 10
 s.free();
 ```
 
-`initMeos()` is safe to call multiple times — subsequent calls return the cached module.
+`initMeos()` is safe to call multiple times; subsequent calls return the cached module.
 
 ## Memory management
 
@@ -50,8 +50,8 @@ allocate new WASM memory, free those results too.
 ## What is MEOS?
 
 [MEOS](https://libmeos.org/) (Mobility Engine Open Source) is the C library at the core of
-[MobilityDB](https://mobilitydb.com/). It provides temporal types — types that track how a
-value changes over time — together with the span, span-set, and set primitives needed to
+[MobilityDB](https://mobilitydb.com/). It provides temporal types (types that track how a
+value changes over time) together with the span, span-set, and set primitives needed to
 represent ranges of numbers, dates, and timestamps.
 
 MEOS.js compiles MEOS to WebAssembly and exposes its types as idiomatic TypeScript classes.

@@ -16,6 +16,7 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 - [Doc](#doc)
 - [Memory management](#memory-management)
 - [Implemented types](#implemented-types)
+- [DeckGL integration](#deckgl-integration)
 - [Use Case Examples](#use-case-examples)
 
 ## Requirements
@@ -253,9 +254,64 @@ Click any type name to open its API reference.
 
 Factory functions `createTBool`, `createTInt`, `createTFloat`, `createTText`, `createTGeomPoint`, `createTGeogPoint` dispatch to the right subtype based on the MEOS internal type flag.
 
+## DeckGL integration
+
+MEOS.js ships an optional, framework-free adapter for rendering temporal points with [deck.gl](https://deck.gl/)'s `TripsLayer`. It lives in two sub-exports so the core library never depends on deck.gl or React:
+
+| Import | Depends on | Contents |
+|---|---|---|
+| `meos.js/deckgl` | nothing (only MEOS.js) | adapter + browser-side temporal helpers |
+| `meos.js/deckgl/layer` | `@deck.gl/*` (peer) | ready-to-use `TripsLayer` factory |
+
+`@deck.gl/core` and `@deck.gl/geo-layers` are declared as **optional peer dependencies**: installing `meos.js` does not pull them in. Install them yourself when you use `meos.js/deckgl/layer`.
+
+### Adapter
+
+`tgeompointsToTrips` converts temporal points into the `{ path, timestamps }` shape `TripsLayer` expects, placing every trip on a single shared animation clock:
+
+```ts
+import { initMeos, TGeomPoint } from 'meos.js';
+import { tgeompointsToTrips } from 'meos.js/deckgl';
+
+await initMeos();
+const trajectories = [/* TGeomPoint, … */];
+const { trips, timeOrigin, timeRange } = tgeompointsToTrips(trajectories);
+// trips: { path: [lng, lat][]; timestamps: number[] }[]
+```
+
+A trajectory with temporal gaps (a sequence set) maps to several `path`s.
+
+### Browser-side temporal logic
+
+The same sub-export wraps common MobilityDB operations so the temporal work runs in the browser instead of on a server:
+
+```ts
+import { atGeometry, atTime, tripsWithSpeed } from 'meos.js/deckgl';
+
+atGeometry(t, 'POLYGON((…))');                            // clip to a zone   (tpoint_at_geom)
+atTime(t, '[2024-01-15 09:00+00, 2024-01-15 09:10+00]');  // clip to a period (temporal_at_tstzspan)
+tripsWithSpeed(t);                                        // trips + per-vertex speed (tpoint_speed)
+```
+
+### Ready-to-use layer
+
+```ts
+import { tripsLayerFromTGeompoints } from 'meos.js/deckgl/layer';
+
+const layer = tripsLayerFromTGeompoints(trajectories, {
+    currentTime,
+    trailLength: 180,
+    widthMinPixels: 4,
+});
+```
+
+The layer renders standalone or **interleaved over a MapLibre basemap**, so it can sit on top of an existing map.
+
+See the [DeckGL guide](https://mobilitydb.github.io/MEOS.js/guide/deckgl) for the full API.
+
 ## Use Case Examples
 
-*Coming soon: a dedicated examples repository / section will walk through end-to-end workflows: ingesting GPS trajectories, computing temporal aggregates, and integrating with visualization tools such as deck.gl.*
+A complete, animated end-to-end demo (MEOS.js → adapter → `TripsLayer` interleaved over MapLibre, with in-browser zone/time/speed controls) lives in the [MEOS.js-examples](https://github.com/MobilityDB/MEOS.js-examples) repository.
 
 [Span]: https://mobilitydb.github.io/MEOS.js/api/classes/Span
 [SpanSet]: https://mobilitydb.github.io/MEOS.js/api/classes/SpanSet
