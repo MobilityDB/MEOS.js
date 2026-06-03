@@ -6,7 +6,8 @@
   "main": "core/index.js",
   "exports": {
     ".": "./core/index.js",
-    "./deckgl": "./deckgl/index.js"
+    "./deckgl": "./deckgl/index.js",
+    "./deckgl/layer": "./deckgl/layer.js"
   },
   "scripts": {
     "generate": "npx tsx codegen/FunctionsGenerator.ts",
@@ -23,7 +24,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "peerDependencies": {
+    "@deck.gl/core": ">=9",
+    "@deck.gl/geo-layers": ">=9"
+  },
+  "peerDependenciesMeta": {
+    "@deck.gl/core": {
+      "optional": true
+    },
+    "@deck.gl/geo-layers": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@deck.gl/core": "^9.3.3",
+    "@deck.gl/geo-layers": "^9.3.3",
     "@types/node": "^25.5.2",
     "tsx": "^4.21.0",
     "typedoc": "^0.28.19",
