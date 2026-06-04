@@ -56,6 +56,16 @@ describe('TGeomPoint - Construction', () => {
 		t.free();
 		c.free();
 	});
+
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t = TGeomPoint.fromString(SEQ_WKT);
+		const hex = t.asHexWKB();
+		const r = TGeomPoint.fromHexWKB(hex);
+		assert.ok(r.inner !== 0);
+		assert.equal(r.toString(), t.toString());
+		t.free();
+		r.free();
+	});
 });
 
 describe('TGeomPoint - Subtypes', () => {

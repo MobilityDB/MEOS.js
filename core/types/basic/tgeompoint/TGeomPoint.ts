@@ -3,6 +3,7 @@ import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js
 import {
 	tgeompoint_in,
 	tgeompoint_from_mfjson,
+	temporal_from_hexwkb,
 	temporal_round,
 	tspatial_as_text,
 	tspatial_as_ewkt,
@@ -120,6 +121,14 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	static fromMFJSON(mfjson: string): TGeomPoint {
 		return new TGeomPoint(tgeompoint_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Parse a TGeomPoint from a hex-encoded WKB string.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexWKB(hexwkb: string): TGeomPoint {
+		return new TGeomPoint(temporal_from_hexwkb(hexwkb));
 	}
 
 	/**
