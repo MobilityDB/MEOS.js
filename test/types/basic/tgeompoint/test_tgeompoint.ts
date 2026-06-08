@@ -331,4 +331,68 @@ describe('TGeomPoint - speed / cumulativeLength / angularDifference', () => {
 		meos_free(ad);
 		t.free();
 	});
+
+	it('shiftTime / shiftScaleTime accept interval strings', () => {
+		const t = TGeomPoint.fromString(
+			'[POINT(0 0)@2020-06-01 08:00:00+00, POINT(1 1)@2020-06-01 09:00:00+00]'
+		);
+		using shifted = t.shiftTime('1 day');
+		assert.ok(shifted.toString().includes('2020-06-02 08:00:00'));
+		using ss = t.shiftScaleTime('-1 hour', '30 minutes');
+		assert.ok(ss.toString().includes('2020-06-01 07:00:00'));
+		assert.ok(ss.toString().includes('2020-06-01 07:30:00'));
+		t.free();
+	});
+});
+
+// Builds a linear-interpolation sequence WKT with `n` strictly increasing
+// instants, one second apart, starting at 2020-06-01 08:00:00 UTC.
+//
+// The y coordinate follows a sine zigzag so consecutive segments are never
+// collinear-at-constant-speed: otherwise MEOS normalises the redundant
+// instants away and collapses the sequence down to its two endpoints, which
+// would never exercise the stack.
+function bigSequenceWkt(n: number): string {
+	const base = Date.UTC(2020, 5, 1, 8, 0, 0);
+	const parts: string[] = [];
+	for (let i = 0; i < n; i++) {
+		const ts = new Date(base + i * 1000).toISOString().replace('T', ' ').replace('.000Z', '+00');
+		const x = (i * 0.0001).toFixed(6);
+		const y = (Math.sin(i * 0.3) * 0.01).toFixed(6);
+		parts.push(`POINT(${x} ${y})@${ts}`);
+	}
+	return `[${parts.join(', ')}]`;
+}
+
+// Regression guard for the wasm stack-overflow limit. On a wasm built with the
+// default 64 KB Emscripten stack, MEOS traps with "memory access out of bounds"
+// once a temporal exceeds ~2500 instants (the EMULATE_FUNCTION_POINTER_CASTS
+// trampolines push extra args per indirect call). After rebuilding with
+// -sSTACK_SIZE=8MB this must walk thousands of instants without crashing.
+//
+// Skipped by default so the committed suite stays green on the current wasm;
+// run with MEOS_TEST_LARGE=1 after the rebuild to confirm the fix.
+const RUN_LARGE = process.env.MEOS_TEST_LARGE === '1';
+const largeSkip = RUN_LARGE
+	? false
+	: 'set MEOS_TEST_LARGE=1 (run only against a wasm rebuilt with -sSTACK_SIZE=8MB)';
+
+describe('TGeomPoint - large temporal (wasm stack regression)', () => {
+	it('walks 8000 instants without a wasm trap', { skip: largeSkip }, () => {
+		const n = 8000;
+		const t = TGeomPoint.fromString(bigSequenceWkt(n));
+		try {
+			// MEOS may normalise away a handful of near-collinear instants, so we
+			// don't expect exactly `n` back — only that the temporal stayed far
+			// past the old ~2500-instant stack-overflow limit, and that ops that
+			// walk every instant through indirect MEOS calls complete without a
+			// wasm trap.
+			assert.ok(t.numInstants() > 2500, `expected a large temporal, got ${t.numInstants()}`);
+			assert.ok(t.length() > 0);
+			const v = t.valueAtTimestamp(t.startTimestamp());
+			assert.ok(v !== null && v.includes('POINT'));
+		} finally {
+			t.free();
+		}
+	});
 });

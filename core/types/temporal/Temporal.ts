@@ -37,6 +37,8 @@ import {
 	temporal_shift_time,
 	temporal_scale_time,
 	temporal_shift_scale_time,
+	pg_interval_in,
+	meos_free,
 	temporal_set_interp,
 	temporal_to_tinstant,
 	temporal_to_tsequence,
@@ -131,6 +133,19 @@ export namespace TemporalType {
 		}
 		return TemporalType.Instant;
 	}
+}
+
+/**
+ * Resolve an interval argument: a raw `Ptr` is used as-is; a string (e.g.
+ * `'1 hour'`, `'-30 minutes'`, `'90 seconds'`) is parsed via MEOS and freed
+ * after use. Lets shift/scale be called without exposing interval pointers.
+ */
+function asInterval(v: Ptr | string): { ptr: Ptr; free: () => void } {
+	if (typeof v === 'string') {
+		const ptr = pg_interval_in(v, -1);
+		return { ptr, free: () => meos_free(ptr) };
+	}
+	return { ptr: v, free: () => {} };
 }
 
 /**
@@ -455,19 +470,48 @@ export abstract class Temporal<V> {
 	// TRANSFORMATIONS — time shift/scale/interp/subtype
 	// -------------------------------------------------------------------------
 
-	/** Shifts the temporal domain by the given interval pointer. MEOS: temporal_shift_time */
-	shiftTime(shift: Ptr): this {
-		return this._fromInner(temporal_shift_time(this._inner, shift));
+	/**
+	 * Shifts the temporal domain by `shift`, a Postgres interval string
+	 * (e.g. `'1 hour'`, `'-30 minutes'`) or a raw interval `Ptr`.
+	 * MEOS: temporal_shift_time
+	 */
+	shiftTime(shift: Ptr | string): this {
+		const s = asInterval(shift);
+		try {
+			return this._fromInner(temporal_shift_time(this._inner, s.ptr));
+		} finally {
+			s.free();
+		}
 	}
 
-	/** Scales the temporal domain to the given duration interval pointer. MEOS: temporal_scale_time */
-	scaleTime(duration: Ptr): this {
-		return this._fromInner(temporal_scale_time(this._inner, duration));
+	/**
+	 * Scales the temporal domain to last `duration`, a Postgres interval string
+	 * (e.g. `'10 minutes'`) or a raw interval `Ptr`.
+	 * MEOS: temporal_scale_time
+	 */
+	scaleTime(duration: Ptr | string): this {
+		const d = asInterval(duration);
+		try {
+			return this._fromInner(temporal_scale_time(this._inner, d.ptr));
+		} finally {
+			d.free();
+		}
 	}
 
-	/** Shifts and scales the temporal domain. MEOS: temporal_shift_scale_time */
-	shiftScaleTime(shift: Ptr, duration: Ptr): this {
-		return this._fromInner(temporal_shift_scale_time(this._inner, shift, duration));
+	/**
+	 * Shifts then scales the temporal domain. `shift` and `duration` may each be
+	 * a Postgres interval string (e.g. `'1 hour'`, `'10 minutes'`) or a raw `Ptr`.
+	 * MEOS: temporal_shift_scale_time
+	 */
+	shiftScaleTime(shift: Ptr | string, duration: Ptr | string): this {
+		const s = asInterval(shift);
+		const d = asInterval(duration);
+		try {
+			return this._fromInner(temporal_shift_scale_time(this._inner, s.ptr, d.ptr));
+		} finally {
+			s.free();
+			d.free();
+		}
 	}
 
 	/**
