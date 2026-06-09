@@ -45,6 +45,12 @@ export default defineConfig({
 					],
 				},
 				{
+					text: 'Integrations',
+					items: [
+						{ text: 'DeckGL', link: '/guide/deckgl' },
+					],
+				},
+				{
 					text: 'Advanced',
 					items: [
 						{ text: 'Error Handling', link: '/guide/errors' },

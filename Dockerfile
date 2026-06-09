@@ -207,6 +207,18 @@ RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)"
 #     Avoid LLVM optimisations that can merge or devirtualise indirect-call
 #     sites before the emulation shims are inserted; -O1 keeps the shims
 #     effective while still producing reasonably compact code.
+#
+#   -sSTACK_SIZE=8MB
+#     The Emscripten default stack is only 64 KB. MEOS walks temporals
+#     instant-by-instant through indirect calls (datum_func2, interpolation,
+#     aggregation), and EMULATE_FUNCTION_POINTER_CASTS wraps every one of
+#     those calls in a trampoline that pushes extra args onto the stack.
+#     Deep call chains over a few thousand instants overflow 64 KB; because
+#     stack-overflow checking is off in release builds the overflow corrupts
+#     adjacent linear memory and surfaces as "memory access out of bounds".
+#     8 MB is reserved address space, not committed RAM, so it is cheap and
+#     pushes the practical limit from ~2500 to hundreds of thousands of
+#     instants.
 RUN mkdir -p /app/wasm \
     && emcc -sMEMORY64=1 -sEMULATE_FUNCTION_POINTER_CASTS=1 -O1 \
         /app/core/c-src/bindings.c \
@@ -236,6 +248,7 @@ RUN mkdir -p /app/wasm \
         -s EXPORT_NAME="createMeosModule" \
         -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","UTF8ToString","allocate","ALLOC_NORMAL"]' \
         -s ALLOW_MEMORY_GROWTH=1 \
+        -s STACK_SIZE=8MB \
         -s ENVIRONMENT='web,node' \
         -s EXPORT_ES6=1 \
         -Wno-incompatible-pointer-types \

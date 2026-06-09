@@ -1,6 +1,6 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
-import { ttextinst_make } from '../../../functions/functions.generated';
-import { TText } from './TText';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
+import { ttextinst_make } from '../../../functions/functions.generated.js';
+import { TText } from './TText.js';
 
 /**
  * Temporal text — Instant subtype.

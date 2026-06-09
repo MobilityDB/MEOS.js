@@ -1,7 +1,7 @@
 # Time Types
 
 MEOS.js has three families of time-related types.
-Each family mirrors the structure of the number types — a span, a span set, and a set.
+Each family mirrors the structure of the number types: a span, a span set, and a set.
 
 | Family | Span | Span Set | Set |
 |---|---|---|---|
@@ -19,7 +19,7 @@ Day 0 = 2000-01-01, day 1 = 2000-01-02, day -1 = 1999-12-31.
 
 Timestamps are stored as **microseconds since 2000-01-01 00:00:00 UTC**
 (a `number` alias called `TimestampTz`).
-At runtime, `tbox_tmin()` and `tbox_tmax()` return `BigInt` — see [TBox guide](./tbox.md).
+At runtime, `tbox_tmin()` and `tbox_tmax()` return `BigInt`, see [TBox guide](./tbox.md).
 
 ## Date spans
 
@@ -29,7 +29,7 @@ await initMeos();
 
 const s = DateSpan.fromString('[2020-01-01, 2020-12-31]');
 
-s.lower();        // DateADT — days since 2000-01-01
+s.lower();        // DateADT - days since 2000-01-01
 s.upper();        // DateADT
 s.lowerInc();     // true
 s.upperInc();     // true
@@ -92,7 +92,7 @@ const s = TsTzSpan.fromString('[2020-01-01, 2020-12-31]');
 
 s.lower();      // TimestampTz (microseconds since 2000-01-01 UTC)
 s.upper();      // TimestampTz
-s.durationMs(); // (upper - lower) / 1000  — duration in milliseconds
+s.durationMs(); // (upper - lower) / 1000  - duration in milliseconds
 ```
 
 `isAdjacent` on `TsTzSpan` delegates to the MEOS C implementation, which correctly

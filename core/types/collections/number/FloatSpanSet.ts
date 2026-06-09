@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	floatspanset_in,
 	floatspanset_out,
@@ -16,9 +16,9 @@ import {
 	floatspanset_radians,
 	floatspanset_round,
 	floatspanset_shift_scale,
-} from '../../../functions/functions.generated';
-import { SpanSet } from '../base/SpanSet';
-import { FloatSpan } from './FloatSpan';
+} from '../../../functions/functions.generated.js';
+import { SpanSet } from '../base/SpanSet.js';
+import { FloatSpan } from './FloatSpan.js';
 
 /**
  * An ordered set of disjoint {@link FloatSpan} values.

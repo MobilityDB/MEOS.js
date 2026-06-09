@@ -1,5 +1,5 @@
-import type { Ptr, TimestampTz } from '../../functions/functions.generated';
-import { getModule } from '../../runtime/meos';
+import type { Ptr, TimestampTz } from '../../functions/functions.generated.js';
+import { getModule } from '../../runtime/meos.js';
 import {
 	tbox_in,
 	tbox_out,
@@ -63,7 +63,7 @@ import {
 	tbox_ge,
 	tbox_cmp,
 	meos_free,
-} from '../../functions/functions.generated';
+} from '../../functions/functions.generated.js';
 
 /**
  * A temporal bounding box with an optional numeric (X) dimension and an optional temporal (T) dimension.

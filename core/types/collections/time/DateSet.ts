@@ -1,4 +1,4 @@
-import type { Ptr, DateADT } from '../../../functions/functions.generated';
+import type { Ptr, DateADT } from '../../../functions/functions.generated.js';
 import {
 	dateset_in,
 	dateset_out,
@@ -9,8 +9,8 @@ import {
 	distance_dateset_dateset,
 	dateset_to_tstzset,
 	dateset_shift_scale,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct calendar dates.

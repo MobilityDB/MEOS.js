@@ -78,7 +78,7 @@ s1.free(); s2.free(); ss.free();
 ```ts
 const seq = TGeomPoint.fromString('[POINT(0 0)@2024-01-01, POINT(10 10)@2024-01-11]');
 
-seq.startValue();   // "POINT(0 0)"  — WKT string
+seq.startValue();   // "POINT(0 0)"  - WKT string
 seq.endValue();     // "POINT(10 10)"
 seq.numInstants();  // 2
 seq.valueN(0);      // "POINT(0 0)"
@@ -144,7 +144,7 @@ const seq = TGeomPoint.fromString('[POINT(0 0)@2024-01-01, POINT(3 4)@2024-01-06
 
 const xPtr = seq.getX(); // raw TFloat Ptr
 const yPtr = seq.getY();
-const zPtr = seq.getZ(); // only valid when hasZ() is true — throws otherwise
+const zPtr = seq.getZ(); // only valid when hasZ() is true - throws otherwise
 
 seq.hasZ(); // false for 2D, true for 3D
 
@@ -196,7 +196,7 @@ const seq = TGeomPoint.fromString('[POINT(0 0)@2024-01-01, POINT(10 10)@2024-01-
 // Nearest approach distance to a static point
 const d = seq.nad('POINT(5 0)'); // scalar distance
 
-// Temporal distance — returns a TFloat Ptr
+// Temporal distance - returns a TFloat Ptr
 import { TFloat, meos_free } from 'meos.js';
 const tdPtr = seq.temporalDistance('POINT(5 0)');
 const td    = new TFloat(tdPtr);

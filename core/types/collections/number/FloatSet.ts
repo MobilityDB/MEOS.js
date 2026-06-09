@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	floatset_in,
 	floatset_out,
@@ -13,8 +13,8 @@ import {
 	floatset_degrees,
 	floatset_radians,
 	floatset_shift_scale,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct IEEE 754 double-precision floats.

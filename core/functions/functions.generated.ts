@@ -1,5 +1,5 @@
 /* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
-import { getModule } from '../runtime/meos';
+import { getModule } from '../runtime/meos.js';
 
 // WASM linear memory address, held as a JS number (safe up to 2^53).
 export type Ptr = number;
@@ -51,8 +51,8 @@ export function callPtr(
 // Typed exceptions (MeosInternalError, MeosInvalidArgError, …) are defined in
 // src/errors.ts and dispatched via makeMeosException().
 
-import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from './errors';
-export * from './errors';
+import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from './errors.js';
+export * from './errors.js';
 
 // MeosError kept as alias for backward compatibility.
 export { MeosException as MeosError };

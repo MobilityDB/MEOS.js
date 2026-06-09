@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	bigintspanset_in,
 	bigintspanset_out,
@@ -10,9 +10,9 @@ import {
 	distance_bigintspanset_bigintspan,
 	distance_bigintspanset_bigintspanset,
 	bigintspanset_shift_scale,
-} from '../../../functions/functions.generated';
-import { SpanSet } from '../base/SpanSet';
-import { BigIntSpan } from './BigIntSpan';
+} from '../../../functions/functions.generated.js';
+import { SpanSet } from '../base/SpanSet.js';
+import { BigIntSpan } from './BigIntSpan.js';
 
 /**
  * An ordered set of disjoint {@link BigIntSpan} values.

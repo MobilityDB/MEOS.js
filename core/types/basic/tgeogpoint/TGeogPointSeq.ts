@@ -1,7 +1,7 @@
-import type { Ptr } from '../../../functions/functions.generated';
-import { tsequence_make } from '../../../functions/functions.generated';
-import { withPtrArray } from '../../../functions/ptr_array';
-import { TGeogPoint } from './TGeogPoint';
+import type { Ptr } from '../../../functions/functions.generated.js';
+import { tsequence_make } from '../../../functions/functions.generated.js';
+import { withPtrArray } from '../../../functions/ptr_array.js';
+import { TGeogPoint } from './TGeogPoint.js';
 
 /**
  * Temporal geography point - Sequence subtype.

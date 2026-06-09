@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	set_copy,
 	set_from_hexwkb,
@@ -24,7 +24,7 @@ import {
 	set_gt,
 	set_ge,
 	meos_free,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Abstract base class for all MEOS set types (ordered sets of discrete values).

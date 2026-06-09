@@ -1,5 +1,5 @@
-import type { Ptr } from './functions.generated';
-import { getModule } from '../runtime/meos';
+import type { Ptr } from './functions.generated.js';
+import { getModule } from '../runtime/meos.js';
 
 /**
  * Builds a temporary wasm64 pointer array, calls `fn(arrPtr, count)`,

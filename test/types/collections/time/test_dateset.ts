@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { DateSet } from '../../../../core/types/collections/time/DateSet';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { DateSet } from '../../../../core/types/collections/time/DateSet.js';
 
 before(async () => {
 	await initMeos();

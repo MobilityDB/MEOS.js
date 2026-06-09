@@ -1,6 +1,6 @@
-import { Temporal } from '../../temporal/Temporal';
-import { TsTzSpanSet } from '../../collections/time/TsTzSpanSet';
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import { Temporal } from '../../temporal/Temporal.js';
+import { TsTzSpanSet } from '../../collections/time/TsTzSpanSet.js';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tbool_in,
 	tbool_out,
@@ -28,7 +28,7 @@ import {
 	tbool_value_n,
 	temporal_at_timestamptz,
 	meos_free,
-} from '../../../functions/functions.generated';
+} from '../../../functions/functions.generated.js';
 
 /**
  * Temporal boolean type.

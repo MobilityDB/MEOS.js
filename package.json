@@ -1,14 +1,35 @@
 {
   "name": "meos.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "JavaScript/TypeScript bindings for MobilityDB MEOS via WebAssembly",
-  "main": "core/index.js",
+  "main": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./deckgl": {
+      "types": "./dist/deckgl/index.d.ts",
+      "import": "./dist/deckgl/index.js"
+    },
+    "./deckgl/layer": {
+      "types": "./dist/deckgl/layer.d.ts",
+      "import": "./dist/deckgl/layer.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "generate": "npx tsx codegen/FunctionsGenerator.ts",
     "build:wasm": "docker build --output type=local,dest=./wasm --target wasm .",
     "build:ts": "tsc",
-    "build": "npm run build:ts",
+    "clean": "shx rm -rf dist",
+    "copy:wasm": "shx cp -r wasm dist/wasm",
+    "build": "npm run clean && npm run build:ts && npm run copy:wasm",
+    "prepack": "npm run build",
     "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
     "play": "node --import tsx/esm scripts/playground.ts",
     "docs:api": "typedoc",
@@ -19,8 +40,23 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "peerDependencies": {
+    "@deck.gl/core": ">=9",
+    "@deck.gl/geo-layers": ">=9"
+  },
+  "peerDependenciesMeta": {
+    "@deck.gl/core": {
+      "optional": true
+    },
+    "@deck.gl/geo-layers": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@deck.gl/core": "^9.3.3",
+    "@deck.gl/geo-layers": "^9.3.3",
     "@types/node": "^25.5.2",
+    "shx": "^0.4.0",
     "tsx": "^4.21.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",

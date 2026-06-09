@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { TGeogPoint } from '../../../../core/types/basic/tgeogpoint/TGeogPoint';
-import { TGeogPointInst } from '../../../../core/types/basic/tgeogpoint/TGeogPointInst';
-import { TGeogPointSeq } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeq';
-import { TGeogPointSeqSet } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeqSet';
-import { TInterpolation } from '../../../../core/types/temporal/Temporal';
-import { meos_free } from '../../../../core/functions/functions.generated';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { TGeogPoint } from '../../../../core/types/basic/tgeogpoint/TGeogPoint.js';
+import { TGeogPointInst } from '../../../../core/types/basic/tgeogpoint/TGeogPointInst.js';
+import { TGeogPointSeq } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeq.js';
+import { TGeogPointSeqSet } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeqSet.js';
+import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
+import { meos_free } from '../../../../core/functions/functions.generated.js';
 
 const T0 = '2001-01-01 00:00:00+00';
 const T1 = '2001-01-02 00:00:00+00';

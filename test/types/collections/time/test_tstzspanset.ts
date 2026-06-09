@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { interval_make, meos_free } from '../../../../core/functions/functions.generated';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { interval_make, meos_free } from '../../../../core/functions/functions.generated.js';
+import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
+import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 01:00:00+00'; // +1 h

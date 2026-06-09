@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
-import { initMeos } from '../../../../core/runtime/meos';
-import { TFloat } from '../../../../core/types/basic/tfloat/TFloat';
-import { TBool } from '../../../../core/types/basic/tbool/TBool';
-import { TInt } from '../../../../core/types/basic/tint/TInt';
-import { TInterpolation } from '../../../../core/types/temporal/Temporal';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet';
+import { initMeos } from '../../../../core/runtime/meos.js';
+import { TFloat } from '../../../../core/types/basic/tfloat/TFloat.js';
+import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
+import { TInt } from '../../../../core/types/basic/tint/TInt.js';
+import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
+import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
+import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
+import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min

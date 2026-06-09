@@ -1,5 +1,5 @@
-import { TNumber } from '../tnumber/TNumber';
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
+import { TNumber } from '../tnumber/TNumber.js';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tint_in,
 	tint_out,
@@ -52,8 +52,8 @@ import {
 	nad_tint_int,
 	nad_tint_tint,
 	nad_tint_tbox,
-} from '../../../functions/functions.generated';
-import { TBool } from '../tbool/TBool';
+} from '../../../functions/functions.generated.js';
+import { TBool } from '../tbool/TBool.js';
 
 /**
  * Temporal integer type.

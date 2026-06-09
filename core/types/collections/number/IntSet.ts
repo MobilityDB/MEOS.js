@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	intset_in,
 	intset_out,
@@ -9,8 +9,8 @@ import {
 	distance_intset_intset,
 	intset_to_floatset,
 	intset_shift_scale,
-} from '../../../functions/functions.generated';
-import { MeosSet } from '../base/MeosSet';
+} from '../../../functions/functions.generated.js';
+import { MeosSet } from '../base/MeosSet.js';
 
 /**
  * An ordered set of distinct integers.

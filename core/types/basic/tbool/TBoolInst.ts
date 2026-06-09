@@ -1,6 +1,6 @@
-import type { Ptr, TimestampTz } from '../../../functions/functions.generated';
-import { tboolinst_make } from '../../../functions/functions.generated';
-import { TBool } from './TBool';
+import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
+import { tboolinst_make } from '../../../functions/functions.generated.js';
+import { TBool } from './TBool.js';
 
 /**
  * Temporal boolean — Instant subtype.

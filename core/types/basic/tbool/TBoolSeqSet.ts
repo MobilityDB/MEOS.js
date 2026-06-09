@@ -1,7 +1,7 @@
-import type { Ptr } from '../../../functions/functions.generated';
-import { tsequenceset_make } from '../../../functions/functions.generated';
-import { withPtrArray } from '../../../functions/ptr_array';
-import { TBool } from './TBool';
+import type { Ptr } from '../../../functions/functions.generated.js';
+import { tsequenceset_make } from '../../../functions/functions.generated.js';
+import { withPtrArray } from '../../../functions/ptr_array.js';
+import { TBool } from './TBool.js';
 
 /**
  * Temporal boolean — SequenceSet subtype.

@@ -1,4 +1,4 @@
-import type { Ptr, DateADT } from '../../../functions/functions.generated';
+import type { Ptr, DateADT } from '../../../functions/functions.generated.js';
 import {
 	datespanset_in,
 	datespanset_out,
@@ -12,9 +12,9 @@ import {
 	distance_datespanset_datespanset,
 	datespanset_to_tstzspanset,
 	datespanset_shift_scale,
-} from '../../../functions/functions.generated';
-import { SpanSet } from '../base/SpanSet';
-import { DateSpan } from './DateSpan';
+} from '../../../functions/functions.generated.js';
+import { SpanSet } from '../base/SpanSet.js';
+import { DateSpan } from './DateSpan.js';
 
 /**
  * An ordered set of disjoint {@link DateSpan} values.

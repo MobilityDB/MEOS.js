@@ -1,4 +1,4 @@
-import type { Ptr } from '../../../functions/functions.generated';
+import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	intspan_in,
 	intspan_out,
@@ -11,8 +11,8 @@ import {
 	intspan_to_floatspan,
 	intspan_expand,
 	intspan_shift_scale,
-} from '../../../functions/functions.generated';
-import { Span } from '../base/Span';
+} from '../../../functions/functions.generated.js';
+import { Span } from '../base/Span.js';
 
 /**
  * A contiguous range of integers, stored internally as a half-open interval `[lower, upper)`.
