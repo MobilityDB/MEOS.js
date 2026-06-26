@@ -4,6 +4,12 @@
 [![docs](https://img.shields.io/badge/docs-mobilitydb.github.io-1f6feb)](https://mobilitydb.github.io/MEOS.js/)
 [![WebAssembly Memory64](https://img.shields.io/badge/WebAssembly-Memory64-654ff0)](#requirements)
 
+<div align="center">
+    
+**[Documentation](https://mobilitydb.github.io/MEOS.js/) · [Examples](https://github.com/MobilityDB/MEOS.js-examples) · [MobilityDB](https://mobilitydb.com/)**
+
+</div>
+
 TypeScript/JavaScript bindings for [MEOS](https://libmeos.org/), the C library that powers [MobilityDB](https://mobilitydb.com/) spatiotemporal types.
 
 MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscripten.org/). MEOS.js wraps the resulting `.wasm` module in a typed TypeScript API so you can work with temporal values, spans, sets, and bounding boxes in Node.js or the browser.
@@ -11,8 +17,6 @@ MEOS is compiled to WebAssembly (wasm64/MEMORY64) via [Emscripten](https://emscr
 ```bash
 npm install meos.js
 ```
-
-**[Documentation](https://mobilitydb.github.io/MEOS.js/) · [Examples](https://github.com/MobilityDB/MEOS.js-examples) · [MobilityDB](https://mobilitydb.com/)**
 
 > Requires a runtime with WebAssembly MEMORY64 (Node.js 22+, or a recent browser).
 
