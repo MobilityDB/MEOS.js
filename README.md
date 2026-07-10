@@ -50,7 +50,6 @@ MEOS.js/
 ├── codegen/                         ← Code generator
 │   ├── res/
 │   │   ├── meos-idl.json            ← MEOS API description
-│   │   ├── meos.h, meos_geo.h       ← Cached upstream headers
 │   │   ├── bindings_c_header.c.template
 │   │   └── functions_ts_header.ts.template
 │   └── FunctionsGenerator.ts        ← Eemits the C glue + TS bindings
