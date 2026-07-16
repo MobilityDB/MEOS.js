@@ -163,7 +163,7 @@ cp output/meos-idl.json /path/to/MEOS.js/codegen/res/meos-idl.json
 npm run generate
 ```
 
-Bump the `MOBILITYDB_COMMIT` pin in the `Dockerfile` together with the IDL refresh so the WASM build stays in sync with the bindings.
+The WASM build tracks upstream MobilityDB `master` (`MOBILITYDB_BRANCH` in the `Dockerfile`), so refreshing `meos-idl.json` from a current-master MEOS surface keeps the generated bindings in sync with the library the build links against.
 
 ## Tests
 

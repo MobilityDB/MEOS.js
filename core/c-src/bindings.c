@@ -9,6 +9,9 @@
 #include <meos_npoint.h>
 #include <meos_pose.h>
 #include <meos_rgeo.h>
+#include <meos_h3.h>
+#include <meos_json.h>
+#include <meos_quadbin.h>
 #include <emscripten.h>
 
 /*
@@ -284,17 +287,40 @@ EMSCRIPTEN_KEEPALIVE
 char * textset_value_n_w(const Set *s, int n) {
     text *r;
     if (!textset_value_n(s, n, &r)) return NULL;
-    return text2cstring(r);
+    return text_to_cstring(r);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * ttext_value_n_w(const Temporal *temp, int n) {
     text *r;
     if (!ttext_value_n(temp, n, &r)) return NULL;
-    return text2cstring(r);
+    return text_to_cstring(r);
 }
 
 /* --- Generated wrappers --- */
+/* === meos_error.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int meos_errno_w() {
+  return meos_errno();
+}
+
+EMSCRIPTEN_KEEPALIVE
+int meos_errno_set_w(int err) {
+  return meos_errno_set(err);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int meos_errno_restore_w(int err) {
+  return meos_errno_restore(err);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int meos_errno_reset_w() {
+  return meos_errno_reset();
+}
+
+
 /* === meos.h === */
 
 EMSCRIPTEN_KEEPALIVE
@@ -388,6 +414,11 @@ void rtree_insert_temporal_w(RTree * rtree, const Temporal * temp, int id) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+void rtree_insert_temporal_split_w(RTree * rtree, const Temporal * temp, int id, int maxboxes) {
+  rtree_insert_temporal_split(rtree, temp, id, maxboxes);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int rtree_search_w(const RTree * rtree, RTreeSearchOp op, const void * query, MeosArray * result) {
   return rtree_search(rtree, op, query, result);
 }
@@ -398,23 +429,28 @@ int rtree_search_temporal_w(const RTree * rtree, RTreeSearchOp op, const Tempora
 }
 
 EMSCRIPTEN_KEEPALIVE
-int meos_errno_w() {
-  return meos_errno();
+int rtree_search_temporal_dedup_w(const RTree * rtree, RTreeSearchOp op, const Temporal * temp, int maxboxes, MeosArray * result) {
+  return rtree_search_temporal_dedup(rtree, op, temp, maxboxes, result);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int meos_errno_set_w(int err) {
-  return meos_errno_set(err);
+void meos_initialize_allocator_w(meos_malloc_fn malloc_fn, meos_realloc_fn realloc_fn, meos_free_fn free_fn) {
+  meos_initialize_allocator(malloc_fn, realloc_fn, free_fn);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int meos_errno_restore_w(int err) {
-  return meos_errno_restore(err);
+void meos_initialize_noexit_error_handler_w() {
+  meos_initialize_noexit_error_handler();
 }
 
 EMSCRIPTEN_KEEPALIVE
-int meos_errno_reset_w() {
-  return meos_errno_reset();
+void meos_initialize_collation_w() {
+  meos_initialize_collation();
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_finalize_collation_w() {
+  meos_finalize_collation();
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -443,215 +479,8 @@ void meos_set_spatial_ref_sys_csv_w(const char * path) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-DateADT add_date_int_w(DateADT d, int days) {
-  return add_date_int(d, days);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Interval * add_interval_interval_w(const Interval * interv1, const Interval * interv2) {
-  return add_interval_interval(interv1, interv2);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long add_timestamptz_interval_w(long long t, const Interval * interv) {
-  return add_timestamptz_interval((TimestampTz) t, interv);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int bool_in_w(const char * str) {
-  return (int) bool_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * bool_out_w(int b) {
-  return bool_out((bool) b);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long date_to_timestamp_w(DateADT dateVal) {
-  return date_to_timestamp(dateVal);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long date_to_timestamptz_w(DateADT d) {
-  return date_to_timestamptz(d);
-}
-
-EMSCRIPTEN_KEEPALIVE
-double float_exp_w(double d) {
-  return float_exp(d);
-}
-
-EMSCRIPTEN_KEEPALIVE
-double float_ln_w(double d) {
-  return float_ln(d);
-}
-
-EMSCRIPTEN_KEEPALIVE
-double float_log10_w(double d) {
-  return float_log10(d);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * float8_out_w(double d, int maxdd) {
-  return float8_out(d, maxdd);
-}
-
-EMSCRIPTEN_KEEPALIVE
-double float_round_w(double d, int maxdd) {
-  return float_round(d, maxdd);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int int32_cmp_w(int l, int r) {
-  return int32_cmp(l, r);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int int64_cmp_w(int64_t l, int64_t r) {
-  return int64_cmp(l, r);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Interval * interval_make_w(int years, int months, int weeks, int days, int hours, int mins, double secs) {
-  return interval_make(years, months, weeks, days, hours, mins, secs);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int minus_date_date_w(DateADT d1, DateADT d2) {
-  return minus_date_date(d1, d2);
-}
-
-EMSCRIPTEN_KEEPALIVE
-DateADT minus_date_int_w(DateADT d, int days) {
-  return minus_date_int(d, days);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long minus_timestamptz_interval_w(long long t, const Interval * interv) {
-  return minus_timestamptz_interval((TimestampTz) t, interv);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Interval * minus_timestamptz_timestamptz_w(long long t1, long long t2) {
-  return minus_timestamptz_timestamptz((TimestampTz) t1, (TimestampTz) t2);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Interval * mul_interval_double_w(const Interval * interv, double factor) {
-  return mul_interval_double(interv, factor);
-}
-
-EMSCRIPTEN_KEEPALIVE
-DateADT pg_date_in_w(const char * str) {
-  return pg_date_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * pg_date_out_w(DateADT d) {
-  return pg_date_out(d);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int pg_interval_cmp_w(const Interval * interv1, const Interval * interv2) {
-  return pg_interval_cmp(interv1, interv2);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Interval * pg_interval_in_w(const char * str, int typmod) {
-  return pg_interval_in(str, typmod);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * pg_interval_out_w(const Interval * interv) {
-  return pg_interval_out(interv);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long pg_timestamp_in_w(const char * str, int typmod) {
-  return pg_timestamp_in(str, typmod);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * pg_timestamp_out_w(long long t) {
-  return pg_timestamp_out((Timestamp) t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long pg_timestamptz_in_w(const char * str, int typmod) {
-  return pg_timestamptz_in(str, typmod);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * pg_timestamptz_out_w(long long t) {
-  return pg_timestamptz_out((TimestampTz) t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int text_cmp_w(const char * txt1, const char * txt2) {
-  return text_cmp(cstring2text(txt1), cstring2text(txt2));
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_copy_w(const char * txt) {
-  text *_t = text_copy(cstring2text(txt));
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_in_w(const char * str) {
-  text *_t = text_in(str);
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_initcap_w(const char * txt) {
-  text *_t = text_initcap(cstring2text(txt));
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_lower_w(const char * txt) {
-  text *_t = text_lower(cstring2text(txt));
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_out_w(const char * txt) {
-  return text_out(cstring2text(txt));
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * text_upper_w(const char * txt) {
-  text *_t = text_upper(cstring2text(txt));
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * textcat_text_text_w(const char * txt1, const char * txt2) {
-  text *_t = textcat_text_text(cstring2text(txt1), cstring2text(txt2));
-  if (!_t) return NULL;
-  return text2cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long timestamptz_shift_w(long long t, const Interval * interv) {
-  return timestamptz_shift((TimestampTz) t, interv);
-}
-
-EMSCRIPTEN_KEEPALIVE
-DateADT timestamp_to_date_w(long long t) {
-  return timestamp_to_date((Timestamp) t);
-}
-
-EMSCRIPTEN_KEEPALIVE
-DateADT timestamptz_to_date_w(long long t) {
-  return timestamptz_to_date((TimestampTz) t);
+void meos_set_ways_csv_w(const char * path) {
+  meos_set_ways_csv(path);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1020,6 +849,11 @@ Span * floatspan_to_intspan_w(const Span * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Span * floatspan_to_bigintspan_w(const Span * s) {
+  return floatspan_to_bigintspan(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SpanSet * floatspanset_to_intspanset_w(const SpanSet * ss) {
   return floatspanset_to_intspanset(ss);
 }
@@ -1050,6 +884,21 @@ Span * intspan_to_floatspan_w(const Span * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Span * intspan_to_bigintspan_w(const Span * s) {
+  return intspan_to_bigintspan(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * bigintspan_to_intspan_w(const Span * s) {
+  return bigintspan_to_intspan(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * bigintspan_to_floatspan_w(const Span * s) {
+  return bigintspan_to_floatspan(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SpanSet * intspanset_to_floatspanset_w(const SpanSet * ss) {
   return intspanset_to_floatspanset(ss);
 }
@@ -1071,7 +920,7 @@ SpanSet * span_to_spanset_w(const Span * s) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * text_to_set_w(const char * txt) {
-  return text_to_set(cstring2text(txt));
+  return text_to_set(cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1122,8 +971,8 @@ long long bigintset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int64_t * bigintset_values_w(const Set * s) {
-  return bigintset_values(s);
+int64_t * bigintset_values_w(const Set * s, int * count) {
+  return bigintset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1174,8 +1023,8 @@ DateADT dateset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-DateADT * dateset_values_w(const Set * s) {
-  return dateset_values(s);
+DateADT * dateset_values_w(const Set * s, int * count) {
+  return dateset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1243,8 +1092,8 @@ double floatset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-double * floatset_values_w(const Set * s) {
-  return floatset_values(s);
+double * floatset_values_w(const Set * s, int * count) {
+  return floatset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1295,8 +1144,8 @@ int intset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int * intset_values_w(const Set * s) {
-  return intset_values(s);
+int * intset_values_w(const Set * s, int * count) {
+  return intset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1335,7 +1184,7 @@ int set_hash_w(const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int set_hash_extended_w(const Set * s, int seed) {
+uint64_t set_hash_extended_w(const Set * s, uint64_t seed) {
   return set_hash_extended(s, seed);
 }
 
@@ -1350,7 +1199,7 @@ int span_hash_w(const Span * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int span_hash_extended_w(const Span * s, int seed) {
+uint64_t span_hash_extended_w(const Span * s, uint64_t seed) {
   return span_hash_extended(s, seed);
 }
 
@@ -1375,7 +1224,7 @@ int spanset_hash_w(const SpanSet * ss) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int spanset_hash_extended_w(const SpanSet * ss, int seed) {
+uint64_t spanset_hash_extended_w(const SpanSet * ss, uint64_t seed) {
   return spanset_hash_extended(ss, seed);
 }
 
@@ -1400,8 +1249,8 @@ Span * spanset_span_n_w(const SpanSet * ss, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span ** spanset_spanarr_w(const SpanSet * ss) {
-  return spanset_spanarr(ss);
+Span ** spanset_spanarr_w(const SpanSet * ss, int * count) {
+  return spanset_spanarr(ss, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1418,24 +1267,24 @@ EMSCRIPTEN_KEEPALIVE
 char * textset_end_value_w(const Set * s) {
   text *_t = textset_end_value(s);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * textset_start_value_w(const Set * s) {
   text *_t = textset_start_value(s);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
-text ** textset_values_w(const Set * s) {
-  return textset_values(s);
+text ** textset_values_w(const Set * s, int * count) {
+  return textset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TimestampTz * tstzset_values_w(const Set * s) {
-  return tstzset_values(s);
+TimestampTz * tstzset_values_w(const Set * s, int * count) {
+  return tstzset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1595,12 +1444,12 @@ Set * set_round_w(const Set * s, int maxdd) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * textcat_text_textset_w(const char * txt, const Set * s) {
-  return textcat_text_textset(cstring2text(txt), s);
+  return textcat_text_textset(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
 Set * textcat_textset_text_w(const Set * s, const char * txt) {
-  return textcat_textset_text(s, cstring2text(txt));
+  return textcat_textset_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1749,8 +1598,8 @@ int spanset_ne_w(const SpanSet * ss1, const SpanSet * ss2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * set_spans_w(const Set * s) {
-  return set_spans(s);
+Span * set_spans_w(const Set * s, int * count) {
+  return set_spans(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1764,8 +1613,8 @@ Span * set_split_n_spans_w(const Set * s, int span_count, int * count) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * spanset_spans_w(const SpanSet * ss) {
-  return spanset_spans(ss);
+Span * spanset_spans_w(const SpanSet * ss, int * count) {
+  return spanset_spans(ss, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1806,6 +1655,31 @@ int adjacent_span_spanset_w(const Span * s, const SpanSet * ss) {
 EMSCRIPTEN_KEEPALIVE
 int adjacent_span_timestamptz_w(const Span * s, long long t) {
   return (int) adjacent_span_timestamptz(s, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_bigint_span_w(int64_t i, const Span * s) {
+  return (int) adjacent_bigint_span(i, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_date_span_w(DateADT d, const Span * s) {
+  return (int) adjacent_date_span(d, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_float_span_w(double d, const Span * s) {
+  return (int) adjacent_float_span(d, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_int_span_w(int i, const Span * s) {
+  return (int) adjacent_int_span(i, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_timestamptz_span_w(long long t, const Span * s) {
+  return (int) adjacent_timestamptz_span((TimestampTz) t, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1930,7 +1804,7 @@ int contained_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
 
 EMSCRIPTEN_KEEPALIVE
 int contained_text_set_w(const char * txt, const Set * s) {
-  return (int) contained_text_set(cstring2text(txt), s);
+  return (int) contained_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1975,7 +1849,7 @@ int contains_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 int contains_set_text_w(const Set * s, const char * t) {
-  return (int) contains_set_text(s, cstring2text(t));
+  return (int) contains_set_text(s, cstring_to_text(t));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2076,6 +1950,11 @@ int overlaps_spanset_span_w(const SpanSet * ss, const Span * s) {
 EMSCRIPTEN_KEEPALIVE
 int overlaps_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
   return (int) overlaps_spanset_spanset(ss1, ss2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int same_span_span_w(const Span * s1, const Span * s2) {
+  return (int) same_span_span(s1, s2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2265,7 +2144,7 @@ int left_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 int left_set_text_w(const Set * s, const char * txt) {
-  return (int) left_set_text(s, cstring2text(txt));
+  return (int) left_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2320,7 +2199,7 @@ int left_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
 
 EMSCRIPTEN_KEEPALIVE
 int left_text_set_w(const char * txt, const Set * s) {
-  return (int) left_text_set(cstring2text(txt), s);
+  return (int) left_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2510,7 +2389,7 @@ int overleft_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 int overleft_set_text_w(const Set * s, const char * txt) {
-  return (int) overleft_set_text(s, cstring2text(txt));
+  return (int) overleft_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2565,7 +2444,7 @@ int overleft_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
 
 EMSCRIPTEN_KEEPALIVE
 int overleft_text_set_w(const char * txt, const Set * s) {
-  return (int) overleft_text_set(cstring2text(txt), s);
+  return (int) overleft_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2635,7 +2514,7 @@ int overright_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 int overright_set_text_w(const Set * s, const char * txt) {
-  return (int) overright_set_text(s, cstring2text(txt));
+  return (int) overright_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2690,7 +2569,7 @@ int overright_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
 
 EMSCRIPTEN_KEEPALIVE
 int overright_text_set_w(const char * txt, const Set * s) {
-  return (int) overright_text_set(cstring2text(txt), s);
+  return (int) overright_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2760,7 +2639,7 @@ int right_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 int right_set_text_w(const Set * s, const char * txt) {
-  return (int) right_set_text(s, cstring2text(txt));
+  return (int) right_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2815,7 +2694,7 @@ int right_spanset_spanset_w(const SpanSet * ss1, const SpanSet * ss2) {
 
 EMSCRIPTEN_KEEPALIVE
 int right_text_set_w(const char * txt, const Set * s) {
-  return (int) right_text_set(cstring2text(txt), s);
+  return (int) right_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2865,7 +2744,7 @@ Set * intersection_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * intersection_set_text_w(const Set * s, const char * txt) {
-  return intersection_set_text(s, cstring2text(txt));
+  return intersection_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2945,7 +2824,7 @@ SpanSet * intersection_spanset_timestamptz_w(const SpanSet * ss, long long t) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * intersection_text_set_w(const char * txt, const Set * s) {
-  return intersection_text_set(cstring2text(txt), s);
+  return intersection_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3040,7 +2919,7 @@ Set * minus_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * minus_set_text_w(const Set * s, const char * txt) {
-  return minus_set_text(s, cstring2text(txt));
+  return minus_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3120,7 +2999,7 @@ SpanSet * minus_spanset_timestamptz_w(const SpanSet * ss, long long t) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * minus_text_set_w(const char * txt, const Set * s) {
-  return minus_text_set(cstring2text(txt), s);
+  return minus_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3144,8 +3023,8 @@ Set * union_bigint_set_w(int64_t i, const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * union_bigint_span_w(const Span * s, int64_t i) {
-  return union_bigint_span(s, i);
+SpanSet * union_bigint_span_w(int64_t i, const Span * s) {
+  return union_bigint_span(i, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3159,8 +3038,8 @@ Set * union_date_set_w(DateADT d, const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * union_date_span_w(const Span * s, DateADT d) {
-  return union_date_span(s, d);
+SpanSet * union_date_span_w(DateADT d, const Span * s) {
+  return union_date_span(d, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3174,8 +3053,8 @@ Set * union_float_set_w(double d, const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * union_float_span_w(const Span * s, double d) {
-  return union_float_span(s, d);
+SpanSet * union_float_span_w(double d, const Span * s) {
+  return union_float_span(d, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3225,7 +3104,7 @@ Set * union_set_set_w(const Set * s1, const Set * s2) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * union_set_text_w(const Set * s, const char * txt) {
-  return union_set_text(s, cstring2text(txt));
+  return union_set_text(s, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3256,6 +3135,11 @@ SpanSet * union_span_int_w(const Span * s, int i) {
 EMSCRIPTEN_KEEPALIVE
 SpanSet * union_span_span_w(const Span * s1, const Span * s2) {
   return union_span_span(s1, s2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * super_union_span_span_w(const Span * s1, const Span * s2) {
+  return super_union_span_span(s1, s2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3305,7 +3189,7 @@ SpanSet * union_spanset_timestamptz_w(const SpanSet * ss, long long t) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * union_text_set_w(const char * txt, const Set * s) {
-  return union_text_set(cstring2text(txt), s);
+  return union_text_set(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3580,7 +3464,7 @@ SpanSet * spanset_union_transfn_w(SpanSet * state, const SpanSet * ss) {
 
 EMSCRIPTEN_KEEPALIVE
 Set * text_union_transfn_w(Set * state, const char * txt) {
-  return text_union_transfn(state, cstring2text(txt));
+  return text_union_transfn(state, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3669,8 +3553,8 @@ Span * tstzspanset_bins_w(const SpanSet * ss, const Interval * duration, long lo
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * tbox_as_hexwkb_w(const TBox * box, uint8_t variant, size_t * size) {
-  return tbox_as_hexwkb(box, variant, size);
+char * tbox_as_hexwkb_w(const TBox * box, uint8_t variant, size_t * size_out) {
+  return tbox_as_hexwkb(box, variant, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3714,8 +3598,18 @@ TBox * int_timestamptz_to_tbox_w(int i, long long t) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TBox * bigint_timestamptz_to_tbox_w(int64_t i, long long t) {
+  return bigint_timestamptz_to_tbox(i, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TBox * int_tstzspan_to_tbox_w(int i, const Span * s) {
   return int_tstzspan_to_tbox(i, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * bigint_tstzspan_to_tbox_w(int64_t i, const Span * s) {
+  return bigint_tstzspan_to_tbox(i, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3749,6 +3643,11 @@ TBox * int_to_tbox_w(int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TBox * bigint_to_tbox_w(int64_t i) {
+  return bigint_to_tbox(i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TBox * set_to_tbox_w(const Set * s) {
   return set_to_tbox(s);
 }
@@ -3766,6 +3665,11 @@ TBox * spanset_to_tbox_w(const SpanSet * ss) {
 EMSCRIPTEN_KEEPALIVE
 Span * tbox_to_intspan_w(const TBox * box) {
   return tbox_to_intspan(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * tbox_to_bigintspan_w(const TBox * box) {
+  return tbox_to_bigintspan(box);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3789,7 +3693,7 @@ int tbox_hash_w(const TBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int tbox_hash_extended_w(const TBox * box, int seed) {
+uint64_t tbox_hash_extended_w(const TBox * box, uint64_t seed) {
   return tbox_hash_extended(box, seed);
 }
 
@@ -3881,10 +3785,34 @@ int tboxint_xmax_w(const TBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+long long tboxbigint_xmax_w(const TBox * box) {
+  int64_t r;
+  if (!tboxbigint_xmax(box, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
 int tboxint_xmin_w(const TBox * box) {
   int r;
   if (!tboxint_xmin(box, &r)) return 0;
   return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tboxbigint_xmin_w(const TBox * box) {
+  int64_t r;
+  if (!tboxbigint_xmin(box, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tfloatbox_expand_w(const TBox * box, double d) {
+  return tfloatbox_expand(box, d);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tintbox_expand_w(const TBox * box, int i) {
+  return tintbox_expand(box, i);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -3898,28 +3826,28 @@ TBox * tbox_round_w(const TBox * box, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tbox_shift_scale_time_w(const TBox * box, const Interval * shift, const Interval * duration) {
-  return tbox_shift_scale_time(box, shift, duration);
-}
-
-EMSCRIPTEN_KEEPALIVE
-TBox * tfloatbox_expand_w(const TBox * box, double d) {
-  return tfloatbox_expand(box, d);
-}
-
-EMSCRIPTEN_KEEPALIVE
 TBox * tfloatbox_shift_scale_w(const TBox * box, double shift, double width, int hasshift, int haswidth) {
   return tfloatbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tintbox_expand_w(const TBox * box, int i) {
-  return tintbox_expand(box, i);
+TBox * tintbox_shift_scale_w(const TBox * box, int shift, int width, int hasshift, int haswidth) {
+  return tintbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tintbox_shift_scale_w(const TBox * box, int shift, int width, int hasshift, int haswidth) {
-  return tintbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
+TBox * tbox_shift_scale_time_w(const TBox * box, const Interval * shift, const Interval * duration) {
+  return tbox_shift_scale_time(box, shift, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tbigintbox_expand_w(const TBox * box, int64_t i) {
+  return tbigintbox_expand(box, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tbigintbox_shift_scale_w(const TBox * box, int64_t shift, int64_t width, int hasshift, int haswidth) {
+  return tbigintbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4053,6 +3981,11 @@ uint8_t * temporal_as_wkb_w(const Temporal * temp, uint8_t variant, size_t * siz
 }
 
 EMSCRIPTEN_KEEPALIVE
+uint8_t wkb_variant_from_endian_w(const char * endian) {
+  return wkb_variant_from_endian(endian);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * temporal_from_hexwkb_w(const char * hexwkb) {
   return temporal_from_hexwkb(hexwkb);
 }
@@ -4083,13 +4016,28 @@ Temporal * tint_from_mfjson_w(const char * str) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_from_mfjson_w(const char * str) {
+  return tbigint_from_mfjson(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tint_in_w(const char * str) {
   return tint_in(str);
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_in_w(const char * str) {
+  return tbigint_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
 char * tint_out_w(const Temporal * temp) {
   return tint_out(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tbigint_out_w(const Temporal * temp) {
+  return tbigint_out(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4168,8 +4116,18 @@ Temporal * tint_from_base_temp_w(int i, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_from_base_temp_w(int64_t i, const Temporal * temp) {
+  return tbigint_from_base_temp(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TInstant * tintinst_make_w(int i, long long t) {
   return tintinst_make(i, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tbigintinst_make_w(int64_t i, long long t) {
+  return tbigintinst_make(i, (TimestampTz) t);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4178,13 +4136,28 @@ TSequence * tintseq_from_base_tstzset_w(int i, const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TSequence * tbigintseq_from_base_tstzset_w(int64_t i, const Set * s) {
+  return tbigintseq_from_base_tstzset(i, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TSequence * tintseq_from_base_tstzspan_w(int i, const Span * s) {
   return tintseq_from_base_tstzspan(i, s);
 }
 
 EMSCRIPTEN_KEEPALIVE
+TSequence * tbigintseq_from_base_tstzspan_w(int64_t i, const Span * s) {
+  return tbigintseq_from_base_tstzspan(i, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TSequenceSet * tintseqset_from_base_tstzspanset_w(int i, const SpanSet * ss) {
   return tintseqset_from_base_tstzspanset(i, ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tbigintseqset_from_base_tstzspanset_w(int64_t i, const SpanSet * ss) {
+  return tbigintseqset_from_base_tstzspanset(i, ss);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4204,27 +4177,27 @@ TSequenceSet * tsequenceset_make_gaps_w(TInstant ** instants, int count, interpT
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * ttext_from_base_temp_w(const char * txt, const Temporal * temp) {
-  return ttext_from_base_temp(cstring2text(txt), temp);
+  return ttext_from_base_temp(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
 TInstant * ttextinst_make_w(const char * txt, long long t) {
-  return ttextinst_make(cstring2text(txt), (TimestampTz) t);
+  return ttextinst_make(cstring_to_text(txt), (TimestampTz) t);
 }
 
 EMSCRIPTEN_KEEPALIVE
 TSequence * ttextseq_from_base_tstzset_w(const char * txt, const Set * s) {
-  return ttextseq_from_base_tstzset(cstring2text(txt), s);
+  return ttextseq_from_base_tstzset(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
 TSequence * ttextseq_from_base_tstzspan_w(const char * txt, const Span * s) {
-  return ttextseq_from_base_tstzspan(cstring2text(txt), s);
+  return ttextseq_from_base_tstzspan(cstring_to_text(txt), s);
 }
 
 EMSCRIPTEN_KEEPALIVE
 TSequenceSet * ttextseqset_from_base_tstzspanset_w(const char * txt, const SpanSet * ss) {
-  return ttextseqset_from_base_tstzspanset(cstring2text(txt), ss);
+  return ttextseqset_from_base_tstzspanset(cstring_to_text(txt), ss);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4243,8 +4216,28 @@ Temporal * tfloat_to_tint_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tfloat_to_tbigint_w(const Temporal * temp) {
+  return tfloat_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tint_to_tfloat_w(const Temporal * temp) {
   return tint_to_tfloat(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tint_to_tbigint_w(const Temporal * temp) {
+  return tint_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_to_tint_w(const Temporal * temp) {
+  return tbigint_to_tint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_to_tfloat_w(const Temporal * temp) {
+  return tbigint_to_tfloat(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4390,6 +4383,11 @@ const char * temporal_subtype_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+const char * temporal_basetype_name_w(const Temporal * temp) {
+  return temporal_basetype_name(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SpanSet * temporal_time_w(const Temporal * temp) {
   return temporal_time(temp);
 }
@@ -4454,8 +4452,18 @@ int tint_end_value_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int64_t tbigint_end_value_w(const Temporal * temp) {
+  return tbigint_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int tint_max_value_w(const Temporal * temp) {
   return tint_max_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t tbigint_max_value_w(const Temporal * temp) {
+  return tbigint_max_value(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4464,8 +4472,23 @@ int tint_min_value_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int64_t tbigint_min_value_w(const Temporal * temp) {
+  return tbigint_min_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int tint_start_value_w(const Temporal * temp) {
   return tint_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t tbigint_start_value_w(const Temporal * temp) {
+  return tbigint_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tbigint_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, int64_t * value) {
+  return (int) tbigint_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4481,8 +4504,20 @@ int tint_value_n_w(const Temporal * temp, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+long long tbigint_value_n_w(const Temporal * temp, int64_t n) {
+  int64_t r;
+  if (!tbigint_value_n(temp, n, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
 int * tint_values_w(const Temporal * temp, int * count) {
   return tint_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t * tbigint_values_w(const Temporal * temp, int * count) {
+  return tbigint_values(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4509,28 +4544,28 @@ EMSCRIPTEN_KEEPALIVE
 char * ttext_end_value_w(const Temporal * temp) {
   text *_t = ttext_end_value(temp);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * ttext_max_value_w(const Temporal * temp) {
   text *_t = ttext_max_value(temp);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * ttext_min_value_w(const Temporal * temp) {
   text *_t = ttext_min_value(temp);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * ttext_start_value_w(const Temporal * temp) {
   text *_t = ttext_start_value(temp);
   if (!_t) return NULL;
-  return text2cstring(_t);
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4634,13 +4669,28 @@ Temporal * tint_scale_value_w(const Temporal * temp, int width) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_scale_value_w(const Temporal * temp, int64_t width) {
+  return tbigint_scale_value(temp, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tint_shift_scale_value_w(const Temporal * temp, int shift, int width) {
   return tint_shift_scale_value(temp, shift, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_shift_scale_value_w(const Temporal * temp, int64_t shift, int64_t width) {
+  return tbigint_shift_scale_value(temp, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tint_shift_value_w(const Temporal * temp, int shift) {
   return tint_shift_value(temp, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_shift_value_w(const Temporal * temp, int64_t shift) {
+  return tbigint_shift_value(temp, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4835,12 +4885,12 @@ Temporal * tnumber_minus_tbox_w(const Temporal * temp, const TBox * box) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * ttext_at_value_w(const Temporal * temp, const char * txt) {
-  return ttext_at_value(temp, cstring2text(txt));
+  return ttext_at_value(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * ttext_minus_value_w(const Temporal * temp, const char * txt) {
-  return ttext_minus_value(temp, cstring2text(txt));
+  return ttext_minus_value(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4905,7 +4955,7 @@ int always_eq_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_eq_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_eq_text_ttext(cstring2text(txt), temp);
+  return always_eq_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4919,8 +4969,18 @@ int always_eq_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_eq_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_eq_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_eq_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_eq_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_eq_ttext_text(temp, cstring2text(txt));
+  return always_eq_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4940,7 +5000,7 @@ int always_ge_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_ge_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_ge_text_ttext(cstring2text(txt), temp);
+  return always_ge_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4954,8 +5014,18 @@ int always_ge_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_ge_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_ge_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ge_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_ge_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_ge_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_ge_ttext_text(temp, cstring2text(txt));
+  return always_ge_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4975,7 +5045,7 @@ int always_gt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_gt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_gt_text_ttext(cstring2text(txt), temp);
+  return always_gt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4989,8 +5059,18 @@ int always_gt_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_gt_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_gt_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_gt_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_gt_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_gt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_gt_ttext_text(temp, cstring2text(txt));
+  return always_gt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5010,7 +5090,7 @@ int always_le_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_le_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_le_text_ttext(cstring2text(txt), temp);
+  return always_le_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5024,8 +5104,18 @@ int always_le_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_le_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_le_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_le_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_le_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_le_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_le_ttext_text(temp, cstring2text(txt));
+  return always_le_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5045,7 +5135,7 @@ int always_lt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_lt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_lt_text_ttext(cstring2text(txt), temp);
+  return always_lt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5059,8 +5149,18 @@ int always_lt_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_lt_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_lt_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_lt_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_lt_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_lt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_lt_ttext_text(temp, cstring2text(txt));
+  return always_lt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5090,7 +5190,7 @@ int always_ne_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2
 
 EMSCRIPTEN_KEEPALIVE
 int always_ne_text_ttext_w(const char * txt, const Temporal * temp) {
-  return always_ne_text_ttext(cstring2text(txt), temp);
+  return always_ne_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5104,8 +5204,18 @@ int always_ne_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_ne_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return always_ne_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return always_ne_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int always_ne_ttext_text_w(const Temporal * temp, const char * txt) {
-  return always_ne_ttext_text(temp, cstring2text(txt));
+  return always_ne_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5135,7 +5245,7 @@ int ever_eq_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_eq_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_eq_text_ttext(cstring2text(txt), temp);
+  return ever_eq_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5149,8 +5259,18 @@ int ever_eq_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_eq_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_eq_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_eq_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_eq_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_eq_ttext_text(temp, cstring2text(txt));
+  return ever_eq_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5170,7 +5290,7 @@ int ever_ge_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_ge_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_ge_text_ttext(cstring2text(txt), temp);
+  return ever_ge_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5184,8 +5304,18 @@ int ever_ge_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_ge_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_ge_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ge_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_ge_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_ge_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_ge_ttext_text(temp, cstring2text(txt));
+  return ever_ge_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5205,7 +5335,7 @@ int ever_gt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_gt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_gt_text_ttext(cstring2text(txt), temp);
+  return ever_gt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5219,8 +5349,18 @@ int ever_gt_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_gt_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_gt_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_gt_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_gt_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_gt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_gt_ttext_text(temp, cstring2text(txt));
+  return ever_gt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5240,7 +5380,7 @@ int ever_le_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_le_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_le_text_ttext(cstring2text(txt), temp);
+  return ever_le_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5254,8 +5394,18 @@ int ever_le_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_le_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_le_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_le_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_le_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_le_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_le_ttext_text(temp, cstring2text(txt));
+  return ever_le_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5275,7 +5425,7 @@ int ever_lt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_lt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_lt_text_ttext(cstring2text(txt), temp);
+  return ever_lt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5289,8 +5439,18 @@ int ever_lt_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_lt_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_lt_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_lt_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_lt_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_lt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_lt_ttext_text(temp, cstring2text(txt));
+  return ever_lt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5320,7 +5480,7 @@ int ever_ne_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) 
 
 EMSCRIPTEN_KEEPALIVE
 int ever_ne_text_ttext_w(const char * txt, const Temporal * temp) {
-  return ever_ne_text_ttext(cstring2text(txt), temp);
+  return ever_ne_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5334,8 +5494,18 @@ int ever_ne_tint_int_w(const Temporal * temp, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_ne_bigint_tbigint_w(int64_t i, const Temporal * temp) {
+  return ever_ne_bigint_tbigint(i, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tbigint_bigint_w(const Temporal * temp, int64_t i) {
+  return ever_ne_tbigint_bigint(temp, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_ne_ttext_text_w(const Temporal * temp, const char * txt) {
-  return ever_ne_ttext_text(temp, cstring2text(txt));
+  return ever_ne_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5365,7 +5535,7 @@ Temporal * teq_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * teq_text_ttext_w(const char * txt, const Temporal * temp) {
-  return teq_text_ttext(cstring2text(txt), temp);
+  return teq_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5380,7 +5550,7 @@ Temporal * teq_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * teq_ttext_text_w(const Temporal * temp, const char * txt) {
-  return teq_ttext_text(temp, cstring2text(txt));
+  return teq_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5400,7 +5570,7 @@ Temporal * tge_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tge_text_ttext_w(const char * txt, const Temporal * temp) {
-  return tge_text_ttext(cstring2text(txt), temp);
+  return tge_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5415,7 +5585,7 @@ Temporal * tge_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tge_ttext_text_w(const Temporal * temp, const char * txt) {
-  return tge_ttext_text(temp, cstring2text(txt));
+  return tge_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5435,7 +5605,7 @@ Temporal * tgt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tgt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return tgt_text_ttext(cstring2text(txt), temp);
+  return tgt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5450,7 +5620,7 @@ Temporal * tgt_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tgt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return tgt_ttext_text(temp, cstring2text(txt));
+  return tgt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5470,7 +5640,7 @@ Temporal * tle_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tle_text_ttext_w(const char * txt, const Temporal * temp) {
-  return tle_text_ttext(cstring2text(txt), temp);
+  return tle_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5485,7 +5655,7 @@ Temporal * tle_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tle_ttext_text_w(const Temporal * temp, const char * txt) {
-  return tle_ttext_text(temp, cstring2text(txt));
+  return tle_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5505,7 +5675,7 @@ Temporal * tlt_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tlt_text_ttext_w(const char * txt, const Temporal * temp) {
-  return tlt_text_ttext(cstring2text(txt), temp);
+  return tlt_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5520,7 +5690,7 @@ Temporal * tlt_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tlt_ttext_text_w(const Temporal * temp, const char * txt) {
-  return tlt_ttext_text(temp, cstring2text(txt));
+  return tlt_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5550,7 +5720,7 @@ Temporal * tne_temporal_temporal_w(const Temporal * temp1, const Temporal * temp
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tne_text_ttext_w(const char * txt, const Temporal * temp) {
-  return tne_text_ttext(cstring2text(txt), temp);
+  return tne_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5565,7 +5735,7 @@ Temporal * tne_tint_int_w(const Temporal * temp, int i) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * tne_ttext_text_w(const Temporal * temp, const char * txt) {
-  return tne_ttext_text(temp, cstring2text(txt));
+  return tne_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6079,6 +6249,16 @@ Temporal * add_tint_int_w(const Temporal * tnumber, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * add_bigint_tbigint_w(int64_t i, const Temporal * tnumber) {
+  return add_bigint_tbigint(i, tnumber);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * add_tbigint_bigint_w(const Temporal * tnumber, int64_t i) {
+  return add_tbigint_bigint(tnumber, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * add_tnumber_tnumber_w(const Temporal * tnumber1, const Temporal * tnumber2) {
   return add_tnumber_tnumber(tnumber1, tnumber2);
 }
@@ -6101,6 +6281,16 @@ Temporal * div_tfloat_float_w(const Temporal * tnumber, double d) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * div_tint_int_w(const Temporal * tnumber, int i) {
   return div_tint_int(tnumber, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * div_bigint_tbigint_w(int64_t i, const Temporal * tnumber) {
+  return div_bigint_tbigint(i, tnumber);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * div_tbigint_bigint_w(const Temporal * tnumber, int64_t i) {
+  return div_tbigint_bigint(tnumber, i);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6129,6 +6319,16 @@ Temporal * mul_tint_int_w(const Temporal * tnumber, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * mul_bigint_tbigint_w(int64_t i, const Temporal * tnumber) {
+  return mul_bigint_tbigint(i, tnumber);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * mul_tbigint_bigint_w(const Temporal * tnumber, int64_t i) {
+  return mul_tbigint_bigint(tnumber, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * mul_tnumber_tnumber_w(const Temporal * tnumber1, const Temporal * tnumber2) {
   return mul_tnumber_tnumber(tnumber1, tnumber2);
 }
@@ -6154,6 +6354,16 @@ Temporal * sub_tint_int_w(const Temporal * tnumber, int i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * sub_bigint_tbigint_w(int64_t i, const Temporal * tnumber) {
+  return sub_bigint_tbigint(i, tnumber);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * sub_tbigint_bigint_w(const Temporal * tnumber, int64_t i) {
+  return sub_tbigint_bigint(tnumber, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * sub_tnumber_tnumber_w(const Temporal * tnumber1, const Temporal * tnumber2) {
   return sub_tnumber_tnumber(tnumber1, tnumber2);
 }
@@ -6176,6 +6386,21 @@ Temporal * tfloat_ln_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tfloat_log10_w(const Temporal * temp) {
   return tfloat_log10(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tfloat_sin_w(const Temporal * temp) {
+  return tfloat_sin(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tfloat_cos_w(const Temporal * temp) {
+  return tfloat_cos(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tfloat_tan_w(const Temporal * temp) {
+  return tfloat_tan(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6205,12 +6430,12 @@ Temporal * tnumber_delta_value_w(const Temporal * temp) {
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * textcat_text_ttext_w(const char * txt, const Temporal * temp) {
-  return textcat_text_ttext(cstring2text(txt), temp);
+  return textcat_text_ttext(cstring_to_text(txt), temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
 Temporal * textcat_ttext_text_w(const Temporal * temp, const char * txt) {
-  return textcat_ttext_text(temp, cstring2text(txt));
+  return textcat_ttext_text(temp, cstring_to_text(txt));
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6294,23 +6519,23 @@ SkipList * tbool_tand_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tbool_tand_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tbool_tand_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tbool_tor_transfn_w(SkipList * state, const Temporal * temp) {
   return tbool_tor_transfn(state, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tbool_tor_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tbool_tor_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Span * temporal_extent_transfn_w(Span * s, const Temporal * temp) {
   return temporal_extent_transfn(s, temp);
-}
-
-EMSCRIPTEN_KEEPALIVE
-SkipList * temporal_merge_transfn_w(SkipList * state, const Temporal * temp) {
-  return temporal_merge_transfn(state, temp);
-}
-
-EMSCRIPTEN_KEEPALIVE
-SkipList * temporal_merge_combinefn_w(SkipList * state1, SkipList * state2) {
-  return temporal_merge_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6324,8 +6549,18 @@ SkipList * temporal_tcount_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * temporal_tcount_combinefn_w(SkipList * state1, SkipList * state2) {
+  return temporal_tcount_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tfloat_tmax_transfn_w(SkipList * state, const Temporal * temp) {
   return tfloat_tmax_transfn(state, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SkipList * tfloat_tmax_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tfloat_tmax_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6334,8 +6569,18 @@ SkipList * tfloat_tmin_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tfloat_tmin_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tfloat_tmin_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tfloat_tsum_transfn_w(SkipList * state, const Temporal * temp) {
   return tfloat_tsum_transfn(state, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SkipList * tfloat_tsum_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tfloat_tsum_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6364,13 +6609,28 @@ SkipList * tint_tmax_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tint_tmax_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tint_tmax_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tint_tmin_transfn_w(SkipList * state, const Temporal * temp) {
   return tint_tmin_transfn(state, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tint_tmin_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tint_tmin_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tint_tsum_transfn_w(SkipList * state, const Temporal * temp) {
   return tint_tsum_transfn(state, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SkipList * tint_tsum_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tint_tsum_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6404,6 +6664,11 @@ SkipList * tnumber_tavg_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * tnumber_tavg_combinefn_w(SkipList * state1, SkipList * state2) {
+  return tnumber_tavg_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * tnumber_wavg_transfn_w(SkipList * state, const Temporal * temp, const Interval * interv) {
   return tnumber_wavg_transfn(state, temp, interv);
 }
@@ -6424,8 +6689,23 @@ SkipList * tstzspanset_tcount_transfn_w(SkipList * state, const SpanSet * ss) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+SkipList * temporal_merge_transfn_w(SkipList * state, const Temporal * temp) {
+  return temporal_merge_transfn(state, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SkipList * temporal_merge_combinefn_w(SkipList * state1, SkipList * state2) {
+  return temporal_merge_combinefn(state1, state2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SkipList * ttext_tmax_transfn_w(SkipList * state, const Temporal * temp) {
   return ttext_tmax_transfn(state, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SkipList * ttext_tmax_combinefn_w(SkipList * state1, SkipList * state2) {
+  return ttext_tmax_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6434,13 +6714,18 @@ SkipList * ttext_tmin_transfn_w(SkipList * state, const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * temporal_simplify_dp_w(const Temporal * temp, double eps_dist, int synchronized) {
-  return temporal_simplify_dp(temp, eps_dist, (bool) synchronized);
+SkipList * ttext_tmin_combinefn_w(SkipList * state1, SkipList * state2) {
+  return ttext_tmin_combinefn(state1, state2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * temporal_simplify_max_dist_w(const Temporal * temp, double eps_dist, int synchronized) {
-  return temporal_simplify_max_dist(temp, eps_dist, (bool) synchronized);
+Temporal * temporal_simplify_dp_w(const Temporal * temp, double dist, int synchronized) {
+  return temporal_simplify_dp(temp, dist, (bool) synchronized);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * temporal_simplify_max_dist_w(const Temporal * temp, double dist, int synchronized) {
+  return temporal_simplify_max_dist(temp, dist, (bool) synchronized);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6489,13 +6774,28 @@ double temporal_hausdorff_distance_w(const Temporal * temp1, const Temporal * te
 }
 
 EMSCRIPTEN_KEEPALIVE
+double temporal_average_hausdorff_distance_w(const Temporal * temp1, const Temporal * temp2) {
+  return temporal_average_hausdorff_distance(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double temporal_lcss_distance_w(const Temporal * temp1, const Temporal * temp2, double epsilon) {
+  return temporal_lcss_distance(temp1, temp2, epsilon);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * temporal_ext_kalman_filter_w(const Temporal * temp, double gate, double q, double variance, int to_drop) {
+  return temporal_ext_kalman_filter(temp, gate, q, variance, (bool) to_drop);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Span * temporal_time_bins_w(const Temporal * temp, const Interval * duration, long long origin, int * count) {
   return temporal_time_bins(temp, duration, (TimestampTz) origin, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal ** temporal_time_split_w(const Temporal * temp, const Interval * duration, long long torigin, TimestampTz ** time_bins, int * count) {
-  return temporal_time_split(temp, duration, (TimestampTz) torigin, time_bins, count);
+Temporal ** temporal_time_split_w(const Temporal * temp, const Interval * duration, long long torigin, TimestampTz ** bins, int * count) {
+  return temporal_time_split(temp, duration, (TimestampTz) torigin, bins, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6592,6 +6892,36 @@ TBox * tintbox_value_time_tiles_w(const TBox * box, int xsize, const Interval * 
 /* === meos_geo.h === */
 
 EMSCRIPTEN_KEEPALIVE
+BOX3D * box3d_make_w(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int32_t srid) {
+  return box3d_make(xmin, xmax, ymin, ymax, zmin, zmax, srid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+BOX3D * box3d_in_w(const char * str) {
+  return box3d_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * box3d_out_w(const BOX3D * box, int maxdd) {
+  return box3d_out(box, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GBOX * gbox_make_w(int hasz, int hasm, int geodetic, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double mmin, double mmax) {
+  return gbox_make((bool) hasz, (bool) hasm, (bool) geodetic, xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GBOX * gbox_in_w(const char * str) {
+  return gbox_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * gbox_out_w(const GBOX * box, int maxdd) {
+  return gbox_out(box, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * geo_as_ewkb_w(const GSERIALIZED * gs, const char * endian, size_t * size) {
   return geo_as_ewkb(gs, endian, size);
 }
@@ -6617,7 +6947,7 @@ char * geo_as_text_w(const GSERIALIZED * gs, int precision) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * geo_from_ewkb_w(const uint8_t * wkb, size_t wkb_size, int srid) {
+GSERIALIZED * geo_from_ewkb_w(const uint8_t * wkb, size_t wkb_size, int32_t srid) {
   return geo_from_ewkb(wkb, wkb_size, srid);
 }
 
@@ -6657,28 +6987,8 @@ GSERIALIZED * geom_in_w(const char * str, int typmod) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-BOX3D * box3d_make_w(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int32_t srid) {
-  return box3d_make(xmin, xmax, ymin, ymax, zmin, zmax, srid);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * box3d_out_w(const BOX3D * box, int maxdd) {
-  return box3d_out(box, maxdd);
-}
-
-EMSCRIPTEN_KEEPALIVE
-GBOX * gbox_make_w(int hasz, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
-  return gbox_make((bool) hasz, xmin, xmax, ymin, ymax, zmin, zmax);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * gbox_out_w(const GBOX * box, int maxdd) {
-  return gbox_out(box, maxdd);
-}
-
-EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * geo_copy_w(const GSERIALIZED * g) {
-  return geo_copy(g);
+GSERIALIZED * geo_copy_w(const GSERIALIZED * gs) {
+  return geo_copy(gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6712,8 +7022,8 @@ GSERIALIZED * geog_to_geom_w(const GSERIALIZED * geog) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int geo_is_empty_w(const GSERIALIZED * g) {
-  return (int) geo_is_empty(g);
+int geo_is_empty_w(const GSERIALIZED * gs) {
+  return (int) geo_is_empty(gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6727,23 +7037,23 @@ const char * geo_typename_w(int type) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-double geog_area_w(const GSERIALIZED * g, int use_spheroid) {
-  return geog_area(g, (bool) use_spheroid);
+double geog_area_w(const GSERIALIZED * gs, int use_spheroid) {
+  return geog_area(gs, (bool) use_spheroid);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * geog_centroid_w(const GSERIALIZED * g, int use_spheroid) {
-  return geog_centroid(g, (bool) use_spheroid);
+GSERIALIZED * geog_centroid_w(const GSERIALIZED * gs, int use_spheroid) {
+  return geog_centroid(gs, (bool) use_spheroid);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double geog_length_w(const GSERIALIZED * g, int use_spheroid) {
-  return geog_length(g, (bool) use_spheroid);
+double geog_length_w(const GSERIALIZED * gs, int use_spheroid) {
+  return geog_length(gs, (bool) use_spheroid);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double geog_perimeter_w(const GSERIALIZED * g, int use_spheroid) {
-  return geog_perimeter(g, (bool) use_spheroid);
+double geog_perimeter_w(const GSERIALIZED * gs, int use_spheroid) {
+  return geog_perimeter(gs, (bool) use_spheroid);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6884,13 +7194,13 @@ GSERIALIZED * geom_min_bounding_radius_w(const GSERIALIZED * geom, double * radi
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * geom_shortestline2d_w(const GSERIALIZED * gs1, const GSERIALIZED * s2) {
-  return geom_shortestline2d(gs1, s2);
+GSERIALIZED * geom_shortestline2d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
+  return geom_shortestline2d(gs1, gs2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * geom_shortestline3d_w(const GSERIALIZED * gs1, const GSERIALIZED * s2) {
-  return geom_shortestline3d(gs1, s2);
+GSERIALIZED * geom_shortestline3d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
+  return geom_shortestline3d(gs1, gs2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -6939,6 +7249,11 @@ int geom_disjoint2d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int geom_dwithin_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, double tolerance) {
+  return (int) geom_dwithin(gs1, gs2, tolerance);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int geom_dwithin2d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, double tolerance) {
   return (int) geom_dwithin2d(gs1, gs2, tolerance);
 }
@@ -6946,6 +7261,11 @@ int geom_dwithin2d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, double to
 EMSCRIPTEN_KEEPALIVE
 int geom_dwithin3d_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, double tolerance) {
   return (int) geom_dwithin3d(gs1, gs2, tolerance);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int geom_intersects_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
+  return (int) geom_intersects(gs1, gs2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -7019,6 +7339,11 @@ Set * geomset_in_w(const char * str) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * spatialset_out_w(const Set * s, int maxdd) {
+  return spatialset_out(s, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 char * spatialset_as_text_w(const Set * set, int maxdd) {
   return spatialset_as_text(set, maxdd);
 }
@@ -7056,8 +7381,8 @@ GSERIALIZED * geoset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED ** geoset_values_w(const Set * s) {
-  return geoset_values(s);
+GSERIALIZED ** geoset_values_w(const Set * s, int * count) {
+  return geoset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -7126,8 +7451,8 @@ Set * spatialset_transform_pipeline_w(const Set * s, const char * pipelinestr, i
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * stbox_as_hexwkb_w(const STBox * box, uint8_t variant, size_t * size) {
-  return stbox_as_hexwkb(box, variant, size);
+char * stbox_as_hexwkb_w(const STBox * box, uint8_t variant, size_t * size_out) {
+  return stbox_as_hexwkb(box, variant, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -7171,7 +7496,7 @@ STBox * stbox_copy_w(const STBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-STBox * stbox_make_w(int hasx, int hasz, int geodetic, int srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, const Span * s) {
+STBox * stbox_make_w(int hasx, int hasz, int geodetic, int32_t srid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, const Span * s) {
   return stbox_make((bool) hasx, (bool) hasz, (bool) geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, s);
 }
 
@@ -7236,7 +7561,7 @@ int stbox_hash_w(const STBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int stbox_hash_extended_w(const STBox * box, int seed) {
+uint64_t stbox_hash_extended_w(const STBox * box, uint64_t seed) {
   return stbox_hash_extended(box, seed);
 }
 
@@ -7546,6 +7871,11 @@ int stbox_ne_w(const STBox * box1, const STBox * box2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * tspatial_out_w(const Temporal * temp, int maxdd) {
+  return tspatial_out(temp, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tgeogpoint_from_mfjson_w(const char * str) {
   return tgeogpoint_from_mfjson(str);
 }
@@ -7596,11 +7926,6 @@ char * tspatial_as_text_w(const Temporal * temp, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * tspatial_out_w(const Temporal * temp, int maxdd) {
-  return tspatial_out(temp, maxdd);
-}
-
-EMSCRIPTEN_KEEPALIVE
 Temporal * tgeo_from_base_temp_w(const GSERIALIZED * gs, const Temporal * temp) {
   return tgeo_from_base_temp(gs, temp);
 }
@@ -7646,7 +7971,7 @@ TSequence * tpointseq_from_base_tstzspan_w(const GSERIALIZED * gs, const Span * 
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence * tpointseq_make_coords_w(const double * xcoords, const double * ycoords, const double * zcoords, const TimestampTz * times, int count, int srid, int geodetic, int lower_inc, int upper_inc, interpType interp, int normalize) {
+TSequence * tpointseq_make_coords_w(const double * xcoords, const double * ycoords, const double * zcoords, const TimestampTz * times, int count, int32_t srid, int geodetic, int lower_inc, int upper_inc, interpType interp, int normalize) {
   return tpointseq_make_coords(xcoords, ycoords, zcoords, times, count, srid, (bool) geodetic, (bool) lower_inc, (bool) upper_inc, interp, (bool) normalize);
 }
 
@@ -7701,8 +8026,8 @@ Temporal * tgeompoint_to_tgeometry_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int tpoint_as_mvtgeom_w(const Temporal * temp, const STBox * bounds, int32_t extent, int32_t buffer, int clip_geom, GSERIALIZED ** gsarr, int64_t ** timesarr, int * count) {
-  return (int) tpoint_as_mvtgeom(temp, bounds, extent, buffer, (bool) clip_geom, gsarr, timesarr, count);
+MvtGeom tpoint_as_mvtgeom_w(const Temporal * temp, const STBox * bounds, int32_t extent, int32_t buffer, int clip_geom) {
+  return tpoint_as_mvtgeom(temp, bounds, extent, buffer, (bool) clip_geom);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -7760,8 +8085,10 @@ GSERIALIZED * tgeo_traversed_area_w(const Temporal * temp, int unary_union) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int tgeo_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, GSERIALIZED ** value) {
-  return (int) tgeo_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+GSERIALIZED * tgeo_value_at_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  GSERIALIZED * r;
+  if (!tgeo_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, &r)) return NULL;
+  return r;
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8369,6 +8696,26 @@ int acontains_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int acovers_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return acovers_geo_tgeo(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int acovers_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return acovers_tgeo_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int acovers_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
+  return acovers_tgeo_tgeo(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adisjoint_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return adisjoint_geo_tgeo(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int adisjoint_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return adisjoint_tgeo_geo(temp, gs);
 }
@@ -8376,6 +8723,11 @@ int adisjoint_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 int adisjoint_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
   return adisjoint_tgeo_tgeo(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adwithin_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp, double dist) {
+  return adwithin_geo_tgeo(gs, temp, dist);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8389,6 +8741,11 @@ int adwithin_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double 
 }
 
 EMSCRIPTEN_KEEPALIVE
+int aintersects_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return aintersects_geo_tgeo(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int aintersects_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return aintersects_tgeo_geo(temp, gs);
 }
@@ -8396,6 +8753,11 @@ int aintersects_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 int aintersects_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
   return aintersects_tgeo_tgeo(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int atouches_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return atouches_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8411,6 +8773,11 @@ int atouches_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
 EMSCRIPTEN_KEEPALIVE
 int atouches_tpoint_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return atouches_tpoint_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int atouches_geo_tpoint_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return atouches_geo_tpoint(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8444,6 +8811,11 @@ int ecovers_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int edisjoint_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return edisjoint_geo_tgeo(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int edisjoint_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return edisjoint_tgeo_geo(temp, gs);
 }
@@ -8451,6 +8823,11 @@ int edisjoint_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 int edisjoint_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
   return edisjoint_tgeo_tgeo(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int edwithin_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp, double dist) {
+  return edwithin_geo_tgeo(gs, temp, dist);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8464,6 +8841,11 @@ int edwithin_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double 
 }
 
 EMSCRIPTEN_KEEPALIVE
+int eintersects_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return eintersects_geo_tgeo(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int eintersects_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return eintersects_tgeo_geo(temp, gs);
 }
@@ -8471,6 +8853,11 @@ int eintersects_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 int eintersects_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
   return eintersects_tgeo_tgeo(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int etouches_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return etouches_geo_tgeo(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8486,6 +8873,11 @@ int etouches_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
 EMSCRIPTEN_KEEPALIVE
 int etouches_tpoint_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return etouches_tpoint_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int etouches_geo_tpoint_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return etouches_geo_tpoint(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8579,6 +8971,66 @@ Temporal * ttouches_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) 
 }
 
 EMSCRIPTEN_KEEPALIVE
+int * edwithin_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, double dist, int * count) {
+  return edwithin_tgeoarr_tgeoarr(arr1, count1, arr2, count2, dist, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * adwithin_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, double dist, int * count) {
+  return adwithin_tgeoarr_tgeoarr(arr1, count1, arr2, count2, dist, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * eintersects_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return eintersects_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * aintersects_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return aintersects_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * etouches_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return etouches_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * atouches_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return atouches_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * edisjoint_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return edisjoint_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * adisjoint_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count) {
+  return adisjoint_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * tdwithin_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, double dist, int * count, SpanSet *** periods) {
+  return tdwithin_tgeoarr_tgeoarr(arr1, count1, arr2, count2, dist, count, periods);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * tintersects_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count, SpanSet *** periods) {
+  return tintersects_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count, periods);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * ttouches_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count, SpanSet *** periods) {
+  return ttouches_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count, periods);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int * tdisjoint_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2, int * count, SpanSet *** periods) {
+  return tdisjoint_tgeoarr_tgeoarr(arr1, count1, arr2, count2, count, periods);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tdistance_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return tdistance_tgeo_geo(temp, gs);
 }
@@ -8596,6 +9048,11 @@ double nad_stbox_geo_w(const STBox * box, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 double nad_stbox_stbox_w(const STBox * box1, const STBox * box2) {
   return nad_stbox_stbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double stbox_spatial_distance_w(const STBox * box1, const STBox * box2) {
+  return stbox_spatial_distance(box1, box2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8634,13 +9091,13 @@ GSERIALIZED * shortestline_tgeo_tgeo_w(const Temporal * temp1, const Temporal * 
 }
 
 EMSCRIPTEN_KEEPALIVE
-double tgeoarr_tgeoarr_mindist_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2) {
-  return tgeoarr_tgeoarr_mindist(arr1, count1, arr2, count2);
+double mindistance_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double threshold) {
+  return mindistance_tgeo_tgeo(temp1, temp2, threshold);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double mindistance_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double threshold) {
-  return mindistance_tgeo_tgeo(temp1, temp2, threshold);
+double mindistance_tgeoarr_tgeoarr_w(const Temporal ** arr1, int count1, const Temporal ** arr2, int count2) {
+  return mindistance_tgeoarr_tgeoarr(arr1, count1, arr2, count2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8689,18 +9146,18 @@ STBox * stbox_time_tiles_w(const STBox * bounds, const Interval * duration, long
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal ** tgeo_space_split_w(const Temporal * temp, double xsize, double ysize, double zsize, const GSERIALIZED * sorigin, int bitmatrix, int border_inc, GSERIALIZED *** space_bins, int * count) {
-  return tgeo_space_split(temp, xsize, ysize, zsize, sorigin, (bool) bitmatrix, (bool) border_inc, space_bins, count);
+SpaceSplit tgeo_space_split_w(const Temporal * temp, double xsize, double ysize, double zsize, const GSERIALIZED * sorigin, int bitmatrix, int border_inc) {
+  return tgeo_space_split(temp, xsize, ysize, zsize, sorigin, (bool) bitmatrix, (bool) border_inc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal ** tgeo_space_time_split_w(const Temporal * temp, double xsize, double ysize, double zsize, const Interval * duration, const GSERIALIZED * sorigin, long long torigin, int bitmatrix, int border_inc, GSERIALIZED *** space_bins, TimestampTz ** time_bins, int * count) {
-  return tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, (TimestampTz) torigin, (bool) bitmatrix, (bool) border_inc, space_bins, time_bins, count);
+SpaceTimeSplit tgeo_space_time_split_w(const Temporal * temp, double xsize, double ysize, double zsize, const Interval * duration, const GSERIALIZED * sorigin, long long torigin, int bitmatrix, int border_inc) {
+  return tgeo_space_time_split(temp, xsize, ysize, zsize, duration, sorigin, (TimestampTz) torigin, (bool) bitmatrix, (bool) border_inc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int * geo_cluster_kmeans_w(const GSERIALIZED ** geoms, uint32_t ngeoms, uint32_t k) {
-  return geo_cluster_kmeans(geoms, ngeoms, k);
+int * geo_cluster_kmeans_w(const GSERIALIZED ** geoms, uint32_t ngeoms, uint32_t k, int * count) {
+  return geo_cluster_kmeans(geoms, ngeoms, k, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8727,8 +9184,8 @@ char * cbuffer_as_ewkt_w(const Cbuffer * cb, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * cbuffer_as_hexwkb_w(const Cbuffer * cb, uint8_t variant, size_t * size) {
-  return cbuffer_as_hexwkb(cb, variant, size);
+char * cbuffer_as_hexwkb_w(const Cbuffer * cb, uint8_t variant, size_t * size_out) {
+  return cbuffer_as_hexwkb(cb, variant, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8797,7 +9254,7 @@ int cbuffer_hash_w(const Cbuffer * cb) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int cbuffer_hash_extended_w(const Cbuffer * cb, int seed) {
+uint64_t cbuffer_hash_extended_w(const Cbuffer * cb, uint64_t seed) {
   return cbuffer_hash_extended(cb, seed);
 }
 
@@ -8984,8 +9441,8 @@ Cbuffer * cbufferset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Cbuffer ** cbufferset_values_w(const Set * s) {
-  return cbufferset_values(s);
+Cbuffer ** cbufferset_values_w(const Set * s, int * count) {
+  return cbufferset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9039,8 +9496,43 @@ Temporal * tcbuffer_in_w(const char * str) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tcbuffer_from_mfjson_w(const char * mfjson) {
+  return tcbuffer_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tcbufferinst_make_w(const Cbuffer * cb, long long t) {
+  return tcbufferinst_make(cb, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tcbuffer_make_w(const Temporal * tpoint, const Temporal * tfloat) {
   return tcbuffer_make(tpoint, tfloat);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcbuffer_from_base_temp_w(const Cbuffer * cb, const Temporal * temp) {
+  return tcbuffer_from_base_temp(cb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tcbufferseq_from_base_tstzset_w(const Cbuffer * cb, const Set * s) {
+  return tcbufferseq_from_base_tstzset(cb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tcbufferseq_from_base_tstzspan_w(const Cbuffer * cb, const Span * s, interpType interp) {
+  return tcbufferseq_from_base_tstzspan(cb, s, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tcbufferseqset_from_base_tstzspanset_w(const Cbuffer * cb, const SpanSet * ss, interpType interp) {
+  return tcbufferseqset_from_base_tstzspanset(cb, ss, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Cbuffer * tcbuffer_end_value_w(const Temporal * temp) {
+  return tcbuffer_end_value(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9054,8 +9546,35 @@ Set * tcbuffer_radius_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * tcbuffer_trav_area_w(const Temporal * temp, int merge_union) {
-  return tcbuffer_trav_area(temp, (bool) merge_union);
+GSERIALIZED * tcbuffer_traversed_area_w(const Temporal * temp, int unary_union) {
+  return tcbuffer_traversed_area(temp, (bool) unary_union);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * tcbuffer_convex_hull_w(const Temporal * temp) {
+  return tcbuffer_convex_hull(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Cbuffer * tcbuffer_start_value_w(const Temporal * temp) {
+  return tcbuffer_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tcbuffer_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Cbuffer ** value) {
+  return (int) tcbuffer_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Cbuffer * tcbuffer_value_n_w(const Temporal * temp, int n) {
+  Cbuffer * r;
+  if (!tcbuffer_value_n(temp, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Cbuffer ** tcbuffer_values_w(const Temporal * temp, int * count) {
+  return tcbuffer_values(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9141,6 +9660,11 @@ double nad_tcbuffer_stbox_w(const Temporal * temp, const STBox * box) {
 EMSCRIPTEN_KEEPALIVE
 double nad_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
   return nad_tcbuffer_tcbuffer(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double mindistance_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2, double threshold) {
+  return mindistance_tcbuffer_tcbuffer(temp1, temp2, threshold);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9294,6 +9818,11 @@ int acovers_tcbuffer_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int acovers_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
+  return acovers_tcbuffer_tcbuffer(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int adisjoint_tcbuffer_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
   return adisjoint_tcbuffer_geo(temp, gs);
 }
@@ -9371,6 +9900,11 @@ int econtains_tcbuffer_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 EMSCRIPTEN_KEEPALIVE
 int ecovers_cbuffer_tcbuffer_w(const Cbuffer * cb, const Temporal * temp) {
   return ecovers_cbuffer_tcbuffer(cb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ecovers_geo_tcbuffer_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return ecovers_geo_tcbuffer(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9589,6 +10123,1412 @@ Temporal * ttouches_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal *
 }
 
 
+/* === meos_h3.h === */
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t h3index_in_w(const char * str) {
+  return h3index_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * h3index_out_w(uint64_t cell) {
+  return h3index_out(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t h3index_from_wkb_w(const uint8_t * wkb, size_t size) {
+  return h3index_from_wkb(wkb, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t h3index_from_hexwkb_w(const char * hexwkb) {
+  return h3index_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * h3index_as_wkb_w(uint64_t cell, uint8_t variant, size_t * size_out) {
+  return h3index_as_wkb(cell, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * h3index_as_hexwkb_w(uint64_t cell, uint8_t variant, size_t * size_out) {
+  return h3index_as_hexwkb(cell, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_eq_w(uint64_t a, uint64_t b) {
+  return (int) h3index_eq(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_ne_w(uint64_t a, uint64_t b) {
+  return (int) h3index_ne(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_lt_w(uint64_t a, uint64_t b) {
+  return (int) h3index_lt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_le_w(uint64_t a, uint64_t b) {
+  return (int) h3index_le(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_gt_w(uint64_t a, uint64_t b) {
+  return (int) h3index_gt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_ge_w(uint64_t a, uint64_t b) {
+  return (int) h3index_ge(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_cmp_w(uint64_t a, uint64_t b) {
+  return h3index_cmp(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int h3index_hash_w(uint64_t cell) {
+  return h3index_hash(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * h3_grid_disk_w(uint64_t origin, int k) {
+  return h3_grid_disk(origin, k);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * h3_cell_to_children_w(uint64_t origin, int childRes) {
+  return h3_cell_to_children(origin, childRes);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * h3_compact_cells_w(const Set * cells) {
+  return h3_compact_cells(cells);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * h3_uncompact_cells_w(const Set * cells, int res) {
+  return h3_uncompact_cells(cells, res);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_in_w(const char * str) {
+  return th3index_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * th3indexinst_in_w(const char * str) {
+  return th3indexinst_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * th3indexseq_in_w(const char * str, interpType interp) {
+  return th3indexseq_in(str, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * th3indexseqset_in_w(const char * str) {
+  return th3indexseqset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_make_w(uint64_t value, long long t) {
+  return th3index_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * th3indexinst_make_w(uint64_t value, long long t) {
+  return th3indexinst_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * th3indexseq_make_w(const uint64_t * values, const TimestampTz * times, int count, int lower_inc, int upper_inc) {
+  return th3indexseq_make(values, times, count, (bool) lower_inc, (bool) upper_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * th3indexseqset_make_w(const TSequence ** sequences, int count) {
+  return th3indexseqset_make(sequences, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t th3index_start_value_w(const Temporal * temp) {
+  return th3index_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t th3index_end_value_w(const Temporal * temp) {
+  return th3index_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long th3index_value_n_w(const Temporal * temp, int n) {
+  uint64_t r;
+  if (!th3index_value_n(temp, n, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t * th3index_values_w(const Temporal * temp, int * count) {
+  return th3index_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long th3index_value_at_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  uint64_t r;
+  if (!th3index_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_to_th3index_w(const Temporal * temp) {
+  return tbigint_to_th3index(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_to_tbigint_w(const Temporal * temp) {
+  return th3index_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return ever_eq_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return ever_eq_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return ever_ne_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return ever_ne_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return always_eq_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return always_eq_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return always_ne_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return always_ne_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return teq_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return teq_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return teq_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_h3index_th3index_w(uint64_t cell, const Temporal * temp) {
+  return tne_h3index_th3index(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_th3index_h3index_w(const Temporal * temp, uint64_t cell) {
+  return tne_th3index_h3index(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_th3index_th3index_w(const Temporal * temp1, const Temporal * temp2) {
+  return tne_th3index_th3index(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_get_resolution_w(const Temporal * temp) {
+  return th3index_get_resolution(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_get_base_cell_number_w(const Temporal * temp) {
+  return th3index_get_base_cell_number(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_is_valid_cell_w(const Temporal * temp) {
+  return th3index_is_valid_cell(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_is_res_class_iii_w(const Temporal * temp) {
+  return th3index_is_res_class_iii(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_is_pentagon_w(const Temporal * temp) {
+  return th3index_is_pentagon(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_parent_w(const Temporal * temp, int resolution) {
+  return th3index_cell_to_parent(temp, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_parent_next_w(const Temporal * temp) {
+  return th3index_cell_to_parent_next(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_center_child_w(const Temporal * temp, int resolution) {
+  return th3index_cell_to_center_child(temp, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_center_child_next_w(const Temporal * temp) {
+  return th3index_cell_to_center_child_next(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_child_pos_w(const Temporal * temp, int parent_res) {
+  return th3index_cell_to_child_pos(temp, parent_res);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_child_pos_to_cell_w(const Temporal * child_pos, const Temporal * parent, int child_res) {
+  return th3index_child_pos_to_cell(child_pos, parent, child_res);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tgeogpoint_to_th3index_w(const Temporal * temp, int resolution) {
+  return tgeogpoint_to_th3index(temp, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tgeompoint_to_th3index_w(const Temporal * temp, int resolution) {
+  return tgeompoint_to_th3index(temp, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_to_tgeogpoint_w(const Temporal * temp) {
+  return th3index_to_tgeogpoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_to_tgeompoint_w(const Temporal * temp) {
+  return th3index_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_boundary_w(const Temporal * temp) {
+  return th3index_cell_to_boundary(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t h3_gs_point_to_cell_w(const GSERIALIZED * point, int resolution) {
+  return h3_gs_point_to_cell(point, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * geo_to_h3index_set_w(const GSERIALIZED * gs, int resolution) {
+  return geo_to_h3index_set(gs, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_h3indexset_th3index_w(const Set * cells, const Temporal * th3idx) {
+  return ever_eq_h3indexset_th3index(cells, th3idx);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_are_neighbor_cells_w(const Temporal * origin, const Temporal * dest) {
+  return th3index_are_neighbor_cells(origin, dest);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cells_to_directed_edge_w(const Temporal * origin, const Temporal * dest) {
+  return th3index_cells_to_directed_edge(origin, dest);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_is_valid_directed_edge_w(const Temporal * edge) {
+  return th3index_is_valid_directed_edge(edge);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_get_directed_edge_origin_w(const Temporal * edge) {
+  return th3index_get_directed_edge_origin(edge);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_get_directed_edge_destination_w(const Temporal * edge) {
+  return th3index_get_directed_edge_destination(edge);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_directed_edge_to_boundary_w(const Temporal * edge) {
+  return th3index_directed_edge_to_boundary(edge);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_vertex_w(const Temporal * temp, int vertex_num) {
+  return th3index_cell_to_vertex(temp, vertex_num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_vertex_to_latlng_w(const Temporal * temp) {
+  return th3index_vertex_to_latlng(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_is_valid_vertex_w(const Temporal * temp) {
+  return th3index_is_valid_vertex(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_grid_distance_w(const Temporal * origin, const Temporal * dest) {
+  return th3index_grid_distance(origin, dest);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_to_local_ij_w(const Temporal * origin, const Temporal * cell) {
+  return th3index_cell_to_local_ij(origin, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_local_ij_to_cell_w(const Temporal * origin, const Temporal * coord) {
+  return th3index_local_ij_to_cell(origin, coord);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_cell_area_w(const Temporal * temp, const char * unit) {
+  return th3index_cell_area(temp, unit);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * th3index_edge_length_w(const Temporal * temp, const char * unit) {
+  return th3index_edge_length(temp, unit);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tgeogpoint_great_circle_distance_w(const Temporal * a, const Temporal * b, const char * unit) {
+  return tgeogpoint_great_circle_distance(a, b, unit);
+}
+
+
+/* === meos_json.h === */
+
+EMSCRIPTEN_KEEPALIVE
+char * json_in_w(const char * str) {
+  text *_t = json_in(str);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_out_w(const char * js) {
+  return json_out(cstring_to_text(js));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_from_text_w(const char * txt, int unique_keys) {
+  return jsonb_from_text(cstring_to_text(txt), (bool) unique_keys);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_in_w(const char * str) {
+  return jsonb_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_out_w(const Jsonb * jb) {
+  return jsonb_out(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_make_w(text ** keys_vals, int count) {
+  text *_t = json_make(keys_vals, count);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_make_two_arg_w(text ** keys, text ** values, int count) {
+  text *_t = json_make_two_arg(keys, values, count);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_copy_w(const Jsonb * jb) {
+  return jsonb_copy(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_make_w(text ** keys_vals, int count) {
+  return jsonb_make(keys_vals, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_make_two_arg_w(text ** keys, text ** values, int count) {
+  return jsonb_make_two_arg(keys, values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_to_bool_w(const Jsonb * jb) {
+  return (int) jsonb_to_bool(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_to_cstring_w(const Jsonb * jb) {
+  return jsonb_to_cstring(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_to_float4_w(const Jsonb * jb) {
+  return jsonb_to_float4(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_to_float8_w(const Jsonb * jb) {
+  return jsonb_to_float8(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int16 jsonb_to_int16_w(const Jsonb * jb) {
+  return jsonb_to_int16(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_to_int32_w(const Jsonb * jb) {
+  return jsonb_to_int32(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t jsonb_to_int64_w(const Jsonb * jb) {
+  return jsonb_to_int64(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_to_numeric_w(const Jsonb * jb) {
+  return jsonb_to_numeric(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_to_text_w(const Jsonb * jb) {
+  text *_t = jsonb_to_text(jb);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_array_element_w(const char * js, int element) {
+  text *_t = json_array_element(cstring_to_text(js), element);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_array_element_text_w(const char * js, int element) {
+  text *_t = json_array_element_text(cstring_to_text(js), element);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** json_array_elements_w(const char * js, int * count) {
+  return json_array_elements(cstring_to_text(js), count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** json_array_elements_text_w(const char * js, int * count) {
+  return json_array_elements_text(cstring_to_text(js), count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int json_array_length_w(const char * js) {
+  return json_array_length(cstring_to_text(js));
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** json_each_w(const char * js, text ** values, int * count) {
+  return json_each(cstring_to_text(js), values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** json_each_text_w(const char * js, text ** values, int * count) {
+  return json_each_text(cstring_to_text(js), values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_extract_path_w(const char * js, text ** path_elems, int path_len) {
+  text *_t = json_extract_path(cstring_to_text(js), path_elems, path_len);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_extract_path_text_w(const char * js, text ** path_elems, int path_len) {
+  text *_t = json_extract_path_text(cstring_to_text(js), path_elems, path_len);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_object_field_w(const char * js, const char * key) {
+  text *_t = json_object_field(cstring_to_text(js), cstring_to_text(key));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_object_field_text_w(const char * js, const char * key) {
+  text *_t = json_object_field_text(cstring_to_text(js), cstring_to_text(key));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** json_object_keys_w(const char * js, int * count) {
+  return json_object_keys(cstring_to_text(js), count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_typeof_w(const char * js) {
+  text *_t = json_typeof(cstring_to_text(js));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_array_element_w(const Jsonb * jb, int element) {
+  return jsonb_array_element(jb, element);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_array_element_text_w(const Jsonb * jb, int element) {
+  text *_t = jsonb_array_element_text(jb, element);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb ** jsonb_array_elements_w(const Jsonb * jb, int * count) {
+  return jsonb_array_elements(jb, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** jsonb_array_elements_text_w(const Jsonb * jb, int * count) {
+  return jsonb_array_elements_text(jb, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_array_length_w(const Jsonb * jb) {
+  return jsonb_array_length(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_contained_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_contained(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_contains_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_contains(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** jsonb_each_w(const Jsonb * jb, Jsonb ** values, int * count) {
+  return jsonb_each(jb, values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** jsonb_each_text_w(const Jsonb * jb, text ** values, int * count) {
+  return jsonb_each_text(jb, values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_exists_w(const Jsonb * jb, const char * key) {
+  return (int) jsonb_exists(jb, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_exists_array_w(const Jsonb * jb, text ** keys_elems, int keys_len, int any) {
+  return (int) jsonb_exists_array(jb, keys_elems, keys_len, (bool) any);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_extract_path_w(const Jsonb * jb, text ** path_elems, int path_len) {
+  return jsonb_extract_path(jb, path_elems, path_len);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_extract_path_text_w(const Jsonb * jb, text ** path_elems, int path_len) {
+  text *_t = jsonb_extract_path_text(jb, path_elems, path_len);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_hash_w(const Jsonb * jb) {
+  return jsonb_hash(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t jsonb_hash_extended_w(const Jsonb * jb, uint64_t seed) {
+  return jsonb_hash_extended(jb, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_object_field_w(const Jsonb * jb, const char * key) {
+  return jsonb_object_field(jb, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_object_field_text_w(const Jsonb * jb, const char * key) {
+  text *_t = jsonb_object_field_text(jb, cstring_to_text(key));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+text ** jsonb_object_keys_w(const Jsonb * jb, int * count) {
+  return jsonb_object_keys(jb, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * json_strip_nulls_w(const char * js, int strip_in_arrays) {
+  text *_t = json_strip_nulls(cstring_to_text(js), (bool) strip_in_arrays);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_concat_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return jsonb_concat(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_delete_w(const Jsonb * jb, const char * key) {
+  return jsonb_delete(jb, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_delete_array_w(const Jsonb * jb, text ** keys_elems, int keys_len) {
+  return jsonb_delete_array(jb, keys_elems, keys_len);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_delete_index_w(const Jsonb * jb, int idx) {
+  return jsonb_delete_index(jb, idx);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_delete_path_w(const Jsonb * jb, text ** path_elems, int path_len) {
+  return jsonb_delete_path(jb, path_elems, path_len);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_insert_w(const Jsonb * jb, text ** path_elems, int path_len, const Jsonb * newjb, int after) {
+  return jsonb_insert(jb, path_elems, path_len, newjb, (bool) after);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonb_pretty_w(const Jsonb * jb) {
+  text *_t = jsonb_pretty(jb);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_set_w(const Jsonb * jb, text ** path_elems, int path_len, const Jsonb * newjb, int create) {
+  return jsonb_set(jb, path_elems, path_len, newjb, (bool) create);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_set_lax_w(const Jsonb * jb, text ** path_elems, int path_len, const Jsonb * newjb, int create, const char * handle_null) {
+  return jsonb_set_lax(jb, path_elems, path_len, newjb, (bool) create, cstring_to_text(handle_null));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_strip_nulls_w(const Jsonb * jb, int strip_in_arrays) {
+  return jsonb_strip_nulls(jb, (bool) strip_in_arrays);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_cmp_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return jsonb_cmp(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_eq_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_eq(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_ge_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_ge(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_gt_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_gt(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_le_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_le(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_lt_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_lt(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_ne_w(const Jsonb * jb1, const Jsonb * jb2) {
+  return (int) jsonb_ne(jb1, jb2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_path_exists_w(const Jsonb * jb, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonb_path_exists(jb, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int jsonb_path_match_w(const Jsonb * jb, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return (int) jsonb_path_match(jb, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb ** jsonb_path_query_all_w(const Jsonb * jb, const JsonPath * jp, const Jsonb * vars, int silent, int tz, int * count) {
+  return jsonb_path_query_all(jb, jp, vars, (bool) silent, (bool) tz, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_path_query_array_w(const Jsonb * jb, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonb_path_query_array(jb, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonb_path_query_first_w(const Jsonb * jb, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonb_path_query_first(jb, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+JsonPath * jsonpath_in_w(const char * str) {
+  return jsonpath_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+JsonPath * jsonpath_copy_w(const JsonPath * jp) {
+  return jsonpath_copy(jp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonpath_out_w(const JsonPath * jp) {
+  return jsonpath_out(jp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_in_w(const char * str) {
+  return jsonbset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * jsonbset_out_w(const Set * s, int maxdd) {
+  return jsonbset_out(s, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_make_w(const Jsonb ** values, int count) {
+  return jsonbset_make(values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonb_to_set_w(const Jsonb * jb) {
+  return jsonb_to_set(jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonbset_end_value_w(const Set * s) {
+  return jsonbset_end_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonbset_start_value_w(const Set * s) {
+  return jsonbset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * jsonbset_value_n_w(const Set * s, int n) {
+  Jsonb * r;
+  if (!jsonbset_value_n(s, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb ** jsonbset_values_w(const Set * s, int * count) {
+  return jsonbset_values(s, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * concat_jsonbset_jsonb_w(const Set * s, const Jsonb * jb, int invert) {
+  return concat_jsonbset_jsonb(s, jb, (bool) invert);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_array_length_w(const Set * set) {
+  return jsonbset_array_length(set);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_object_field_w(const Set * set, const char * key, int astext, nullHandleType null_handle) {
+  return jsonbset_object_field(set, cstring_to_text(key), (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_array_element_w(const Set * set, int idx, int astext, nullHandleType null_handle) {
+  return jsonbset_array_element(set, idx, (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_delete_index_w(const Set * set, int idx) {
+  return jsonbset_delete_index(set, idx);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_delete_w(const Set * set, const char * key) {
+  return jsonbset_delete(set, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_delete_array_w(const Set * set, text ** keys, int count) {
+  return jsonbset_delete_array(set, keys, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_exists_w(const Set * set, const char * key) {
+  return jsonbset_exists(set, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_exists_array_w(const Set * set, text ** keys, int count, int any) {
+  return jsonbset_exists_array(set, keys, count, (bool) any);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_set_w(const Set * set, text ** keys, int count, const Jsonb * newjb, int create, const char * null_handle, int lax) {
+  return jsonbset_set(set, keys, count, newjb, (bool) create, cstring_to_text(null_handle), (bool) lax);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_to_alphanumset_w(const Set * set, const char * key, MeosType settype, nullHandleType null_handle) {
+  return jsonbset_to_alphanumset(set, key, settype, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_to_intset_w(const Set * set, const char * key, nullHandleType null_handle) {
+  return jsonbset_to_intset(set, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_to_floatset_w(const Set * set, const char * key, nullHandleType null_handle) {
+  return jsonbset_to_floatset(set, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_to_textset_key_w(const Set * set, const char * key, nullHandleType null_handle) {
+  return jsonbset_to_textset_key(set, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_strip_nulls_w(const Set * set, int strip_in_arrays) {
+  return jsonbset_strip_nulls(set, (bool) strip_in_arrays);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_pretty_w(const Set * set) {
+  return jsonbset_pretty(set);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_delete_path_w(const Set * set, text ** path_elems, int path_len) {
+  return jsonbset_delete_path(set, path_elems, path_len);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_extract_path_w(const Set * set, text ** path_elems, int path_len, int astext, nullHandleType null_handle) {
+  return jsonbset_extract_path(set, path_elems, path_len, (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_insert_w(const Set * set, text ** path_elems, int path_len, const Jsonb * newjb, int after) {
+  return jsonbset_insert(set, path_elems, path_len, newjb, (bool) after);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_path_exists_w(const Set * set, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonbset_path_exists(set, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_path_match_w(const Set * set, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonbset_path_match(set, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_path_query_array_w(const Set * set, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonbset_path_query_array(set, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonbset_path_query_first_w(const Set * set, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return jsonbset_path_query_first(set, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_jsonb_set_w(const Jsonb * jb, const Set * s) {
+  return (int) contained_jsonb_set(jb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_set_jsonb_w(const Set * s, Jsonb * jb) {
+  return (int) contains_set_jsonb(s, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_jsonb_set_w(const Jsonb * jb, const Set * s) {
+  return intersection_jsonb_set(jb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_set_jsonb_w(const Set * s, const Jsonb * jb) {
+  return intersection_set_jsonb(s, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * jsonb_union_transfn_w(Set * state, const Jsonb * jb) {
+  return jsonb_union_transfn(state, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_jsonb_set_w(const Jsonb * jb, const Set * s) {
+  return minus_jsonb_set(jb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_set_jsonb_w(const Set * s, const Jsonb * jb) {
+  return minus_set_jsonb(s, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_jsonb_set_w(const Jsonb * jb, const Set * s) {
+  return union_jsonb_set(jb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_set_jsonb_w(const Set * s, const Jsonb * jb) {
+  return union_set_jsonb(s, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_from_mfjson_w(const char * str) {
+  return tjsonb_from_mfjson(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_in_w(const char * str) {
+  return tjsonb_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tjsonb_out_w(const Temporal * temp) {
+  return tjsonb_out(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tjsonbinst_from_mfjson_w(json_object * mfjson) {
+  return tjsonbinst_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tjsonbinst_in_w(const char * str) {
+  return tjsonbinst_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tjsonbseq_from_mfjson_w(json_object * mfjson) {
+  return tjsonbseq_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tjsonbseq_in_w(const char * str, interpType interp) {
+  return tjsonbseq_in(str, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tjsonbseqset_from_mfjson_w(json_object * mfjson) {
+  return tjsonbseqset_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tjsonbseqset_in_w(const char * str) {
+  return tjsonbseqset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_from_base_temp_w(const Jsonb * jsonb, const Temporal * temp) {
+  return tjsonb_from_base_temp(jsonb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tjsonbinst_make_w(const Jsonb * jsonb, long long t) {
+  return tjsonbinst_make(jsonb, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tjsonbseq_from_base_tstzset_w(const Jsonb * jsonb, const Set * s) {
+  return tjsonbseq_from_base_tstzset(jsonb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tjsonbseq_from_base_tstzspan_w(const Jsonb * jsonb, const Span * sp) {
+  return tjsonbseq_from_base_tstzspan(jsonb, sp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tjsonbseqset_from_base_tstzspanset_w(const Jsonb * jsonb, const SpanSet * ss) {
+  return tjsonbseqset_from_base_tstzspanset(jsonb, ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_to_ttext_w(const Temporal * temp) {
+  return tjsonb_to_ttext(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ttext_to_tjsonb_w(const Temporal * temp) {
+  return ttext_to_tjsonb(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * tjsonb_end_value_w(const Temporal * temp) {
+  return tjsonb_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * tjsonb_start_value_w(const Temporal * temp) {
+  return tjsonb_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tjsonb_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Jsonb ** value) {
+  return (int) tjsonb_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb * tjsonb_value_n_w(const Temporal * temp, int n) {
+  Jsonb * r;
+  if (!tjsonb_value_n(temp, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Jsonb ** tjsonb_values_w(const Temporal * temp, int * count) {
+  return tjsonb_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * concat_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb, int invert) {
+  return concat_tjsonb_jsonb(temp, jb, (bool) invert);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * concat_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return concat_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contains_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb, int invert) {
+  return contains_tjsonb_jsonb(temp, jb, (bool) invert);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contains_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return contains_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+nullHandleType null_handle_type_from_string_w(const char * str) {
+  return null_handle_type_from_string(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjson_array_element_w(const Temporal * temp, int idx, nullHandleType null_handle) {
+  return tjson_array_element(temp, idx, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjson_array_length_w(const Temporal * temp) {
+  return tjson_array_length(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjson_extract_path_w(const Temporal * temp, text ** path_elems, int path_len, nullHandleType null_handle) {
+  return tjson_extract_path(temp, path_elems, path_len, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjson_object_field_w(const Temporal * temp, const char * key, int astext, nullHandleType null_handle) {
+  return tjson_object_field(temp, cstring_to_text(key), (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjson_strip_nulls_w(const Temporal * temp, int strip_in_arrays) {
+  return tjson_strip_nulls(temp, (bool) strip_in_arrays);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_array_element_w(const Temporal * temp, int idx, int astext, nullHandleType null_handle) {
+  return tjsonb_array_element(temp, idx, (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_array_length_w(const Temporal * temp) {
+  return tjsonb_array_length(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_delete_w(const Temporal * temp, const char * key) {
+  return tjsonb_delete(temp, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_delete_array_w(const Temporal * temp, text ** keys, int count) {
+  return tjsonb_delete_array(temp, keys, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_delete_index_w(const Temporal * temp, int idx) {
+  return tjsonb_delete_index(temp, idx);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_delete_path_w(const Temporal * temp, text ** path_elems, int path_len) {
+  return tjsonb_delete_path(temp, path_elems, path_len);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_exists_w(const Temporal * temp, const char * key) {
+  return tjsonb_exists(temp, cstring_to_text(key));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_exists_array_w(const Temporal * temp, text ** keys, int count, int any) {
+  return tjsonb_exists_array(temp, keys, count, (bool) any);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_extract_path_w(const Temporal * temp, text ** path_elems, int path_len, int astext, nullHandleType null_handle) {
+  return tjsonb_extract_path(temp, path_elems, path_len, (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_insert_w(const Temporal * temp, text ** keys, int count, const Jsonb * newjb, int after) {
+  return tjsonb_insert(temp, keys, count, newjb, (bool) after);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_object_field_w(const Temporal * temp, const char * key, int astext, nullHandleType null_handle) {
+  return tjsonb_object_field(temp, cstring_to_text(key), (bool) astext, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_path_exists_w(const Temporal * temp, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return tjsonb_path_exists(temp, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_path_match_w(const Temporal * temp, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return tjsonb_path_match(temp, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_path_query_array_w(const Temporal * temp, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return tjsonb_path_query_array(temp, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_path_query_first_w(const Temporal * temp, const JsonPath * jp, const Jsonb * vars, int silent, int tz) {
+  return tjsonb_path_query_first(temp, jp, vars, (bool) silent, (bool) tz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_pretty_w(const Temporal * temp) {
+  return tjsonb_pretty(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_set_w(const Temporal * temp, text ** keys, int count, const Jsonb * newjb, int create, const char * handle_null, int lax) {
+  return tjsonb_set(temp, keys, count, newjb, (bool) create, cstring_to_text(handle_null), (bool) lax);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_strip_nulls_w(const Temporal * temp, int strip_in_arrays) {
+  return tjsonb_strip_nulls(temp, (bool) strip_in_arrays);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_to_tbool_w(const Temporal * temp, const char * key, nullHandleType null_handle) {
+  return tjsonb_to_tbool(temp, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_to_tfloat_w(const Temporal * temp, const char * key, interpType interp, nullHandleType null_handle) {
+  return tjsonb_to_tfloat(temp, key, interp, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_to_tint_w(const Temporal * temp, const char * key, nullHandleType null_handle) {
+  return tjsonb_to_tint(temp, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_to_ttext_key_w(const Temporal * temp, const char * key, nullHandleType null_handle) {
+  return tjsonb_to_ttext_key(temp, key, null_handle);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_at_value_w(const Temporal * temp, const Jsonb * jsb) {
+  return tjsonb_at_value(temp, jsb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tjsonb_minus_value_w(const Temporal * temp, const Jsonb * jsb) {
+  return tjsonb_minus_value(temp, jsb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return always_eq_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return always_eq_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return always_ne_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return always_ne_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return ever_eq_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return ever_eq_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return ever_ne_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return ever_ne_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return teq_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return teq_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return tne_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return tne_tjsonb_jsonb(temp, jb);
+}
+
+
 /* === meos_npoint.h === */
 
 EMSCRIPTEN_KEEPALIVE
@@ -9682,8 +11622,8 @@ GSERIALIZED * nsegment_to_geom_w(const Nsegment * ns) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-STBox * nsegment_to_stbox_w(const Nsegment * np) {
-  return nsegment_to_stbox(np);
+STBox * nsegment_to_stbox_w(const Nsegment * ns) {
+  return nsegment_to_stbox(ns);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9692,7 +11632,7 @@ int npoint_hash_w(const Npoint * np) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int npoint_hash_extended_w(const Npoint * np, int seed) {
+uint64_t npoint_hash_extended_w(const Npoint * np, uint64_t seed) {
   return npoint_hash_extended(np, seed);
 }
 
@@ -9889,8 +11829,8 @@ Npoint * npointset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Npoint ** npointset_values_w(const Set * s) {
-  return npointset_values(s);
+Npoint ** npointset_values_w(const Set * s, int * count) {
+  return npointset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9944,6 +11884,11 @@ Temporal * tnpoint_in_w(const char * str) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tnpoint_from_mfjson_w(const char * mfjson) {
+  return tnpoint_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
 char * tnpoint_out_w(const Temporal * temp, int maxdd) {
   return tnpoint_out(temp, maxdd);
 }
@@ -9951,6 +11896,26 @@ char * tnpoint_out_w(const Temporal * temp, int maxdd) {
 EMSCRIPTEN_KEEPALIVE
 TInstant * tnpointinst_make_w(const Npoint * np, long long t) {
   return tnpointinst_make(np, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tnpoint_from_base_temp_w(const Npoint * np, const Temporal * temp) {
+  return tnpoint_from_base_temp(np, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tnpointseq_from_base_tstzset_w(const Npoint * np, const Set * s) {
+  return tnpointseq_from_base_tstzset(np, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tnpointseq_from_base_tstzspan_w(const Npoint * np, const Span * s, interpType interp) {
+  return tnpointseq_from_base_tstzspan(np, s, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tnpointseqset_from_base_tstzspanset_w(const Npoint * np, const SpanSet * ss, interpType interp) {
+  return tnpointseqset_from_base_tstzspanset(np, ss, interp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9966,6 +11931,11 @@ Temporal * tnpoint_to_tgeompoint_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tnpoint_cumulative_length_w(const Temporal * temp) {
   return tnpoint_cumulative_length(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Npoint * tnpoint_end_value_w(const Temporal * temp) {
+  return tnpoint_end_value(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9994,8 +11964,30 @@ Temporal * tnpoint_speed_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Npoint * tnpoint_start_value_w(const Temporal * temp) {
+  return tnpoint_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * tnpoint_trajectory_w(const Temporal * temp) {
   return tnpoint_trajectory(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tnpoint_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Npoint ** value) {
+  return (int) tnpoint_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Npoint * tnpoint_value_n_w(const Temporal * temp, int n) {
+  Npoint * r;
+  if (!tnpoint_value_n(temp, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Npoint ** tnpoint_values_w(const Temporal * temp, int * count) {
+  return tnpoint_values(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10049,8 +12041,8 @@ Temporal * tdistance_tnpoint_npoint_w(const Temporal * temp, const Npoint * np) 
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdistance_tnpoint_point_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return tdistance_tnpoint_point(temp, gs);
+Temporal * tdistance_tnpoint_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tdistance_tnpoint_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10109,7 +12101,7 @@ GSERIALIZED * shortestline_tnpoint_tnpoint_w(const Temporal * temp1, const Tempo
 }
 
 EMSCRIPTEN_KEEPALIVE
-SkipList * tnpoint_tcentroid_transfn_w(SkipList * state, Temporal * temp) {
+SkipList * tnpoint_tcentroid_transfn_w(SkipList * state, const Temporal * temp) {
   return tnpoint_tcentroid_transfn(state, temp);
 }
 
@@ -10192,8 +12184,8 @@ char * pose_as_ewkt_w(const Pose * pose, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * pose_as_hexwkb_w(const Pose * pose, uint8_t variant, size_t * size) {
-  return pose_as_hexwkb(pose, variant, size);
+char * pose_as_hexwkb_w(const Pose * pose, uint8_t variant, size_t * size_out) {
+  return pose_as_hexwkb(pose, variant, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10227,18 +12219,48 @@ char * pose_out_w(const Pose * pose, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Pose * pose_from_geopose_w(const char * json) {
+  return pose_from_geopose(json);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pose_as_geopose_w(const Pose * pose, int conformance, int precision) {
+  return pose_as_geopose(pose, conformance, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_from_geopose_w(const char * json) {
+  return tpose_from_geopose(json);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tpose_as_geopose_w(const Temporal * temp, int conformance, int precision) {
+  return tpose_as_geopose(temp, conformance, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * pose_apply_geo_w(const Pose * pose, const GSERIALIZED * body) {
+  return pose_apply_geo(pose, body);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_apply_geo_w(const Temporal * temp, const GSERIALIZED * body) {
+  return tpose_apply_geo(temp, body);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Pose * pose_copy_w(const Pose * pose) {
   return pose_copy(pose);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Pose * pose_make_2d_w(double x, double y, double theta, int32_t srid) {
-  return pose_make_2d(x, y, theta, srid);
+Pose * pose_make_2d_w(double x, double y, double theta, int geodetic, int32_t srid) {
+  return pose_make_2d(x, y, theta, (bool) geodetic, srid);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Pose * pose_make_3d_w(double x, double y, double z, double W, double X, double Y, double Z, int32_t srid) {
-  return pose_make_3d(x, y, z, W, X, Y, Z, srid);
+Pose * pose_make_3d_w(double x, double y, double z, double W, double X, double Y, double Z, int geodetic, int32_t srid) {
+  return pose_make_3d(x, y, z, W, X, Y, Z, (bool) geodetic, srid);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10267,18 +12289,43 @@ int pose_hash_w(const Pose * pose) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int pose_hash_extended_w(const Pose * pose, int seed) {
+uint64_t pose_hash_extended_w(const Pose * pose, uint64_t seed) {
   return pose_hash_extended(pose, seed);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double * pose_orientation_w(const Pose * pose) {
-  return pose_orientation(pose);
+double * pose_orientation_w(const Pose * pose, int * count) {
+  return pose_orientation(pose, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
 double pose_rotation_w(const Pose * pose) {
   return pose_rotation(pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double pose_yaw_w(const Pose * pose) {
+  return pose_yaw(pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double pose_pitch_w(const Pose * pose) {
+  return pose_pitch(pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double pose_roll_w(const Pose * pose) {
+  return pose_roll(pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double pose_angular_distance_w(const Pose * pose1, const Pose * pose2) {
+  return pose_angular_distance(pose1, pose2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * pose_normalize_w(const Pose * pose) {
+  return pose_normalize(pose);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10419,8 +12466,8 @@ Pose * poseset_value_n_w(const Set * s, int n) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Pose ** poseset_values_w(const Set * s) {
-  return poseset_values(s);
+Pose ** poseset_values_w(const Set * s, int * count) {
+  return poseset_values(s, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10469,8 +12516,38 @@ Set * union_set_pose_w(const Set * s, const Pose * pose) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_from_mfjson_w(const char * str) {
+  return tpose_from_mfjson(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tpose_in_w(const char * str) {
   return tpose_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tposeinst_make_w(const Pose * pose, long long t) {
+  return tposeinst_make(pose, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_from_base_temp_w(const Pose * pose, const Temporal * temp) {
+  return tpose_from_base_temp(pose, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tposeseq_from_base_tstzset_w(const Pose * pose, const Set * s) {
+  return tposeseq_from_base_tstzset(pose, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tposeseq_from_base_tstzspan_w(const Pose * pose, const Span * s, interpType interp) {
+  return tposeseq_from_base_tstzspan(pose, s, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tposeseqset_from_base_tstzspanset_w(const Pose * pose, const SpanSet * ss, interpType interp) {
+  return tposeseqset_from_base_tstzspanset(pose, ss, interp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10499,6 +12576,31 @@ Temporal * tpose_rotation_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_yaw_w(const Temporal * temp) {
+  return tpose_yaw(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_pitch_w(const Temporal * temp) {
+  return tpose_pitch(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_roll_w(const Temporal * temp) {
+  return tpose_roll(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_speed_w(const Temporal * temp) {
+  return tpose_speed(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_angular_speed_w(const Temporal * temp) {
+  return tpose_angular_speed(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Pose * tpose_start_value_w(const Temporal * temp) {
   return tpose_start_value(temp);
 }
@@ -10509,8 +12611,10 @@ GSERIALIZED * tpose_trajectory_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int tpose_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Pose ** value) {
-  return (int) tpose_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+Pose * tpose_value_at_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  Pose * r;
+  if (!tpose_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, &r)) return NULL;
+  return r;
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10561,8 +12665,8 @@ Temporal * tdistance_tpose_pose_w(const Temporal * temp, const Pose * pose) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdistance_tpose_point_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return tdistance_tpose_point(temp, gs);
+Temporal * tdistance_tpose_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tdistance_tpose_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10701,343 +12805,864 @@ Temporal * tne_tpose_pose_w(const Temporal * temp, const Pose * pose) {
 }
 
 
+/* === meos_quadbin.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_is_valid_index_w(uint64_t index) {
+  return (int) quadbin_is_valid_index(index);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_is_valid_cell_w(uint64_t cell) {
+  return (int) quadbin_is_valid_cell(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_tile_to_cell_w(uint32_t x, uint32_t y, uint32_t z) {
+  return quadbin_tile_to_cell(x, y, z);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void quadbin_cell_to_tile_w(uint64_t cell, uint32_t * x, uint32_t * y, uint32_t * z) {
+  quadbin_cell_to_tile(cell, x, y, z);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t quadbin_get_resolution_w(uint64_t cell) {
+  return quadbin_get_resolution(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_cell_to_parent_w(uint64_t cell, uint32_t parent_resolution) {
+  return quadbin_cell_to_parent(cell, parent_resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t * quadbin_cell_to_children_w(uint64_t cell, uint32_t children_resolution, int * count) {
+  return quadbin_cell_to_children(cell, children_resolution, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_cell_sibling_w(uint64_t cell, const char * direction) {
+  return quadbin_cell_sibling(cell, direction);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t * quadbin_k_ring_w(uint64_t cell, int k, int * count) {
+  return quadbin_k_ring(cell, k, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_point_to_cell_w(double longitude, double latitude, uint32_t resolution) {
+  return quadbin_point_to_cell(longitude, latitude, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void quadbin_cell_to_point_w(uint64_t cell, double * longitude, double * latitude) {
+  quadbin_cell_to_point(cell, longitude, latitude);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void quadbin_cell_to_bounding_box_w(uint64_t cell, double * xmin, double * ymin, double * xmax, double * ymax) {
+  quadbin_cell_to_bounding_box(cell, xmin, ymin, xmax, ymax);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double quadbin_cell_area_w(uint64_t cell) {
+  return quadbin_cell_area(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * quadbin_index_to_string_w(uint64_t index) {
+  return quadbin_index_to_string(index);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_string_to_index_w(const char * str) {
+  return quadbin_string_to_index(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * quadbin_cell_to_quadkey_w(uint64_t cell) {
+  return quadbin_cell_to_quadkey(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t quadbin_parse_w(const char * str) {
+  return quadbin_parse(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_eq_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_eq(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_ne_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_ne(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_lt_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_lt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_le_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_le(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_gt_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_gt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_ge_w(uint64_t a, uint64_t b) {
+  return (int) quadbin_ge(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int quadbin_cmp_w(uint64_t a, uint64_t b) {
+  return quadbin_cmp(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t quadbin_hash_w(uint64_t cell) {
+  return quadbin_hash(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * quadbin_grid_disk_w(uint64_t origin, int k) {
+  return quadbin_grid_disk(origin, k);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * quadbin_cell_to_children_set_w(uint64_t origin, int children_resolution) {
+  return quadbin_cell_to_children_set(origin, children_resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tquadbin_in_w(const char * str) {
+  return tquadbin_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tquadbininst_in_w(const char * str) {
+  return tquadbininst_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tquadbinseq_in_w(const char * str, interpType interp) {
+  return tquadbinseq_in(str, interp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tquadbinseqset_in_w(const char * str) {
+  return tquadbinseqset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tquadbin_make_w(uint64_t value, long long t) {
+  return tquadbin_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tquadbininst_make_w(uint64_t value, long long t) {
+  return tquadbininst_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tquadbinseq_make_w(const uint64_t * values, const TimestampTz * times, int count, int lower_inc, int upper_inc) {
+  return tquadbinseq_make(values, times, count, (bool) lower_inc, (bool) upper_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tquadbinseqset_make_w(const TSequence ** sequences, int count) {
+  return tquadbinseqset_make(sequences, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t tquadbin_start_value_w(const Temporal * temp) {
+  return tquadbin_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t tquadbin_end_value_w(const Temporal * temp) {
+  return tquadbin_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tquadbin_value_n_w(const Temporal * temp, int n) {
+  uint64_t r;
+  if (!tquadbin_value_n(temp, n, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t * tquadbin_values_w(const Temporal * temp, int * count) {
+  return tquadbin_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tquadbin_value_at_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  uint64_t r;
+  if (!tquadbin_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_to_tquadbin_w(const Temporal * temp) {
+  return tbigint_to_tquadbin(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tquadbin_to_tbigint_w(const Temporal * temp) {
+  return tquadbin_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return ever_eq_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return ever_eq_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return ever_ne_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return ever_ne_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return always_eq_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return always_eq_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return always_ne_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return always_ne_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return teq_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return teq_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return teq_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_quadbin_tquadbin_w(uint64_t cell, const Temporal * temp) {
+  return tne_quadbin_tquadbin(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tquadbin_quadbin_w(const Temporal * temp, uint64_t cell) {
+  return tne_tquadbin_quadbin(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp2) {
+  return tne_tquadbin_tquadbin(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tquadbin_cell_to_quadkey_w(const Temporal * temp) {
+  return tquadbin_cell_to_quadkey(temp);
+}
+
+
 /* === meos_rgeo.h === */
 
 EMSCRIPTEN_KEEPALIVE
-char * trgeo_out_w(const Temporal * temp) {
-  return trgeo_out(temp);
+char * trgeometry_out_w(const Temporal * temp) {
+  return trgeometry_out(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * trgeoinst_make_w(const GSERIALIZED * geom, const Pose * pose, long long t) {
-  return trgeoinst_make(geom, pose, (TimestampTz) t);
+TInstant * trgeometryinst_make_w(const GSERIALIZED * geom, const Pose * pose, long long t) {
+  return trgeometryinst_make(geom, pose, (TimestampTz) t);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * geo_tpose_to_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return geo_tpose_to_trgeo(gs, temp);
+Temporal * geo_tpose_to_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return geo_tpose_to_trgeometry(gs, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_to_tpose_w(const Temporal * temp) {
-  return trgeo_to_tpose(temp);
+Temporal * trgeometry_to_tpose_w(const Temporal * temp) {
+  return trgeometry_to_tpose(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_to_tpoint_w(const Temporal * temp) {
-  return trgeo_to_tpoint(temp);
+Temporal * trgeometry_to_tpoint_w(const Temporal * temp) {
+  return trgeometry_to_tpoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * trgeo_end_instant_w(const Temporal * temp) {
-  return trgeo_end_instant(temp);
+Temporal * trgeometry_to_tgeometry_w(const Temporal * temp) {
+  return trgeometry_to_tgeometry(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence * trgeo_end_sequence_w(const Temporal * temp) {
-  return trgeo_end_sequence(temp);
+TInstant * trgeometry_end_instant_w(const Temporal * temp) {
+  return trgeometry_end_instant(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * trgeo_end_value_w(const Temporal * temp) {
-  return trgeo_end_value(temp);
+TSequence * trgeometry_end_sequence_w(const Temporal * temp) {
+  return trgeometry_end_sequence(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * trgeo_geom_w(const Temporal * temp) {
-  return trgeo_geom(temp);
+GSERIALIZED * trgeometry_end_value_w(const Temporal * temp) {
+  return trgeometry_end_value(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * trgeo_instant_n_w(const Temporal * temp, int n) {
-  return trgeo_instant_n(temp, n);
+GSERIALIZED * trgeometry_geom_w(const Temporal * temp) {
+  return trgeometry_geom(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant ** trgeo_instants_w(const Temporal * temp, int * count) {
-  return trgeo_instants(temp, count);
+TInstant * trgeometry_instant_n_w(const Temporal * temp, int n) {
+  return trgeometry_instant_n(temp, n);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * trgeo_points_w(const Temporal * temp) {
-  return trgeo_points(temp);
+TInstant ** trgeometry_instants_w(const Temporal * temp, int * count) {
+  return trgeometry_instants(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_rotation_w(const Temporal * temp) {
-  return trgeo_rotation(temp);
+Set * trgeometry_points_w(const Temporal * temp) {
+  return trgeometry_points(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence ** trgeo_segments_w(const Temporal * temp, int * count) {
-  return trgeo_segments(temp, count);
+Temporal * trgeometry_rotation_w(const Temporal * temp) {
+  return trgeometry_rotation(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence * trgeo_sequence_n_w(const Temporal * temp, int i) {
-  return trgeo_sequence_n(temp, i);
+TSequence ** trgeometry_segments_w(const Temporal * temp, int * count) {
+  return trgeometry_segments(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence ** trgeo_sequences_w(const Temporal * temp, int * count) {
-  return trgeo_sequences(temp, count);
+TSequence * trgeometry_sequence_n_w(const Temporal * temp, int i) {
+  return trgeometry_sequence_n(temp, i);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * trgeo_start_instant_w(const Temporal * temp) {
-  return trgeo_start_instant(temp);
+TSequence ** trgeometry_sequences_w(const Temporal * temp, int * count) {
+  return trgeometry_sequences(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TSequence * trgeo_start_sequence_w(const Temporal * temp) {
-  return trgeo_start_sequence(temp);
+TInstant * trgeometry_start_instant_w(const Temporal * temp) {
+  return trgeometry_start_instant(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * trgeo_start_value_w(const Temporal * temp) {
-  return trgeo_start_value(temp);
+TSequence * trgeometry_start_sequence_w(const Temporal * temp) {
+  return trgeometry_start_sequence(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * trgeo_value_n_w(const Temporal * temp, int n) {
+GSERIALIZED * trgeometry_start_value_w(const Temporal * temp) {
+  return trgeometry_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * trgeometry_value_n_w(const Temporal * temp, int n) {
   GSERIALIZED * r;
-  if (!trgeo_value_n(temp, n, &r)) return NULL;
+  if (!trgeometry_value_n(temp, n, &r)) return NULL;
   return r;
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * trgeo_traversed_area_w(const Temporal * temp, int unary_union) {
-  return trgeo_traversed_area(temp, (bool) unary_union);
+GSERIALIZED * trgeometry_traversed_area_w(const Temporal * temp, int unary_union) {
+  return trgeometry_traversed_area(temp, (bool) unary_union);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_append_tinstant_w(Temporal * temp, const TInstant * inst, interpType interp, double maxdist, const Interval * maxt, int expand) {
-  return trgeo_append_tinstant(temp, inst, interp, maxdist, maxt, (bool) expand);
+Temporal * trgeometry_centroid_w(const Temporal * temp) {
+  return trgeometry_centroid(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_append_tsequence_w(Temporal * temp, const TSequence * seq, int expand) {
-  return trgeo_append_tsequence(temp, seq, (bool) expand);
+GSERIALIZED * trgeometry_convex_hull_w(const Temporal * temp) {
+  return trgeometry_convex_hull(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_delete_timestamptz_w(const Temporal * temp, long long t, int connect) {
-  return trgeo_delete_timestamptz(temp, (TimestampTz) t, (bool) connect);
+Temporal * trgeometry_body_point_trajectory_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return trgeometry_body_point_trajectory(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_delete_tstzset_w(const Temporal * temp, const Set * s, int connect) {
-  return trgeo_delete_tstzset(temp, s, (bool) connect);
+STBox * trgeometry_space_boxes_w(const Temporal * temp, double xsize, double ysize, double zsize, const GSERIALIZED * sorigin, int bitmatrix, int border_inc, int * count) {
+  return trgeometry_space_boxes(temp, xsize, ysize, zsize, sorigin, (bool) bitmatrix, (bool) border_inc, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_delete_tstzspan_w(const Temporal * temp, const Span * s, int connect) {
-  return trgeo_delete_tstzspan(temp, s, (bool) connect);
+STBox * trgeometry_space_time_boxes_w(const Temporal * temp, double xsize, double ysize, double zsize, const Interval * duration, const GSERIALIZED * sorigin, long long torigin, int bitmatrix, int border_inc, int * count) {
+  return trgeometry_space_time_boxes(temp, xsize, ysize, zsize, duration, sorigin, (TimestampTz) torigin, (bool) bitmatrix, (bool) border_inc, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_delete_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int connect) {
-  return trgeo_delete_tstzspanset(temp, ss, (bool) connect);
+STBox * trgeometry_stboxes_w(const Temporal * temp, int * count) {
+  return trgeometry_stboxes(temp, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_round_w(const Temporal * temp, int maxdd) {
-  return trgeo_round(temp, maxdd);
+STBox * trgeometry_split_n_stboxes_w(const Temporal * temp, int box_count, int * count) {
+  return trgeometry_split_n_stboxes(temp, box_count, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_set_interp_w(const Temporal * temp, interpType interp) {
-  return trgeo_set_interp(temp, interp);
+STBox * trgeometry_split_each_n_stboxes_w(const Temporal * temp, int elem_count, int * count) {
+  return trgeometry_split_each_n_stboxes(temp, elem_count, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * trgeo_to_tinstant_w(const Temporal * temp) {
-  return trgeo_to_tinstant(temp);
+double trgeometry_hausdorff_distance_w(const Temporal * temp1, const Temporal * temp2) {
+  return trgeometry_hausdorff_distance(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_after_timestamptz_w(const Temporal * temp, long long t, int strict) {
-  return trgeo_after_timestamptz(temp, (TimestampTz) t, (bool) strict);
+double trgeometry_frechet_distance_w(const Temporal * temp1, const Temporal * temp2) {
+  return trgeometry_frechet_distance(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_before_timestamptz_w(const Temporal * temp, long long t, int strict) {
-  return trgeo_before_timestamptz(temp, (TimestampTz) t, (bool) strict);
-}
-
-/* SKIP trgeo_restrict_value: internal Datum param 'value' — use the typed *_meos.c wrapper */
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_restrict_values_w(const Temporal * temp, const Set * s, int atfunc) {
-  return trgeo_restrict_values(temp, s, (bool) atfunc);
+double trgeometry_dyntimewarp_distance_w(const Temporal * temp1, const Temporal * temp2) {
+  return trgeometry_dyntimewarp_distance(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_restrict_timestamptz_w(const Temporal * temp, long long t, int atfunc) {
-  return trgeo_restrict_timestamptz(temp, (TimestampTz) t, (bool) atfunc);
+Match * trgeometry_frechet_path_w(const Temporal * temp1, const Temporal * temp2, int * count) {
+  return trgeometry_frechet_path(temp1, temp2, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_restrict_tstzset_w(const Temporal * temp, const Set * s, int atfunc) {
-  return trgeo_restrict_tstzset(temp, s, (bool) atfunc);
+Match * trgeometry_dyntimewarp_path_w(const Temporal * temp1, const Temporal * temp2, int * count) {
+  return trgeometry_dyntimewarp_path(temp1, temp2, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_restrict_tstzspan_w(const Temporal * temp, const Span * s, int atfunc) {
-  return trgeo_restrict_tstzspan(temp, s, (bool) atfunc);
+double trgeometry_length_w(const Temporal * temp) {
+  return trgeometry_length(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * trgeo_restrict_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int atfunc) {
-  return trgeo_restrict_tstzspanset(temp, ss, (bool) atfunc);
+Temporal * trgeometry_cumulative_length_w(const Temporal * temp) {
+  return trgeometry_cumulative_length(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdistance_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return tdistance_trgeo_geo(temp, gs);
+Temporal * trgeometry_speed_w(const Temporal * temp) {
+  return trgeometry_speed(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdistance_trgeo_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
-  return tdistance_trgeo_tpoint(temp1, temp2);
+GSERIALIZED * trgeometry_twcentroid_w(const Temporal * temp) {
+  return trgeometry_twcentroid(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tdistance_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return tdistance_trgeo_trgeo(temp1, temp2);
+Temporal * trgeometry_append_tinstant_w(Temporal * temp, const TInstant * inst, interpType interp, double maxdist, const Interval * maxt, int expand) {
+  return trgeometry_append_tinstant(temp, inst, interp, maxdist, maxt, (bool) expand);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double nad_stbox_trgeo_w(const STBox * box, const Temporal * temp) {
-  return nad_stbox_trgeo(box, temp);
+Temporal * trgeometry_append_tsequence_w(Temporal * temp, const TSequence * seq, int expand) {
+  return trgeometry_append_tsequence(temp, seq, (bool) expand);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double nad_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return nad_trgeo_geo(temp, gs);
+Temporal * trgeometry_delete_timestamptz_w(const Temporal * temp, long long t, int connect) {
+  return trgeometry_delete_timestamptz(temp, (TimestampTz) t, (bool) connect);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double nad_trgeo_stbox_w(const Temporal * temp, const STBox * box) {
-  return nad_trgeo_stbox(temp, box);
+Temporal * trgeometry_delete_tstzset_w(const Temporal * temp, const Set * s, int connect) {
+  return trgeometry_delete_tstzset(temp, s, (bool) connect);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double nad_trgeo_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
-  return nad_trgeo_tpoint(temp1, temp2);
+Temporal * trgeometry_delete_tstzspan_w(const Temporal * temp, const Span * s, int connect) {
+  return trgeometry_delete_tstzspan(temp, s, (bool) connect);
 }
 
 EMSCRIPTEN_KEEPALIVE
-double nad_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return nad_trgeo_trgeo(temp1, temp2);
+Temporal * trgeometry_delete_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int connect) {
+  return trgeometry_delete_tstzspanset(temp, ss, (bool) connect);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * nai_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return nai_trgeo_geo(temp, gs);
+Temporal * trgeometry_round_w(const Temporal * temp, int maxdd) {
+  return trgeometry_round(temp, maxdd);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * nai_trgeo_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
-  return nai_trgeo_tpoint(temp1, temp2);
+Temporal * trgeometry_set_interp_w(const Temporal * temp, interpType interp) {
+  return trgeometry_set_interp(temp, interp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * nai_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return nai_trgeo_trgeo(temp1, temp2);
+TInstant * trgeometry_to_tinstant_w(const Temporal * temp) {
+  return trgeometry_to_tinstant(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * shortestline_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return shortestline_trgeo_geo(temp, gs);
+Temporal * trgeometry_after_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  return trgeometry_after_timestamptz(temp, (TimestampTz) t, (bool) strict);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * shortestline_trgeo_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
-  return shortestline_trgeo_tpoint(temp1, temp2);
+Temporal * trgeometry_before_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  return trgeometry_before_timestamptz(temp, (TimestampTz) t, (bool) strict);
 }
 
 EMSCRIPTEN_KEEPALIVE
-GSERIALIZED * shortestline_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return shortestline_trgeo_trgeo(temp1, temp2);
+Temporal * trgeometry_restrict_values_w(const Temporal * temp, const Set * s, int atfunc) {
+  return trgeometry_restrict_values(temp, s, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_eq_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return always_eq_geo_trgeo(gs, temp);
+Temporal * trgeometry_restrict_timestamptz_w(const Temporal * temp, long long t, int atfunc) {
+  return trgeometry_restrict_timestamptz(temp, (TimestampTz) t, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_eq_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return always_eq_trgeo_geo(temp, gs);
+Temporal * trgeometry_restrict_tstzset_w(const Temporal * temp, const Set * s, int atfunc) {
+  return trgeometry_restrict_tstzset(temp, s, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_eq_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return always_eq_trgeo_trgeo(temp1, temp2);
+Temporal * trgeometry_restrict_tstzspan_w(const Temporal * temp, const Span * s, int atfunc) {
+  return trgeometry_restrict_tstzspan(temp, s, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_ne_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return always_ne_geo_trgeo(gs, temp);
+Temporal * trgeometry_restrict_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int atfunc) {
+  return trgeometry_restrict_tstzspanset(temp, ss, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_ne_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return always_ne_trgeo_geo(temp, gs);
+Temporal * trgeometry_at_geom_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return trgeometry_at_geom(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int always_ne_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return always_ne_trgeo_trgeo(temp1, temp2);
+Temporal * trgeometry_minus_geom_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return trgeometry_minus_geom(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_eq_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return ever_eq_geo_trgeo(gs, temp);
+Temporal * trgeometry_at_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return trgeometry_at_stbox(temp, box, (bool) border_inc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_eq_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return ever_eq_trgeo_geo(temp, gs);
+Temporal * trgeometry_minus_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return trgeometry_minus_stbox(temp, box, (bool) border_inc);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_eq_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return ever_eq_trgeo_trgeo(temp1, temp2);
+Temporal * tdistance_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tdistance_trgeometry_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_ne_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return ever_ne_geo_trgeo(gs, temp);
+Temporal * tdistance_trgeometry_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return tdistance_trgeometry_tpoint(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_ne_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return ever_ne_trgeo_geo(temp, gs);
+Temporal * tdistance_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return tdistance_trgeometry_trgeometry(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int ever_ne_trgeo_trgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return ever_ne_trgeo_trgeo(temp1, temp2);
+double nad_stbox_trgeometry_w(const STBox * box, const Temporal * temp) {
+  return nad_stbox_trgeometry(box, temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * teq_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return teq_geo_trgeo(gs, temp);
+double nad_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return nad_trgeometry_geo(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * teq_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return teq_trgeo_geo(temp, gs);
+double nad_trgeometry_stbox_w(const Temporal * temp, const STBox * box) {
+  return nad_trgeometry_stbox(temp, box);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tne_geo_trgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
-  return tne_geo_trgeo(gs, temp);
+double nad_trgeometry_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return nad_trgeometry_tpoint(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * tne_trgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
-  return tne_trgeo_geo(temp, gs);
+double nad_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return nad_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * nai_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return nai_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * nai_trgeometry_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return nai_trgeometry_tpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * nai_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return nai_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * shortestline_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return shortestline_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * shortestline_trgeometry_tpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return shortestline_trgeometry_tpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * shortestline_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return shortestline_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return always_eq_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return always_eq_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return always_ne_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return always_ne_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return ever_eq_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return ever_eq_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return ever_ne_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return ever_ne_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return teq_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return teq_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return tne_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tne_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int econtains_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return econtains_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int acontains_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return acontains_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ecovers_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return ecovers_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int acovers_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return acovers_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ecovers_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return ecovers_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int acovers_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return acovers_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int edisjoint_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return edisjoint_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adisjoint_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return adisjoint_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eintersects_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return eintersects_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int aintersects_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return aintersects_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int etouches_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return etouches_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int atouches_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return atouches_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int edwithin_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs, double dist) {
+  return edwithin_trgeometry_geo(temp, gs, dist);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adwithin_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs, double dist) {
+  return adwithin_trgeometry_geo(temp, gs, dist);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int edisjoint_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return edisjoint_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adisjoint_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return adisjoint_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eintersects_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return eintersects_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int aintersects_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return aintersects_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int edwithin_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2, double dist) {
+  return edwithin_trgeometry_trgeometry(temp1, temp2, dist);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adwithin_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2, double dist) {
+  return adwithin_trgeometry_trgeometry(temp1, temp2, dist);
 }
 

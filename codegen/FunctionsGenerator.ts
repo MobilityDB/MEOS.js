@@ -8,8 +8,9 @@
  *   src/core/functions.ts  — TypeScript functions that call their C counterpart
  *                            via Emscripten's Module.ccall().
  *
- * The IDL (meos-idl.json) is produced by a separate C-header extraction script
- * and contains a "functions" array where each entry carries:
+ * The IDL (meos-idl.json) is the MEOS-API catalog (produced by MEOS-API's run.py
+ * from the MEOS C headers); this binding is a projection of it. Each "functions"
+ * array entry carries:
  *   name        -> C function name
  *   file        -> originating header (meos.h / meos_geo.h)
  *   returnType  -> { c: string, canonical: string }
@@ -78,7 +79,7 @@ interface Idl {
  *       temporal_duration   returns Interval* — re-exposed as
  *                           temporal_duration_us (total microseconds) instead
  *
- *   - PostgreSQL text utilities: cstring2text / text2cstring are used
+ *   - PostgreSQL text utilities: cstring_to_text / text_to_cstring are used
  *     internally by the generated C wrappers and have no meaningful JS surface.
  */
 const MANUAL_FUNCTIONS = new Set([
@@ -94,8 +95,8 @@ const MANUAL_FUNCTIONS = new Set([
 	'temporal_as_mfjson',
 	'temporal_instant_n',
 	'temporal_duration',
-	'cstring2text',
-	'text2cstring',
+	'cstring_to_text',
+	'text_to_cstring',
 	// WASM32 Datum workarounds: int64 is stored by-reference in WASM32
 	// (no USE_FLOAT8_BYVAL), so these need custom C wrappers that
 	// dereference the Datum pointer to get the actual int64 value.
@@ -218,7 +219,7 @@ const isDatum = (t: string) => /\bDatum\b/.test(clean(t));
 
 /**
  * True for the PostgreSQL text type passed as a single pointer (text *).
- * These require cstring2text / text2cstring conversion in the C wrapper
+ * These require cstring_to_text / text_to_cstring conversion in the C wrapper
  * so that the JS side always works with plain char* strings.
  */
 const isTextSingle = (t: string) => {
@@ -400,7 +401,7 @@ function shouldSkip(fn: IdlFunction): string | null {
  * This function maps MEOS-specific types to their ABI-compatible equivalents:
  *   bool       -> int           (no C99 bool in ccall ABI)
  *   TimestampTz/Timestamp → long long  (int64 microseconds)
- *   text *     -> const char *  (converted via cstring2text in the body)
+ *   text *     -> const char *  (converted via cstring_to_text in the body)
  *   everything else passes through unchanged
  */
 function cWrapParamType(cType: string): string {
@@ -416,7 +417,7 @@ function cWrapParamType(cType: string): string {
  * Mirrors cWrapParamType for return types:
  *   bool   -> int
  *   TimestampTz/Timestamp → long long
- *   text * -> char *   (converted via text2cstring in the body)
+ *   text * -> char *   (converted via text_to_cstring in the body)
  */
 function cWrapRetType(cType: string): string {
 	if (isBool(cType)) return 'int';
@@ -432,13 +433,13 @@ function cWrapRetType(cType: string): string {
  *   bool        -> (bool) name         re-cast from int
  *   TimestampTz -> (TimestampTz) name  re-cast from long long
  *   Timestamp   -> (Timestamp) name
- *   text *      -> cstring2text(name)  convert C string to PG text*
+ *   text *      -> cstring_to_text(name)  convert C string to PG text*
  */
 function cCastExpr(name: string, cType: string): string {
 	if (isBool(cType)) return `(bool) ${name}`;
 	if (isTsTz(cType)) return `(TimestampTz) ${name}`;
 	if (isTs(cType)) return `(Timestamp) ${name}`;
-	if (isTextSingle(cType)) return `cstring2text(${name})`;
+	if (isTextSingle(cType)) return `cstring_to_text(${name})`;
 	return name;
 }
 
@@ -463,15 +464,15 @@ function cCastExpr(name: string, cType: string): string {
  * 2. Normal path:
  *    - void    -> call with no return
  *    - bool    -> cast return to (int)
- *    - text *  -> call text2cstring on the returned PG text pointer
+ *    - text *  -> call text_to_cstring on the returned PG text pointer
  *    - all other types → return value directly
  *
  *    Example: text * return (text_lower):
  *      EMSCRIPTEN_KEEPALIVE
  *      char *text_lower_w(const char *txt) {
- *        text *_t = text_lower(cstring2text(txt));
+ *        text *_t = text_lower(cstring_to_text(txt));
  *        if (!_t) return NULL;
- *        return text2cstring(_t);
+ *        return text_to_cstring(_t);
  *      }
  */
 function generateCWrapper(fn: IdlFunction): string {
@@ -527,7 +528,7 @@ function generateCWrapper(fn: IdlFunction): string {
 	} else if (isTextSingle(ret)) {
 		lines.push(`  text *_t = ${callExpr};`);
 		lines.push(`  if (!_t) return NULL;`);
-		lines.push(`  return text2cstring(_t);`);
+		lines.push(`  return text_to_cstring(_t);`);
 	} else {
 		lines.push(`  return ${callExpr};`);
 	}
@@ -719,7 +720,7 @@ const safeName = (n: string) => (TS_KEYWORDS.has(n) ? `${n}_` : n);
  *    - void    		-> call with no return value
  *    - bool    		-> ccall returns 'number'; compare !== 0 for boolean
  *    - char*   		-> ccall returns 'string'
- *    - text*   		-> same as char* (the C wrapper already called text2cstring)
+ *    - text*   		-> same as char* (the C wrapper already called text_to_cstring)
  *    - all other types -> ccall returns 'number' (int, double, Ptr…)
  *
  *    Example: tbool_in (string input):
@@ -841,19 +842,51 @@ function main(): void {
 	console.log('Reading IDL:', idlPath);
 	const idl: Idl = JSON.parse(fs.readFileSync(idlPath, 'utf-8'));
 
-	// The binding mirrors the PUBLIC MEOS API only. Exclude functions declared in
-	// non-API headers: the internal headers (meos_internal.h / meos_internal_geo.h
-	// — not user-facing, nothing in core/types calls them, many take/return the
-	// opaque Datum, see isDatum / shouldSkip) and the bundled liblwgeom external
-	// definitions (postgis_ext_defs.in.h — PostGIS glue, not MEOS API). The public
-	// meos*.h headers, and the typed *_meos.c wrappers they declare, are the API.
-	const NON_API_HEADERS = new Set([
-		'meos_internal.h',
-		'meos_internal_geo.h',
-		'postgis_ext_defs.in.h',
+	// The binding compiles C wrappers that CALL each MEOS function, so it can only
+	// use symbols that are DECLARED in a header the wrapper preamble #includes — the
+	// public meos_*.h umbrella headers (bindings_c_header.c.template). A function the
+	// catalog attributes to an internal fine-grained header (e.g. cbuffer.h,
+	// tcbuffer.h, temporal.h, meos_internal.h) is not declared there and often uses
+	// non-marshalable internal types (double2, Datum), so emitting a wrapper for it
+	// fails the emcc compile. The catalog attributes each public function to its
+	// umbrella and each internal-only function to the fine-grained header, so the
+	// public API is exactly the set of umbrella headers below — the same list the
+	// template #includes and the Dockerfile builds (CBUFFER/NPOINT/POSE/RGEO + H3 via
+	// libh3, JSON via json-c, QUADBIN via libm). The two families whose native
+	// libraries do not yet cross-compile to wasm — POINTCLOUD (pgpointcloud: libpc +
+	// lazperf) and RASTER (GDAL) — are excluded by leaving their umbrellas
+	// (meos_pointcloud.h, meos_raster.h) out. To add a family: add its umbrella here,
+	// #include it in the template, and flip its -D<FAMILY>=ON in the Dockerfile.
+	// Only top-level meos/include/*.h umbrellas belong here; meos_catalog.h lives in
+	// meos/include/temporal/ and is an internal type-system header (its accessors are
+	// `inline`, hence unlinkable from a separate TU), so it is deliberately excluded.
+	const API_HEADERS = new Set([
+		'meos.h',
+		'meos_error.h',
+		'meos_geo.h',
+		'meos_cbuffer.h',
+		'meos_npoint.h',
+		'meos_pose.h',
+		'meos_rgeo.h',
+		'meos_h3.h',
+		'meos_json.h',
+		'meos_quadbin.h',
+	]);
+	// A few disabled-family symbols are declared (under #if POINTCLOUD guards) inside
+	// otherwise-public umbrellas — meos.h and meos_catalog.h — so the umbrella
+	// allow-list alone does not exclude them. The guard compiles them out when the
+	// family is off, so a wrapper for them would reference an undeclared symbol.
+	// Exclude them by name; drop an entry here when its family is enabled.
+	const DISABLED_FAMILY_FUNCTIONS = new Set([
+		// POINTCLOUD (guarded in meos.h / meos_catalog.h)
+		'meos_initialize_pointcloud',
+		'rtree_create_tpcbox',
+		'pointcloud_basetype',
+		'pointcloudset_type',
+		'tpointcloud_temptype',
 	]);
 	const fns: IdlFunction[] = (idl.functions ?? []).filter(
-		f => !NON_API_HEADERS.has(f.file)
+		f => API_HEADERS.has(f.file) && !DISABLED_FAMILY_FUNCTIONS.has(f.name)
 	);
 
 	let cOut = fs.readFileSync(

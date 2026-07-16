@@ -9,6 +9,9 @@
 #include <meos_npoint.h>
 #include <meos_pose.h>
 #include <meos_rgeo.h>
+#include <meos_h3.h>
+#include <meos_json.h>
+#include <meos_quadbin.h>
 #include <emscripten.h>
 
 /*
@@ -284,14 +287,14 @@ EMSCRIPTEN_KEEPALIVE
 char * textset_value_n_w(const Set *s, int n) {
     text *r;
     if (!textset_value_n(s, n, &r)) return NULL;
-    return text2cstring(r);
+    return text_to_cstring(r);
 }
 
 EMSCRIPTEN_KEEPALIVE
 char * ttext_value_n_w(const Temporal *temp, int n) {
     text *r;
     if (!ttext_value_n(temp, n, &r)) return NULL;
-    return text2cstring(r);
+    return text_to_cstring(r);
 }
 
 /* --- Generated wrappers --- */
