@@ -4,19 +4,15 @@
 #   docker build --output type=local,dest=./wasm --target wasm .
 #
 # Versions:
-#   emsdk 5.0.6       |  MobilityDB 7d5521b (estebanzimanyi fork, see TODO below)
+#   emsdk 5.0.6       |  MobilityDB master
 #   GEOS 3.14.1       |  PROJ 9.8.1         |  SQLite 3.46.1
-#   JSON-C 0.18       |  GSL 2.8
+#   JSON-C 0.18       |  GSL 2.8            |  H3 4.2.1
 
-# TODO: revert to MobilityDB/MobilityDB master once MobilityDB#1124 lands.
-#   Currently pinned to estebanzimanyi's fork because master `2c4243a` declares
-#   5 trgeo accessors (trgeo_points/rotation/segments/traversed_area,
-#   nad_stbox_trgeo) in meos_rgeo.h but never implements them — wasm-ld fails
-#   with "undefined symbol". The fork commit only adds those 5 implementations
-#   (no header changes), so the committed codegen/res/meos-idl.json stays valid.
-ARG MOBILITYDB_REPO=https://github.com/estebanzimanyi/MobilityDB.git
-ARG MOBILITYDB_BRANCH=fix/trgeo-accessors-undefined
-ARG MOBILITYDB_COMMIT=7d5521b2141778cdc4f71106a6d7a136e62f2804
+# Track upstream MobilityDB master. The committed codegen/res/meos-idl.json is a
+# snapshot of the MEOS-API catalog for that surface; refresh it (see README) when
+# the MEOS surface changes.
+ARG MOBILITYDB_REPO=https://github.com/MobilityDB/MobilityDB.git
+ARG MOBILITYDB_BRANCH=master
 
 # EMSCRIPTEN & EVERY NEEDED TOOL
 FROM emscripten/emsdk:5.0.6 AS base
@@ -120,14 +116,43 @@ RUN cp /usr/share/automake-*/config.sub config.sub \
     && emmake make -j"$(nproc)" \
     && emmake make install
 
+# COMPILING H3 WITH EMSCRIPTEN (Uber libh3, required by the temporal H3 index family)
+# BUILD_GENERATORS=OFF: the lib's generated coordinate tables are committed in the
+# release tarball; only the standalone generator TOOLS would need native execution,
+# so skipping them keeps the whole build cross-compilable. h3api.h is the single
+# self-contained public header (produced from h3api.h.in by configure_file, so it
+# exists regardless of the generators); copy it and libh3.a into a clean prefix.
+FROM base AS h3
+
+RUN curl -fL "https://github.com/uber/h3/archive/refs/tags/v4.2.1.tar.gz" \
+        | tar xz -C /root \
+    && mv /root/h3-4.2.1 /root/h3
+
+WORKDIR /root/h3
+RUN mkdir -p build && cd build \
+    && emcmake cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_TESTING=OFF \
+        -DBUILD_BENCHMARKS=OFF \
+        -DBUILD_FILTERS=OFF \
+        -DBUILD_GENERATORS=OFF \
+        -DENABLE_COVERAGE=OFF \
+        -DENABLE_DOCS=OFF \
+        -DENABLE_FORMAT=OFF \
+        -DENABLE_LINTING=OFF \
+        -DCMAKE_C_FLAGS=-sMEMORY64=1 \
+    && emmake make -j"$(nproc)" h3 \
+    && mkdir -p /root/h3-install/lib /root/h3-install/include \
+    && cp /root/h3/build/lib/libh3.a /root/h3-install/lib/ \
+    && cp /root/h3/build/src/h3lib/include/h3api.h /root/h3-install/include/
+
 # MOBILITYDB SOURCE (separate stage so /app/ changes don't invalidate the clone)
 FROM base AS mobilitydb_src
 ARG MOBILITYDB_REPO
 ARG MOBILITYDB_BRANCH
-ARG MOBILITYDB_COMMIT
 
-RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB \
-    && git -C /root/MobilityDB checkout ${MOBILITYDB_COMMIT}
+RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB
 
 # BUILDING WASM
 FROM base AS builder
@@ -137,6 +162,7 @@ COPY --from=geos           /root/geos            /root/geos
 COPY --from=proj           /root/PROJ            /root/PROJ
 COPY --from=jsonc          /root/json-c-install  /root/json-c-install
 COPY --from=gsl            /root/gsl-wasm        /root/gsl-wasm
+COPY --from=h3             /root/h3-install      /root/h3-install
 COPY --from=mobilitydb_src /root/MobilityDB      /root/MobilityDB
 
 WORKDIR /app
@@ -157,6 +183,11 @@ RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-instal
         -DNPOINT=ON \
         -DPOSE=ON \
         -DRGEO=ON \
+        -DH3=ON \
+        -DJSON=ON \
+        -DQUADBIN=ON \
+        -DH3_LIBRARY=/root/h3-install/lib/libh3.a \
+        -DH3_INCLUDE_DIR=/root/h3-install/include \
         -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_BUILD_TYPE=Release \
         -DGEOS_INCLUDE_DIR=/root/geos/build/capi \
@@ -175,7 +206,7 @@ RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-instal
 #   SIZEOF_LONG is always 4 in Emscripten (ILP32 model, even in wasm64)
 #   SIZEOF_VOID_P / SIZEOF_SIZE_T: 8 for wasm64
 #   HAVE_LONG_LONG_INT_64: needed (long=32 bit -> int64 must use long long)
-RUN PG_CONFIG_H=/root/MobilityDB/build/postgres/pg_config.h \
+RUN PG_CONFIG_H=/root/MobilityDB/build/pgtypes/pg_config.h \
     && sed -i \
         -e 's/^#define SIZEOF_LONG [0-9]\+/#define SIZEOF_LONG 4/' \
         -e 's/^#define SIZEOF_VOID_P [0-9]\+/#define SIZEOF_VOID_P 8/' \
@@ -223,6 +254,8 @@ RUN mkdir -p /app/wasm \
     && emcc -sMEMORY64=1 -sEMULATE_FUNCTION_POINTER_CASTS=1 -O1 \
         /app/core/c-src/bindings.c \
         /root/MobilityDB/build/meos/libmeos.a \
+        /root/MobilityDB/build/pgtypes/libpgtypes.a \
+        /root/MobilityDB/build/postgis/libpostgis.a \
         /root/geos/build/lib/libgeos.a \
         /root/geos/build/lib/libgeos_c.a \
         /root/PROJ/build/lib/libproj.a \
@@ -230,9 +263,12 @@ RUN mkdir -p /app/wasm \
         /root/gsl-wasm/lib/libgsl.a \
         /root/gsl-wasm/lib/libgslcblas.a \
         /root/json-c-install/lib/libjson-c.a \
+        /root/h3-install/lib/libh3.a \
         -I/root/MobilityDB/meos/include \
-        -I/root/MobilityDB/postgres \
-        -I/root/MobilityDB/build/postgres \
+        -I/root/geos/include \
+        -I/root/geos/build/capi \
+        -I/root/MobilityDB/pgtypes \
+        -I/root/MobilityDB/build/pgtypes \
         -I/root/MobilityDB/build/postgis/liblwgeom \
         -I/root/MobilityDB/build/postgis \
         -I/root/MobilityDB/postgis \
@@ -240,6 +276,7 @@ RUN mkdir -p /app/wasm \
         -I/root/PROJ/src \
         -I/root/json-c-install/include \
         -I/root/gsl-wasm/include \
+        -I/root/h3-install/include \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
         --embed-file /root/MobilityDB/meos/src/geo/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
         --embed-file /root/PROJ/build/data/proj.db@/usr/local/share/proj/proj.db \
