@@ -35,3 +35,5 @@ scripts/
 docs/api/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+# tools/refresh-from-master.sh scratch (sibling clones + libmeos prefix).
+.meos-chain/
