@@ -1,5 +1,5 @@
 /* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
-import { getModule } from '../runtime/meos';
+import { getModule } from '../runtime/meos.js';
 
 // WASM linear memory address, held as a JS number (safe up to 2^53).
 export type Ptr = number;
@@ -51,8 +51,8 @@ export function callPtr(
 // Typed exceptions (MeosInternalError, MeosInvalidArgError, …) are defined in
 // src/errors.ts and dispatched via makeMeosException().
 
-import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from './errors';
-export * from './errors';
+import { makeMeosException, MEOS_NOTICE, MEOS_WARNING, MeosException } from './errors.js';
+export * from './errors.js';
 
 // MeosError kept as alias for backward compatibility.
 export { MeosException as MeosError };
@@ -243,6 +243,18 @@ export function ttext_value_n(temp: Ptr, n: number): string | null {
 	const _r = call<string>('ttext_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
 	return _r ?? null;
+}
+
+/*
+ * pg_interval_in — parse an interval string into a PostgreSQL Interval*.
+ * Declared in pgtypes.h (the PostgreSQL-compat layer), not a public MEOS
+ * umbrella header, so it is absent from the MEOS-API catalog (run.py ingests
+ * meos/include only) and is wrapped by hand. Pass typmod -1 for the default.
+ */
+export function pg_interval_in(str: string, typmod: number): Ptr {
+	const _r = callPtr('pg_interval_in_w', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
 }
 
 // --- Generated wrappers ---

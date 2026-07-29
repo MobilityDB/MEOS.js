@@ -889,11 +889,15 @@ function main(): void {
 		f => API_HEADERS.has(f.file) && !DISABLED_FAMILY_FUNCTIONS.has(f.name)
 	);
 
-	let cOut = fs.readFileSync(
+	// The marker banner is emitted here rather than stored in the source templates
+	// (which are hand-edited). Its text is assembled from parts so this generator is
+	// not itself flagged by tooling that scans for the marker.
+	const BANNER = '/* AUTO-GENERATED - DO NOT ' + 'EDIT. Run: npm run generate */\n';
+	let cOut = BANNER + fs.readFileSync(
 		path.resolve(__dirname, 'res/bindings_c_header.c.template'),
 		'utf-8'
 	);
-	let tsOut = fs.readFileSync(
+	let tsOut = BANNER + fs.readFileSync(
 		path.resolve(__dirname, 'res/functions_ts_header.ts.template'),
 		'utf-8'
 	);
