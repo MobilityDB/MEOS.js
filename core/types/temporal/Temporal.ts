@@ -37,7 +37,7 @@ import {
 	temporal_shift_time,
 	temporal_scale_time,
 	temporal_shift_scale_time,
-	pg_interval_in,
+	interval_in,
 	meos_free,
 	temporal_set_interp,
 	temporal_to_tinstant,
@@ -142,7 +142,7 @@ export namespace TemporalType {
  */
 function asInterval(v: Ptr | string): { ptr: Ptr; free: () => void } {
 	if (typeof v === 'string') {
-		const ptr = pg_interval_in(v, -1);
+		const ptr = interval_in(v, -1);
 		return { ptr, free: () => meos_free(ptr) };
 	}
 	return { ptr: v, free: () => {} };
