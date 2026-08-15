@@ -938,6 +938,8 @@ function main(): void {
 		stats.generated++;
 	}
 
+	assertEveryWrapperChecksForErrors(tsOut);
+
 	fs.writeFileSync(bindingsPath, cOut);
 	fs.writeFileSync(functionsPath, tsOut);
 
@@ -946,6 +948,45 @@ function main(): void {
 	);
 	console.log('  ->', bindingsPath);
 	console.log('  ->', functionsPath);
+}
+
+/**
+ * Fail generation if any emitted wrapper calls into MEOS without consulting the
+ * error state afterwards.
+ *
+ * MEOS reports a failure out of band and returns a sentinel that is a valid
+ * value of the wrapper's own return type -- 0 is a real TimestampTz, false is a
+ * real answer -- so a caller reading only the value cannot tell a failure from a
+ * result. Every generated wrapper emits the check, which leaves the hand-written
+ * ones in the template as the only place the invariant can lapse; this asserts
+ * over the whole emitted file so it cannot lapse silently.
+ *
+ * ALLOWED lists the wrappers that must not check, each for a reason: meos_free
+ * runs on cleanup paths, and checkMeosError() clears the state as it reads it,
+ * so checking there consumes an error the next real call is meant to raise.
+ * Growing this list is a decision, which is the point of it being explicit.
+ */
+function assertEveryWrapperChecksForErrors(tsOut: string): void {
+	const ALLOWED = new Set(['meos_free', 'checkMeosError', 'call', 'callPtr']);
+	const offenders: string[] = [];
+
+	for (const block of tsOut.split(/\n(?=export function )/)) {
+		const name = /^export function (\w+)/.exec(block)?.[1];
+		if (!name || ALLOWED.has(name)) continue;
+		const callsMeos = /\bcall(<[^>]*>)?\(|\bcallPtr\(/.test(block);
+		if (callsMeos && !block.includes('checkMeosError()')) offenders.push(name);
+	}
+
+	if (offenders.length > 0) {
+		console.error(
+			`\nERROR: ${offenders.length} wrapper(s) call MEOS without checkMeosError():\n` +
+			offenders.map((n) => `  - ${n}`).join('\n') +
+			'\n\nA MEOS sentinel is a valid value of the return type, so the error state is the ' +
+			'only way a caller can tell a failure from a result. Add checkMeosError() after the ' +
+			'call, or add the name to ALLOWED with the reason it must not check.\n'
+		);
+		process.exit(1);
+	}
 }
 
 main();
