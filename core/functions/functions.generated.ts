@@ -275,18 +275,6 @@ export function ttext_value_n(temp: Ptr, n: number): string | null {
 	return _r ?? null;
 }
 
-/*
- * pg_interval_in — parse an interval string into a PostgreSQL Interval*.
- * Declared in pgtypes.h (the PostgreSQL-compat layer), not a public MEOS
- * umbrella header, so it is absent from the MEOS-API catalog (run.py ingests
- * meos/include only) and is wrapped by hand. Pass typmod -1 for the default.
- */
-export function pg_interval_in(str: string, typmod: number): Ptr {
-	const _r = callPtr('pg_interval_in_w', ['string', 'number'], [str, typmod]);
-	checkMeosError();
-	return _r;
-}
-
 // --- Generated wrappers ---
 
 // === meos_error.h ===
@@ -16116,6 +16104,141 @@ export function edwithin_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr, dist: num
 
 export function adwithin_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr, dist: number): number {
 	const _r = call<number>('adwithin_trgeometry_trgeometry_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
+	checkMeosError();
+	return _r;
+}
+
+
+// === postgres_ext_defs.in.h ===
+
+export function bool_in(str: string): boolean {
+	const _r = call<number>('bool_in_w', 'number', ['string'], [str]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function bool_out(b: boolean): string {
+	const _r = call<string>('bool_out_w', 'string', ['number'], [b ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function float8_out(num: number, maxdd: number): string {
+	const _r = call<string>('float8_out_w', 'string', ['number', 'number'], [num, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function date_in(str: string): DateADT {
+	const _r = call<DateADT>('date_in_w', 'number', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function date_out(date: DateADT): string {
+	const _r = call<string>('date_out_w', 'string', ['number'], [date]);
+	checkMeosError();
+	return _r;
+}
+
+export function interval_cmp(interv1: Ptr, interv2: Ptr): number {
+	const _r = call<number>('interval_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(interv1), ptrArgVal(interv2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function interval_in(str: string, typmod: number): Ptr {
+	const _r = callPtr('interval_in_w', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
+}
+
+export function interval_out(interv: Ptr): string {
+	const _r = call<string>('interval_out_w', 'string', [ptrArgType()], [ptrArgVal(interv)]);
+	checkMeosError();
+	return _r;
+}
+
+export function time_in(str: string, typmod: number): number {
+	const _r = call<number>('time_in_w', 'number', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
+}
+
+export function time_out(time: number): string {
+	const _r = call<string>('time_out_w', 'string', ['number'], [time]);
+	checkMeosError();
+	return _r;
+}
+
+export function timestamp_in(str: string, typmod: number): number {
+	const _r = call<number>('timestamp_in_w', 'number', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
+}
+
+export function timestamp_out(ts: number): string {
+	const _r = call<string>('timestamp_out_w', 'string', ['bigint'], [BigInt(ts)]);
+	checkMeosError();
+	return _r;
+}
+
+export function timestamptz_in(str: string, typmod: number): TimestampTz {
+	const _r = call<TimestampTz>('timestamptz_in_w', 'number', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
+}
+
+export function timestamptz_out(tstz: TimestampTz): string {
+	const _r = call<string>('timestamptz_out_w', 'string', ['bigint'], [BigInt(tstz)]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_in(str: string): string {
+	const _r = call<string>('text_in_w', 'string', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_out(txt: string): string {
+	const _r = call<string>('text_out_w', 'string', ['string'], [txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_cmp(txt1: string, txt2: string, collid: number): number {
+	const _r = call<number>('text_cmp_w', 'number', ['string', 'string', 'number'], [txt1, txt2, collid]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_copy(txt: string): string {
+	const _r = call<string>('text_copy_w', 'string', ['string'], [txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_initcap(txt: string): string {
+	const _r = call<string>('text_initcap_w', 'string', ['string'], [txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_lower(txt: string): string {
+	const _r = call<string>('text_lower_w', 'string', ['string'], [txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function text_upper(txt: string): string {
+	const _r = call<string>('text_upper_w', 'string', ['string'], [txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function textcat_text_text(txt1: string, txt2: string): string {
+	const _r = call<string>('textcat_text_text_w', 'string', ['string', 'string'], [txt1, txt2]);
 	checkMeosError();
 	return _r;
 }

@@ -871,6 +871,15 @@ function main(): void {
 		'meos_h3.h',
 		'meos_json.h',
 		'meos_quadbin.h',
+		// The PostgreSQL-compat base I/O (interval_in, interval_out, …). MEOS
+		// splices these declarations into the installed <meos.h> at build time
+		// (meos/CMakeLists.txt), so they are reachable through the umbrella this
+		// preamble already includes, even though the catalog attributes them to
+		// their own declaring header. Both spellings are listed because that
+		// attribution has moved: an older catalog says postgres_ext_defs.in.h,
+		// a current one says pg_interval.h.
+		'postgres_ext_defs.in.h',
+		'pg_interval.h',
 	]);
 	// A few disabled-family symbols are declared (under #if POINTCLOUD guards) inside
 	// otherwise-public umbrellas — meos.h and meos_catalog.h — so the umbrella

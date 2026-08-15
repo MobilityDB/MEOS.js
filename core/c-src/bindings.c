@@ -297,19 +297,6 @@ char * ttext_value_n_w(const Temporal *temp, int n) {
     return text_to_cstring(r);
 }
 
-/*
- * pg_interval_in — parse an interval string into a PostgreSQL Interval*.
- * Declared in pgtypes.h (the PostgreSQL-compat layer), which is not among the
- * public meos_*.h umbrella headers this preamble #includes; it is forward-
- * declared here and its symbol resolves from libpgtypes.a at link time.
- */
-extern Interval *pg_interval_in(const char *str, int32 typmod);
-
-EMSCRIPTEN_KEEPALIVE
-Interval * pg_interval_in_w(const char * str, int typmod) {
-    return pg_interval_in(str, typmod);
-}
-
 /* --- Generated wrappers --- */
 /* === meos_error.h === */
 
@@ -13677,5 +13664,130 @@ int edwithin_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * te
 EMSCRIPTEN_KEEPALIVE
 int adwithin_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2, double dist) {
   return adwithin_trgeometry_trgeometry(temp1, temp2, dist);
+}
+
+
+/* === postgres_ext_defs.in.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int bool_in_w(const char * str) {
+  return (int) bool_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * bool_out_w(int b) {
+  return bool_out((bool) b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * float8_out_w(double num, int maxdd) {
+  return float8_out(num, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT date_in_w(const char * str) {
+  return date_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * date_out_w(DateADT date) {
+  return date_out(date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int interval_cmp_w(const Interval * interv1, const Interval * interv2) {
+  return interval_cmp(interv1, interv2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * interval_in_w(const char * str, int32 typmod) {
+  return interval_in(str, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * interval_out_w(const Interval * interv) {
+  return interval_out(interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT time_in_w(const char * str, int32 typmod) {
+  return time_in(str, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * time_out_w(TimeADT time) {
+  return time_out(time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_in_w(const char * str, int32 typmod) {
+  return timestamp_in(str, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * timestamp_out_w(long long ts) {
+  return timestamp_out((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_in_w(const char * str, int32 typmod) {
+  return timestamptz_in(str, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * timestamptz_out_w(long long tstz) {
+  return timestamptz_out((TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_in_w(const char * str) {
+  text *_t = text_in(str);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_out_w(const char * txt) {
+  return text_out(cstring_to_text(txt));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_cmp_w(const char * txt1, const char * txt2, Oid collid) {
+  return text_cmp(cstring_to_text(txt1), cstring_to_text(txt2), collid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_copy_w(const char * txt) {
+  text *_t = text_copy(cstring_to_text(txt));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_initcap_w(const char * txt) {
+  text *_t = text_initcap(cstring_to_text(txt));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_lower_w(const char * txt) {
+  text *_t = text_lower(cstring_to_text(txt));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * text_upper_w(const char * txt) {
+  text *_t = text_upper(cstring_to_text(txt));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * textcat_text_text_w(const char * txt1, const char * txt2) {
+  text *_t = textcat_text_text(cstring_to_text(txt1), cstring_to_text(txt2));
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
 }
 

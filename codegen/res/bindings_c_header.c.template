@@ -296,17 +296,4 @@ char * ttext_value_n_w(const Temporal *temp, int n) {
     return text_to_cstring(r);
 }
 
-/*
- * pg_interval_in — parse an interval string into a PostgreSQL Interval*.
- * Declared in pgtypes.h (the PostgreSQL-compat layer), which is not among the
- * public meos_*.h umbrella headers this preamble #includes; it is forward-
- * declared here and its symbol resolves from libpgtypes.a at link time.
- */
-extern Interval *pg_interval_in(const char *str, int32 typmod);
-
-EMSCRIPTEN_KEEPALIVE
-Interval * pg_interval_in_w(const char * str, int typmod) {
-    return pg_interval_in(str, typmod);
-}
-
 /* --- Generated wrappers --- */
