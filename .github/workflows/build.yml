@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  generate-and-typecheck:
+    name: Regenerate from the catalog and type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Regenerating must reproduce the committed sources exactly. A drift means
+      # either the generator changed without its output being refreshed, or the
+      # output was edited by hand -- both make the committed surface something no
+      # catalog projection produces.
+      #
+      # This step also runs the generator's own assertion that every emitted
+      # wrapper consults the MEOS error state, which otherwise only fires when
+      # somebody regenerates locally.
+      - name: Regenerate the bindings
+        run: npm run generate
+
+      - name: Fail on drift between the generator and the committed sources
+        run: git diff --exit-code -- core/functions/functions.generated.ts core/c-src/bindings.c
+
+      - name: Type-check
+        run: npx tsc --noEmit
