@@ -167,13 +167,13 @@ COPY --from=mobilitydb_src /root/MobilityDB      /root/MobilityDB
 
 WORKDIR /app
 
-# Install node deps first (cached unless package.json or lock change)
-COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
-
-# Now copy the rest and generate bindings
+# The wrappers are taken from the tree rather than regenerated here. They are a
+# projection of the MEOS-API catalog, and the catalog is derived from MobilityDB
+# rather than committed, so an image that regenerates needs a catalog the tree
+# does not carry. Compiling the committed wrappers also makes this build answer
+# the question that matters to a consumer of the published package, who compiles
+# exactly these: that they still build against the MEOS they are linked to.
 COPY . .
-RUN npm run generate
 
 # CMAKE: configure MobilityDB
 RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-install/include -I/root/json-c-install/include/json-c" \
