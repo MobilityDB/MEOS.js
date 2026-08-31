@@ -35,5 +35,12 @@ scripts/
 docs/api/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+# The MEOS catalog, derived from MobilityDB by the provision-meos action (MEOS-API
+# run.py) and staged here for the generator. It is never committed: the Dockerfile
+# clones MobilityDB at master, so a tracked copy names a different commit than the
+# library the module links against, and the two drift apart with nothing reporting
+# it. The C glue and the TypeScript surface projected from it ARE committed.
+codegen/res/meos-idl.json
+
 # tools/refresh-from-master.sh scratch (sibling clones + libmeos prefix).
 .meos-chain/

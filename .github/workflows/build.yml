@@ -28,6 +28,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The catalog is derived here rather than read from the tree. The Dockerfile
+      # clones MobilityDB at master, so a committed catalog names a different commit
+      # than the library the module links against; deriving both from master is what
+      # keeps the surface the generator projects and the surface the build links
+      # against the same one.
+      - name: Provision MEOS (catalog)
+        id: provision
+        uses: MobilityDB/MEOS-API/.github/actions/provision-meos@master
+        with:
+          mobilitydb-ref: master
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -35,19 +46,27 @@ jobs:
 
       - run: npm ci
 
-      # Regenerating must reproduce the committed sources exactly. A drift means
-      # either the generator changed without its output being refreshed, or the
-      # output was edited by hand -- both make the committed surface something no
-      # catalog projection produces.
-      #
-      # This step also runs the generator's own assertion that every emitted
-      # wrapper consults the MEOS error state, which otherwise only fires when
-      # somebody regenerates locally.
+      - name: Stage the derived catalog for the generator
+        run: cp "${{ steps.provision.outputs.catalog-path }}" codegen/res/meos-idl.json
+
+      # This also runs the generator's own assertion that every emitted wrapper
+      # consults the MEOS error state, which otherwise only fires when somebody
+      # regenerates locally.
       - name: Regenerate the bindings
         run: npm run generate
 
-      - name: Fail on drift between the generator and the committed sources
-        run: git diff --exit-code -- core/functions/functions.generated.ts core/c-src/bindings.c
+      - name: Report drift between the committed and freshly derived sources
+        run: |
+          # Informational, and deliberately so: MobilityDB master moves independently
+          # of this repository, so a difference between the committed projection and a
+          # freshly derived one is ordinary and a contributor cannot act on it.
+          # Refresh it by running the chain and committing the result.
+          if ! git diff --quiet -- core/functions/functions.generated.ts core/c-src/bindings.c; then
+            echo "::notice::the committed sources differ from the freshly derived catalog (snapshot lags MobilityDB master):"
+            git diff --stat -- core/functions/functions.generated.ts core/c-src/bindings.c
+          else
+            echo "the committed sources are in sync with the derived catalog."
+          fi
 
       - name: Type-check
         run: npx tsc --noEmit
