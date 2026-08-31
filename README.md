@@ -49,7 +49,7 @@ npm install meos.js
 MEOS.js/
 ├── codegen/                         ← Code generator
 │   ├── res/
-│   │   ├── meos-idl.json            ← MEOS API description
+│   │   ├── meos-idl.json            ← MEOS API description (derived, not committed)
 │   │   ├── bindings_c_header.c.template
 │   │   └── functions_ts_header.ts.template
 │   └── FunctionsGenerator.ts        ← Eemits the C glue + TS bindings
@@ -138,7 +138,9 @@ The only thing TypeScript users get extra is **compile-time type checking at wri
 
 The `codegen/` directory contains the generator that produces `core/c-src/bindings.c` and `core/functions/functions.generated.ts` from the [MEOS API](https://github.com/MobilityDB/MEOS-API) description file (`codegen/res/meos-idl.json`).
 
-**When to regenerate**: whenever `meos-idl.json` is updated (e.g. after a MEOS version upgrade) or whenever `FunctionsGenerator.ts` / the templates change.
+`meos-idl.json` is derived from MobilityDB rather than committed: the WASM build clones MobilityDB at `master`, so a tracked catalog would name a different commit than the library the module links against, and the two drift apart with nothing reporting it. The projection it produces — `bindings.c` and `functions.generated.ts` — is committed, because that is what a consumer of the published package compiles against.
+
+**When to regenerate**: whenever the MEOS surface moves, or whenever `FunctionsGenerator.ts` / the templates change.
 
 ### Running the generator
 
@@ -150,20 +152,17 @@ This reads `codegen/res/meos-idl.json`, applies the templates in `codegen/res/`,
 
 > **Do not edit `bindings.c` or `functions.generated.ts` manually**: any change will be lost the next time the generator runs. Manual overrides live in the templates (`codegen/res/*_header.*.template`).
 
-### Updating the input file
+### Deriving the catalog
 
-The canonical `meos-idl.json` is produced by [MEOS-API](https://github.com/MobilityDB/MEOS-API). To refresh against a newer MEOS surface:
+One command derives the catalog from the latest MobilityDB master and regenerates this binding's surface from it:
 
 ```bash
-# in a MEOS-API checkout
-python setup.py
-python run.py
-cp output/meos-idl.json /path/to/MEOS.js/codegen/res/meos-idl.json
-# back in MEOS.js
-npm run generate
+tools/refresh-from-master.sh
 ```
 
-The WASM build tracks upstream MobilityDB `master` (`MOBILITYDB_BRANCH` in the `Dockerfile`), so refreshing `meos-idl.json` from a current-master MEOS surface keeps the generated bindings in sync with the library the build links against.
+It runs the shared `refresh-binding.sh` in [MEOS-API](https://github.com/MobilityDB/MEOS-API) — the same recipe CI's `provision-meos` action runs, so the by-hand path and the CI path cannot drift. The per-binding last leg is in `tools/refresh.conf`. Pass `--mdb <path>` to refresh against a local MobilityDB branch instead of master.
+
+CI derives the catalog the same way on every push, then reports (without failing) any difference between the committed projection and the freshly derived one: MobilityDB master moves independently of this repository, so such a difference is ordinary.
 
 ## Tests
 
