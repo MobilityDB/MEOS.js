@@ -220,10 +220,19 @@ RUN PG_CONFIG_H=/root/MobilityDB/build/pgtypes/pg_config.h \
         "$PG_CONFIG_H"
 
 # COMPILING: libmeos.a
-# The install step produces the header this module compiles against. MEOS
-# assembles the installed <meos.h> rather than shipping the source one: it
-# splices the PostgreSQL-compat definitions and the de-prefixed base I/O into
-# it, so interval_in, date_in and their siblings are declared only there.
+# The install step produces both the header and the archive this module is built
+# against, so the prefix is the only thing the link line names and the build-tree
+# layout is MEOS's business alone.
+#
+# MEOS assembles the installed <meos.h> rather than shipping the source one: it
+# splices the PostgreSQL-compat definitions and the de-prefixed base I/O into it,
+# so interval_in, date_in and their siblings are declared only there.
+#
+# The installed archive is self-contained: MEOS folds pgtypes, liblwgeom and ryu
+# (and libpc, with POINTCLOUD on) into it precisely so a consumer that embeds MEOS
+# in one relocatable module links one library. The sidecar libpgtypes.a and
+# libpostgis.a it used to need are build-tree intermediates that `install` does not
+# publish, and naming them again would duplicate what the archive already carries.
 RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)" \
     && cmake --install /root/MobilityDB/build --prefix /root/meos-install
 
@@ -258,9 +267,7 @@ RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)" \
 RUN mkdir -p /app/wasm \
     && emcc -sMEMORY64=1 -sEMULATE_FUNCTION_POINTER_CASTS=1 -O1 \
         /app/core/c-src/bindings.c \
-        /root/MobilityDB/build/meos/libmeos.a \
-        /root/MobilityDB/build/pgtypes/libpgtypes.a \
-        /root/MobilityDB/build/postgis/libpostgis.a \
+        /root/meos-install/lib/libmeos.a \
         /root/geos/build/lib/libgeos.a \
         /root/geos/build/lib/libgeos_c.a \
         /root/PROJ/build/lib/libproj.a \
@@ -272,18 +279,12 @@ RUN mkdir -p /app/wasm \
         -I/root/meos-install/include \
         -I/root/geos/include \
         -I/root/geos/build/capi \
-        -I/root/MobilityDB/pgtypes \
-        -I/root/MobilityDB/build/pgtypes \
-        -I/root/MobilityDB/build/postgis/liblwgeom \
-        -I/root/MobilityDB/build/postgis \
-        -I/root/MobilityDB/postgis \
-        -I/root/MobilityDB/postgis/liblwgeom \
         -I/root/PROJ/src \
         -I/root/json-c-install/include \
         -I/root/gsl-wasm/include \
         -I/root/h3-install/include \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
-        --embed-file /root/MobilityDB/meos/src/geo/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
+        --embed-file /root/meos-install/share/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
         --embed-file /root/PROJ/build/data/proj.db@/usr/local/share/proj/proj.db \
         -o /app/wasm/meos.js \
         -s MODULARIZE=1 \
