@@ -220,7 +220,12 @@ RUN PG_CONFIG_H=/root/MobilityDB/build/pgtypes/pg_config.h \
         "$PG_CONFIG_H"
 
 # COMPILING: libmeos.a
-RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)"
+# The install step produces the header this module compiles against. MEOS
+# assembles the installed <meos.h> rather than shipping the source one: it
+# splices the PostgreSQL-compat definitions and the de-prefixed base I/O into
+# it, so interval_in, date_in and their siblings are declared only there.
+RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)" \
+    && cmake --install /root/MobilityDB/build --prefix /root/meos-install
 
 # EMCC: link everything into meos.js + meos.wasm
 #
@@ -264,7 +269,7 @@ RUN mkdir -p /app/wasm \
         /root/gsl-wasm/lib/libgslcblas.a \
         /root/json-c-install/lib/libjson-c.a \
         /root/h3-install/lib/libh3.a \
-        -I/root/MobilityDB/meos/include \
+        -I/root/meos-install/include \
         -I/root/geos/include \
         -I/root/geos/build/capi \
         -I/root/MobilityDB/pgtypes \

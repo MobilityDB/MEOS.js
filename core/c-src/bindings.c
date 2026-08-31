@@ -1,8 +1,22 @@
 /* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
 
 #include <stdlib.h>
-#include <postgres.h>
-#include <utils/timestamp.h>
+#include <string.h>
+/*
+ * <meos.h> stands in for <postgres.h> here, and including both breaks it.
+ *
+ * The installed <meos.h> is assembled rather than copied from the source tree:
+ * MEOS splices its PostgreSQL-compat definitions into it under `#ifndef
+ * POSTGRES_H`, which supplies Datum, DateADT, TimestampTz, Interval and the
+ * de-prefixed base I/O (interval_in, date_in, timestamptz_in, …) that carry no
+ * meos_ prefix precisely so they do not collide with a real PostgreSQL. Pulling
+ * in the vendored <postgres.h> first defines POSTGRES_H, the spliced block is
+ * skipped, and those types and declarations vanish.
+ *
+ * So the module compiles against the installed umbrella alone. Only the Datum
+ * accessors are missing from it, and they are defined below beside the
+ * Int64GetDatum/Float8GetDatum this file already supplies for the same reason.
+ */
 #include <meos.h>
 #include <meos_geo.h>
 #include <meos_cbuffer.h>
@@ -15,22 +29,61 @@
 #include <emscripten.h>
 
 /*
- * Implementations of Int64GetDatum and Float8GetDatum required when
- * USE_FLOAT8_BYVAL is disabled (by-reference mode for 64-bit types).
+ * The Datum accessors PostgreSQL declares in postgres.h.
+ *
+ * Whether a 64-bit value rides inside a Datum or behind a pointer is decided by
+ * the pointer width: PostgreSQL sets USE_FLOAT8_BYVAL when SIZEOF_VOID_P >= 8,
+ * and Datum is uintptr_t. This module builds with -sMEMORY64=1, so pointers are
+ * 8 bytes and a TimestampTz or an int64 span bound rides inside the Datum
+ * itself. Reading such a Datum through a pointer returns whatever the value
+ * happens to address, which is how a bigint span reports a neighbour it does
+ * not touch as adjacent.
+ *
+ * The condition below reproduces PostgreSQL's, so both widths stay correct.
  */
-#ifndef USE_FLOAT8_BYVAL
-Datum Int64GetDatum(int64 X) {
+#include <stdint.h>
+
+typedef double float8;
+
+#if UINTPTR_MAX > 0xFFFFFFFFu
+#define USE_FLOAT8_BYVAL 1
+#endif
+
+#ifndef PointerGetDatum
+#define PointerGetDatum(X)  ((Datum) (X))
+#endif
+
+#ifdef USE_FLOAT8_BYVAL
+
+#define DatumGetInt64(X)  ((int64) (X))
+#define Int64GetDatum(X)  ((Datum) (X))
+
+static inline Datum Float8GetDatum(float8 X) {
+    union { float8 value; int64 retval; } myunion;
+    myunion.value = X;
+    return (Datum) myunion.retval;
+}
+
+#else
+
+#define DatumGetInt64(X)  (*((int64 *) DatumGetPointer(X)))
+
+static inline Datum Int64GetDatum(int64 X) {
     int64 *ptr = (int64 *) malloc(sizeof(int64));
     *ptr = X;
     return PointerGetDatum(ptr);
 }
 
-Datum Float8GetDatum(float8 X) {
+static inline Datum Float8GetDatum(float8 X) {
     float8 *ptr = (float8 *) malloc(sizeof(float8));
     *ptr = X;
     return PointerGetDatum(ptr);
 }
+
 #endif
+
+#define DatumGetTimestampTz(X)  ((TimestampTz) DatumGetInt64(X))
+#define TimestampTzGetDatum(X)  Int64GetDatum(X)
 
 /* --- Error handler --- */
 /*
