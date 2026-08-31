@@ -40,9 +40,9 @@ import {
 	interval_in,
 	meos_free,
 	temporal_set_interp,
-	temporal_to_tinstant,
-	temporal_to_tsequence,
-	temporal_to_tsequenceset,
+	temporal_as_tinstant,
+	temporal_as_tsequence,
+	temporal_as_tsequenceset,
 	temporal_append_tinstant,
 	temporal_append_tsequence,
 	temporal_merge,
@@ -529,12 +529,12 @@ export abstract class Temporal<V> {
 		return this._fromInner(temporal_set_interp(this._inner, interpMap[interp]));
 	}
 
-	/** Converts to TInstant (must already be an instant). MEOS: temporal_to_tinstant */
+	/** Converts to TInstant (must already be an instant). MEOS: temporal_as_tinstant */
 	toInstant(): this {
-		return this._fromInner(temporal_to_tinstant(this._inner));
+		return this._fromInner(temporal_as_tinstant(this._inner));
 	}
 
-	/** Converts to TSequence with the given interpolation. MEOS: temporal_to_tsequence */
+	/** Converts to TSequence with the given interpolation. MEOS: temporal_as_tsequence */
 	toSequence(interp: TInterpolation): this {
 		const interpMap: Record<TInterpolation, number> = {
 			[TInterpolation.None]: 0,
@@ -542,10 +542,10 @@ export abstract class Temporal<V> {
 			[TInterpolation.Stepwise]: 2,
 			[TInterpolation.Linear]: 3,
 		};
-		return this._fromInner(temporal_to_tsequence(this._inner, interpMap[interp]));
+		return this._fromInner(temporal_as_tsequence(this._inner, interpMap[interp]));
 	}
 
-	/** Converts to TSequenceSet with the given interpolation. MEOS: temporal_to_tsequenceset */
+	/** Converts to TSequenceSet with the given interpolation. MEOS: temporal_as_tsequenceset */
 	toSequenceSet(interp: TInterpolation): this {
 		const interpMap: Record<TInterpolation, number> = {
 			[TInterpolation.None]: 0,
@@ -553,7 +553,7 @@ export abstract class Temporal<V> {
 			[TInterpolation.Stepwise]: 2,
 			[TInterpolation.Linear]: 3,
 		};
-		return this._fromInner(temporal_to_tsequenceset(this._inner, interpMap[interp]));
+		return this._fromInner(temporal_as_tsequenceset(this._inner, interpMap[interp]));
 	}
 
 	// -------------------------------------------------------------------------
