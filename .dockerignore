@@ -1,7 +1,7 @@
-# Build outputs / generated files
+# Build outputs / generated files. core/c-src/bindings.c is NOT excluded: it is
+# the committed projection this image compiles, not something the image produces.
 node_modules/
 wasm/
-core/c-src/bindings.c
 dist/
 coverage/
 
