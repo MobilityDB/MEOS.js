@@ -70,3 +70,32 @@ jobs:
 
       - name: Type-check
         run: npx tsc --noEmit
+
+  wasm:
+    name: Build the WebAssembly module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # The MEOS the module embeds comes from a clone of MobilityDB master made
+      # inside the image, so the clone layer must not be served from the cache:
+      # a cached mobilitydb_src freezes MEOS at whatever commit first populated
+      # it, and the module would then be built against a MEOS nobody is running.
+      # The dependency stages (sqlite, geos, proj, json-c, gsl, h3, zlib,
+      # libxml2, gdal) are pure builds of pinned releases, so they cache safely
+      # and carry the cost of this job.
+      - name: Build the WebAssembly module
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: wasm
+          outputs: type=local,dest=./wasm
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          no-cache-filters: mobilitydb_src
+
+      - name: Report what the module carries
+        run: |
+          ls -la wasm/meos.js wasm/meos.wasm
