@@ -99,6 +99,122 @@ RUN mkdir -p build && cd build \
     && cp /root/json-c/build/*.h /root/json-c-install/include/json-c/ \
     && cp /root/json-c/build/libjson-c.a /root/json-c-install/lib/
 
+# COMPILING ZLIB WITH EMSCRIPTEN
+#
+# pgPointCloud's libpc links zlib and libxml2, so POINTCLOUD needs both on the
+# wasm build path. Emscripten ships a zlib port, but MEOS reaches it through
+# find_package(ZLIB), which wants a prefix it can point at rather than a linker
+# flag, so it is built here like every other dependency.
+FROM base AS zlib
+
+RUN curl -fL "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz" \
+        | tar xz -C /root \
+    && mv /root/zlib-1.3.1 /root/zlib
+
+WORKDIR /root/zlib
+RUN mkdir -p build && cd build \
+    && emcmake cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/root/zlib-install \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DZLIB_BUILD_EXAMPLES=OFF \
+        -DCMAKE_C_FLAGS=-sMEMORY64=1 \
+    && emmake make -j"$(nproc)" zlibstatic \
+    && emmake make install
+
+# COMPILING LIBXML2 WITH EMSCRIPTEN
+#
+# The other half of libpc's link line. Every optional feature is off: libpc uses
+# libxml2 to read a point cloud's XML schema, so the parser is all that is
+# needed, and the extras (python, http, lzma, iconv) each drag in a dependency
+# this image would then have to cross-compile too.
+FROM base AS libxml2
+
+COPY --from=zlib /root/zlib-install /root/zlib-install
+
+RUN curl -fL "https://download.gnome.org/sources/libxml2/2.13/libxml2-2.13.5.tar.xz" \
+        | tar xJ -C /root \
+    && mv /root/libxml2-2.13.5 /root/libxml2
+
+WORKDIR /root/libxml2
+RUN mkdir -p build && cd build \
+    && emcmake cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/root/libxml2-install \
+        -DZLIB_INCLUDE_DIR=/root/zlib-install/include \
+        -DZLIB_LIBRARY=/root/zlib-install/lib/libz.a \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DLIBXML2_WITH_PYTHON=OFF \
+        -DLIBXML2_WITH_HTTP=OFF \
+        -DLIBXML2_WITH_LZMA=OFF \
+        -DLIBXML2_WITH_ICONV=OFF \
+        -DLIBXML2_WITH_ZLIB=ON \
+        -DLIBXML2_WITH_PROGRAMS=OFF \
+        -DLIBXML2_WITH_TESTS=OFF \
+        -DCMAKE_C_FLAGS=-sMEMORY64=1 \
+    && emmake make -j"$(nproc)" \
+    && emmake make install
+
+# COMPILING GDAL WITH EMSCRIPTEN
+#
+# RASTER samples raster bands along a trajectory through GDAL, and -DALL=ON turns
+# RASTER on, so GDAL has to be on the wasm build path for the family set
+# MobilityDB's own CMakeLists defines.
+#
+# Every optional driver is off. GDAL's driver set is where its bulk and its
+# dependency surface live (curl, netcdf, hdf5, the proprietary SDKs), and MEOS
+# reads raster bands through the generic API rather than naming a format, so the
+# core plus the built-in drivers is the whole requirement. The dependencies it
+# does take — PROJ and SQLite — are ones this image already builds for MEOS
+# itself, so GDAL adds no third-party library that was not already here.
+#
+# GEOS is off in GDAL: it backs OGR's geometry predicates, which raster band
+# sampling does not reach, and MEOS links its own GEOS regardless. Handing it
+# this tree's GEOS would also need two include directories — `geos_c.h` takes
+# `geos/export.h` from the source tree while the header itself is generated into
+# the build tree — and GEOS_INCLUDE_DIR names one.
+FROM base AS gdal
+
+COPY --from=sqlite /root/sqlite3 /root/sqlite3
+COPY --from=proj   /root/PROJ    /root/PROJ
+COPY --from=geos   /root/geos    /root/geos
+COPY --from=zlib   /root/zlib-install /root/zlib-install
+
+RUN curl -fL "https://github.com/OSGeo/gdal/releases/download/v3.9.3/gdal-3.9.3.tar.gz" \
+        | tar xz -C /root \
+    && mv /root/gdal-3.9.3 /root/gdal
+
+WORKDIR /root/gdal
+RUN mkdir -p build && cd build \
+    && emcmake cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/root/gdal-install \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_APPS=OFF \
+        -DBUILD_TESTING=OFF \
+        -DBUILD_DOCS=OFF \
+        -DBUILD_PYTHON_BINDINGS=OFF \
+        -DBUILD_JAVA_BINDINGS=OFF \
+        -DBUILD_CSHARP_BINDINGS=OFF \
+        -DGDAL_BUILD_OPTIONAL_DRIVERS=OFF \
+        -DOGR_BUILD_OPTIONAL_DRIVERS=OFF \
+        -DGDAL_USE_EXTERNAL_LIBS=OFF \
+        -DGDAL_USE_INTERNAL_LIBS=ON \
+        -DGDAL_USE_PROJ=ON \
+        -DPROJ_INCLUDE_DIR=/root/PROJ/src \
+        -DPROJ_LIBRARY=/root/PROJ/build/lib/libproj.a \
+        -DGDAL_USE_GEOS=OFF \
+        -DGDAL_USE_SQLITE3=ON \
+        -DSQLite3_INCLUDE_DIR=/root/sqlite3 \
+        -DSQLite3_LIBRARY=/root/sqlite3/libsqlite3.a \
+        -DGDAL_USE_ZLIB=ON \
+        -DZLIB_INCLUDE_DIR=/root/zlib-install/include \
+        -DZLIB_LIBRARY=/root/zlib-install/lib/libz.a \
+        -DCMAKE_C_FLAGS=-sMEMORY64=1 \
+        -DCMAKE_CXX_FLAGS=-sMEMORY64=1 \
+    && emmake make -j"$(nproc)" \
+    && emmake make install
+
 # COMPILING GSL WITH EMSCRIPTEN
 FROM base AS gsl
 
@@ -163,6 +279,9 @@ COPY --from=proj           /root/PROJ            /root/PROJ
 COPY --from=jsonc          /root/json-c-install  /root/json-c-install
 COPY --from=gsl            /root/gsl-wasm        /root/gsl-wasm
 COPY --from=h3             /root/h3-install      /root/h3-install
+COPY --from=zlib           /root/zlib-install    /root/zlib-install
+COPY --from=libxml2        /root/libxml2-install /root/libxml2-install
+COPY --from=gdal           /root/gdal-install    /root/gdal-install
 COPY --from=mobilitydb_src /root/MobilityDB      /root/MobilityDB
 
 WORKDIR /app
@@ -176,16 +295,17 @@ WORKDIR /app
 COPY . .
 
 # CMAKE: configure MobilityDB
+#
+# The install prefix is named HERE, not only on the install line: `meos.pc` is
+# generated at configure time and records the prefix it is given then, so a
+# prefix supplied later relocates the files while the `.pc` keeps pointing at
+# the emscripten sysroot, and `pkg-config --cflags` then reports an include
+# directory that holds no MEOS header.
 RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-install/include -I/root/json-c-install/include/json-c" \
     && emcmake cmake -S /root/MobilityDB -B /root/MobilityDB/build \
         -DMEOS=ON \
-        -DCBUFFER=ON \
-        -DNPOINT=ON \
-        -DPOSE=ON \
-        -DRGEO=ON \
-        -DH3=ON \
-        -DJSON=ON \
-        -DQUADBIN=ON \
+        -DALL=ON \
+        -DCMAKE_INSTALL_PREFIX=/root/meos-install \
         -DH3_LIBRARY=/root/h3-install/lib/libh3.a \
         -DH3_INCLUDE_DIR=/root/h3-install/include \
         -DBUILD_SHARED_LIBS=OFF \
@@ -199,6 +319,12 @@ RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-instal
         -DGSL_INCLUDE_DIR=/root/gsl-wasm/include \
         -DGSL_LIBRARY=/root/gsl-wasm/lib/libgsl.a \
         -DGSL_CBLAS_LIBRARY=/root/gsl-wasm/lib/libgslcblas.a \
+        -DZLIB_INCLUDE_DIR=/root/zlib-install/include \
+        -DZLIB_LIBRARY=/root/zlib-install/lib/libz.a \
+        -DLIBXML2_INCLUDE_DIR=/root/libxml2-install/include/libxml2 \
+        -DLIBXML2_LIBRARY=/root/libxml2-install/lib/libxml2.a \
+        -DGDAL_INCLUDE_DIR=/root/gdal-install/include \
+        -DGDAL_LIBRARY=/root/gdal-install/lib/libgdal.a \
         "-DCMAKE_C_FLAGS=-sMEMORY64=1 $INCLUDES" \
         "-DCMAKE_CXX_FLAGS=-sMEMORY64=1 $INCLUDES"
 
@@ -264,8 +390,23 @@ RUN cmake --build /root/MobilityDB/build --target meos --parallel "$(nproc)" \
 #     8 MB is reserved address space, not committed RAM, so it is cheap and
 #     pushes the practical limit from ~2500 to hundreds of thousands of
 #     instants.
+#
+# The installed MEOS describes itself: `pkg-config --cflags meos` reports its
+# include directory together with the family macros it is compiled with. Both
+# halves matter, because the public headers gate declarations on those macros --
+# `meos.h` holds `#if POINTCLOUD` and `#if JSON` blocks -- so an include path
+# written here without them compiles the negative branch and loses declarations
+# whose symbols the archive exports.
+#
+# EMULATE_FUNCTION_POINTER_CASTS makes wasm-opt give every indirect call one
+# signature, as wide as the widest function type in the module, and it refuses
+# to run when that exceeds its default cap. GDAL, which RASTER samples raster
+# bands through, carries the widest of them. The pass names the minimum it needs
+# in its own error, and the value is kept at that minimum because the width it
+# sets is paid by every thunk.
 RUN mkdir -p /app/wasm \
     && emcc -sMEMORY64=1 -sEMULATE_FUNCTION_POINTER_CASTS=1 -O1 \
+        -sBINARYEN_EXTRA_PASSES=pass-arg=max-func-params@23 \
         /app/core/c-src/bindings.c \
         /root/meos-install/lib/libmeos.a \
         /root/geos/build/lib/libgeos.a \
@@ -276,7 +417,10 @@ RUN mkdir -p /app/wasm \
         /root/gsl-wasm/lib/libgslcblas.a \
         /root/json-c-install/lib/libjson-c.a \
         /root/h3-install/lib/libh3.a \
-        -I/root/meos-install/include \
+        /root/gdal-install/lib/libgdal.a \
+        /root/libxml2-install/lib/libxml2.a \
+        /root/zlib-install/lib/libz.a \
+        $(PKG_CONFIG_PATH=/root/meos-install/lib/pkgconfig pkg-config --cflags meos) \
         -I/root/geos/include \
         -I/root/geos/build/capi \
         -I/root/PROJ/src \

@@ -2,7 +2,6 @@ import { Temporal } from '../../temporal/Temporal.js';
 import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	tnumber_integral,
-	tnumber_avg_value,
 	tnumber_twavg,
 	tnumber_abs,
 	tnumber_delta_value,
@@ -64,8 +63,6 @@ export abstract class TNumber extends Temporal<number> {
 	/** Returns the time-weighted average. MEOS: tnumber_twavg */
 	timeWeightedAverage(): number { return tnumber_twavg(this._inner); }
 
-	/** Returns the plain average of all instant values. MEOS: tnumber_avg_value */
-	avgValue(): number { return tnumber_avg_value(this._inner); }
 
 	// -------------------------------------------------------------------------
 	// VALUE TRANSFORMATIONS

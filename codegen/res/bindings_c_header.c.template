@@ -16,15 +16,7 @@
  * accessors are missing from it, and they are defined below beside the
  * Int64GetDatum/Float8GetDatum this file already supplies for the same reason.
  */
-#include <meos.h>
-#include <meos_geo.h>
-#include <meos_cbuffer.h>
-#include <meos_npoint.h>
-#include <meos_pose.h>
-#include <meos_rgeo.h>
-#include <meos_h3.h>
-#include <meos_json.h>
-#include <meos_quadbin.h>
+/* @GENERATED_INCLUDES@ */
 #include <emscripten.h>
 
 /*

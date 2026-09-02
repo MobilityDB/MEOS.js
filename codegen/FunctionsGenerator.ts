@@ -41,6 +41,8 @@ interface Param {
 interface IdlFunction {
 	name: string;
 	file: string;
+	api: string;
+	family: string;
 	returnType: ReturnType;
 	params: Param[];
 }
@@ -842,62 +844,21 @@ function main(): void {
 	console.log('Reading IDL:', idlPath);
 	const idl: Idl = JSON.parse(fs.readFileSync(idlPath, 'utf-8'));
 
-	// The binding compiles C wrappers that CALL each MEOS function, so it can only
-	// use symbols that are DECLARED in a header the wrapper preamble #includes — the
-	// public meos_*.h umbrella headers (bindings_c_header.c.template). A function the
-	// catalog attributes to an internal fine-grained header (e.g. cbuffer.h,
-	// tcbuffer.h, temporal.h, meos_internal.h) is not declared there and often uses
-	// non-marshalable internal types (double2, Datum), so emitting a wrapper for it
-	// fails the emcc compile. The catalog attributes each public function to its
-	// umbrella and each internal-only function to the fine-grained header, so the
-	// public API is exactly the set of umbrella headers below — the same list the
-	// template #includes and the Dockerfile builds (CBUFFER/NPOINT/POSE/RGEO + H3 via
-	// libh3, JSON via json-c, QUADBIN via libm). The two families whose native
-	// libraries do not yet cross-compile to wasm — POINTCLOUD (pgpointcloud: libpc +
-	// lazperf) and RASTER (GDAL) — are excluded by leaving their umbrellas
-	// (meos_pointcloud.h, meos_raster.h) out. To add a family: add its umbrella here,
-	// #include it in the template, and flip its -D<FAMILY>=ON in the Dockerfile.
-	// Only top-level meos/include/*.h umbrellas belong here; meos_catalog.h lives in
-	// meos/include/temporal/ and is an internal type-system header (its accessors are
-	// `inline`, hence unlinkable from a separate TU), so it is deliberately excluded.
-	const API_HEADERS = new Set([
-		'meos.h',
-		'meos_error.h',
-		'meos_geo.h',
-		'meos_cbuffer.h',
-		'meos_npoint.h',
-		'meos_pose.h',
-		'meos_rgeo.h',
-		'meos_h3.h',
-		'meos_json.h',
-		'meos_quadbin.h',
-		// The PostgreSQL-compat base I/O (interval_in, interval_out, …). MEOS
-		// splices these declarations into the installed <meos.h> at build time
-		// (meos/CMakeLists.txt), so they are reachable through the umbrella this
-		// preamble already includes, even though the catalog attributes them to
-		// their own declaring header. Both spellings are listed because that
-		// attribution has moved: an older catalog says postgres_ext_defs.in.h,
-		// a current one says pg_interval.h.
-		'postgres_ext_defs.in.h',
-		'pg_interval.h',
-	]);
-	// A few disabled-family symbols are declared (under #if POINTCLOUD guards) inside
-	// otherwise-public umbrellas — meos.h and meos_catalog.h — so the umbrella
-	// allow-list alone does not exclude them. The guard compiles them out when the
-	// family is off, so a wrapper for them would reference an undeclared symbol.
-	// Exclude them by name; drop an entry here when its family is enabled.
-	const DISABLED_FAMILY_FUNCTIONS = new Set([
-		// POINTCLOUD (guarded in meos.h / meos_catalog.h)
-		'meos_initialize_pointcloud',
-		'rtree_create_tpcbox',
-		'pointcloud_basetype',
-		'pointcloudset_type',
-		'tpointcloud_temptype',
-	]);
-	const fns: IdlFunction[] = (idl.functions ?? []).filter(
-		f => API_HEADERS.has(f.file) && !DISABLED_FAMILY_FUNCTIONS.has(f.name)
-	);
+	// The emitted surface is every function the catalog calls public. `api` is
+	// derived from the @ingroup doxygen tag in MEOS's own sources, so the binding
+	// asks MEOS what it publishes rather than deciding from the header a symbol
+	// happens to be declared in.
+	//
+	// The preamble is the set of headers those functions come from, taken from the
+	// catalog too. A header list written here is a copy of that set kept by hand,
+	// and it goes stale in one direction only: a family MobilityDB adds is absent
+	// from the copy, so its whole surface is dropped with nothing reporting it.
+	// MEOS installs a family's umbrella only when the family is built, and the
+	// image builds them all, so every header named here is present.
+	const fns: IdlFunction[] = (idl.functions ?? []).filter(f => f.api === 'public');
 
+	const includes = [...new Set(fns.map(f => f.file))].sort()
+		.map(h => `#include <${h}>`).join('\n');
 	// The marker banner is emitted here rather than stored in the source templates
 	// (which are hand-edited). Its text is assembled from parts so this generator is
 	// not itself flagged by tooling that scans for the marker.
@@ -905,7 +866,7 @@ function main(): void {
 	let cOut = BANNER + fs.readFileSync(
 		path.resolve(__dirname, 'res/bindings_c_header.c.template'),
 		'utf-8'
-	);
+	).replace('/* @GENERATED_INCLUDES@ */', includes);
 	let tsOut = BANNER + fs.readFileSync(
 		path.resolve(__dirname, 'res/functions_ts_header.ts.template'),
 		'utf-8'
