@@ -18,14 +18,26 @@
  * Int64GetDatum/Float8GetDatum this file already supplies for the same reason.
  */
 #include <meos.h>
-#include <meos_geo.h>
 #include <meos_cbuffer.h>
-#include <meos_npoint.h>
-#include <meos_pose.h>
-#include <meos_rgeo.h>
+#include <meos_cellindex.h>
+#include <meos_geo.h>
 #include <meos_h3.h>
 #include <meos_json.h>
+#include <meos_npoint.h>
+#include <meos_pointcloud.h>
+#include <meos_pose.h>
 #include <meos_quadbin.h>
+#include <meos_raster.h>
+#include <meos_rgeo.h>
+#include <meos_s2cell.h>
+#include <pg_bool.h>
+#include <pg_date.h>
+#include <pg_float.h>
+#include <pg_int.h>
+#include <pg_interval.h>
+#include <pg_text.h>
+#include <pg_time.h>
+#include <pg_timestamp.h>
 #include <emscripten.h>
 
 /*
@@ -441,13 +453,6 @@ int text_cmp_w(const char * txt1, const char * txt2, Oid collid) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * text_copy_w(const char * txt) {
-  text *_t = text_copy(cstring_to_text(txt));
-  if (!_t) return NULL;
-  return text_to_cstring(_t);
-}
-
-EMSCRIPTEN_KEEPALIVE
 char * text_initcap_w(const char * txt) {
   text *_t = text_initcap(cstring_to_text(txt));
   if (!_t) return NULL;
@@ -571,6 +576,11 @@ RTree * rtree_create_stbox_w() {
 }
 
 EMSCRIPTEN_KEEPALIVE
+RTree * rtree_create_tpcbox_w() {
+  return rtree_create_tpcbox();
+}
+
+EMSCRIPTEN_KEEPALIVE
 void rtree_free_w(RTree * rtree) {
   rtree_free(rtree);
 }
@@ -623,11 +633,6 @@ int rtree_join_w(const RTree * rtree1, const RTree * rtree2, IndexSearchOp op, M
 EMSCRIPTEN_KEEPALIVE
 int rtree_search_temporal_w(const RTree * rtree, IndexSearchOp op, const Temporal * temp, MeosArray * result) {
   return rtree_search_temporal(rtree, op, temp, result);
-}
-
-EMSCRIPTEN_KEEPALIVE
-int rtree_search_temporal_dedup_w(const RTree * rtree, IndexSearchOp op, const Temporal * temp, int maxboxes, MeosArray * result) {
-  return rtree_search_temporal_dedup(rtree, op, temp, maxboxes, result);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -741,11 +746,6 @@ int sptree_search_temporal_w(const SPTree * sptree, IndexSearchOp op, const Temp
 }
 
 EMSCRIPTEN_KEEPALIVE
-int sptree_search_temporal_dedup_w(const SPTree * sptree, IndexSearchOp op, const Temporal * temp, int maxboxes, MeosArray * result) {
-  return sptree_search_temporal_dedup(sptree, op, temp, maxboxes, result);
-}
-
-EMSCRIPTEN_KEEPALIVE
 SPNNCursor * sptree_nn_cursor_open_w(const SPTree * sptree, const void * query) {
   return sptree_nn_cursor_open(sptree, query);
 }
@@ -778,6 +778,11 @@ void meos_initialize_collation_w() {
 EMSCRIPTEN_KEEPALIVE
 void meos_finalize_collation_w() {
   meos_finalize_collation();
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_initialize_pointcloud_w() {
+  meos_initialize_pointcloud();
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4878,11 +4883,6 @@ int64_t * tbigint_values_w(const Temporal * temp, int32 * count) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-double tnumber_avg_value_w(const Temporal * temp) {
-  return tnumber_avg_value(temp);
-}
-
-EMSCRIPTEN_KEEPALIVE
 double tnumber_integral_w(const Temporal * temp) {
   return tnumber_integral(temp);
 }
@@ -6318,6 +6318,11 @@ int overlaps_tbox_tnumber_w(const TBox * box, const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 int overlaps_temporal_temporal_w(const Temporal * temp1, const Temporal * temp2) {
   return (int) overlaps_temporal_temporal(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int temporal_time_overlaps_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) temporal_time_overlaps(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9198,11 +9203,6 @@ int acontains_tgeo_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int acontains_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
-  return acontains_tgeo_tgeo(temp1, temp2);
-}
-
-EMSCRIPTEN_KEEPALIVE
 int acovers_geo_tgeo_w(const GSERIALIZED * gs, const Temporal * temp) {
   return acovers_geo_tgeo(gs, temp);
 }
@@ -10390,11 +10390,6 @@ int atouches_tcbuffer_cbuffer_w(const Temporal * temp, const Cbuffer * cb) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int atouches_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
-  return atouches_tcbuffer_tcbuffer(temp1, temp2);
-}
-
-EMSCRIPTEN_KEEPALIVE
 int econtains_cbuffer_tcbuffer_w(const Cbuffer * cb, const Temporal * temp) {
   return econtains_cbuffer_tcbuffer(cb, temp);
 }
@@ -10637,6 +10632,39 @@ Temporal * ttouches_tcbuffer_cbuffer_w(const Temporal * temp, const Cbuffer * cb
 EMSCRIPTEN_KEEPALIVE
 Temporal * ttouches_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
   return ttouches_tcbuffer_tcbuffer(temp1, temp2);
+}
+
+
+/* === meos_cellindex.h === */
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_get_resolution_w(const Temporal * temp) {
+  return tcellindex_get_resolution(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_is_valid_cell_w(const Temporal * temp) {
+  return tcellindex_is_valid_cell(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_cell_to_parent_w(const Temporal * temp, int32 resolution) {
+  return tcellindex_cell_to_parent(temp, resolution);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_cell_to_point_w(const Temporal * temp) {
+  return tcellindex_cell_to_point(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_cell_to_boundary_w(const Temporal * temp) {
+  return tcellindex_cell_to_boundary(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_cell_area_w(const Temporal * temp) {
+  return tcellindex_cell_area(temp);
 }
 
 
@@ -11769,21 +11797,6 @@ char * tjsonb_out_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * tjsonbinst_in_w(const char * str) {
-  return tjsonbinst_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
-TSequence * tjsonbseq_in_w(const char * str, interpType interp) {
-  return tjsonbseq_in(str, interp);
-}
-
-EMSCRIPTEN_KEEPALIVE
-TSequenceSet * tjsonbseqset_in_w(const char * str) {
-  return tjsonbseqset_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
 Temporal * tjsonb_from_base_temp_w(const Jsonb * jsonb, const Temporal * temp) {
   return tjsonb_from_base_temp(jsonb, temp);
 }
@@ -12753,6 +12766,1107 @@ Temporal * tne_tnpoint_npoint_w(const Temporal * temp, const Npoint * np) {
 }
 
 
+/* === meos_pointcloud.h === */
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpoint_hex_in_w(const char * str) {
+  return pcpoint_hex_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpoint_hex_out_w(const Pcpoint * pt, int maxdd) {
+  return pcpoint_hex_out(pt, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpoint_from_hexwkb_w(const char * hexwkb) {
+  return pcpoint_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpoint_as_hexwkb_w(const Pcpoint * pt) {
+  return pcpoint_as_hexwkb(pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpoint_make_w(uint32_t pcid, const double * values, int count) {
+  return pcpoint_make(pcid, values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpoint_copy_w(const Pcpoint * pt) {
+  return pcpoint_copy(pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t pcpoint_get_pcid_w(const Pcpoint * pt) {
+  return pcpoint_get_pcid(pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t pcpoint_hash_w(const Pcpoint * pt) {
+  return pcpoint_hash(pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t pcpoint_hash_extended_w(const Pcpoint * pt, uint64_t seed) {
+  return pcpoint_hash_extended(pt, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_get_x_w(const Pcpoint * pt, PCSCHEMA * schema, double * out) {
+  return (int) pcpoint_get_x(pt, schema, out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_get_y_w(const Pcpoint * pt, PCSCHEMA * schema, double * out) {
+  return (int) pcpoint_get_y(pt, schema, out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_get_z_w(const Pcpoint * pt, PCSCHEMA * schema, double * out) {
+  return (int) pcpoint_get_z(pt, schema, out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_get_dim_w(const Pcpoint * pt, PCSCHEMA * schema, const char * name, double * out) {
+  return (int) pcpoint_get_dim(pt, schema, name, out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * pcpoint_to_tpcbox_w(const Pcpoint * pt, PCSCHEMA * schema) {
+  return pcpoint_to_tpcbox(pt, schema);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PCSCHEMA * meos_pc_schema_w(uint32_t pcid) {
+  return meos_pc_schema(pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_pc_schema_register_w(uint32_t pcid, PCSCHEMA * schema) {
+  meos_pc_schema_register(pcid, schema);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PCSCHEMA * meos_pc_schema_from_dims_w(uint32_t pcid, int32_t srid, const char * compression, const PCDimensionSpec * dims, int ndims) {
+  return meos_pc_schema_from_dims(pcid, srid, compression, dims, ndims);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int meos_pc_schema_register_dims_w(uint32_t pcid, int32_t srid, const char * compression, const PCDimensionSpec * dims, int ndims) {
+  return (int) meos_pc_schema_register_dims(pcid, srid, compression, dims, ndims);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_pc_schema_register_xml_w(uint32_t pcid, PCSCHEMA * schema, const char * xml_text) {
+  meos_pc_schema_register_xml(pcid, schema, xml_text);
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char * meos_pc_schema_xml_w(uint32_t pcid) {
+  return meos_pc_schema_xml(pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_pc_schema_clear_w() {
+  meos_pc_schema_clear();
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32_t meos_pc_schema_srid_w(uint32_t pcid) {
+  return meos_pc_schema_srid(pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char * meos_pc_schema_compression_w(uint32_t pcid) {
+  return meos_pc_schema_compression(pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32_t meos_pc_schema_ndims_w(uint32_t pcid) {
+  return meos_pc_schema_ndims(pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void meos_set_pointcloud_schemas_xml_w(const char * path) {
+  meos_set_pointcloud_schemas_xml(path);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_cmp_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return pcpoint_cmp(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_eq_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_eq(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_ne_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_ne(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_lt_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_lt(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_le_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_le(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_gt_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_gt(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpoint_ge_w(const Pcpoint * pt1, const Pcpoint * pt2) {
+  return (int) pcpoint_ge(pt1, pt2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_hex_in_w(const char * str) {
+  return pcpatch_hex_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpatch_hex_out_w(const Pcpatch * pa, int maxdd) {
+  return pcpatch_hex_out(pa, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_from_hexwkb_w(const char * hexwkb) {
+  return pcpatch_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpatch_as_hexwkb_w(const Pcpatch * pa) {
+  return pcpatch_as_hexwkb(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_make_w(const Pcpoint ** points, int count) {
+  return pcpatch_make(points, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_make_coords_w(uint32_t pcid, const double * values, int count) {
+  return pcpatch_make_coords(pcid, values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_copy_w(const Pcpatch * pa) {
+  return pcpatch_copy(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t pcpatch_get_pcid_w(const Pcpatch * pa) {
+  return pcpatch_get_pcid(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t pcpatch_npoints_w(const Pcpatch * pa) {
+  return pcpatch_npoints(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t pcpatch_hash_w(const Pcpatch * pa) {
+  return pcpatch_hash(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t pcpatch_hash_extended_w(const Pcpatch * pa, uint64_t seed) {
+  return pcpatch_hash_extended(pa, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * pcpatch_to_geom_w(const Pcpatch * pa) {
+  return pcpatch_to_geom(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_cmp_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return pcpatch_cmp(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_eq_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_eq(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_ne_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_ne(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_lt_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_lt(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_le_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_le(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_gt_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_gt(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int pcpatch_ge_w(const Pcpatch * pa1, const Pcpatch * pa2) {
+  return (int) pcpatch_ge(pa1, pa2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpointset_in_w(const char * str) {
+  return pcpointset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpointset_out_w(const Set * s, int maxdd) {
+  return pcpointset_out(s, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpointset_make_w(Pcpoint ** values, int count) {
+  return pcpointset_make(values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpoint_to_set_w(const Pcpoint * pt) {
+  return pcpoint_to_set(pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpointset_start_value_w(const Set * s) {
+  return pcpointset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpointset_end_value_w(const Set * s) {
+  return pcpointset_end_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpointset_value_n_w(const Set * s, int n) {
+  Pcpoint * r;
+  if (!pcpointset_value_n(s, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint ** pcpointset_values_w(const Set * s, int * count) {
+  return pcpointset_values(s, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_set_pcpoint_w(const Set * s, Pcpoint * pt) {
+  return (int) contains_set_pcpoint(s, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_pcpoint_set_w(const Pcpoint * pt, const Set * s) {
+  return (int) contained_pcpoint_set(pt, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_pcpoint_set_w(const Pcpoint * pt, const Set * s) {
+  return intersection_pcpoint_set(pt, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_set_pcpoint_w(const Set * s, const Pcpoint * pt) {
+  return intersection_set_pcpoint(s, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_pcpoint_set_w(const Pcpoint * pt, const Set * s) {
+  return minus_pcpoint_set(pt, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_set_pcpoint_w(const Set * s, const Pcpoint * pt) {
+  return minus_set_pcpoint(s, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_pcpoint_set_w(const Pcpoint * pt, const Set * s) {
+  return union_pcpoint_set(pt, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_set_pcpoint_w(const Set * s, const Pcpoint * pt) {
+  return union_set_pcpoint(s, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpoint_union_transfn_w(Set * state, const Pcpoint * pt) {
+  return pcpoint_union_transfn(state, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpatchset_in_w(const char * str) {
+  return pcpatchset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * pcpatchset_out_w(const Set * s, int maxdd) {
+  return pcpatchset_out(s, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpatchset_make_w(Pcpatch ** values, int count) {
+  return pcpatchset_make(values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpatch_to_set_w(const Pcpatch * pa) {
+  return pcpatch_to_set(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatchset_start_value_w(const Set * s) {
+  return pcpatchset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatchset_end_value_w(const Set * s) {
+  return pcpatchset_end_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatchset_value_n_w(const Set * s, int n) {
+  Pcpatch * r;
+  if (!pcpatchset_value_n(s, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch ** pcpatchset_values_w(const Set * s, int * count) {
+  return pcpatchset_values(s, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_set_pcpatch_w(const Set * s, Pcpatch * pa) {
+  return (int) contains_set_pcpatch(s, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_pcpatch_set_w(const Pcpatch * pa, const Set * s) {
+  return (int) contained_pcpatch_set(pa, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_pcpatch_set_w(const Pcpatch * pa, const Set * s) {
+  return intersection_pcpatch_set(pa, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_set_pcpatch_w(const Set * s, const Pcpatch * pa) {
+  return intersection_set_pcpatch(s, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_pcpatch_set_w(const Pcpatch * pa, const Set * s) {
+  return minus_pcpatch_set(pa, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_set_pcpatch_w(const Set * s, const Pcpatch * pa) {
+  return minus_set_pcpatch(s, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_pcpatch_set_w(const Pcpatch * pa, const Set * s) {
+  return union_pcpatch_set(pa, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_set_pcpatch_w(const Set * s, const Pcpatch * pa) {
+  return union_set_pcpatch(s, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * pcpatch_union_transfn_w(Set * state, const Pcpatch * pa) {
+  return pcpatch_union_transfn(state, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * tpcbox_in_w(const char * str) {
+  return tpcbox_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tpcbox_out_w(const TPCBox * box, int maxdd) {
+  return tpcbox_out(box, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * tpcbox_make_w(int hasx, int hasz, int hast, int geodetic, int32_t srid, uint32_t pcid, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, const Span * period) {
+  return tpcbox_make((bool) hasx, (bool) hasz, (bool) hast, (bool) geodetic, srid, pcid, xmin, xmax, ymin, ymax, zmin, zmax, period);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * tpcbox_copy_w(const TPCBox * box) {
+  return tpcbox_copy(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * pcpatch_to_tpcbox_w(const Pcpatch * pa, int32_t srid) {
+  return pcpatch_to_tpcbox(pa, srid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_hasx_w(const TPCBox * box) {
+  return (int) tpcbox_hasx(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_hasz_w(const TPCBox * box) {
+  return (int) tpcbox_hasz(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_hast_w(const TPCBox * box) {
+  return (int) tpcbox_hast(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_geodetic_w(const TPCBox * box) {
+  return (int) tpcbox_geodetic(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_xmin_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_xmin(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_xmax_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_xmax(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_ymin_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_ymin(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_ymax_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_ymax(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_zmin_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_zmin(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tpcbox_zmax_w(const TPCBox * box) {
+  double r;
+  if (!tpcbox_zmax(box, &r)) return 0.0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tpcbox_tmin_w(const TPCBox * box) {
+  TimestampTz r;
+  if (!tpcbox_tmin(box, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_tmin_inc_w(const TPCBox * box) {
+  bool r;
+  if (!tpcbox_tmin_inc(box, &r)) return 0;
+  return (int) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tpcbox_tmax_w(const TPCBox * box) {
+  TimestampTz r;
+  if (!tpcbox_tmax(box, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_tmax_inc_w(const TPCBox * box) {
+  bool r;
+  if (!tpcbox_tmax_inc(box, &r)) return 0;
+  return (int) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32_t tpcbox_srid_w(const TPCBox * box) {
+  return tpcbox_srid(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t tpcbox_pcid_w(const TPCBox * box) {
+  return tpcbox_pcid(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * tpcbox_to_stbox_w(const TPCBox * box) {
+  return tpcbox_to_stbox(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * tpcbox_round_w(const TPCBox * box, int maxdd) {
+  return tpcbox_round(box, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * tpcbox_set_srid_w(const TPCBox * box, int32_t srid) {
+  return tpcbox_set_srid(box, srid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * union_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2, int strict) {
+  return union_tpcbox_tpcbox(box1, box2, (bool) strict);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TPCBox * intersection_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return intersection_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) contains_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) contained_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overlaps_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overlaps_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int same_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) same_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) adjacent_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_cmp_w(const TPCBox * box1, const TPCBox * box2) {
+  return tpcbox_cmp(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_eq_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_eq(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_ne_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_ne(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_lt_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_lt(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_le_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_le(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_gt_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_gt(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcbox_ge_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) tpcbox_ge(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int left_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) left_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overleft_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overleft_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int right_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) right_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overright_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overright_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int below_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) below_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overbelow_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overbelow_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int above_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) above_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overabove_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overabove_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int front_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) front_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overfront_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overfront_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int back_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) back_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overback_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overback_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int before_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) before_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overbefore_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overbefore_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int after_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) after_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overafter_tpcbox_tpcbox_w(const TPCBox * box1, const TPCBox * box2) {
+  return (int) overafter_tpcbox_tpcbox(box1, box2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpointcloud_to_tgeompoint_w(const Temporal * temp) {
+  return tpointcloud_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_to_tgeometry_w(const Temporal * temp) {
+  return tpcpatch_to_tgeometry(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tpcpointinst_make_w(const Pcpoint * pt, long long t) {
+  return tpcpointinst_make(pt, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tpcpointseq_from_base_tstzset_w(const Pcpoint * pt, const Set * s) {
+  return tpcpointseq_from_base_tstzset(pt, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tpcpointseq_from_base_tstzspan_w(const Pcpoint * pt, const Span * sp) {
+  return tpcpointseq_from_base_tstzspan(pt, sp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tpcpointseqset_from_base_tstzspanset_w(const Pcpoint * pt, const SpanSet * ss) {
+  return tpcpointseqset_from_base_tstzspanset(pt, ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_from_base_temp_w(const Pcpoint * pt, const Temporal * temp) {
+  return tpcpoint_from_base_temp(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * tpcpoint_start_value_w(const Temporal * temp) {
+  return tpcpoint_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * tpcpoint_end_value_w(const Temporal * temp) {
+  return tpcpoint_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint * tpcpoint_value_n_w(const Temporal * temp, int n) {
+  Pcpoint * r;
+  if (!tpcpoint_value_n(temp, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint ** tpcpoint_values_w(const Temporal * temp, int * count) {
+  return tpcpoint_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcpoint_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Pcpoint ** value) {
+  return (int) tpcpoint_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_at_value_w(const Temporal * temp, const Pcpoint * pt) {
+  return tpcpoint_at_value(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_minus_value_w(const Temporal * temp, const Pcpoint * pt) {
+  return tpcpoint_minus_value(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * tpcpatchinst_make_w(const Pcpatch * pa, long long t) {
+  return tpcpatchinst_make(pa, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tpcpatchseq_from_base_tstzset_w(const Pcpatch * pa, const Set * s) {
+  return tpcpatchseq_from_base_tstzset(pa, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * tpcpatchseq_from_base_tstzspan_w(const Pcpatch * pa, const Span * sp) {
+  return tpcpatchseq_from_base_tstzspan(pa, sp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * tpcpatchseqset_from_base_tstzspanset_w(const Pcpatch * pa, const SpanSet * ss) {
+  return tpcpatchseqset_from_base_tstzspanset(pa, ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_from_base_temp_w(const Pcpatch * pa, const Temporal * temp) {
+  return tpcpatch_from_base_temp(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * tpcpatch_start_value_w(const Temporal * temp) {
+  return tpcpatch_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * tpcpatch_end_value_w(const Temporal * temp) {
+  return tpcpatch_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * tpcpatch_value_n_w(const Temporal * temp, int n) {
+  Pcpatch * r;
+  if (!tpcpatch_value_n(temp, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch ** tpcpatch_values_w(const Temporal * temp, int * count) {
+  return tpcpatch_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tpcpatch_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, Pcpatch ** value) {
+  return (int) tpcpatch_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_at_value_w(const Temporal * temp, const Pcpatch * pa) {
+  return tpcpatch_at_value(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_minus_value_w(const Temporal * temp, const Pcpatch * pa) {
+  return tpcpatch_minus_value(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return ever_eq_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return ever_eq_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tpcpoint_tpcpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_tpcpoint_tpcpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return ever_ne_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return ever_ne_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tpcpoint_tpcpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_tpcpoint_tpcpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return always_eq_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return always_eq_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tpcpoint_tpcpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_tpcpoint_tpcpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return always_ne_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return always_ne_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tpcpoint_tpcpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_tpcpoint_tpcpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return ever_eq_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return ever_eq_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tpcpatch_tpcpatch_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_tpcpatch_tpcpatch(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return ever_ne_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return ever_ne_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tpcpatch_tpcpatch_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_tpcpatch_tpcpatch(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return always_eq_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return always_eq_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tpcpatch_tpcpatch_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_tpcpatch_tpcpatch(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return always_ne_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return always_ne_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tpcpatch_tpcpatch_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_tpcpatch_tpcpatch(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return teq_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return teq_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_pcpoint_tpcpoint_w(const Pcpoint * pt, const Temporal * temp) {
+  return tne_pcpoint_tpcpoint(pt, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tpcpoint_pcpoint_w(const Temporal * temp, const Pcpoint * pt) {
+  return tne_tpcpoint_pcpoint(temp, pt);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return teq_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return teq_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
+  return tne_pcpatch_tpcpatch(pa, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
+  return tne_tpcpatch_pcpatch(temp, pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_tpcbox_tpointcloud_w(const TPCBox * box, const Temporal * temp) {
+  return (int) adjacent_tpcbox_tpointcloud(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_tpointcloud_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return (int) adjacent_tpointcloud_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_tpointcloud_tpointcloud_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) adjacent_tpointcloud_tpointcloud(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_tpcbox_tpointcloud_w(const TPCBox * box, const Temporal * temp) {
+  return (int) contained_tpcbox_tpointcloud(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_tpointcloud_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return (int) contained_tpointcloud_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_tpointcloud_tpointcloud_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) contained_tpointcloud_tpointcloud(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_tpcbox_tpointcloud_w(const TPCBox * box, const Temporal * temp) {
+  return (int) contains_tpcbox_tpointcloud(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_tpointcloud_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return (int) contains_tpointcloud_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_tpointcloud_tpointcloud_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) contains_tpointcloud_tpointcloud(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overlaps_tpcbox_tpointcloud_w(const TPCBox * box, const Temporal * temp) {
+  return (int) overlaps_tpcbox_tpointcloud(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overlaps_tpointcloud_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return (int) overlaps_tpointcloud_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int overlaps_tpointcloud_tpointcloud_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) overlaps_tpointcloud_tpointcloud(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int same_tpcbox_tpointcloud_w(const TPCBox * box, const Temporal * temp) {
+  return (int) same_tpcbox_tpointcloud(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int same_tpointcloud_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return (int) same_tpointcloud_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int same_tpointcloud_tpointcloud_w(const Temporal * temp1, const Temporal * temp2) {
+  return (int) same_tpointcloud_tpointcloud(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eintersects_tpcpoint_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return (int) eintersects_tpcpoint_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double nad_tpcpoint_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return nad_tpcpoint_geo(temp, gs);
+}
+
+
 /* === meos_pose.h === */
 
 EMSCRIPTEN_KEEPALIVE
@@ -12813,11 +13927,6 @@ Temporal * tpose_from_geopose_w(const char * json) {
 EMSCRIPTEN_KEEPALIVE
 char * tpose_as_geopose_w(const Temporal * temp, int conformance, int precision) {
   return tpose_as_geopose(temp, conformance, precision);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * tpose_as_geopose_stream_header_w(const Temporal * temp, int precision) {
-  return tpose_as_geopose_stream_header(temp, precision);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13446,6 +14555,408 @@ Temporal * tne_tpose_pose_w(const Temporal * temp, const Pose * pose) {
   return tne_tpose_pose(temp, pose);
 }
 
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_in_w(const char * str) {
+  return posechain_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * posechain_out_w(const PoseChain * pc, int maxdd) {
+  return posechain_out(pc, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * posechain_as_text_w(const PoseChain * pc, int maxdd) {
+  return posechain_as_text(pc, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * posechain_as_ewkt_w(const PoseChain * pc, int maxdd) {
+  return posechain_as_ewkt(pc, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * posechain_as_wkb_w(const PoseChain * pc, uint8_t variant, size_t * size_out) {
+  return posechain_as_wkb(pc, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * posechain_as_hexwkb_w(const PoseChain * pc, uint8_t variant, size_t * size_out) {
+  return posechain_as_hexwkb(pc, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_from_wkb_w(const uint8_t * wkb, size_t size) {
+  return posechain_from_wkb(wkb, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_from_hexwkb_w(const char * hexwkb) {
+  return posechain_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_make_w(const Pose ** poses, int count) {
+  return posechain_make(poses, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_copy_w(const PoseChain * pc) {
+  return posechain_copy(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_append_w(const PoseChain * pc, const Pose * pose) {
+  return posechain_append(pc, pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * pose_to_posechain_w(const Pose * pose) {
+  return pose_to_posechain(pose);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * posechain_to_pose_w(const PoseChain * pc) {
+  return posechain_to_pose(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * posechain_prefix_pose_w(const PoseChain * pc, int n) {
+  return posechain_prefix_pose(pc, n);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * posechain_to_point_w(const PoseChain * pc) {
+  return posechain_to_point(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * posechain_to_stbox_w(const PoseChain * pc) {
+  return posechain_to_stbox(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * posechain_timestamptz_to_stbox_w(const PoseChain * pc, long long t) {
+  return posechain_timestamptz_to_stbox(pc, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * posechain_tstzspan_to_stbox_w(const PoseChain * pc, const Span * s) {
+  return posechain_tstzspan_to_stbox(pc, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_num_poses_w(const PoseChain * pc) {
+  return posechain_num_poses(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * posechain_start_pose_w(const PoseChain * pc) {
+  return posechain_start_pose(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * posechain_end_pose_w(const PoseChain * pc) {
+  return posechain_end_pose(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose * posechain_pose_n_w(const PoseChain * pc, int n) {
+  return posechain_pose_n(pc, n);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pose ** posechain_poses_w(const PoseChain * pc, int * count) {
+  return posechain_poses(pc, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t posechain_hash_w(const PoseChain * pc) {
+  return posechain_hash(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t posechain_hash_extended_w(const PoseChain * pc, uint64_t seed) {
+  return posechain_hash_extended(pc, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_round_w(const PoseChain * pc, int maxdd) {
+  return posechain_round(pc, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32_t posechain_srid_w(const PoseChain * pc) {
+  return posechain_srid(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_set_srid_w(const PoseChain * pc, int32_t srid) {
+  return posechain_set_srid(pc, srid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_transform_w(const PoseChain * pc, int32_t srid_to) {
+  return posechain_transform(pc, srid_to);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechain_transform_pipeline_w(const PoseChain * pc, const char * pipeline, int32_t srid_to, int is_forward) {
+  return posechain_transform_pipeline(pc, pipeline, srid_to, (bool) is_forward);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_from_geopose_w(const char * json) {
+  return tposechain_from_geopose(json);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tposechain_as_geopose_w(const Temporal * temp, int precision) {
+  return tposechain_as_geopose(temp, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * tposechainarr_as_geopose_w(const Temporal ** temparr, int count, int precision) {
+  return tposechainarr_as_geopose(temparr, count, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_eq_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_eq(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_ne_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_ne(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_same_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_same(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_nsame_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_nsame(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_cmp_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return posechain_cmp(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_lt_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_lt(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_le_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_le(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_gt_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_gt(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int posechain_ge_w(const PoseChain * pc1, const PoseChain * pc2) {
+  return (int) posechain_ge(pc1, pc2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * posechainset_in_w(const char * str) {
+  return posechainset_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * posechainset_out_w(const Set * s, int maxdd) {
+  return posechainset_out(s, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * posechainset_make_w(const PoseChain ** values, int count) {
+  return posechainset_make(values, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * posechain_to_set_w(const PoseChain * pc) {
+  return posechain_to_set(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechainset_end_value_w(const Set * s) {
+  return posechainset_end_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechainset_start_value_w(const Set * s) {
+  return posechainset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain * posechainset_value_n_w(const Set * s, int n) {
+  PoseChain * r;
+  if (!posechainset_value_n(s, n, &r)) return NULL;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+PoseChain ** posechainset_values_w(const Set * s, int * count) {
+  return posechainset_values(s, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contained_posechain_set_w(const PoseChain * pc, const Set * s) {
+  return (int) contained_posechain_set(pc, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int contains_set_posechain_w(const Set * s, PoseChain * pc) {
+  return (int) contains_set_posechain(s, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_posechain_set_w(const PoseChain * pc, const Set * s) {
+  return intersection_posechain_set(pc, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intersection_set_posechain_w(const Set * s, const PoseChain * pc) {
+  return intersection_set_posechain(s, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_posechain_set_w(const PoseChain * pc, const Set * s) {
+  return minus_posechain_set(pc, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * minus_set_posechain_w(const Set * s, const PoseChain * pc) {
+  return minus_set_posechain(s, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * posechain_union_transfn_w(Set * state, const PoseChain * pc) {
+  return posechain_union_transfn(state, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_posechain_set_w(const PoseChain * pc, const Set * s) {
+  return union_posechain_set(pc, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * union_set_posechain_w(const Set * s, const PoseChain * pc) {
+  return union_set_posechain(s, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_in_w(const char * str) {
+  return tposechain_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_from_mfjson_w(const char * mfjson) {
+  return tposechain_from_mfjson(mfjson);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_from_base_temp_w(const PoseChain * pc, const Temporal * temp) {
+  return tposechain_from_base_temp(pc, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_to_tpose_w(const Temporal * temp) {
+  return tposechain_to_tpose(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int tposechain_num_poses_w(const Temporal * temp) {
+  return tposechain_num_poses(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return always_eq_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return always_eq_tposechain_posechain(temp, posechain);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_tposechain_tposechain_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_tposechain_tposechain(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return always_ne_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return always_ne_tposechain_posechain(temp, posechain);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_tposechain_tposechain_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_tposechain_tposechain(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return ever_eq_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return ever_eq_tposechain_posechain(temp, posechain);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_tposechain_tposechain_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_tposechain_tposechain(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return ever_ne_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return ever_ne_tposechain_posechain(temp, posechain);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_tposechain_tposechain_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_tposechain_tposechain(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return teq_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return teq_tposechain_posechain(temp, posechain);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
+  return tne_posechain_tposechain(posechain, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_tposechain_posechain_w(const Temporal * temp, const PoseChain * posechain) {
+  return tne_tposechain_posechain(temp, posechain);
+}
+
 
 /* === meos_quadbin.h === */
 
@@ -13615,21 +15126,6 @@ Temporal * tquadbin_in_w(const char * str) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TInstant * tquadbininst_in_w(const char * str) {
-  return tquadbininst_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
-TSequence * tquadbinseq_in_w(const char * str, interpType interp) {
-  return tquadbinseq_in(str, interp);
-}
-
-EMSCRIPTEN_KEEPALIVE
-TSequenceSet * tquadbinseqset_in_w(const char * str) {
-  return tquadbinseqset_in(str);
-}
-
-EMSCRIPTEN_KEEPALIVE
 Temporal * tquadbin_make_w(uint64_t value, long long t) {
   return tquadbin_make(value, (TimestampTz) t);
 }
@@ -13786,6 +15282,244 @@ Temporal * tne_tquadbin_tquadbin_w(const Temporal * temp1, const Temporal * temp
 EMSCRIPTEN_KEEPALIVE
 Temporal * tquadbin_cell_to_quadkey_w(const Temporal * temp) {
   return tquadbin_cell_to_quadkey(temp);
+}
+
+
+/* === meos_raster.h === */
+
+EMSCRIPTEN_KEEPALIVE
+size_t raquet_pixtype_size_w(MeosPixType pixtype) {
+  return raquet_pixtype_size(pixtype);
+}
+
+EMSCRIPTEN_KEEPALIVE
+MeosPixType raquet_pixtype_from_string_w(const char * str) {
+  return raquet_pixtype_from_string(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_in_w(const char * str) {
+  return raquet_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * raquet_out_w(const Raquet * rq) {
+  return raquet_out(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_from_wkb_w(const uint8_t * wkb, size_t size) {
+  return raquet_from_wkb(wkb, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_from_hexwkb_w(const char * hexwkb) {
+  return raquet_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * raquet_as_wkb_w(const Raquet * rq, uint8_t variant, size_t * size_out) {
+  return raquet_as_wkb(rq, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * raquet_as_hexwkb_w(const Raquet * rq, uint8_t variant, size_t * size_out) {
+  return raquet_as_hexwkb(rq, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_make_w(uint64_t quadbin, int32 width, int32 height, MeosPixType pixtype, double nodata, int has_nodata, const uint8_t * pixels, size_t pixels_size) {
+  return raquet_make(quadbin, width, height, pixtype, nodata, (bool) has_nodata, pixels, pixels_size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_copy_w(const Raquet * rq) {
+  return raquet_copy(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_read_w(const char * path, uint64_t quadbin) {
+  return raquet_read(path, quadbin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raquet * raquet_read_bytes_w(const uint8_t * data, size_t size, uint64_t quadbin) {
+  return raquet_read_bytes(data, size, quadbin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t raquet_quadbin_w(const Raquet * rq) {
+  return raquet_quadbin(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_width_w(const Raquet * rq) {
+  return raquet_width(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_height_w(const Raquet * rq) {
+  return raquet_height(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double raquet_nodata_w(const Raquet * rq) {
+  return raquet_nodata(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * raquet_pixtype_w(const Raquet * rq) {
+  return raquet_pixtype(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * raquet_pixels_w(const Raquet * rq, size_t * size_out) {
+  return raquet_pixels(rq, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t raquet_hash_w(const Raquet * rq) {
+  return raquet_hash(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t raquet_hash_extended_w(const Raquet * rq, uint64_t seed) {
+  return raquet_hash_extended(rq, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raster * raster_from_wkb_w(const uint8_t * wkb, size_t size) {
+  return raster_from_wkb(wkb, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Raster * raster_from_hexwkb_w(const char * hexwkb) {
+  return raster_from_hexwkb(hexwkb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * raster_as_wkb_w(const Raster * rast, size_t * size_out) {
+  return raster_as_wkb(rast, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * raster_as_hexwkb_w(const Raster * rast, size_t * size_out) {
+  return raster_as_hexwkb(rast, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raster_num_bands_w(const Raster * rast) {
+  return raster_num_bands(rast);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * raquet_to_stbox_w(const Raquet * rq) {
+  return raquet_to_stbox(rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_cmp_w(const Raquet * rq1, const Raquet * rq2) {
+  return raquet_cmp(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_eq_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_eq(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_ne_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_ne(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_lt_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_lt(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_le_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_le(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_ge_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_ge(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raquet_gt_w(const Raquet * rq1, const Raquet * rq2) {
+  return (int) raquet_gt(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx) {
+  return raster_value(traj, box, sample, ctx);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_at_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
+  return raster_at_value(traj, box, sample, ctx, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_minus_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
+  return raster_minus_value(traj, box, sample, ctx, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eraster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
+  return eraster_value(traj, box, sample, ctx, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int araster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
+  return araster_value(traj, box, sample, ctx, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_value_gdal_w(const Temporal * traj, const char * path, int band) {
+  return raster_value_gdal(traj, path, band);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_at_value_gdal_w(const Temporal * traj, const char * path, int band, const Span * vspan) {
+  return raster_at_value_gdal(traj, path, band, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_minus_value_gdal_w(const Temporal * traj, const char * path, int band, const Span * vspan) {
+  return raster_minus_value_gdal(traj, path, band, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eraster_value_gdal_w(const Temporal * traj, const char * path, int band, const Span * vspan) {
+  return eraster_value_gdal(traj, path, band, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int araster_value_gdal_w(const Temporal * traj, const char * path, int band, const Span * vspan) {
+  return araster_value_gdal(traj, path, band, vspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_tile_value_quadbin_w(const Temporal * traj, const uint8_t * pixels, size_t pixels_size, int32 width, int32 height, uint64_t quadbin, MeosPixType pixtype, double nodata, int has_nodata) {
+  return raster_tile_value_quadbin(traj, pixels, pixels_size, width, height, quadbin, pixtype, nodata, (bool) has_nodata);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_tile_value_w(const Temporal * traj, const Raquet * rq) {
+  return raster_tile_value(traj, rq);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * raster_tile_value_array_w(const Temporal * traj, const Raquet ** rqarr, int count) {
+  return raster_tile_value_array(traj, rqarr, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t * trajectory_quadbins_w(const Temporal * traj, uint32_t zoom, int * count) {
+  return trajectory_quadbins(traj, zoom, count);
 }
 
 
@@ -14111,31 +15845,6 @@ Temporal * trgeometry_after_timestamptz_w(const Temporal * temp, long long t, in
 EMSCRIPTEN_KEEPALIVE
 Temporal * trgeometry_before_timestamptz_w(const Temporal * temp, long long t, int strict) {
   return trgeometry_before_timestamptz(temp, (TimestampTz) t, (bool) strict);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeometry_restrict_values_w(const Temporal * temp, const Set * s, int atfunc) {
-  return trgeometry_restrict_values(temp, s, (bool) atfunc);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeometry_restrict_timestamptz_w(const Temporal * temp, long long t, int atfunc) {
-  return trgeometry_restrict_timestamptz(temp, (TimestampTz) t, (bool) atfunc);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeometry_restrict_tstzset_w(const Temporal * temp, const Set * s, int atfunc) {
-  return trgeometry_restrict_tstzset(temp, s, (bool) atfunc);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeometry_restrict_tstzspan_w(const Temporal * temp, const Span * s, int atfunc) {
-  return trgeometry_restrict_tstzspan(temp, s, (bool) atfunc);
-}
-
-EMSCRIPTEN_KEEPALIVE
-Temporal * trgeometry_restrict_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int atfunc) {
-  return trgeometry_restrict_tstzspanset(temp, ss, (bool) atfunc);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -14479,6 +16188,1012 @@ int adwithin_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * te
 }
 
 
+/* === meos_s2cell.h === */
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_in_w(const char * str) {
+  return s2cell_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * s2cell_out_w(S2CellId cell) {
+  return s2cell_out(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_eq_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_eq(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_ne_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_ne(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_lt_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_lt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_le_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_le(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_gt_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_gt(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_ge_w(S2CellId a, S2CellId b) {
+  return (int) s2cell_ge(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_cmp_w(S2CellId a, S2CellId b) {
+  return s2cell_cmp(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t s2cell_hash_w(S2CellId cell) {
+  return s2cell_hash(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t s2cell_hash_extended_w(S2CellId cell, uint64_t seed) {
+  return s2cell_hash_extended(cell, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_is_valid_cell_w(S2CellId cell) {
+  return (int) s2cell_is_valid_cell(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * s2cell_cell_to_token_w(S2CellId cell) {
+  return s2cell_cell_to_token(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_token_to_cell_w(const char * token) {
+  return s2cell_token_to_cell(token);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t s2cell_get_resolution_w(S2CellId cell) {
+  return s2cell_get_resolution(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t s2cell_get_face_w(S2CellId cell) {
+  return s2cell_get_face(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_cell_to_parent_w(S2CellId cell, uint32_t level) {
+  return s2cell_cell_to_parent(cell, level);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_cell_to_child_w(S2CellId cell, uint32_t level, uint32_t position) {
+  return s2cell_cell_to_child(cell, level, position);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId * s2cell_cell_to_children_w(S2CellId cell, uint32_t level, int * count) {
+  return s2cell_cell_to_children(cell, level, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_cell_contains_w(S2CellId cell, S2CellId other) {
+  return (int) s2cell_cell_contains(cell, other);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int s2cell_common_ancestor_level_w(S2CellId a, S2CellId b) {
+  return s2cell_common_ancestor_level(a, b);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_range_min_w(S2CellId cell) {
+  return s2cell_range_min(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_range_max_w(S2CellId cell) {
+  return s2cell_range_max(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId * s2cell_edge_neighbors_w(S2CellId cell, int * count) {
+  return s2cell_edge_neighbors(cell, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId s2cell_point_to_cell_w(double longitude, double latitude, uint32_t level) {
+  return s2cell_point_to_cell(longitude, latitude, level);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double s2cell_cell_area_w(S2CellId cell) {
+  return s2cell_cell_area(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double s2cell_edge_length_w(S2CellId cell, uint32_t edge) {
+  return s2cell_edge_length(cell, edge);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId geo_to_s2cell_cell_w(const GSERIALIZED * point, int32 level) {
+  return geo_to_s2cell_cell(point, level);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * s2cell_cell_to_geogpoint_w(S2CellId cell) {
+  return s2cell_cell_to_geogpoint(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * s2cell_cell_to_geog_w(S2CellId cell) {
+  return s2cell_cell_to_geog(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * s2cell_to_stbox_w(S2CellId cell) {
+  return s2cell_to_stbox(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * s2cell_timestamptz_to_stbox_w(S2CellId cell, long long t) {
+  return s2cell_timestamptz_to_stbox(cell, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * s2cell_tstzspan_to_stbox_w(S2CellId cell, const Span * s) {
+  return s2cell_tstzspan_to_stbox(cell, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * s2cell_edge_neighbors_set_w(S2CellId cell) {
+  return s2cell_edge_neighbors_set(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * s2cell_cell_to_children_set_w(S2CellId cell, int children_level) {
+  return s2cell_cell_to_children_set(cell, children_level);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ts2cell_in_w(const char * str) {
+  return ts2cell_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ts2cell_make_w(S2CellId value, long long t) {
+  return ts2cell_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * ts2cellinst_make_w(S2CellId value, long long t) {
+  return ts2cellinst_make(value, (TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequence * ts2cellseq_make_w(const S2CellId * values, const TimestampTz * times, int count, int lower_inc, int upper_inc) {
+  return ts2cellseq_make(values, times, count, (bool) lower_inc, (bool) upper_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TSequenceSet * ts2cellseqset_make_w(const TSequence ** sequences, int count) {
+  return ts2cellseqset_make(sequences, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId ts2cell_start_value_w(const Temporal * temp) {
+  return ts2cell_start_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId ts2cell_end_value_w(const Temporal * temp) {
+  return ts2cell_end_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId ts2cell_value_n_w(const Temporal * temp, int n) {
+  S2CellId r;
+  if (!ts2cell_value_n(temp, n, &r)) return 0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId * ts2cell_values_w(const Temporal * temp, int * count) {
+  return ts2cell_values(temp, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+S2CellId ts2cell_value_at_timestamptz_w(const Temporal * temp, long long t, int strict) {
+  S2CellId r;
+  if (!ts2cell_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, &r)) return 0;
+  return r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * s2cell_to_set_w(S2CellId cell) {
+  return s2cell_to_set(cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tbigint_to_ts2cell_w(const Temporal * temp) {
+  return tbigint_to_ts2cell(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ts2cell_to_tbigint_w(const Temporal * temp) {
+  return ts2cell_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return ever_eq_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return ever_eq_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return ever_ne_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return ever_ne_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return always_eq_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return always_eq_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return always_ne_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return always_ne_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_eq_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_eq_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_ne_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_ne_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_eq_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_eq_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_ne_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_ne_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return teq_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return teq_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * teq_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return teq_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_s2cell_ts2cell_w(S2CellId cell, const Temporal * temp) {
+  return tne_s2cell_ts2cell(cell, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_ts2cell_s2cell_w(const Temporal * temp, S2CellId cell) {
+  return tne_ts2cell_s2cell(temp, cell);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tne_ts2cell_ts2cell_w(const Temporal * temp1, const Temporal * temp2) {
+  return tne_ts2cell_ts2cell(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ts2cell_cell_to_token_w(const Temporal * temp) {
+  return ts2cell_cell_to_token(temp);
+}
+
+
+/* === pg_bool.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int bool_eq_w(int arg1, int arg2) {
+  return (int) bool_eq((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int bool_ge_w(int arg1, int arg2) {
+  return (int) bool_ge((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int bool_gt_w(int arg1, int arg2) {
+  return (int) bool_gt((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t bool_hash_w(int arg) {
+  return bool_hash((bool) arg);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t bool_hash_extended_w(int arg, int64_t seed) {
+  return bool_hash_extended((bool) arg, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int bool_le_w(int arg1, int arg2) {
+  return (int) bool_le((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int bool_lt_w(int arg1, int arg2) {
+  return (int) bool_lt((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int bool_ne_w(int arg1, int arg2) {
+  return (int) bool_ne((bool) arg1, (bool) arg2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * bool_to_text_w(int b) {
+  text *_t = bool_to_text((bool) b);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+
+/* === pg_date.h === */
+
+EMSCRIPTEN_KEEPALIVE
+DateADT add_date_int_w(DateADT date, int32 days) {
+  return add_date_int(date, days);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT add_date_interval_w(DateADT date, Interval * interv) {
+  return add_date_interval(date, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_date_timestamp_w(DateADT date, long long ts) {
+  return cmp_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int cmp_date_date_w(DateADT date1, DateADT date2) {
+  return cmp_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_date_timestamptz_w(DateADT date, long long tstz) {
+  return cmp_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_timestamp_date_w(long long ts, DateADT date) {
+  return cmp_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_timestamptz_date_w(long long tstz, DateADT date) {
+  return cmp_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Numeric date_extract_w(DateADT date, const char * units) {
+  return date_extract(date, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t date_hash_w(DateADT date) {
+  return date_hash(date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t date_hash_extended_w(DateADT date, int64_t seed) {
+  return date_hash_extended(date, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int date_is_finite_w(DateADT date) {
+  return (int) date_is_finite(date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT date_larger_w(DateADT date1, DateADT date2) {
+  return date_larger(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT date_make_w(int year, int mon, int mday) {
+  return date_make(year, mon, mday);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT date_smaller_w(DateADT date1, DateADT date2) {
+  return date_smaller(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long date_time_to_timestamp_w(DateADT date, TimeADT time) {
+  return date_time_to_timestamp(date, time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long date_to_timestamp_w(DateADT date) {
+  return date_to_timestamp(date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long date_to_timestamptz_w(DateADT date) {
+  return date_to_timestamptz(date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_date_date_w(DateADT date1, DateADT date2) {
+  return (int) eq_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_date_timestamp_w(DateADT date, long long ts) {
+  return (int) eq_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) eq_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamp_date_w(long long ts, DateADT date) {
+  return (int) eq_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) eq_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_date_date_w(DateADT date1, DateADT date2) {
+  return (int) ge_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_date_timestamp_w(DateADT date, long long ts) {
+  return (int) ge_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) ge_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_timestamp_date_w(long long ts, DateADT date) {
+  return (int) ge_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) ge_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_date_date_w(DateADT date1, DateADT date2) {
+  return (int) gt_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_date_timestamp_w(DateADT date, long long ts) {
+  return (int) gt_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) gt_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_timestamp_date_w(long long ts, DateADT date) {
+  return (int) gt_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) gt_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_date_date_w(DateADT date1, DateADT date2) {
+  return (int) le_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_date_timestamp_w(DateADT date, long long ts) {
+  return (int) le_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) le_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_timestamp_date_w(long long ts, DateADT date) {
+  return (int) le_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) le_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_date_date_w(DateADT date1, DateADT date2) {
+  return (int) lt_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_date_timestamp_w(DateADT date, long long ts) {
+  return (int) lt_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) lt_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_timestamp_date_w(long long ts, DateADT date) {
+  return (int) lt_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) lt_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 minus_date_date_w(DateADT date1, DateADT date2) {
+  return minus_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT minus_date_int_w(DateADT date, int32 days) {
+  return minus_date_int(date, days);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT minus_date_interval_w(DateADT date, Interval * span) {
+  return minus_date_interval(date, span);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_date_date_w(DateADT date1, DateADT date2) {
+  return (int) ne_date_date(date1, date2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_date_timestamp_w(DateADT date, long long ts) {
+  return (int) ne_date_timestamp(date, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_date_timestamptz_w(DateADT date, long long tstz) {
+  return (int) ne_date_timestamptz(date, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_timestamp_date_w(long long ts, DateADT date) {
+  return (int) ne_timestamp_date((Timestamp) ts, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_timestamptz_date_w(long long tstz, DateADT date) {
+  return (int) ne_timestamptz_date((TimestampTz) tstz, date);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT timestamp_to_date_w(long long ts) {
+  return timestamp_to_date((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT timestamptz_to_date_w(long long tstz) {
+  return timestamptz_to_date((TimestampTz) tstz);
+}
+
+
+/* === pg_float.h === */
+
+EMSCRIPTEN_KEEPALIVE
+float8 add_float8_float8_w(float8 num1, float8 num2) {
+  return add_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 div_float8_float8_w(float8 num1, float8 num2) {
+  return div_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_float8_float8_w(float8 num1, float8 num2) {
+  return (int) eq_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_abs_w(float8 num) {
+  return float8_abs(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_ceil_w(float8 num) {
+  return float8_ceil(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int float8_cmp_w(float8 num1, float8 num2) {
+  return float8_cmp(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_cos_w(float8 num) {
+  return float8_cos(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_degrees_w(float8 num) {
+  return float8_degrees(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_exp_w(float8 num) {
+  return float8_exp(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_floor_w(float8 num) {
+  return float8_floor(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t float8_hash_w(float8 num) {
+  return float8_hash(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t float8_hash_extended_w(float8 num, uint64_t seed) {
+  return float8_hash_extended(num, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_in_w(const char * str) {
+  return float8_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_ln_w(float8 num) {
+  return float8_ln(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_log10_w(float8 num) {
+  return float8_log10(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_radians_w(float8 num) {
+  return float8_radians(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_sin_w(float8 num) {
+  return float8_sin(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 float8_tan_w(float8 num) {
+  return float8_tan(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_float8_float8_w(float8 num1, float8 num2) {
+  return (int) ge_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_float8_float8_w(float8 num1, float8 num2) {
+  return (int) gt_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_float8_float8_w(float8 num1, float8 num2) {
+  return (int) le_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_float8_float8_w(float8 num1, float8 num2) {
+  return (int) lt_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 minus_float8_float8_w(float8 num1, float8 num2) {
+  return minus_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 mul_float8_float8_w(float8 num1, float8 num2) {
+  return mul_float8_float8(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_float8_float8_w(float8 num1, float8 num2) {
+  return (int) ne_float8_float8(num1, num2);
+}
+
+
+/* === pg_int.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int32 add_int32_int32_w(int32 num1, int32 num2) {
+  return add_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t add_int64_int64_w(int64_t num1, int64_t num2) {
+  return add_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 div_int32_int32_w(int32 num1, int32 num2) {
+  return div_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t div_int64_int64_w(int64_t num1, int64_t num2) {
+  return div_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_int32_int32_w(int32 num1, int32 num2) {
+  return (int) eq_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) eq_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) eq_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) eq_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_int32_int32_w(int32 num1, int32 num2) {
+  return (int) ge_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) ge_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) ge_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) ge_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_int32_int32_w(int32 num1, int32 num2) {
+  return (int) gt_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) gt_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) gt_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) gt_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 int32_abs_w(int32 num) {
+  return int32_abs(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int int32_cmp_w(int32 l, int32 r) {
+  return int32_cmp(l, r);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t int32_hash_w(int32 val) {
+  return int32_hash(val);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t int32_hash_extended_w(int32 val, uint64_t seed) {
+  return int32_hash_extended(val, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 int32_in_w(const char * str) {
+  return int32_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * int32_out_w(int32 num) {
+  return int32_out(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t int64_abs_w(int64_t num) {
+  return int64_abs(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int int64_cmp_w(int64_t l, int64_t r) {
+  return int64_cmp(l, r);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t int64_hash_w(int64_t num) {
+  return int64_hash(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t int64_hash_extended_w(int64_t num, uint64_t seed) {
+  return int64_hash_extended(num, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t int64_in_w(const char * str) {
+  return int64_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * int64_out_w(int64_t num) {
+  return int64_out(num);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_int32_int32_w(int32 num1, int32 num2) {
+  return (int) le_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) le_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) le_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) le_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_int32_int32_w(int32 num1, int32 num2) {
+  return (int) lt_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) lt_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) lt_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) lt_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 minus_int32_int32_w(int32 num1, int32 num2) {
+  return minus_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t minus_int64_int64_w(int64_t num1, int64_t num2) {
+  return minus_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 mul_int32_int32_w(int32 num1, int32 num2) {
+  return mul_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t mul_int64_int64_w(int64_t num1, int64_t num2) {
+  return mul_int64_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_int32_int32_w(int32 num1, int32 num2) {
+  return (int) ne_int32_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_int32_int64_w(int32 num1, int64_t num2) {
+  return (int) ne_int32_int64(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_int64_int32_w(int64_t num1, int32 num2) {
+  return (int) ne_int64_int32(num1, num2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_int64_int64_w(int64_t num1, int64_t num2) {
+  return (int) ne_int64_int64(num1, num2);
+}
+
+
 /* === pg_interval.h === */
 
 EMSCRIPTEN_KEEPALIVE
@@ -14609,5 +17324,656 @@ Interval * mul_float8_interval_w(float8 factor, const Interval * interv) {
 EMSCRIPTEN_KEEPALIVE
 Interval * mul_interval_float8_w(const Interval * interv, float8 factor) {
   return mul_interval_float8(interv, factor);
+}
+
+
+/* === pg_text.h === */
+
+EMSCRIPTEN_KEEPALIVE
+int text_eq_w(const char * txt1, const char * txt2) {
+  return (int) text_eq(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_ge_w(const char * txt1, const char * txt2) {
+  return (int) text_ge(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_gt_w(const char * txt1, const char * txt2) {
+  return (int) text_gt(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t text_hash_w(const char * txt, Oid collid) {
+  return text_hash(cstring_to_text(txt), collid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t text_hash_extended_w(const char * txt, uint64_t seed, Oid collid) {
+  return text_hash_extended(cstring_to_text(txt), seed, collid);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_le_w(const char * txt1, const char * txt2) {
+  return (int) text_le(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_lt_w(const char * txt1, const char * txt2) {
+  return (int) text_lt(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_ne_w(const char * txt1, const char * txt2) {
+  return (int) text_ne(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_pattern_ge_w(const char * txt1, const char * txt2) {
+  return (int) text_pattern_ge(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_pattern_gt_w(const char * txt1, const char * txt2) {
+  return (int) text_pattern_gt(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_pattern_le_w(const char * txt1, const char * txt2) {
+  return (int) text_pattern_le(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int text_pattern_lt_w(const char * txt1, const char * txt2) {
+  return (int) text_pattern_lt(cstring_to_text(txt1), cstring_to_text(txt2));
+}
+
+
+/* === pg_time.h === */
+
+EMSCRIPTEN_KEEPALIVE
+long long date_timetz_to_timestamptz_w(DateADT date, const TimeTzADT * timetz) {
+  return date_timetz_to_timestamptz(date, timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT interval_to_time_w(const Interval * interv) {
+  return interval_to_time(interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT minus_time_interval_w(TimeADT time, const Interval * interv) {
+  return minus_time_interval(time, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * minus_time_time_w(TimeADT time1, TimeADT time2) {
+  return minus_time_time(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * minus_timetz_interval_w(const TimeTzADT * timetz, const Interval * interv) {
+  return minus_timetz_interval(timetz, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT plus_time_interval_w(TimeADT time, Interval * interv) {
+  return plus_time_interval(time, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * plus_timetz_interval_w(const TimeTzADT * timetz, const Interval * interv) {
+  return plus_timetz_interval(timetz, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_cmp_w(TimeADT time1, TimeADT time2) {
+  return time_cmp(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_eq_w(TimeADT time1, TimeADT time2) {
+  return (int) time_eq(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Numeric time_extract_w(TimeADT time, const char * units) {
+  return time_extract(time, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_ge_w(TimeADT time1, TimeADT time2) {
+  return (int) time_ge(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_gt_w(TimeADT time1, TimeADT time2) {
+  return (int) time_gt(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t time_hash_w(TimeADT time) {
+  return time_hash(time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t time_hash_extended_w(TimeADT time, int32 seed) {
+  return time_hash_extended(time, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT time_larger_w(TimeADT time1, TimeADT time2) {
+  return time_larger(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_le_w(TimeADT time1, TimeADT time2) {
+  return (int) time_le(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_lt_w(TimeADT time1, TimeADT time2) {
+  return (int) time_lt(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT time_make_w(int tm_hour, int tm_min, double sec) {
+  return time_make(tm_hour, tm_min, sec);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_ne_w(TimeADT time1, TimeADT time2) {
+  return (int) time_ne(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_overlaps_w(TimeADT ts1, TimeADT te1, TimeADT ts2, TimeADT te2) {
+  return (int) time_overlaps(ts1, te1, ts2, te2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 time_part_w(TimeADT time, const char * units) {
+  return time_part(time, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT time_scale_w(TimeADT date, int32 typmod) {
+  return time_scale(date, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT time_smaller_w(TimeADT time1, TimeADT time2) {
+  return time_smaller(time1, time2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * time_to_interval_w(TimeADT time) {
+  return time_to_interval(time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * time_to_timetz_w(TimeADT time) {
+  return time_to_timetz(time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT timestamp_to_time_w(long long ts) {
+  return timestamp_to_time((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT timestamptz_to_time_w(long long tztz) {
+  return timestamptz_to_time((TimestampTz) tztz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timestamptz_to_timetz_w(long long tztz) {
+  return timestamptz_to_timetz((TimestampTz) tztz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_at_local_w(const TimeTzADT * timetz) {
+  return timetz_at_local(timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 timetz_cmp_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return timetz_cmp(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_eq_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_eq(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Numeric timetz_extract_w(const TimeTzADT * timetz, const char * units) {
+  return timetz_extract(timetz, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_ge_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_ge(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_gt_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_gt(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t timetz_hash_w(const TimeTzADT * timetz) {
+  return timetz_hash(timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t timetz_hash_extended_w(const TimeTzADT * timetz, int64_t seed) {
+  return timetz_hash_extended(timetz, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_in_w(const char * str, int32 typmod) {
+  return timetz_in(str, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_izone_w(const TimeTzADT * timetz, const Interval * zone) {
+  return timetz_izone(timetz, zone);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_larger_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return timetz_larger(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_le_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_le(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_lt_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_lt(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_ne_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return (int) timetz_ne(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_copy_w(const TimeTzADT * timetz) {
+  return timetz_copy(timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * timetz_out_w(const TimeTzADT * timetz) {
+  return timetz_out(timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_overlaps_w(const TimeTzADT * ts1, const TimeTzADT * te1, const TimeTzADT * ts2, const TimeTzADT * te2) {
+  return (int) timetz_overlaps(ts1, te1, ts2, te2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 timetz_part_w(const TimeTzADT * timetz, const char * units) {
+  return timetz_part(timetz, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_scale_w(const TimeTzADT * timetz, int32 typmod) {
+  return timetz_scale(timetz, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_smaller_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
+  return timetz_smaller(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeADT timetz_to_time_w(const TimeTzADT * timetz) {
+  return timetz_to_time(timetz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_zone_w(const TimeTzADT * timetz, const char * zone) {
+  return timetz_zone(timetz, cstring_to_text(zone));
+}
+
+
+/* === pg_timestamp.h === */
+
+EMSCRIPTEN_KEEPALIVE
+long long add_timestamp_interval_w(long long ts, const Interval * interv) {
+  return add_timestamp_interval((Timestamp) ts, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long add_timestamptz_interval_w(long long tstz, const Interval * interv) {
+  return add_timestamptz_interval((TimestampTz) tstz, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long add_timestamptz_interval_at_zone_w(long long tstz, const Interval * interv, const char * zone) {
+  return add_timestamptz_interval_at_zone((TimestampTz) tstz, interv, cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return cmp_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return cmp_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 cmp_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return cmp_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) eq_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) eq_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) eq_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int eq_timestamptz_timestamptz_w(long long tstz1, long long tstz2) {
+  return (int) eq_timestamptz_timestamptz((TimestampTz) tstz1, (TimestampTz) tstz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long float8_to_timestamptz_w(float8 seconds) {
+  return float8_to_timestamptz(seconds);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) gt_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) gt_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int gt_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) gt_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) ge_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) ge_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ge_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) ge_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) le_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) le_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int le_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) le_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) lt_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) lt_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int lt_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) lt_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long minus_timestamp_interval_w(long long ts, const Interval * interv) {
+  return minus_timestamp_interval((Timestamp) ts, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * minus_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return minus_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long minus_timestamptz_interval_w(long long tstz, const Interval * interv) {
+  return minus_timestamptz_interval((TimestampTz) tstz, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long minus_timestamptz_interval_at_zone_w(long long tstz, const Interval * interv, const char * zone) {
+  return minus_timestamptz_interval_at_zone((TimestampTz) tstz, interv, cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * minus_timestamptz_timestamptz_w(long long tstz1, long long tstz2) {
+  return minus_timestamptz_timestamptz((TimestampTz) tstz1, (TimestampTz) tstz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_timestamp_timestamp_w(long long ts1, long long ts2) {
+  return (int) ne_timestamp_timestamp((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_timestamp_timestamptz_w(long long ts, long long tstz) {
+  return (int) ne_timestamp_timestamptz((Timestamp) ts, (TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ne_timestamptz_timestamp_w(long long tstz, long long ts) {
+  return (int) ne_timestamptz_timestamp((TimestampTz) tstz, (Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * timestamp_age_w(long long ts1, long long ts2) {
+  return timestamp_age((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_at_local_w(long long ts) {
+  return timestamp_at_local((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_bin_w(long long ts, const Interval * stride, long long origin) {
+  return timestamp_bin((Timestamp) ts, stride, (Timestamp) origin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Numeric timestamp_extract_w(long long ts, const char * units) {
+  return timestamp_extract((Timestamp) ts, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t timestamp_hash_w(long long ts) {
+  return timestamp_hash((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t timestamp_hash_extended_w(long long tstz, uint64_t seed) {
+  return timestamp_hash_extended((TimestampTz) tstz, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timestamp_is_finite_w(long long ts) {
+  return (int) timestamp_is_finite((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_izone_w(long long ts, const Interval * zone) {
+  return timestamp_izone((Timestamp) ts, zone);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * time_of_day_w() {
+  text *_t = time_of_day();
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_larger_w(long long ts1, long long ts2) {
+  return timestamp_larger((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_make_w(int32 year, int32 month, int32 mday, int32 hour, int32 min, float8 sec) {
+  return timestamp_make(year, month, mday, hour, min, sec);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timestamp_overlaps_w(long long ts1, long long te1, long long ts2, long long te2) {
+  return (int) timestamp_overlaps((Timestamp) ts1, (Timestamp) te1, (Timestamp) ts2, (Timestamp) te2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 timestamp_part_w(long long ts, const char * units) {
+  return timestamp_part((Timestamp) ts, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_scale_w(long long ts, int32 typmod) {
+  return timestamp_scale((Timestamp) ts, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_smaller_w(long long ts1, long long ts2) {
+  return timestamp_smaller((Timestamp) ts1, (Timestamp) ts2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_to_timestamptz_w(long long ts) {
+  return timestamp_to_timestamptz((Timestamp) ts);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_trunc_w(long long ts, const char * units) {
+  return timestamp_trunc((Timestamp) ts, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamp_zone_w(long long ts, const char * zone) {
+  return timestamp_zone((Timestamp) ts, cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * timestamptz_age_w(long long tstz1, long long tstz2) {
+  return timestamptz_age((TimestampTz) tstz1, (TimestampTz) tstz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_at_local_w(long long tstz) {
+  return timestamptz_at_local((TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_bin_w(long long tstz, const Interval * stride, long long origin) {
+  return timestamptz_bin((TimestampTz) tstz, stride, (TimestampTz) origin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Numeric timestamptz_extract_w(long long tstz, const char * units) {
+  return timestamptz_extract((TimestampTz) tstz, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int32 timestamptz_hash_w(long long tstz) {
+  return timestamptz_hash((TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t timestamptz_hash_extended_w(long long tstz, uint64_t seed) {
+  return timestamptz_hash_extended((TimestampTz) tstz, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_izone_w(long long tstz, const Interval * zone) {
+  return timestamptz_izone((TimestampTz) tstz, zone);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_make_w(int32 year, int32 month, int32 day, int32 hour, int32 min, float8 sec) {
+  return timestamptz_make(year, month, day, hour, min, sec);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_make_at_timezone_w(int32 year, int32 month, int32 day, int32 hour, int32 min, float8 sec, const char * zone) {
+  return timestamptz_make_at_timezone(year, month, day, hour, min, sec, cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timestamptz_overlaps_w(long long ts1, long long te1, long long ts2, long long te2) {
+  return (int) timestamptz_overlaps((TimestampTz) ts1, (TimestampTz) te1, (TimestampTz) ts2, (TimestampTz) te2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+float8 timestamptz_part_w(long long tstz, const char * units) {
+  return timestamptz_part((TimestampTz) tstz, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_scale_w(long long tstz, int32 typmod) {
+  return timestamptz_scale((TimestampTz) tstz, typmod);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_shift_w(long long tstz, const Interval * interv) {
+  return timestamptz_shift((TimestampTz) tstz, interv);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_to_timestamp_w(long long tstz) {
+  return timestamptz_to_timestamp((TimestampTz) tstz);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_trunc_w(long long tstz, const char * units) {
+  return timestamptz_trunc((TimestampTz) tstz, cstring_to_text(units));
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_trunc_zone_w(long long tstz, const char * units, const char * zone) {
+  return timestamptz_trunc_zone((TimestampTz) tstz, cstring_to_text(units), cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long timestamptz_zone_w(long long tstz, const char * zone) {
+  return timestamptz_zone((TimestampTz) tstz, cstring_to_text(zone));
 }
 
