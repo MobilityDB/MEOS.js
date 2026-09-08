@@ -8798,6 +8798,12 @@ export function geom_azimuth(gs1: Ptr, gs2: Ptr): number {
 	return _r;
 }
 
+export function geom_area(gs: Ptr): number {
+	const _r = call<number>('geom_area_w', 'number', [ptrArgType()], [ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
 export function geom_length(gs: Ptr): number {
 	const _r = call<number>('geom_length_w', 'number', [ptrArgType()], [ptrArgVal(gs)]);
 	checkMeosError();
@@ -11212,12 +11218,6 @@ export function shortestline_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
 
 export function shortestline_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
 	const _r = callPtr('shortestline_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
-	checkMeosError();
-	return _r;
-}
-
-export function mindistance_tgeo_tgeo(temp1: Ptr, temp2: Ptr, threshold: number): number {
-	const _r = call<number>('mindistance_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), threshold]);
 	checkMeosError();
 	return _r;
 }
@@ -15202,6 +15202,18 @@ export function pcpatch_npoints(pa: Ptr): number {
 	return _r;
 }
 
+export function pcpatch_point_n(pa: Ptr, n: number): Ptr {
+	const _r = callPtr('pcpatch_point_n_w', [ptrArgType(), 'number'], [ptrArgVal(pa), n]);
+	checkMeosError();
+	return _r;
+}
+
+export function pcpatch_points(pa: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('pcpatch_points_w', [ptrArgType(), ptrArgType()], [ptrArgVal(pa), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function pcpatch_hash(pa: Ptr): number {
 	const _r = call<number>('pcpatch_hash_w', 'number', [ptrArgType()], [ptrArgVal(pa)]);
 	checkMeosError();
@@ -18127,32 +18139,32 @@ export function raquet_gt(rq1: Ptr, rq2: Ptr): boolean {
 	return _r;
 }
 
-export function raster_value(traj: Ptr, box: Ptr, sample: number, ctx: Ptr): Ptr {
-	const _r = callPtr('raster_value_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), ptrArgVal(box), sample, ptrArgVal(ctx)]);
+export function raster_value(traj: Ptr, rast: Ptr, band: number): Ptr {
+	const _r = callPtr('raster_value_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(traj), ptrArgVal(rast), band]);
 	checkMeosError();
 	return _r;
 }
 
-export function raster_at_value(traj: Ptr, box: Ptr, sample: number, ctx: Ptr, vspan: Ptr): Ptr {
-	const _r = callPtr('raster_at_value_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType()], [ptrArgVal(traj), ptrArgVal(box), sample, ptrArgVal(ctx), ptrArgVal(vspan)]);
+export function raster_at_value(traj: Ptr, rast: Ptr, band: number, vspan: Ptr): Ptr {
+	const _r = callPtr('raster_at_value_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), ptrArgVal(rast), band, ptrArgVal(vspan)]);
 	checkMeosError();
 	return _r;
 }
 
-export function raster_minus_value(traj: Ptr, box: Ptr, sample: number, ctx: Ptr, vspan: Ptr): Ptr {
-	const _r = callPtr('raster_minus_value_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType()], [ptrArgVal(traj), ptrArgVal(box), sample, ptrArgVal(ctx), ptrArgVal(vspan)]);
+export function raster_minus_value(traj: Ptr, rast: Ptr, band: number, vspan: Ptr): Ptr {
+	const _r = callPtr('raster_minus_value_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), ptrArgVal(rast), band, ptrArgVal(vspan)]);
 	checkMeosError();
 	return _r;
 }
 
-export function eraster_value(traj: Ptr, box: Ptr, sample: number, ctx: Ptr, vspan: Ptr): number {
-	const _r = call<number>('eraster_value_w', 'number', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType()], [ptrArgVal(traj), ptrArgVal(box), sample, ptrArgVal(ctx), ptrArgVal(vspan)]);
+export function eraster_value(traj: Ptr, rast: Ptr, band: number, vspan: Ptr): number {
+	const _r = call<number>('eraster_value_w', 'number', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), ptrArgVal(rast), band, ptrArgVal(vspan)]);
 	checkMeosError();
 	return _r;
 }
 
-export function araster_value(traj: Ptr, box: Ptr, sample: number, ctx: Ptr, vspan: Ptr): number {
-	const _r = call<number>('araster_value_w', 'number', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType()], [ptrArgVal(traj), ptrArgVal(box), sample, ptrArgVal(ctx), ptrArgVal(vspan)]);
+export function araster_value(traj: Ptr, rast: Ptr, band: number, vspan: Ptr): number {
+	const _r = call<number>('araster_value_w', 'number', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), ptrArgVal(rast), band, ptrArgVal(vspan)]);
 	checkMeosError();
 	return _r;
 }

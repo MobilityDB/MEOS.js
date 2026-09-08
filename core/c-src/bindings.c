@@ -4878,7 +4878,7 @@ int * tint_values_w(const Temporal * temp, int * count) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-int64_t * tbigint_values_w(const Temporal * temp, int32 * count) {
+int64_t * tbigint_values_w(const Temporal * temp, int * count) {
   return tbigint_values(temp, count);
 }
 
@@ -7551,6 +7551,11 @@ double geom_azimuth_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+double geom_area_w(const GSERIALIZED * gs) {
+  return geom_area(gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
 double geom_length_w(const GSERIALIZED * gs) {
   return geom_length(gs);
 }
@@ -9595,11 +9600,6 @@ GSERIALIZED * shortestline_tgeo_geo_w(const Temporal * temp, const GSERIALIZED *
 EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * shortestline_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2) {
   return shortestline_tgeo_tgeo(temp1, temp2);
-}
-
-EMSCRIPTEN_KEEPALIVE
-double mindistance_tgeo_tgeo_w(const Temporal * temp1, const Temporal * temp2, double threshold) {
-  return mindistance_tgeo_tgeo(temp1, temp2, threshold);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -12974,6 +12974,16 @@ uint32_t pcpatch_npoints_w(const Pcpatch * pa) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpatch_point_n_w(const Pcpatch * pa, int n) {
+  return pcpatch_point_n(pa, n);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpoint ** pcpatch_points_w(const Pcpatch * pa, int * count) {
+  return pcpatch_points(pa, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint32_t pcpatch_hash_w(const Pcpatch * pa) {
   return pcpatch_hash(pa);
 }
@@ -15453,28 +15463,28 @@ int raquet_gt_w(const Raquet * rq1, const Raquet * rq2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * raster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx) {
-  return raster_value(traj, box, sample, ctx);
+Temporal * raster_value_w(const Temporal * traj, const Raster * rast, int band) {
+  return raster_value(traj, rast, band);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * raster_at_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
-  return raster_at_value(traj, box, sample, ctx, vspan);
+Temporal * raster_at_value_w(const Temporal * traj, const Raster * rast, int band, const Span * vspan) {
+  return raster_at_value(traj, rast, band, vspan);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * raster_minus_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
-  return raster_minus_value(traj, box, sample, ctx, vspan);
+Temporal * raster_minus_value_w(const Temporal * traj, const Raster * rast, int band, const Span * vspan) {
+  return raster_minus_value(traj, rast, band, vspan);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int eraster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
-  return eraster_value(traj, box, sample, ctx, vspan);
+int eraster_value_w(const Temporal * traj, const Raster * rast, int band, const Span * vspan) {
+  return eraster_value(traj, rast, band, vspan);
 }
 
 EMSCRIPTEN_KEEPALIVE
-int araster_value_w(const Temporal * traj, const STBox * box, raster_sample_fn sample, void * ctx, const Span * vspan) {
-  return araster_value(traj, box, sample, ctx, vspan);
+int araster_value_w(const Temporal * traj, const Raster * rast, int band, const Span * vspan) {
+  return araster_value(traj, rast, band, vspan);
 }
 
 EMSCRIPTEN_KEEPALIVE
