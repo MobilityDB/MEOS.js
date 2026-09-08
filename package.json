@@ -31,6 +31,7 @@
     "build": "npm run clean && npm run build:ts && npm run copy:wasm",
     "prepack": "npm run build",
     "test": "node --import tsx/esm --test 'test/**/test_*.ts'",
+    "check:no-skips": "node tools/check-no-skips.mjs",
     "play": "node --import tsx/esm scripts/playground.ts",
     "docs:api": "typedoc",
     "docs:dev": "npm run docs:api && vitepress dev docs",
