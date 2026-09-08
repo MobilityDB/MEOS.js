@@ -367,18 +367,11 @@ function bigSequenceWkt(n: number): string {
 // Regression guard for the wasm stack-overflow limit. On a wasm built with the
 // default 64 KB Emscripten stack, MEOS traps with "memory access out of bounds"
 // once a temporal exceeds ~2500 instants (the EMULATE_FUNCTION_POINTER_CASTS
-// trampolines push extra args per indirect call). After rebuilding with
-// -sSTACK_SIZE=8MB this must walk thousands of instants without crashing.
-//
-// Skipped by default so the committed suite stays green on the current wasm;
-// run with MEOS_TEST_LARGE=1 after the rebuild to confirm the fix.
-const RUN_LARGE = process.env.MEOS_TEST_LARGE === '1';
-const largeSkip = RUN_LARGE
-	? false
-	: 'set MEOS_TEST_LARGE=1 (run only against a wasm rebuilt with -sSTACK_SIZE=8MB)';
-
+// trampolines push extra args per indirect call). The module this suite runs
+// against is built with `-s STACK_SIZE=8MB` (Dockerfile), so the precondition
+// the guard waited for is supplied and the test walks thousands of instants.
 describe('TGeomPoint - large temporal (wasm stack regression)', () => {
-	it('walks 8000 instants without a wasm trap', { skip: largeSkip }, () => {
+	it('walks 8000 instants without a wasm trap', () => {
 		const n = 8000;
 		const t = TGeomPoint.fromString(bigSequenceWkt(n));
 		try {
