@@ -101,7 +101,7 @@ Only needed to work on MEOS.js itself.
 docker build --output type=local,dest=./wasm --target wasm .
 ```
 
-This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles GEOS, PROJ, SQLite, GSL, JSON-C, and MobilityDB from source.
+This produces `wasm/meos.js` and `wasm/meos.wasm`. The first build may take a while as it compiles PROJ, SQLite, JSON-C, H3, GDAL, and MobilityDB from source.
 
 #### 2. Install dependencies
 

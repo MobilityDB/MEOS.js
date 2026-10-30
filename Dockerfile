@@ -5,8 +5,8 @@
 #
 # Versions:
 #   emsdk 5.0.6       |  MobilityDB master
-#   GEOS 3.14.1       |  PROJ 9.8.1         |  SQLite 3.46.1
-#   JSON-C 0.18       |  GSL 2.8            |  H3 4.2.1
+#   PROJ 9.8.1        |  SQLite 3.46.1      |  JSON-C 0.18
+#   H3 4.2.1
 
 # Track upstream MobilityDB master. The committed codegen/res/meos-idl.json is a
 # snapshot of the MEOS-API catalog for that surface; refresh it (see README) when
@@ -33,24 +33,6 @@ WORKDIR /tmp/sqlite-amalgamation-3460100
 RUN emcc -sMEMORY64=1 -O2 -c sqlite3.c -o sqlite3.o \
     && emar rcs /root/sqlite3/libsqlite3.a sqlite3.o \
     && cp sqlite3.h /root/sqlite3/
-
-# COMPILING GEOS WITH EMSCRIPTEN
-FROM base AS geos
-
-RUN curl -fL "https://download.osgeo.org/geos/geos-3.14.1.tar.bz2" | tar xj -C /root \
-    && mv /root/geos-3.14.1 /root/geos
-
-WORKDIR /root/geos
-RUN mkdir -p build && cd build \
-    && emcmake cmake .. \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DBUILD_SHARED_LIBS=OFF \
-        -DGEOS_BUILD_DEVELOPER=OFF \
-        -DBUILD_TESTING=OFF \
-        -DBUILD_GEOSOP=OFF \
-        -DCMAKE_C_FLAGS=-sMEMORY64=1 \
-        -DCMAKE_CXX_FLAGS=-sMEMORY64=1 \
-    && emmake make -j"$(nproc)" geos geos_c
 
 # COMPILING PROJ WITH EMSCRIPTEN
 FROM base AS proj
@@ -169,15 +151,11 @@ RUN mkdir -p build && cd build \
 # itself, so GDAL adds no third-party library that was not already here.
 #
 # GEOS is off in GDAL: it backs OGR's geometry predicates, which raster band
-# sampling does not reach, and MEOS links its own GEOS regardless. Handing it
-# this tree's GEOS would also need two include directories — `geos_c.h` takes
-# `geos/export.h` from the source tree while the header itself is generated into
-# the build tree — and GEOS_INCLUDE_DIR names one.
+# sampling does not reach, and MEOS calls no GEOS.
 FROM base AS gdal
 
 COPY --from=sqlite /root/sqlite3 /root/sqlite3
 COPY --from=proj   /root/PROJ    /root/PROJ
-COPY --from=geos   /root/geos    /root/geos
 COPY --from=zlib   /root/zlib-install /root/zlib-install
 
 RUN curl -fL "https://github.com/OSGeo/gdal/releases/download/v3.9.3/gdal-3.9.3.tar.gz" \
@@ -212,23 +190,6 @@ RUN mkdir -p build && cd build \
         -DZLIB_LIBRARY=/root/zlib-install/lib/libz.a \
         -DCMAKE_C_FLAGS=-sMEMORY64=1 \
         -DCMAKE_CXX_FLAGS=-sMEMORY64=1 \
-    && emmake make -j"$(nproc)" \
-    && emmake make install
-
-# COMPILING GSL WITH EMSCRIPTEN
-FROM base AS gsl
-
-RUN curl -fL "https://ftpmirror.gnu.org/gsl/gsl-2.8.tar.gz" | tar xz -C /root
-
-WORKDIR /root/gsl-2.8
-RUN cp /usr/share/automake-*/config.sub config.sub \
-    && cp /usr/share/automake-*/config.guess config.guess \
-    && emconfigure ./configure \
-        --prefix=/root/gsl-wasm \
-        --host=wasm32-unknown-emscripten \
-        --disable-shared \
-        --enable-static \
-        CFLAGS="-O2 -sMEMORY64=1" \
     && emmake make -j"$(nproc)" \
     && emmake make install
 
@@ -274,10 +235,8 @@ RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/M
 FROM base AS builder
 
 COPY --from=sqlite         /root/sqlite3         /root/sqlite3
-COPY --from=geos           /root/geos            /root/geos
 COPY --from=proj           /root/PROJ            /root/PROJ
 COPY --from=jsonc          /root/json-c-install  /root/json-c-install
-COPY --from=gsl            /root/gsl-wasm        /root/gsl-wasm
 COPY --from=h3             /root/h3-install      /root/h3-install
 COPY --from=zlib           /root/zlib-install    /root/zlib-install
 COPY --from=libxml2        /root/libxml2-install /root/libxml2-install
@@ -301,7 +260,7 @@ COPY . .
 # prefix supplied later relocates the files while the `.pc` keeps pointing at
 # the emscripten sysroot, and `pkg-config --cflags` then reports an include
 # directory that holds no MEOS header.
-RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-install/include -I/root/json-c-install/include/json-c" \
+RUN INCLUDES="-I/root/json-c-install/include -I/root/json-c-install/include/json-c" \
     && emcmake cmake -S /root/MobilityDB -B /root/MobilityDB/build \
         -DMEOS=ON \
         -DALL=ON \
@@ -310,15 +269,10 @@ RUN INCLUDES="-I/root/geos/include -I/root/geos/build/capi -I/root/json-c-instal
         -DH3_INCLUDE_DIR=/root/h3-install/include \
         -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_BUILD_TYPE=Release \
-        -DGEOS_INCLUDE_DIR=/root/geos/build/capi \
-        -DGEOS_LIBRARY=/root/geos/build/lib/libgeos.a \
         -DPROJ_INCLUDE_DIRS=/root/PROJ/src \
         -DPROJ_LIBRARIES=/root/PROJ/build/lib/libproj.a \
         "-DJSON-C_INCLUDE_DIRS=/root/json-c-install/include" \
         "-DJSON-C_LIBRARIES=/root/json-c-install/lib/libjson-c.a" \
-        -DGSL_INCLUDE_DIR=/root/gsl-wasm/include \
-        -DGSL_LIBRARY=/root/gsl-wasm/lib/libgsl.a \
-        -DGSL_CBLAS_LIBRARY=/root/gsl-wasm/lib/libgslcblas.a \
         -DZLIB_INCLUDE_DIR=/root/zlib-install/include \
         -DZLIB_LIBRARY=/root/zlib-install/lib/libz.a \
         -DLIBXML2_INCLUDE_DIR=/root/libxml2-install/include/libxml2 \
@@ -409,23 +363,16 @@ RUN mkdir -p /app/wasm \
         -sBINARYEN_EXTRA_PASSES=pass-arg=max-func-params@23 \
         /app/core/c-src/bindings.c \
         /root/meos-install/lib/libmeos.a \
-        /root/geos/build/lib/libgeos.a \
-        /root/geos/build/lib/libgeos_c.a \
         /root/PROJ/build/lib/libproj.a \
         /root/sqlite3/libsqlite3.a \
-        /root/gsl-wasm/lib/libgsl.a \
-        /root/gsl-wasm/lib/libgslcblas.a \
         /root/json-c-install/lib/libjson-c.a \
         /root/h3-install/lib/libh3.a \
         /root/gdal-install/lib/libgdal.a \
         /root/libxml2-install/lib/libxml2.a \
         /root/zlib-install/lib/libz.a \
         $(PKG_CONFIG_PATH=/root/meos-install/lib/pkgconfig pkg-config --cflags meos) \
-        -I/root/geos/include \
-        -I/root/geos/build/capi \
         -I/root/PROJ/src \
         -I/root/json-c-install/include \
-        -I/root/gsl-wasm/include \
         -I/root/h3-install/include \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
         --embed-file /root/meos-install/share/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
