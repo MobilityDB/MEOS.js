@@ -1876,6 +1876,16 @@ long long timestamptz_tprecision_w(long long t, const Interval * duration, long 
 }
 
 EMSCRIPTEN_KEEPALIVE
+Set * tstzset_scale_w(const Set * s, const Interval * duration) {
+  return tstzset_scale(s, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * tstzset_shift_w(const Set * s, const Interval * shift) {
+  return tstzset_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Set * tstzset_shift_scale_w(const Set * s, const Interval * shift, const Interval * duration) {
   return tstzset_shift_scale(s, shift, duration);
 }
@@ -1883,6 +1893,16 @@ Set * tstzset_shift_scale_w(const Set * s, const Interval * shift, const Interva
 EMSCRIPTEN_KEEPALIVE
 Set * tstzset_tprecision_w(const Set * s, const Interval * duration, long long torigin) {
   return tstzset_tprecision(s, duration, (TimestampTz) torigin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * tstzspan_scale_w(const Span * s, const Interval * duration) {
+  return tstzspan_scale(s, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * tstzspan_shift_w(const Span * s, const Interval * shift) {
+  return tstzspan_shift(s, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE

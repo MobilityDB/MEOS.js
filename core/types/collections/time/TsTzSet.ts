@@ -9,6 +9,8 @@ import {
 	distance_tstzset_tstzset,
 	interval_us_free,
 	tstzset_to_dateset,
+	tstzset_scale,
+	tstzset_shift,
 	tstzset_shift_scale,
 	tstzset_tprecision,
 } from '../../../functions/functions.generated.js';
@@ -112,9 +114,25 @@ export class TsTzSet extends MeosSet<TimestampTz> {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Returns a new set shifted and/or scaled along the time axis.
-	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
-	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 * Returns a new set shifted along the time axis.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 */
+	shift(shift: Ptr): TsTzSet {
+		return new TsTzSet(tstzset_shift(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new set scaled to last a duration.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
+	 */
+	scale(duration: Ptr): TsTzSet {
+		return new TsTzSet(tstzset_scale(this._inner, duration));
+	}
+
+	/**
+	 * Returns a new set shifted and then scaled along the time axis.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
 	 */
 	shiftScale(shift: Ptr, duration: Ptr): TsTzSet {
 		return new TsTzSet(tstzset_shift_scale(this._inner, shift, duration));
