@@ -3,6 +3,7 @@ import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos.js';
 import { STBox } from '../../../core/types/boxes/STBox.js';
 import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan.js';
+import { interval_make, meos_free } from '../../../core/functions/functions.generated.js';
 
 before(async () => {
 	await initMeos();
@@ -226,6 +227,42 @@ describe('STBox - Transformations', () => {
 		assert.ok(r.toString().includes('1.12'));
 		b.free();
 		r.free();
+	});
+});
+
+describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
+	it('shiftTime moves the temporal dimension forward by 1 day', () => {
+		const b = STBox.fromString(WKT_XT);
+		const shift = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const r = b.shiftTime(shift);
+		assert.ok(r.tmin() > b.tmin());
+		b.free();
+		r.free();
+		meos_free(shift);
+	});
+
+	it('scaleTime stretches the temporal dimension to 2 days', () => {
+		const b = STBox.fromString(WKT_XT);
+		const dur = interval_make(0, 0, 0, 2, 0, 0, 0); // 2 days
+		const r = b.scaleTime(dur);
+		assert.equal(r.tmin(), b.tmin());
+		assert.ok(r.tmax() > b.tmax());
+		b.free();
+		r.free();
+		meos_free(dur);
+	});
+
+	it('shiftScaleTime shifts by 1 day and scales to 2 days', () => {
+		const b = STBox.fromString(WKT_XT);
+		const shift = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const dur = interval_make(0, 0, 0, 2, 0, 0, 0);   // 2 days
+		const r = b.shiftScaleTime(shift, dur);
+		assert.ok(r.tmin() > b.tmin());
+		assert.ok(r.tmax() > b.tmax());
+		b.free();
+		r.free();
+		meos_free(shift);
+		meos_free(dur);
 	});
 });
 

@@ -5039,8 +5039,20 @@ export function tintbox_shift_scale(box: Ptr, shift: number, width: number, hass
 	return _r;
 }
 
+export function tbox_scale_time(box: Ptr, duration: Ptr): Ptr {
+	const _r = callPtr('tbox_scale_time_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tbox_shift_scale_time(box: Ptr, shift: Ptr, duration: Ptr): Ptr {
 	const _r = callPtr('tbox_shift_scale_time_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(shift), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbox_shift_time(box: Ptr, shift: Ptr): Ptr {
+	const _r = callPtr('tbox_shift_time_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(shift)]);
 	checkMeosError();
 	return _r;
 }
@@ -10460,8 +10472,20 @@ export function stbox_round(box: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
+export function stbox_scale_time(box: Ptr, duration: Ptr): Ptr {
+	const _r = callPtr('stbox_scale_time_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
 export function stbox_shift_scale_time(box: Ptr, shift: Ptr, duration: Ptr): Ptr {
 	const _r = callPtr('stbox_shift_scale_time_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(shift), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
+export function stbox_shift_time(box: Ptr, shift: Ptr): Ptr {
+	const _r = callPtr('stbox_shift_time_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(shift)]);
 	checkMeosError();
 	return _r;
 }
