@@ -375,7 +375,7 @@ RUN mkdir -p /app/wasm \
         -I/root/json-c-install/include \
         -I/root/h3-install/include \
         --embed-file /usr/share/zoneinfo@/usr/share/zoneinfo \
-        --embed-file /root/meos-install/share/spatial_ref_sys.csv@/usr/local/share/spatial_ref_sys.csv \
+        --embed-file /root/meos-install/share/spatial_ref_sys.csv@/root/meos-install/share/spatial_ref_sys.csv \
         --embed-file /root/PROJ/build/data/proj.db@/usr/local/share/proj/proj.db \
         -o /app/wasm/meos.js \
         -s MODULARIZE=1 \
