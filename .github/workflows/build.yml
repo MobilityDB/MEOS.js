@@ -22,6 +22,13 @@ jobs:
       - name: Refuse tracked build output, skipped suites and stale pins
         uses: MobilityDB/MEOS-API/.github/actions/check-tree-hygiene@master
 
+      # Reads the test SOURCES, so it needs neither node_modules nor the module,
+      # and it answers the same locally through `npm run check:no-skips`. The
+      # floor in the wasm job catches a skip once the suite has RUN; this catches
+      # one as it is written.
+      - name: Refuse a construct that stops a test asserting
+        run: node tools/check-no-skips.mjs
+
   generate-and-typecheck:
     name: Regenerate from the catalog and type-check
     runs-on: ubuntu-latest
@@ -99,3 +106,29 @@ jobs:
       - name: Report what the module carries
         run: |
           ls -la wasm/meos.js wasm/meos.wasm
+
+      # The suite runs HERE and nowhere else, because this is the only job that
+      # holds the module. Every test imports `wasm/meos.js`, which the step above
+      # takes out of the image, so a job without it can collect nothing — which is
+      # why the suite went unrun while three jobs reported success.
+      # Node 24, not the 20 the type-check job uses: `npm test` names its files
+      # with `test/**/test_*.ts` and lets the test runner expand that glob, which
+      # Node 20 does not do — it reports `Could not find '<the literal pattern>'`
+      # and runs nothing. Nothing declares the requirement (`package.json` carries
+      # no `engines`), and no job ran the suite, so the script has never worked on
+      # the version the other job pins.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # `pipefail` is what makes the tee honest: without it the step's status is
+      # tee's, so a suite that FAILED would report success and the guard below
+      # would read a log nobody was failing on.
+      - name: Run the suite
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test.log
