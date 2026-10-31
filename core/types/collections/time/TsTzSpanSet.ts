@@ -12,6 +12,8 @@ import {
 	distance_tstzspanset_tstzspan,
 	distance_tstzspanset_tstzspanset,
 	interval_us_free,
+	tstzspanset_scale,
+	tstzspanset_shift,
 	tstzspanset_shift_scale,
 	tstzspanset_tprecision,
 	tstzspanset_to_datespanset,
@@ -144,9 +146,25 @@ export class TsTzSpanSet extends SpanSet<TsTzSpan> {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Returns a new span set shifted and/or scaled along the time axis.
-	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
-	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 * Returns a new span set shifted along the time axis.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 */
+	shift(shift: Ptr): TsTzSpanSet {
+		return new TsTzSpanSet(tstzspanset_shift(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new span set scaled to last a duration.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
+	 */
+	scale(duration: Ptr): TsTzSpanSet {
+		return new TsTzSpanSet(tstzspanset_scale(this._inner, duration));
+	}
+
+	/**
+	 * Returns a new span set shifted and then scaled along the time axis.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
 	 */
 	shiftScale(shift: Ptr, duration: Ptr): TsTzSpanSet {
 		return new TsTzSpanSet(tstzspanset_shift_scale(this._inner, shift, duration));
