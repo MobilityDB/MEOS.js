@@ -340,7 +340,7 @@ describe('TsTzSpan - shiftScale', () => {
 	it('shift by 1 hour: [T0,T1) becomes [T1,T2)', () => {
 		const s = TsTzSpan.fromString(`[${T0}, ${T1})`);
 		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
-		const r = s.shiftScale(interv, 0);
+		const r = s.shift(interv);
 		assert.equal(r.toString(), `[${T1}, ${T2})`);
 		s.free();
 		r.free();
@@ -350,12 +350,25 @@ describe('TsTzSpan - shiftScale', () => {
 	it('scale to 2h: width doubles', () => {
 		const s = TsTzSpan.fromString(`[${T0}, ${T1}]`); // 1h
 		const dur = interval_make(0, 0, 0, 0, 2, 0, 0);  // 2 hours
-		const r = s.shiftScale(0, dur);
+		const r = s.scale(dur);
 		// lower stays, upper moves to lower + 2h
 		assert.equal(r.lower(), s.lower());
 		assert.ok(r.upper() > s.upper());
 		s.free();
 		r.free();
+		meos_free(dur);
+	});
+
+	it('shift by 1 hour and scale to 2h: [T0,T1] starts at T1 and lasts 2h', () => {
+		const s = TsTzSpan.fromString(`[${T0}, ${T1}]`); // 1h
+		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
+		const dur = interval_make(0, 0, 0, 0, 2, 0, 0);    // 2 hours
+		const r = s.shiftScale(interv, dur);
+		assert.equal(r.lower(), s.upper());
+		assert.equal(r.upper() - r.lower(), 2 * (s.upper() - s.lower()));
+		s.free();
+		r.free();
+		meos_free(interv);
 		meos_free(dur);
 	});
 });

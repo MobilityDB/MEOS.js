@@ -276,12 +276,24 @@ describe('TsTzSet - shiftScale', () => {
 	it('shift by 1 day: all timestamps advance by 1 day', () => {
 		const s = TsTzSet.fromString(`{${TS1}, ${TS2}}`);
 		const interv = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
-		const r = s.shiftScale(interv, 0);
+		const r = s.shift(interv);
 		assert.ok(r.inner !== 0);
 		assert.ok(r.startValue() > s.startValue());
 		s.free();
 		r.free();
 		meos_free(interv);
+	});
+
+	it('shift by 1 day and scale to 2 days: the set starts 1 day later', () => {
+		const s = TsTzSet.fromString(`{${TS1}, ${TS2}}`);
+		const interv = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const dur = interval_make(0, 0, 0, 2, 0, 0, 0);    // 2 days
+		const r = s.shiftScale(interv, dur);
+		assert.ok(r.startValue() > s.startValue());
+		s.free();
+		r.free();
+		meos_free(interv);
+		meos_free(dur);
 	});
 });
 

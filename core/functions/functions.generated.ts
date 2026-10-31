@@ -2033,6 +2033,18 @@ export function timestamptz_tprecision(t: TimestampTz, duration: Ptr, torigin: T
 	return _r;
 }
 
+export function tstzset_scale(s: Ptr, duration: Ptr): Ptr {
+	const _r = callPtr('tstzset_scale_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzset_shift(s: Ptr, shift: Ptr): Ptr {
+	const _r = callPtr('tstzset_shift_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(shift)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tstzset_shift_scale(s: Ptr, shift: Ptr, duration: Ptr): Ptr {
 	const _r = callPtr('tstzset_shift_scale_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(shift), ptrArgVal(duration)]);
 	checkMeosError();
@@ -2041,6 +2053,18 @@ export function tstzset_shift_scale(s: Ptr, shift: Ptr, duration: Ptr): Ptr {
 
 export function tstzset_tprecision(s: Ptr, duration: Ptr, torigin: TimestampTz): Ptr {
 	const _r = callPtr('tstzset_tprecision_w', [ptrArgType(), ptrArgType(), 'bigint'], [ptrArgVal(s), ptrArgVal(duration), BigInt(torigin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspan_scale(s: Ptr, duration: Ptr): Ptr {
+	const _r = callPtr('tstzspan_scale_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspan_shift(s: Ptr, shift: Ptr): Ptr {
+	const _r = callPtr('tstzspan_shift_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(shift)]);
 	checkMeosError();
 	return _r;
 }
