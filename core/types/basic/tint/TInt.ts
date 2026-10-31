@@ -1,4 +1,5 @@
 import { TNumber } from '../tnumber/TNumber.js';
+import { temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tint_in,
@@ -99,6 +100,22 @@ export class TInt extends TNumber {
 	 */
 	static fromMFJSON(mfjson: string): TInt {
 		return new TInt(tint_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Reads a TInt from its hex-encoded WKB, as {@link asHexWKB} writes it.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexWKB(hexwkb: string): TInt {
+		return new TInt(temporalFromHexWKB(hexwkb, 'int4', 'TInt'));
+	}
+
+	/**
+	 * Reads a TInt from its WKB bytes, as {@link asBinary} writes them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromBinary(wkb: Uint8Array): TInt {
+		return new TInt(temporalFromBinary(wkb, 'int4', 'TInt'));
 	}
 
 	/**

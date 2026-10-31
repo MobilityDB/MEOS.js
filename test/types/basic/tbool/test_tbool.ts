@@ -3,6 +3,7 @@ import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../../core/runtime/meos.js';
 import { meos_free, interval_make } from '../../../../core/functions/functions.generated.js';
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
+import { TInt } from '../../../../core/types/basic/tint/TInt.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
 import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
@@ -531,5 +532,49 @@ describe('TBool - whenTrue / whenFalse', () => {
 		t.free();
 		wt.free();
 		wf.free();
+	});
+});
+
+describe('TBool - WKB', () => {
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t1 = TBool.fromString(`[t@${T0}, f@${T1}]`);
+		const hex = t1.asHexWKB();
+		assert.ok(typeof hex === 'string' && hex.length > 0);
+		const t2 = TBool.fromHexWKB(hex);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(), hex);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromBinary round-trips through asBinary', () => {
+		const t1 = TBool.fromString(`[t@${T0}, f@${T1}]`);
+		const wkb = t1.asBinary();
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), t1.asHexWKB());
+		const t2 = TBool.fromBinary(wkb);
+		assert.equal(t2.toString(), t1.toString());
+		t1.free();
+		t2.free();
+	});
+
+	it('asHexWKB writes the byte order its variant names', () => {
+		const t1 = TBool.fromString(`[t@${T0}, f@${T1}]`);
+		const ndr = t1.asHexWKB(0x08);
+		const xdr = t1.asHexWKB(0x10);
+		assert.equal(ndr.slice(0, 2), '01');
+		assert.equal(xdr.slice(0, 2), '00');
+		const t2 = TBool.fromHexWKB(xdr);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(0x08), ndr);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromHexWKB and fromBinary refuse the WKB of another temporal type', () => {
+		const o = TInt.fromString(`[1@${T0}, 2@${T1}]`);
+		assert.throws(() => TBool.fromHexWKB(o.asHexWKB()), TypeError);
+		assert.throws(() => TBool.fromBinary(o.asBinary()), TypeError);
+		o.free();
 	});
 });

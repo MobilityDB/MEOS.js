@@ -198,8 +198,13 @@ gt3.free(); eq5.free();
 const f = TFloat.fromString('[0.0@2024-01-01, 1.0@2024-01-31]');
 
 f.toString();    // WKT: "[0@2024-01-01 00:00:00+00, 1@2024-01-31 00:00:00+00]"
-f.toMFJSON();    // MF-JSON string
-f.toHexWKB();    // binary hex-encoded WKB
+f.asMFJSON();    // MF-JSON string
+f.asHexWKB();    // hex-encoded WKB
+f.asBinary();    // WKB bytes (Uint8Array)
+
+TFloat.fromMFJSON(f.asMFJSON());   // each reader reads what its writer writes
+TFloat.fromHexWKB(f.asHexWKB());
+TFloat.fromBinary(f.asBinary());
 ```
 
 ## Conversions

@@ -3,6 +3,7 @@ import {
 	intset_in,
 	intset_out,
 	set_from_hexwkb,
+	set_from_wkb,
 	intset_start_value,
 	intset_end_value,
 	intset_value_n,
@@ -10,6 +11,7 @@ import {
 	intset_to_floatset,
 	intset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { MeosSet } from '../base/MeosSet.js';
 
 /**
@@ -47,6 +49,14 @@ export class IntSet extends MeosSet<number> {
 	 */
 	static fromHexWKB(hexwkb: string): IntSet {
 		return new IntSet(set_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises an `IntSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): IntSet {
+		return new IntSet(withWkb(wkb, (ptr, size) => set_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

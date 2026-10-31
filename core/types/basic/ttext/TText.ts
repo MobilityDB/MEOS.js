@@ -1,4 +1,4 @@
-import { Temporal } from '../../temporal/Temporal.js';
+import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	ttext_in,
@@ -78,6 +78,22 @@ export class TText extends Temporal<string> {
 	 */
 	static fromMFJSON(mfjson: string): TText {
 		return new TText(ttext_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Reads a TText from its hex-encoded WKB, as {@link asHexWKB} writes it.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexWKB(hexwkb: string): TText {
+		return new TText(temporalFromHexWKB(hexwkb, 'text', 'TText'));
+	}
+
+	/**
+	 * Reads a TText from its WKB bytes, as {@link asBinary} writes them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromBinary(wkb: Uint8Array): TText {
+		return new TText(temporalFromBinary(wkb, 'text', 'TText'));
 	}
 
 	/**

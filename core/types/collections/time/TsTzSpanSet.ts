@@ -3,6 +3,7 @@ import {
 	tstzspanset_in,
 	tstzspanset_out,
 	spanset_from_hexwkb,
+	spanset_from_wkb,
 	span_to_spanset,
 	tstzspanset_num_timestamps,
 	tstzspanset_lower,
@@ -18,6 +19,7 @@ import {
 	tstzspanset_tprecision,
 	tstzspanset_to_datespanset,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { SpanSet } from '../base/SpanSet.js';
 import { TsTzSpan } from './TsTzSpan.js';
 
@@ -61,6 +63,14 @@ export class TsTzSpanSet extends SpanSet<TsTzSpan> {
 	 */
 	static fromHexWKB(hexwkb: string): TsTzSpanSet {
 		return new TsTzSpanSet(spanset_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `TsTzSpanSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): TsTzSpanSet {
+		return new TsTzSpanSet(withWkb(wkb, (ptr, size) => spanset_from_wkb(ptr, size)));
 	}
 
 	/**

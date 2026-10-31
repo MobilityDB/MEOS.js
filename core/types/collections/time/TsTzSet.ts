@@ -3,6 +3,7 @@ import {
 	tstzset_in,
 	tstzset_out,
 	set_from_hexwkb,
+	set_from_wkb,
 	tstzset_start_value,
 	tstzset_end_value,
 	tstzset_value_n,
@@ -14,6 +15,7 @@ import {
 	tstzset_shift_scale,
 	tstzset_tprecision,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { MeosSet } from '../base/MeosSet.js';
 
 /**
@@ -52,6 +54,14 @@ export class TsTzSet extends MeosSet<TimestampTz> {
 	 */
 	static fromHexWKB(hexwkb: string): TsTzSet {
 		return new TsTzSet(set_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `TsTzSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): TsTzSet {
+		return new TsTzSet(withWkb(wkb, (ptr, size) => set_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

@@ -75,7 +75,7 @@ interface Idl {
  *
  *   - Special-logic wrappers: functions whose JS-facing behaviour differs
  *     non-trivially from the raw C signature:
- *       temporal_as_hexwkb  collapses the WKB variant enum + hides size_out
+ *       temporal_as_hexwkb  hides size_out
  *       temporal_as_mfjson  converts an empty srs string to a C NULL pointer
  *       temporal_instant_n  adjusts from 0-based JS indexing to 1-based MEOS
  *       temporal_duration   returns Interval* — re-exposed as

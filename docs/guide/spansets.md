@@ -32,11 +32,13 @@ const span = IntSpan.fromBounds(1, 10);
 const ss   = IntSpanSet.fromSpan(span);  // wraps the span in a one-element set
 ```
 
-### From hex WKB
+### From WKB
 
 ```ts
 const hexwkb = ss.asHexWKB();
 const copy   = IntSpanSet.fromHexWKB(hexwkb);
+const bytes  = ss.asBinary();   // Uint8Array
+const again  = IntSpanSet.fromBinary(bytes);
 ```
 
 ## Navigating the spans

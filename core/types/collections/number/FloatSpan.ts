@@ -7,6 +7,7 @@ import {
 	floatspan_upper,
 	floatspan_width,
 	span_from_hexwkb,
+	span_from_wkb,
 	distance_floatspan_floatspan,
 	floatspan_to_intspan,
 	floatspan_expand,
@@ -16,6 +17,7 @@ import {
 	floatspan_degrees,
 	floatspan_radians,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { Span } from '../base/Span.js';
 
 /**
@@ -68,6 +70,14 @@ export class FloatSpan extends Span {
 	 */
 	static fromHexWKB(hexwkb: string): FloatSpan {
 		return new FloatSpan(span_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `FloatSpan` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): FloatSpan {
+		return new FloatSpan(withWkb(wkb, (ptr, size) => span_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

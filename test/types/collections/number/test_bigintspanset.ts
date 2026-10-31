@@ -33,6 +33,17 @@ describe('BigIntSpanSet - Construction', () => {
 		ss2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const ss1 = BigIntSpanSet.fromString(WKT_AB);
+		const wkb = ss1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const ss2 = BigIntSpanSet.fromBinary(wkb);
+		assert.equal(ss2.toString(), ss1.toString());
+		ss1.free();
+		ss2.free();
+	});
+
 	it('fromSpan wraps a single BigIntSpan', () => {
 		const s = BigIntSpan.fromBounds(1, 8);
 		const ss = BigIntSpanSet.fromSpan(s);

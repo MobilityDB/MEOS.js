@@ -5,6 +5,7 @@ import { TGeogPoint } from '../../../../core/types/basic/tgeogpoint/TGeogPoint.j
 import { TGeogPointInst } from '../../../../core/types/basic/tgeogpoint/TGeogPointInst.js';
 import { TGeogPointSeq } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeq.js';
 import { TGeogPointSeqSet } from '../../../../core/types/basic/tgeogpoint/TGeogPointSeqSet.js';
+import { TGeomPoint } from '../../../../core/types/basic/tgeompoint/TGeomPoint.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { meos_free } from '../../../../core/functions/functions.generated.js';
 
@@ -261,5 +262,81 @@ describe('TGeogPoint - speed / cumulativeLength / angularDifference', () => {
 		assert.ok(ad !== 0);
 		meos_free(ad);
 		t.free();
+	});
+});
+
+describe('TGeogPoint - WKB', () => {
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t1 = TGeogPoint.fromString(SEQ_WKT);
+		const hex = t1.asHexWKB();
+		assert.ok(typeof hex === 'string' && hex.length > 0);
+		const t2 = TGeogPoint.fromHexWKB(hex);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(), hex);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromBinary round-trips through asBinary', () => {
+		const t1 = TGeogPoint.fromString(SEQ_WKT);
+		const wkb = t1.asBinary();
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), t1.asHexWKB());
+		const t2 = TGeogPoint.fromBinary(wkb);
+		assert.equal(t2.toString(), t1.toString());
+		t1.free();
+		t2.free();
+	});
+
+	it('asHexWKB writes the byte order its variant names', () => {
+		const t1 = TGeogPoint.fromString(SEQ_WKT);
+		const ndr = t1.asHexWKB(0x08);
+		const xdr = t1.asHexWKB(0x10);
+		assert.equal(ndr.slice(0, 2), '01');
+		assert.equal(xdr.slice(0, 2), '00');
+		const t2 = TGeogPoint.fromHexWKB(xdr);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(0x08), ndr);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromHexWKB and fromBinary refuse the WKB of another temporal type', () => {
+		const o = TGeomPoint.fromString(SEQ_WKT);
+		assert.throws(() => TGeogPoint.fromHexWKB(o.asHexWKB()), TypeError);
+		assert.throws(() => TGeogPoint.fromBinary(o.asBinary()), TypeError);
+		o.free();
+	});
+
+	it('asHexWKB round-trips without the SRID and asHexEWKB with it', () => {
+		const t1 = TGeogPoint.fromString(`SRID=4326;${SEQ_WKT}`);
+		assert.equal(t1.srid(), 4326);
+		const hex = t1.asHexWKB();
+		const hexe = t1.asHexEWKB();
+		// SRID 4326 is E6100000 in little-endian hex: the EWKB writes it, the WKB does not
+		assert.ok(hexe.includes('E6100000'));
+		assert.ok(!hex.includes('E6100000'));
+		const t2 = TGeogPoint.fromHexWKB(hex);
+		assert.equal(t2.asText(), t1.asText());
+		assert.equal(t2.asHexWKB(), hex);
+		const t3 = TGeogPoint.fromHexEWKB(hexe);
+		assert.equal(t3.srid(), 4326);
+		assert.equal(t3.asEWKT(), t1.asEWKT());
+		assert.equal(t3.asHexEWKB(), hexe);
+		t1.free();
+		t2.free();
+		t3.free();
+	});
+
+	it('fromEWKB round-trips through asEWKB', () => {
+		const t1 = TGeogPoint.fromString(`SRID=4326;${SEQ_WKT}`);
+		const ewkb = t1.asEWKB();
+		assert.ok(ewkb instanceof Uint8Array && ewkb.length > 0);
+		assert.equal(Buffer.from(ewkb).toString('hex').toUpperCase(), t1.asHexEWKB());
+		const t2 = TGeogPoint.fromEWKB(ewkb);
+		assert.equal(t2.srid(), 4326);
+		assert.equal(t2.asEWKT(), t1.asEWKT());
+		t1.free();
+		t2.free();
 	});
 });

@@ -545,3 +545,47 @@ describe('TNumber - nadTBox', () => {
 		t.free(); box.free();
 	});
 });
+
+describe('TInt - WKB', () => {
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t1 = TInt.fromString(`[1@${T0}, 2@${T1}, 2@${T2}]`);
+		const hex = t1.asHexWKB();
+		assert.ok(typeof hex === 'string' && hex.length > 0);
+		const t2 = TInt.fromHexWKB(hex);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(), hex);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromBinary round-trips through asBinary', () => {
+		const t1 = TInt.fromString(`[1@${T0}, 2@${T1}, 2@${T2}]`);
+		const wkb = t1.asBinary();
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), t1.asHexWKB());
+		const t2 = TInt.fromBinary(wkb);
+		assert.equal(t2.toString(), t1.toString());
+		t1.free();
+		t2.free();
+	});
+
+	it('asHexWKB writes the byte order its variant names', () => {
+		const t1 = TInt.fromString(`[1@${T0}, 2@${T1}, 2@${T2}]`);
+		const ndr = t1.asHexWKB(0x08);
+		const xdr = t1.asHexWKB(0x10);
+		assert.equal(ndr.slice(0, 2), '01');
+		assert.equal(xdr.slice(0, 2), '00');
+		const t2 = TInt.fromHexWKB(xdr);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(0x08), ndr);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromHexWKB and fromBinary refuse the WKB of another temporal type', () => {
+		const o = TBool.fromString(`[t@${T0}, f@${T1}]`);
+		assert.throws(() => TInt.fromHexWKB(o.asHexWKB()), TypeError);
+		assert.throws(() => TInt.fromBinary(o.asBinary()), TypeError);
+		o.free();
+	});
+});

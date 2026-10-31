@@ -3,6 +3,7 @@ import {
 	bigintspanset_in,
 	bigintspanset_out,
 	spanset_from_hexwkb,
+	spanset_from_wkb,
 	span_to_spanset,
 	bigintspanset_lower,
 	bigintspanset_upper,
@@ -11,6 +12,7 @@ import {
 	distance_bigintspanset_bigintspanset,
 	bigintspanset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { SpanSet } from '../base/SpanSet.js';
 import { BigIntSpan } from './BigIntSpan.js';
 
@@ -53,6 +55,14 @@ export class BigIntSpanSet extends SpanSet<BigIntSpan> {
 	 */
 	static fromHexWKB(hexwkb: string): BigIntSpanSet {
 		return new BigIntSpanSet(spanset_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `BigIntSpanSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): BigIntSpanSet {
+		return new BigIntSpanSet(withWkb(wkb, (ptr, size) => spanset_from_wkb(ptr, size)));
 	}
 
 	/**

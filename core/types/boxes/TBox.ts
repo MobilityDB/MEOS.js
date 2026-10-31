@@ -1,10 +1,11 @@
 import type { Ptr, TimestampTz } from '../../functions/functions.generated.js';
-import { getModule } from '../../runtime/meos.js';
 import {
 	tbox_in,
 	tbox_out,
 	tbox_from_hexwkb,
 	tbox_as_hexwkb,
+	tbox_as_wkb,
+	tbox_from_wkb,
 	tbox_make,
 	tbox_copy,
 	tbox_hash,
@@ -66,6 +67,7 @@ import {
 	tbox_cmp,
 	meos_free,
 } from '../../functions/functions.generated.js';
+import { readWkb, withSizeOut, withWkb } from '../../functions/wkb.js';
 
 /**
  * A temporal bounding box with an optional numeric (X) dimension and an optional temporal (T) dimension.
@@ -138,6 +140,14 @@ export class TBox {
 	 */
 	static fromHexWKB(hexwkb: string): TBox {
 		return new TBox(tbox_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `TBox` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): TBox {
+		return new TBox(withWkb(wkb, (ptr, size) => tbox_from_wkb(ptr, size)));
 	}
 
 	/**
@@ -266,16 +276,23 @@ export class TBox {
 	}
 
 	/**
-	 * Serialises this box to a hex-encoded WKB string.
-	 * @param variant WKB encoding variant (default `4` = Extended WKB).
+	 * Serialises this box to its Well-Known Binary (WKB) bytes.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: tbox_as_wkb
 	 */
-	asHexWKB(variant = 4): string {
-		// tbox_as_hexwkb_w requires a valid size_t* output parameter (not NULL).
-		// Allocate 8 bytes on the WASM heap as a sink; the value is discarded.
-		const sizePtr = (
-			getModule() as unknown as { allocate(slab: Uint8Array, allocator: number): number }
-		).allocate(new Uint8Array(8), 0) as Ptr;
-		return tbox_as_hexwkb(this._inner, variant, sizePtr);
+	asBinary(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => tbox_as_wkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this box to a hex-encoded WKB string.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: tbox_as_hexwkb
+	 */
+	asHexWKB(variant = 0): string {
+		return withSizeOut((sizeOut) => tbox_as_hexwkb(this._inner, variant, sizeOut));
 	}
 
 	// -------------------------------------------------------------------------

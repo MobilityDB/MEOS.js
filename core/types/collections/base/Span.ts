@@ -6,6 +6,7 @@ import {
 	span_hash,
 	span_to_spanset,
 	span_as_hexwkb,
+	span_as_wkb,
 	contained_span_span,
 	contains_span_span,
 	overlaps_span_span,
@@ -24,6 +25,7 @@ import {
 	span_ge,
 	meos_free,
 } from '../../../functions/functions.generated.js';
+import { readWkb } from '../../../functions/wkb.js';
 
 /**
  * Abstract base class for all MEOS span types (contiguous ranges).
@@ -84,10 +86,22 @@ export abstract class Span {
 	abstract toString(): string;
 
 	/**
-	 * Serialises this span to a hex-encoded WKB string.
-	 * @param variant WKB encoding variant (default `4` = Extended WKB).
+	 * Serialises this span to its Well-Known Binary (WKB) bytes.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: span_as_wkb
 	 */
-	asHexWKB(variant = 4): string {
+	asBinary(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => span_as_wkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this span to a hex-encoded WKB string.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: span_as_hexwkb
+	 */
+	asHexWKB(variant = 0): string {
 		return span_as_hexwkb(this._inner, variant);
 	}
 

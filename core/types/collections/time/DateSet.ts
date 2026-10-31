@@ -3,6 +3,7 @@ import {
 	dateset_in,
 	dateset_out,
 	set_from_hexwkb,
+	set_from_wkb,
 	dateset_start_value,
 	dateset_end_value,
 	dateset_value_n,
@@ -10,6 +11,7 @@ import {
 	dateset_to_tstzset,
 	dateset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { MeosSet } from '../base/MeosSet.js';
 
 /**
@@ -48,6 +50,14 @@ export class DateSet extends MeosSet<DateADT> {
 	 */
 	static fromHexWKB(hexwkb: string): DateSet {
 		return new DateSet(set_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `DateSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): DateSet {
+		return new DateSet(withWkb(wkb, (ptr, size) => set_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

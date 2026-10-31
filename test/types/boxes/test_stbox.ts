@@ -57,6 +57,46 @@ describe('STBox - Construction', () => {
 		b2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const b1 = STBox.fromString(WKT_XT);
+		const wkb = b1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), b1.asHexWKB());
+		const b2 = STBox.fromBinary(wkb);
+		assert.equal(b1.eq(b2), true);
+		b1.free();
+		b2.free();
+	});
+
+	it('asHexWKB round-trips without the SRID and asHexEWKB with it', () => {
+		const b1 = STBox.fromString(`SRID=4326;${WKT_XT}`);
+		assert.equal(b1.srid(), 4326);
+		const hex = b1.asHexWKB();
+		const hexe = b1.asHexEWKB();
+		// the EWKB carries the 4-byte SRID the WKB leaves out
+		assert.equal(hexe.length, hex.length + 8);
+		const b2 = STBox.fromHexWKB(hex);
+		assert.equal(b2.srid(), 0);
+		assert.equal(b2.asHexWKB(), hex);
+		const b3 = STBox.fromHexEWKB(hexe);
+		assert.equal(b3.srid(), 4326);
+		assert.equal(b3.eq(b1), true);
+		assert.equal(b3.asHexEWKB(), hexe);
+		b1.free();
+		b2.free();
+		b3.free();
+	});
+
+	it('fromEWKB round-trips through asEWKB', () => {
+		const b1 = STBox.fromString(`SRID=4326;${WKT_XT}`);
+		const ewkb = b1.asEWKB();
+		assert.equal(Buffer.from(ewkb).toString('hex').toUpperCase(), b1.asHexEWKB());
+		const b2 = STBox.fromEWKB(ewkb);
+		assert.equal(b2.srid(), 4326);
+		assert.equal(b1.eq(b2), true);
+		b1.free();
+		b2.free();
+	});
+
 	it('copy produces equal but distinct object', () => {
 		const b = STBox.fromString(WKT_XT);
 		const c = b.copy();

@@ -87,9 +87,9 @@ export function meos_free(ptr: Ptr): void {
 	call<void>('meos_free', null, [ptrArgType()], [ptrArgVal(ptr)]);
 }
 
-/** Extended hex-WKB; discards variant + size_out. */
-export function temporal_as_hexwkb(temp: Ptr): string {
-	const _r = call<string>('temporal_as_hexwkb_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+/** Hex WKB of the given variant; discards size_out. */
+export function temporal_as_hexwkb(temp: Ptr, variant: number): string {
+	const _r = call<string>('temporal_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), variant]);
 	checkMeosError();
 	return _r;
 }

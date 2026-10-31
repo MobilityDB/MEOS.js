@@ -26,11 +26,13 @@ const c = DateSet.fromString('{2020-01-01, 2020-06-15, 2020-12-31}');
 const d = TsTzSet.fromString('{2020-01-01, 2020-06-15, 2020-12-31}');
 ```
 
-### From hex WKB
+### From WKB
 
 ```ts
 const hexwkb = a.asHexWKB();
 const copy   = IntSet.fromHexWKB(hexwkb);
+const bytes  = a.asBinary();   // Uint8Array
+const again  = IntSet.fromBinary(bytes);
 ```
 
 ## Navigating values

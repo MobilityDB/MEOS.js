@@ -1,4 +1,4 @@
-import { Temporal } from '../../temporal/Temporal.js';
+import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import { TsTzSpanSet } from '../../collections/time/TsTzSpanSet.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
@@ -82,6 +82,22 @@ export class TBool extends Temporal<boolean> {
 	 */
 	static fromMFJSON(mfjson: string): TBool {
 		return new TBool(tbool_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Reads a TBool from its hex-encoded WKB, as {@link asHexWKB} writes it.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexWKB(hexwkb: string): TBool {
+		return new TBool(temporalFromHexWKB(hexwkb, 'bool', 'TBool'));
+	}
+
+	/**
+	 * Reads a TBool from its WKB bytes, as {@link asBinary} writes them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromBinary(wkb: Uint8Array): TBool {
+		return new TBool(temporalFromBinary(wkb, 'bool', 'TBool'));
 	}
 
 	/**

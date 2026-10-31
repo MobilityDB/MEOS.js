@@ -94,8 +94,15 @@ const t = TGeomPoint.fromString('POINT(1 1)@2024-01-01');
 
 t.toString();    // "POINT(1 1)@2024-01-01 00:00:00+00"
 t.asText();      // WKT string (alias)
-t.asHexWKB();    // binary hex-encoded WKB
-t.asMFJSON();    // MF-JSON string  (TGeomPoint only)
+t.asEWKT();      // WKT with the SRID
+t.asHexWKB();    // hex-encoded WKB
+t.asBinary();    // WKB bytes (Uint8Array)
+t.asHexEWKB();   // hex-encoded EWKB, with the SRID
+t.asEWKB();      // EWKB bytes, with the SRID
+t.asMFJSON();    // MF-JSON string
+
+TGeomPoint.fromHexEWKB(t.asHexEWKB());   // each reader reads what its writer writes
+TGeomPoint.fromEWKB(t.asEWKB());
 
 t.free();
 ```

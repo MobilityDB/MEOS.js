@@ -20,6 +20,9 @@ export interface MeosModule {
 
 	/** Raw wasm64 export of meos_free (calls libc free). Takes a BigInt address. */
 	_meos_free(ptr: bigint): void;
+
+	/** The WASM linear memory as bytes; the module replaces the view when the memory grows. */
+	HEAPU8: Uint8Array;
 }
 
 declare function createMeosModule(moduleArg?: object): Promise<MeosModule>;

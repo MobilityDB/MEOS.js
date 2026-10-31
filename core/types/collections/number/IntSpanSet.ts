@@ -3,6 +3,7 @@ import {
 	intspanset_in,
 	intspanset_out,
 	spanset_from_hexwkb,
+	spanset_from_wkb,
 	span_to_spanset,
 	intspanset_lower,
 	intspanset_upper,
@@ -12,6 +13,7 @@ import {
 	intspanset_to_floatspanset,
 	intspanset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { SpanSet } from '../base/SpanSet.js';
 import { IntSpan } from './IntSpan.js';
 
@@ -54,6 +56,14 @@ export class IntSpanSet extends SpanSet<IntSpan> {
 	 */
 	static fromHexWKB(hexwkb: string): IntSpanSet {
 		return new IntSpanSet(spanset_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises an `IntSpanSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): IntSpanSet {
+		return new IntSpanSet(withWkb(wkb, (ptr, size) => spanset_from_wkb(ptr, size)));
 	}
 
 	/**

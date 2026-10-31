@@ -67,6 +67,17 @@ describe('TBox - Construction', () => {
 		b2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const b1 = TBox.fromString(WKT_XT);
+		const wkb = b1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), b1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const b2 = TBox.fromBinary(wkb);
+		assert.equal(b2.toString(), b1.toString());
+		b1.free();
+		b2.free();
+	});
+
 	it('fromInt creates X-only box at integer value', () => {
 		const b = TBox.fromInt(5);
 		assert.equal(b.hasX(), true);
