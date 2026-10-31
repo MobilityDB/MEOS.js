@@ -29,7 +29,9 @@ import {
 	stbox_get_space,
 	stbox_expand_space,
 	stbox_expand_time,
+	stbox_scale_time,
 	stbox_shift_scale_time,
+	stbox_shift_time,
 	stbox_round,
 	adjacent_stbox_stbox,
 	contained_stbox_stbox,
@@ -386,9 +388,25 @@ export class STBox {
 	}
 
 	/**
-	 * Returns a new `STBox` with the temporal dimension shifted and/or scaled.
-	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
-	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 * Returns a new `STBox` with the temporal dimension shifted.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 */
+	shiftTime(shift: Ptr): STBox {
+		return new STBox(stbox_shift_time(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new `STBox` with the temporal dimension scaled to last a duration.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
+	 */
+	scaleTime(duration: Ptr): STBox {
+		return new STBox(stbox_scale_time(this._inner, duration));
+	}
+
+	/**
+	 * Returns a new `STBox` with the temporal dimension shifted and then scaled.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
 	 */
 	shiftScaleTime(shift: Ptr, duration: Ptr): STBox {
 		return new STBox(stbox_shift_scale_time(this._inner, shift, duration));

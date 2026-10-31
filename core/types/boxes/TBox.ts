@@ -39,7 +39,9 @@ import {
 	tbox_round,
 	tintbox_shift_scale,
 	tfloatbox_shift_scale,
+	tbox_scale_time,
 	tbox_shift_scale_time,
+	tbox_shift_time,
 	adjacent_tbox_tbox,
 	contained_tbox_tbox,
 	contains_tbox_tbox,
@@ -526,9 +528,25 @@ export class TBox {
 	}
 
 	/**
-	 * Returns a new box with the T dimension shifted and/or scaled.
-	 * @param shift    Raw WASM pointer to a MEOS interval for the shift amount (`0` to skip).
-	 * @param duration Raw WASM pointer to a MEOS interval for the new duration (`0` to skip).
+	 * Returns a new box with the T dimension shifted.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 */
+	shiftTime(shift: Ptr): TBox {
+		return new TBox(tbox_shift_time(this._inner, shift));
+	}
+
+	/**
+	 * Returns a new box with the T dimension scaled to last a duration.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
+	 */
+	scaleTime(duration: Ptr): TBox {
+		return new TBox(tbox_scale_time(this._inner, duration));
+	}
+
+	/**
+	 * Returns a new box with the T dimension shifted and then scaled.
+	 * @param shift Raw WASM pointer to a MEOS interval for the shift amount.
+	 * @param duration Raw WASM pointer to a MEOS interval for the new duration.
 	 */
 	shiftScaleTime(shift: Ptr, duration: Ptr): TBox {
 		return new TBox(tbox_shift_scale_time(this._inner, shift, duration));

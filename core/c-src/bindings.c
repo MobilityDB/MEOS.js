@@ -4409,8 +4409,18 @@ TBox * tintbox_shift_scale_w(const TBox * box, int shift, int width, int hasshif
 }
 
 EMSCRIPTEN_KEEPALIVE
+TBox * tbox_scale_time_w(const TBox * box, const Interval * duration) {
+  return tbox_scale_time(box, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TBox * tbox_shift_scale_time_w(const TBox * box, const Interval * shift, const Interval * duration) {
   return tbox_shift_scale_time(box, shift, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tbox_shift_time_w(const TBox * box, const Interval * shift) {
+  return tbox_shift_time(box, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8971,8 +8981,18 @@ STBox * stbox_round_w(const STBox * box, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+STBox * stbox_scale_time_w(const STBox * box, const Interval * duration) {
+  return stbox_scale_time(box, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
 STBox * stbox_shift_scale_time_w(const STBox * box, const Interval * shift, const Interval * duration) {
   return stbox_shift_scale_time(box, shift, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+STBox * stbox_shift_time_w(const STBox * box, const Interval * shift) {
+  return stbox_shift_time(box, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
