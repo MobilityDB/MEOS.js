@@ -296,9 +296,12 @@ interface BoolResultInfo {
 function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
 	if (!isBool(fn.returnType.c)) return null;
 
-	// A "result" param must be either a single or double pointer.
+	// A "result" param must be either a single or double pointer. A single
+	// pointer to const is an input MEOS reads, never an answer it writes,
+	// e.g. bool index_result_id(const MeosArray *result, int n, int64 *id).
 	const rp = fn.params.find(
-		p => p.name === 'result' && (isPtr(p.cType) || isDblPtr(p.cType))
+		p => p.name === 'result' &&
+			((isPtr(p.cType) && !/^\s*const\b/.test(p.cType)) || isDblPtr(p.cType))
 	);
 	if (!rp) return null;
 

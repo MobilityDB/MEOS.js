@@ -125,6 +125,13 @@ export function temporal_duration_us(temp: Ptr, ignoreGaps: boolean): number {
 	return _r;
 }
 
+/** An Interval* a MEOS function answers, as total microseconds (month ≈ 30 days); frees it. */
+export function interval_us_free(iv: Ptr): number {
+	const _r = call<number>('interval_us_free_w', 'number', [ptrArgType()], [ptrArgVal(iv)]);
+	checkMeosError();
+	return _r;
+}
+
 /** Serialise a Span to hex-encoded WKB; discards size_out. */
 export function span_as_hexwkb(s: Ptr, variant: number): string {
 	const _r = call<string>('span_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);
@@ -472,6 +479,18 @@ export function meos_array_destroy_free(array: Ptr): void {
 	checkMeosError();
 }
 
+export function index_result_create(): Ptr {
+	const _r = callPtr('index_result_create_w', [], []);
+	checkMeosError();
+	return _r;
+}
+
+export function index_result_id(result: Ptr, n: number, id: Ptr): boolean {
+	const _r = call<number>('index_result_id_w', 'number', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(result), n, ptrArgVal(id)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function rtree_create_intspan(): Ptr {
 	const _r = callPtr('rtree_create_intspan_w', [], []);
 	checkMeosError();
@@ -510,12 +529,6 @@ export function rtree_create_tbox(): Ptr {
 
 export function rtree_create_stbox(): Ptr {
 	const _r = callPtr('rtree_create_stbox_w', [], []);
-	checkMeosError();
-	return _r;
-}
-
-export function rtree_create_tpcbox(): Ptr {
-	const _r = callPtr('rtree_create_tpcbox_w', [], []);
 	checkMeosError();
 	return _r;
 }
@@ -585,6 +598,12 @@ export function rtree_search_temporal(rtree: Ptr, op: number, temp: Ptr, result:
 	return _r;
 }
 
+export function rtree_search_temporal_dedup(rtree: Ptr, op: number, temp: Ptr, maxboxes: number, result: Ptr): number {
+	const _r = call<number>('rtree_search_temporal_dedup_w', 'number', [ptrArgType(), 'number', ptrArgType(), 'number', ptrArgType()], [ptrArgVal(rtree), op, ptrArgVal(temp), maxboxes, ptrArgVal(result)]);
+	checkMeosError();
+	return _r;
+}
+
 export function rtree_nn_cursor_open(rtree: Ptr, query: Ptr): Ptr {
 	const _r = callPtr('rtree_nn_cursor_open_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rtree), ptrArgVal(query)]);
 	checkMeosError();
@@ -640,12 +659,6 @@ export function sptree_create_tbox(kind: number): Ptr {
 
 export function sptree_create_stbox(kind: number): Ptr {
 	const _r = callPtr('sptree_create_stbox_w', ['number'], [kind]);
-	checkMeosError();
-	return _r;
-}
-
-export function sptree_create_tpcbox(kind: number): Ptr {
-	const _r = callPtr('sptree_create_tpcbox_w', ['number'], [kind]);
 	checkMeosError();
 	return _r;
 }
@@ -715,6 +728,12 @@ export function sptree_search_temporal(sptree: Ptr, op: number, temp: Ptr, resul
 	return _r;
 }
 
+export function sptree_search_temporal_dedup(sptree: Ptr, op: number, temp: Ptr, maxboxes: number, result: Ptr): number {
+	const _r = call<number>('sptree_search_temporal_dedup_w', 'number', [ptrArgType(), 'number', ptrArgType(), 'number', ptrArgType()], [ptrArgVal(sptree), op, ptrArgVal(temp), maxboxes, ptrArgVal(result)]);
+	checkMeosError();
+	return _r;
+}
+
 export function sptree_nn_cursor_open(sptree: Ptr, query: Ptr): Ptr {
 	const _r = callPtr('sptree_nn_cursor_open_w', [ptrArgType(), ptrArgType()], [ptrArgVal(sptree), ptrArgVal(query)]);
 	checkMeosError();
@@ -729,6 +748,11 @@ export function sptree_nn_cursor_next(cursor: Ptr, id_out: Ptr, dist_out: Ptr): 
 
 export function sptree_nn_cursor_close(cursor: Ptr): void {
 	call<void>('sptree_nn_cursor_close_w', null, [ptrArgType()], [ptrArgVal(cursor)]);
+	checkMeosError();
+}
+
+export function meos_initialize_interrupt_handler(handler: number): void {
+	call<void>('meos_initialize_interrupt_handler_w', null, ['number'], [handler]);
 	checkMeosError();
 }
 
@@ -752,8 +776,8 @@ export function meos_finalize_collation(): void {
 	checkMeosError();
 }
 
-export function meos_initialize_pointcloud(): void {
-	call<void>('meos_initialize_pointcloud_w', null, [], []);
+export function meos_finalize_relate(): void {
+	call<void>('meos_finalize_relate_w', null, [], []);
 	checkMeosError();
 }
 
@@ -1176,13 +1200,13 @@ export function bigint_to_set(i: number): Ptr {
 }
 
 export function bigint_to_span(i: number): Ptr {
-	const _r = callPtr('bigint_to_span_w', ['number'], [i]);
+	const _r = callPtr('bigint_to_span_w', ['bigint'], [BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
 
 export function bigint_to_spanset(i: number): Ptr {
-	const _r = callPtr('bigint_to_spanset_w', ['number'], [i]);
+	const _r = callPtr('bigint_to_spanset_w', ['bigint'], [BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -1661,6 +1685,12 @@ export function set_hash_extended(s: Ptr, seed: number): number {
 	return _r;
 }
 
+export function set_mem_size(s: Ptr): number {
+	const _r = call<number>('set_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
 export function set_num_values(s: Ptr): number {
 	const _r = call<number>('set_num_values_w', 'number', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
@@ -1711,6 +1741,12 @@ export function spanset_hash_extended(ss: Ptr, seed: number): number {
 
 export function spanset_lower_inc(ss: Ptr): boolean {
 	const _r = call<number>('spanset_lower_inc_w', 'number', [ptrArgType()], [ptrArgVal(ss)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function spanset_mem_size(ss: Ptr): number {
+	const _r = call<number>('spanset_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -2075,6 +2111,12 @@ export function set_ne(s1: Ptr, s2: Ptr): boolean {
 	return _r;
 }
 
+export function set_sortkey(s: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('set_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(size)]);
+	checkMeosError();
+	return _r;
+}
+
 export function span_cmp(s1: Ptr, s2: Ptr): number {
 	const _r = call<number>('span_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
 	checkMeosError();
@@ -2101,6 +2143,12 @@ export function span_le(s1: Ptr, s2: Ptr): boolean {
 
 export function span_lt(s1: Ptr, s2: Ptr): boolean {
 	const _r = call<number>('span_lt_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function span_sortkey(s: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('span_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -2143,6 +2191,12 @@ export function spanset_lt(ss1: Ptr, ss2: Ptr): boolean {
 
 export function spanset_ne(ss1: Ptr, ss2: Ptr): boolean {
 	const _r = call<number>('spanset_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ss1), ptrArgVal(ss2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function spanset_sortkey(ss: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('spanset_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -2225,8 +2279,20 @@ export function adjacent_bigint_span(i: number, s: Ptr): boolean {
 	return _r;
 }
 
+export function adjacent_bigint_spanset(i: number, ss: Ptr): boolean {
+	const _r = call<number>('adjacent_bigint_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function adjacent_date_span(d: DateADT, s: Ptr): boolean {
 	const _r = call<number>('adjacent_date_span_w', 'number', ['number', ptrArgType()], [d, ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_date_spanset(d: DateADT, ss: Ptr): boolean {
+	const _r = call<number>('adjacent_date_spanset_w', 'number', ['number', ptrArgType()], [d, ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2237,14 +2303,32 @@ export function adjacent_float_span(d: number, s: Ptr): boolean {
 	return _r;
 }
 
+export function adjacent_float_spanset(d: number, ss: Ptr): boolean {
+	const _r = call<number>('adjacent_float_spanset_w', 'number', ['number', ptrArgType()], [d, ptrArgVal(ss)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function adjacent_int_span(i: number, s: Ptr): boolean {
 	const _r = call<number>('adjacent_int_span_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(s)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
+export function adjacent_int_spanset(i: number, ss: Ptr): boolean {
+	const _r = call<number>('adjacent_int_spanset_w', 'number', ['number', ptrArgType()], [i, ptrArgVal(ss)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function adjacent_timestamptz_span(t: TimestampTz, s: Ptr): boolean {
 	const _r = call<number>('adjacent_timestamptz_span_w', 'number', ['bigint', ptrArgType()], [BigInt(t), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_timestamptz_spanset(t: TimestampTz, ss: Ptr): boolean {
+	const _r = call<number>('adjacent_timestamptz_spanset_w', 'number', ['bigint', ptrArgType()], [BigInt(t), ptrArgVal(ss)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -3473,8 +3557,32 @@ export function intersection_bigint_set(i: number, s: Ptr): Ptr {
 	return _r;
 }
 
+export function intersection_bigint_span(i: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_bigint_span_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_bigint_spanset(i: number, ss: Ptr): Ptr {
+	const _r = callPtr('intersection_bigint_spanset_w', ['bigint', ptrArgType()], [BigInt(i), ptrArgVal(ss)]);
+	checkMeosError();
+	return _r;
+}
+
 export function intersection_date_set(d: DateADT, s: Ptr): Ptr {
 	const _r = callPtr('intersection_date_set_w', ['number', ptrArgType()], [d, ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_date_span(d: DateADT, s: Ptr): Ptr {
+	const _r = callPtr('intersection_date_span_w', ['number', ptrArgType()], [d, ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_date_spanset(d: DateADT, ss: Ptr): Ptr {
+	const _r = callPtr('intersection_date_spanset_w', ['number', ptrArgType()], [d, ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -3485,8 +3593,32 @@ export function intersection_float_set(d: number, s: Ptr): Ptr {
 	return _r;
 }
 
+export function intersection_float_span(d: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_float_span_w', ['number', ptrArgType()], [d, ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_float_spanset(d: number, ss: Ptr): Ptr {
+	const _r = callPtr('intersection_float_spanset_w', ['number', ptrArgType()], [d, ptrArgVal(ss)]);
+	checkMeosError();
+	return _r;
+}
+
 export function intersection_int_set(i: number, s: Ptr): Ptr {
 	const _r = callPtr('intersection_int_set_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_int_span(i: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_int_span_w', ['number', ptrArgType()], [i, ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_int_spanset(i: number, ss: Ptr): Ptr {
+	const _r = callPtr('intersection_int_spanset_w', ['number', ptrArgType()], [i, ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -3625,6 +3757,18 @@ export function intersection_text_set(txt: string, s: Ptr): Ptr {
 
 export function intersection_timestamptz_set(t: TimestampTz, s: Ptr): Ptr {
 	const _r = callPtr('intersection_timestamptz_set_w', ['bigint', ptrArgType()], [BigInt(t), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_timestamptz_span(t: TimestampTz, s: Ptr): Ptr {
+	const _r = callPtr('intersection_timestamptz_span_w', ['bigint', ptrArgType()], [BigInt(t), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_timestamptz_spanset(t: TimestampTz, ss: Ptr): Ptr {
+	const _r = callPtr('intersection_timestamptz_spanset_w', ['bigint', ptrArgType()], [BigInt(t), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -4193,8 +4337,8 @@ export function distance_set_int(s: Ptr, i: number): number {
 	return _r;
 }
 
-export function distance_set_timestamptz(s: Ptr, t: TimestampTz): number {
-	const _r = call<number>('distance_set_timestamptz_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(t)]);
+export function distance_set_timestamptz(s: Ptr, t: TimestampTz): Ptr {
+	const _r = callPtr('distance_set_timestamptz_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(t)]);
 	checkMeosError();
 	return _r;
 }
@@ -4223,8 +4367,8 @@ export function distance_span_int(s: Ptr, i: number): number {
 	return _r;
 }
 
-export function distance_span_timestamptz(s: Ptr, t: TimestampTz): number {
-	const _r = call<number>('distance_span_timestamptz_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(t)]);
+export function distance_span_timestamptz(s: Ptr, t: TimestampTz): Ptr {
+	const _r = callPtr('distance_span_timestamptz_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(t)]);
 	checkMeosError();
 	return _r;
 }
@@ -4253,32 +4397,32 @@ export function distance_spanset_int(ss: Ptr, i: number): number {
 	return _r;
 }
 
-export function distance_spanset_timestamptz(ss: Ptr, t: TimestampTz): number {
-	const _r = call<number>('distance_spanset_timestamptz_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(t)]);
+export function distance_spanset_timestamptz(ss: Ptr, t: TimestampTz): Ptr {
+	const _r = callPtr('distance_spanset_timestamptz_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), BigInt(t)]);
 	checkMeosError();
 	return _r;
 }
 
-export function distance_tstzset_tstzset(s1: Ptr, s2: Ptr): number {
-	const _r = call<number>('distance_tstzset_tstzset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+export function distance_tstzset_tstzset(s1: Ptr, s2: Ptr): Ptr {
+	const _r = callPtr('distance_tstzset_tstzset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function distance_tstzspan_tstzspan(s1: Ptr, s2: Ptr): number {
-	const _r = call<number>('distance_tstzspan_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+export function distance_tstzspan_tstzspan(s1: Ptr, s2: Ptr): Ptr {
+	const _r = callPtr('distance_tstzspan_tstzspan_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function distance_tstzspanset_tstzspan(ss: Ptr, s: Ptr): number {
-	const _r = call<number>('distance_tstzspanset_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(s)]);
+export function distance_tstzspanset_tstzspan(ss: Ptr, s: Ptr): Ptr {
+	const _r = callPtr('distance_tstzspanset_tstzspan_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
 
-export function distance_tstzspanset_tstzspanset(ss1: Ptr, ss2: Ptr): number {
-	const _r = call<number>('distance_tstzspanset_tstzspanset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ss1), ptrArgVal(ss2)]);
+export function distance_tstzspanset_tstzspanset(ss1: Ptr, ss2: Ptr): Ptr {
+	const _r = callPtr('distance_tstzspanset_tstzspanset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss1), ptrArgVal(ss2)]);
 	checkMeosError();
 	return _r;
 }
@@ -4337,6 +4481,12 @@ export function set_extent_transfn(state: Ptr, s: Ptr): Ptr {
 	return _r;
 }
 
+export function set_union_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('set_union_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function set_union_finalfn(state: Ptr): Ptr {
 	const _r = callPtr('set_union_finalfn_w', [ptrArgType()], [ptrArgVal(state)]);
 	checkMeosError();
@@ -4345,6 +4495,18 @@ export function set_union_finalfn(state: Ptr): Ptr {
 
 export function set_union_transfn(state: Ptr, s: Ptr): Ptr {
 	const _r = callPtr('set_union_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function setstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('setstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function setstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('setstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -4367,6 +4529,12 @@ export function spanset_extent_transfn(state: Ptr, ss: Ptr): Ptr {
 	return _r;
 }
 
+export function spanset_union_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('spanset_union_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function spanset_union_finalfn(state: Ptr): Ptr {
 	const _r = callPtr('spanset_union_finalfn_w', [ptrArgType()], [ptrArgVal(state)]);
 	checkMeosError();
@@ -4375,6 +4543,18 @@ export function spanset_union_finalfn(state: Ptr): Ptr {
 
 export function spanset_union_transfn(state: Ptr, ss: Ptr): Ptr {
 	const _r = callPtr('spanset_union_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(ss)]);
+	checkMeosError();
+	return _r;
+}
+
+export function spansetstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('spansetstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function spansetstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('spansetstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -4403,14 +4583,20 @@ export function bigint_get_bin(value: number, vsize: number, vorigin: number): n
 	return _r;
 }
 
-export function bigintspan_bins(s: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('bigintspan_bins_w', [ptrArgType(), 'bigint', 'bigint', ptrArgType()], [ptrArgVal(s), BigInt(vsize), BigInt(vorigin), ptrArgVal(count)]);
+export function bigintspan_bins(s: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('bigintspan_bins_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(s), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function bigintspanset_bins(ss: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('bigintspanset_bins_w', [ptrArgType(), 'bigint', 'bigint', ptrArgType()], [ptrArgVal(ss), BigInt(vsize), BigInt(vorigin), ptrArgVal(count)]);
+export function bigintspan_get_bin(value: number, vsize: number, vorigin: number): Ptr {
+	const _r = callPtr('bigintspan_get_bin_w', ['bigint', 'bigint', 'bigint'], [BigInt(value), BigInt(vsize), BigInt(vorigin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bigintspanset_bins(ss: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('bigintspanset_bins_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(ss), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4421,14 +4607,20 @@ export function date_get_bin(d: DateADT, duration: Ptr, torigin: DateADT): DateA
 	return _r;
 }
 
-export function datespan_bins(s: Ptr, duration: Ptr, torigin: DateADT, count: Ptr): Ptr {
-	const _r = callPtr('datespan_bins_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), ptrArgVal(duration), torigin, ptrArgVal(count)]);
+export function datespan_bins(s: Ptr, duration: Ptr, torigin: DateADT, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('datespan_bins_w', [ptrArgType(), ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(s), ptrArgVal(duration), torigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function datespanset_bins(ss: Ptr, duration: Ptr, torigin: DateADT, count: Ptr): Ptr {
-	const _r = callPtr('datespanset_bins_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ss), ptrArgVal(duration), torigin, ptrArgVal(count)]);
+export function datespan_get_bin(d: DateADT, duration: Ptr, torigin: DateADT): Ptr {
+	const _r = callPtr('datespan_get_bin_w', ['number', ptrArgType(), 'number'], [d, ptrArgVal(duration), torigin]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespanset_bins(ss: Ptr, duration: Ptr, torigin: DateADT, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('datespanset_bins_w', [ptrArgType(), ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(ss), ptrArgVal(duration), torigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4439,14 +4631,20 @@ export function float_get_bin(value: number, vsize: number, vorigin: number): nu
 	return _r;
 }
 
-export function floatspan_bins(s: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('floatspan_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(s), vsize, vorigin, ptrArgVal(count)]);
+export function floatspan_bins(s: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('floatspan_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(s), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function floatspanset_bins(ss: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('floatspanset_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(ss), vsize, vorigin, ptrArgVal(count)]);
+export function floatspan_get_bin(value: number, vsize: number, vorigin: number): Ptr {
+	const _r = callPtr('floatspan_get_bin_w', ['number', 'number', 'number'], [value, vsize, vorigin]);
+	checkMeosError();
+	return _r;
+}
+
+export function floatspanset_bins(ss: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('floatspanset_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(ss), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4457,14 +4655,20 @@ export function int_get_bin(value: number, vsize: number, vorigin: number): numb
 	return _r;
 }
 
-export function intspan_bins(s: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('intspan_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(s), vsize, vorigin, ptrArgVal(count)]);
+export function intspan_bins(s: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('intspan_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(s), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function intspanset_bins(ss: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('intspanset_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(ss), vsize, vorigin, ptrArgVal(count)]);
+export function intspan_get_bin(value: number, vsize: number, vorigin: number): Ptr {
+	const _r = callPtr('intspan_get_bin_w', ['number', 'number', 'number'], [value, vsize, vorigin]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspanset_bins(ss: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('intspanset_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(ss), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4475,14 +4679,20 @@ export function timestamptz_get_bin(t: TimestampTz, duration: Ptr, torigin: Time
 	return _r;
 }
 
-export function tstzspan_bins(s: Ptr, duration: Ptr, origin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tstzspan_bins_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(s), ptrArgVal(duration), BigInt(origin), ptrArgVal(count)]);
+export function tstzspan_bins(s: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tstzspan_bins_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(s), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tstzspanset_bins(ss: Ptr, duration: Ptr, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tstzspanset_bins_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(ss), ptrArgVal(duration), BigInt(torigin), ptrArgVal(count)]);
+export function tstzspan_get_bin(t: TimestampTz, duration: Ptr, torigin: TimestampTz): Ptr {
+	const _r = callPtr('tstzspan_get_bin_w', ['bigint', ptrArgType(), 'bigint'], [BigInt(t), ptrArgVal(duration), BigInt(torigin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_bins(ss: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tstzspanset_bins_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(ss), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -4901,6 +5111,222 @@ export function right_tbox_tbox(box1: Ptr, box2: Ptr): boolean {
 	return _r;
 }
 
+export function adjacent_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('adjacent_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('adjacent_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('adjacent_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('adjacent_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('contained_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contained_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contained_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('contained_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('contains_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contains_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contains_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('contains_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overlaps_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overlaps_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overlaps_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overlaps_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('same_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('same_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('same_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('same_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function after_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('after_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function after_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('after_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function before_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('before_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function before_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('before_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function left_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('left_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function left_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('left_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overafter_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overafter_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overafter_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overafter_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbefore_tbox_tstzspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overbefore_tbox_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbefore_tstzspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overbefore_tstzspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overleft_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overleft_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overleft_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overleft_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overright_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overright_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overright_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overright_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function right_numspan_tbox(s: Ptr, box: Ptr): boolean {
+	const _r = call<number>('right_numspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function right_tbox_numspan(box: Ptr, s: Ptr): boolean {
+	const _r = call<number>('right_tbox_numspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function tbox_cmp(box1: Ptr, box2: Ptr): number {
 	const _r = call<number>('tbox_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
 	checkMeosError();
@@ -4943,6 +5369,12 @@ export function tbox_ne(box1: Ptr, box2: Ptr): boolean {
 	return _r;
 }
 
+export function tbox_sortkey(box: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('tbox_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(size)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tbool_from_mfjson(str: string): Ptr {
 	const _r = callPtr('tbool_from_mfjson_w', ['string'], [str]);
 	checkMeosError();
@@ -4969,6 +5401,12 @@ export function temporal_as_wkb(temp: Ptr, variant: number, size_out: Ptr): Ptr 
 
 export function wkb_variant_from_endian(endian: string): number {
 	const _r = call<number>('wkb_variant_from_endian_w', 'number', ['string'], [endian]);
+	checkMeosError();
+	return _r;
+}
+
+export function interptype_from_string(str: string): number {
+	const _r = call<number>('interptype_from_string_w', 'number', ['string'], [str]);
 	checkMeosError();
 	return _r;
 }
@@ -5303,6 +5741,12 @@ export function tbool_start_value(temp: Ptr): boolean {
 	return _r;
 }
 
+export function tbool_value(temp: Ptr): boolean {
+	const _r = call<number>('tbool_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function tbool_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tbool_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -5317,6 +5761,12 @@ export function tbool_value_n(temp: Ptr, n: number): boolean {
 
 export function tbool_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tbool_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbool_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tbool_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -5371,6 +5821,12 @@ export function temporal_lower_inc(temp: Ptr): boolean {
 
 export function temporal_max_instant(temp: Ptr): Ptr {
 	const _r = callPtr('temporal_max_instant_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_mem_size(temp: Ptr): number {
+	const _r = call<number>('temporal_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -5483,6 +5939,12 @@ export function temporal_upper_inc(temp: Ptr): boolean {
 	return _r;
 }
 
+export function temporal_valueset(temp: Ptr): Ptr {
+	const _r = callPtr('temporal_valueset_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tfloat_end_value(temp: Ptr): number {
 	const _r = call<number>('tfloat_end_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -5507,6 +5969,12 @@ export function tfloat_start_value(temp: Ptr): number {
 	return _r;
 }
 
+export function tfloat_value(temp: Ptr): number {
+	const _r = call<number>('tfloat_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tfloat_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tfloat_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -5521,6 +5989,18 @@ export function tfloat_value_n(temp: Ptr, n: number): number {
 
 export function tfloat_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tfloat_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloat_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tinstant_timestamptz(inst: Ptr): TimestampTz {
+	const _r = call<TimestampTz>('tinstant_timestamptz_w', 'number', [ptrArgType()], [ptrArgVal(inst)]);
 	checkMeosError();
 	return _r;
 }
@@ -5573,6 +6053,18 @@ export function tbigint_start_value(temp: Ptr): number {
 	return _r;
 }
 
+export function tint_value(temp: Ptr): number {
+	const _r = call<number>('tint_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigint_value(temp: Ptr): number {
+	const _r = Number(call<bigint>('tbigint_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
+	checkMeosError();
+	return _r;
+}
+
 export function tbigint_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tbigint_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -5603,8 +6095,26 @@ export function tint_values(temp: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
+export function tint_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tint_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tbigint_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tbigint_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigint_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tnumber_avg_value(temp: Ptr): number {
+	const _r = call<number>('tnumber_avg_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -5651,6 +6161,12 @@ export function ttext_start_value(temp: Ptr): string {
 	return _r;
 }
 
+export function ttext_value(temp: Ptr): string {
+	const _r = call<string>('ttext_value_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ttext_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('ttext_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -5663,14 +6179,26 @@ export function ttext_values(temp: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
+export function ttext_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('ttext_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function float_degrees(value: number, normalize: boolean): number {
 	const _r = call<number>('float_degrees_w', 'number', ['number', 'number'], [value, normalize ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function temparr_round(temp: Ptr, count: number, maxdd: number): Ptr {
-	const _r = callPtr('temparr_round_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), count, maxdd]);
+export function float_round(d: number, maxdd: number): number {
+	const _r = call<number>('float_round_w', 'number', ['number', 'number'], [d, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function temparr_round(temparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('temparr_round_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temparr), count, maxdd]);
 	checkMeosError();
 	return _r;
 }
@@ -5857,6 +6385,18 @@ export function temporal_merge_array(temparr: Ptr, count: number): Ptr {
 
 export function temporal_update(temp1: Ptr, temp2: Ptr, connect: boolean): Ptr {
 	const _r = callPtr('temporal_update_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), connect ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigint_at_value(temp: Ptr, i: number): Ptr {
+	const _r = callPtr('tbigint_at_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(i)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigint_minus_value(temp: Ptr, i: number): Ptr {
+	const _r = callPtr('tbigint_minus_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(i)]);
 	checkMeosError();
 	return _r;
 }
@@ -6079,6 +6619,12 @@ export function temporal_lt(temp1: Ptr, temp2: Ptr): boolean {
 
 export function temporal_ne(temp1: Ptr, temp2: Ptr): boolean {
 	const _r = call<number>('temporal_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_sortkey(temp: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('temporal_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -8015,8 +8561,20 @@ export function tdistance_tnumber_tnumber(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
+export function nad_bigintspan_tbox(s: Ptr, box: Ptr): number {
+	const _r = Number(call<bigint>('nad_bigintspan_tbox_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]));
+	checkMeosError();
+	return _r;
+}
+
 export function nad_tboxfloat_tboxfloat(box1: Ptr, box2: Ptr): number {
 	const _r = call<number>('nad_tboxfloat_tboxfloat_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_floatspan_tbox(s: Ptr, box: Ptr): number {
+	const _r = call<number>('nad_floatspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }
@@ -8027,8 +8585,20 @@ export function nad_tboxint_tboxint(box1: Ptr, box2: Ptr): number {
 	return _r;
 }
 
+export function nad_intspan_tbox(s: Ptr, box: Ptr): number {
+	const _r = call<number>('nad_intspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
 export function nad_tfloat_float(temp: Ptr, d: number): number {
 	const _r = call<number>('nad_tfloat_float_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), d]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tfloat_floatspan(temp: Ptr, s: Ptr): number {
+	const _r = call<number>('nad_tfloat_floatspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
@@ -8047,6 +8617,12 @@ export function nad_tfloat_tbox(temp: Ptr, box: Ptr): number {
 
 export function nad_tbigint_bigint(temp: Ptr, i: number): number {
 	const _r = Number(call<bigint>('nad_tbigint_bigint_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(i)]));
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tbigint_bigintspan(temp: Ptr, s: Ptr): number {
+	const _r = Number(call<bigint>('nad_tbigint_bigintspan_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]));
 	checkMeosError();
 	return _r;
 }
@@ -8075,6 +8651,12 @@ export function nad_tint_int(temp: Ptr, i: number): number {
 	return _r;
 }
 
+export function nad_tint_intspan(temp: Ptr, s: Ptr): number {
+	const _r = call<number>('nad_tint_intspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
 export function nad_tint_tbox(temp: Ptr, box: Ptr): number {
 	const _r = call<number>('nad_tint_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
 	checkMeosError();
@@ -8087,14 +8669,20 @@ export function nad_tint_tint(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
-export function tbigint_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
-	const _r = callPtr('tbigint_tmax_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
+export function taggstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('taggstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
 	checkMeosError();
 	return _r;
 }
 
-export function tbigint_tmax_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tbigint_tmax_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+export function taggstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('taggstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigint_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tbigint_tmax_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -8105,20 +8693,8 @@ export function tbigint_tmin_transfn(state: Ptr, temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tbigint_tmin_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tbigint_tmin_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
-	checkMeosError();
-	return _r;
-}
-
 export function tbigint_tsum_transfn(state: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tbigint_tsum_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function tbigint_tsum_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tbigint_tsum_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8165,8 +8741,26 @@ export function tbool_tor_combinefn(state1: Ptr, state2: Ptr): Ptr {
 	return _r;
 }
 
-export function temporal_extent_transfn(s: Ptr, temp: Ptr): Ptr {
-	const _r = callPtr('temporal_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]);
+export function temporal_app_tinst_transfn(state: Ptr, inst: Ptr, interp: number, maxdist: number, maxt: Ptr): Ptr {
+	const _r = callPtr('temporal_app_tinst_transfn_w', [ptrArgType(), ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(state), ptrArgVal(inst), interp, maxdist, ptrArgVal(maxt)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_app_tseq_transfn(state: Ptr, seq: Ptr): Ptr {
+	const _r = callPtr('temporal_app_tseq_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(seq)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_append_finalfn(state: Ptr): Ptr {
+	const _r = callPtr('temporal_append_finalfn_w', [ptrArgType()], [ptrArgVal(state)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_extent_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('temporal_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -8189,14 +8783,32 @@ export function temporal_tcount_combinefn(state1: Ptr, state2: Ptr): Ptr {
 	return _r;
 }
 
-export function tfloat_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
-	const _r = callPtr('tfloat_tmax_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
+export function temporal_tmax_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('temporal_tmax_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_tmax_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tfloat_tmax_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+export function temporal_tmin_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('temporal_tmin_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_wcount_transfn(state: Ptr, temp: Ptr, interv: Ptr): Ptr {
+	const _r = callPtr('temporal_wcount_transfn_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp), ptrArgVal(interv)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_to_taggstate(temp: Ptr): Ptr {
+	const _r = callPtr('temporal_to_taggstate_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloat_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tfloat_tmax_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -8207,20 +8819,8 @@ export function tfloat_tmin_transfn(state: Ptr, temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tfloat_tmin_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tfloat_tmin_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
-	checkMeosError();
-	return _r;
-}
-
 export function tfloat_tsum_transfn(state: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tfloat_tsum_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function tfloat_tsum_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tfloat_tsum_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8255,32 +8855,14 @@ export function tint_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tint_tmax_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tint_tmax_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
-	checkMeosError();
-	return _r;
-}
-
 export function tint_tmin_transfn(state: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tint_tmin_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_tmin_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tint_tmin_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
-	checkMeosError();
-	return _r;
-}
-
 export function tint_tsum_transfn(state: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tint_tsum_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function tint_tsum_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('tint_tsum_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8303,8 +8885,14 @@ export function tint_wsum_transfn(state: Ptr, temp: Ptr, interv: Ptr): Ptr {
 	return _r;
 }
 
-export function tnumber_extent_transfn(box: Ptr, temp: Ptr): Ptr {
-	const _r = callPtr('tnumber_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+export function tbox_extent_transfn(state: Ptr, box: Ptr): Ptr {
+	const _r = callPtr('tbox_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tnumber_extent_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tnumber_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -8323,6 +8911,12 @@ export function tnumber_tavg_transfn(state: Ptr, temp: Ptr): Ptr {
 
 export function tnumber_tavg_combinefn(state1: Ptr, state2: Ptr): Ptr {
 	const _r = callPtr('tnumber_tavg_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tnumber_tsum_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('tnumber_tsum_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8369,20 +8963,8 @@ export function ttext_tmax_transfn(state: Ptr, temp: Ptr): Ptr {
 	return _r;
 }
 
-export function ttext_tmax_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('ttext_tmax_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
-	checkMeosError();
-	return _r;
-}
-
 export function ttext_tmin_transfn(state: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('ttext_tmin_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function ttext_tmin_combinefn(state1: Ptr, state2: Ptr): Ptr {
-	const _r = callPtr('ttext_tmin_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8411,56 +8993,56 @@ export function temporal_simplify_min_tdelta(temp: Ptr, mint: Ptr): Ptr {
 	return _r;
 }
 
-export function temporal_tprecision(temp: Ptr, duration: Ptr, origin: TimestampTz): Ptr {
-	const _r = callPtr('temporal_tprecision_w', [ptrArgType(), ptrArgType(), 'bigint'], [ptrArgVal(temp), ptrArgVal(duration), BigInt(origin)]);
+export function temporal_tprecision(temp: Ptr, duration: Ptr, torigin: TimestampTz): Ptr {
+	const _r = callPtr('temporal_tprecision_w', [ptrArgType(), ptrArgType(), 'bigint'], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin)]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_tsample(temp: Ptr, duration: Ptr, origin: TimestampTz, interp: number): Ptr {
-	const _r = callPtr('temporal_tsample_w', [ptrArgType(), ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), ptrArgVal(duration), BigInt(origin), interp]);
+export function temporal_tsample(temp: Ptr, duration: Ptr, torigin: TimestampTz, interp: number): Ptr {
+	const _r = callPtr('temporal_tsample_w', [ptrArgType(), ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), interp]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_dyntimewarp_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('temporal_dyntimewarp_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function temporal_dyntimewarp_distance(temp1: Ptr, temp2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('temporal_dyntimewarp_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_dyntimewarp_path(temp1: Ptr, temp2: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('temporal_dyntimewarp_path_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), ptrArgVal(count)]);
+export function temporal_dyntimewarp_path(temp1: Ptr, temp2: Ptr, spheroid: boolean, count: Ptr): Ptr {
+	const _r = callPtr('temporal_dyntimewarp_path_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_frechet_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('temporal_frechet_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function temporal_frechet_distance(temp1: Ptr, temp2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('temporal_frechet_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_frechet_path(temp1: Ptr, temp2: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('temporal_frechet_path_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), ptrArgVal(count)]);
+export function temporal_frechet_path(temp1: Ptr, temp2: Ptr, spheroid: boolean, count: Ptr): Ptr {
+	const _r = callPtr('temporal_frechet_path_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_hausdorff_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('temporal_hausdorff_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function temporal_hausdorff_distance(temp1: Ptr, temp2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('temporal_hausdorff_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_average_hausdorff_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('temporal_average_hausdorff_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function temporal_average_hausdorff_distance(temp1: Ptr, temp2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('temporal_average_hausdorff_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_lcss_distance(temp1: Ptr, temp2: Ptr, epsilon: number): number {
-	const _r = call<number>('temporal_lcss_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), epsilon]);
+export function temporal_lcss_distance(temp1: Ptr, temp2: Ptr, epsilon: number, spheroid: boolean): number {
+	const _r = call<number>('temporal_lcss_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), epsilon, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -8471,122 +9053,200 @@ export function temporal_ext_kalman_filter(temp: Ptr, gate: number, q: number, v
 	return _r;
 }
 
-export function temporal_time_bins(temp: Ptr, duration: Ptr, origin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('temporal_time_bins_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(origin), ptrArgVal(count)]);
+export function temporal_time_bins(temp: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('temporal_time_bins_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function temporal_time_split(temp: Ptr, duration: Ptr, torigin: TimestampTz, bins: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('temporal_time_split_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), ptrArgVal(bins), ptrArgVal(count)]);
+export function temporal_time_split(temp: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('temporal_time_split_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), ptrArgVal(count)]);
+export function tbigint_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_value_bins(temp: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_value_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, ptrArgVal(count)]);
+export function tbigint_value_bins(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_value_bins_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_value_boxes(temp: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_value_boxes_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, ptrArgVal(count)]);
+export function tbigint_value_boxes(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_value_boxes_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_value_split(temp: Ptr, size: number, origin: number, bins: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_value_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), size, origin, ptrArgVal(bins), ptrArgVal(count)]);
+export function tbigint_value_split(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_value_split_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_value_time_boxes(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_value_time_boxes_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), ptrArgVal(count)]);
+export function tbigint_value_time_boxes(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_value_time_boxes_w', [ptrArgType(), 'bigint', ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(vsize), ptrArgVal(duration), BigInt(vorigin), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloat_value_time_split(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, value_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('tfloat_value_time_split_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), ptrArgVal(value_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
+export function tbigint_value_time_split(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, value_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tbigint_value_time_split_w', [ptrArgType(), 'bigint', ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), BigInt(vsize), ptrArgVal(duration), BigInt(vorigin), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(value_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloatbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tfloatbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), ptrArgVal(count)]);
+export function tbigintbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigintbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloatbox_value_tiles(box: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tfloatbox_value_tiles_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(box), vsize, vorigin, ptrArgVal(count)]);
+export function tbigintbox_value_tiles(box: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigintbox_value_tiles_w', [ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(box), BigInt(vsize), BigInt(vorigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tfloatbox_value_time_tiles(box: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tfloatbox_value_time_tiles_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType()], [ptrArgVal(box), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), ptrArgVal(count)]);
+export function tbigintbox_value_time_tiles(box: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbigintbox_value_time_tiles_w', [ptrArgType(), 'bigint', ptrArgType(), 'bigint', 'bigint', 'number', ptrArgType()], [ptrArgVal(box), BigInt(vsize), ptrArgVal(duration), BigInt(vorigin), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tint_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), ptrArgVal(count)]);
+export function tbox_get_time_tile(t: TimestampTz, duration: Ptr, torigin: TimestampTz): Ptr {
+	const _r = callPtr('tbox_get_time_tile_w', ['bigint', ptrArgType(), 'bigint'], [BigInt(t), ptrArgVal(duration), BigInt(torigin)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_value_bins(temp: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tint_value_bins_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, ptrArgVal(count)]);
+export function tbox_get_value_tile(value: number, vsize: number, vorigin: number): Ptr {
+	const _r = callPtr('tbox_get_value_tile_w', ['number', 'number', 'number'], [value, vsize, vorigin]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_value_boxes(temp: Ptr, vsize: number, vorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tint_value_boxes_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, ptrArgVal(count)]);
+export function tbox_get_value_time_tile(value: number, t: TimestampTz, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz): Ptr {
+	const _r = callPtr('tbox_get_value_time_tile_w', ['number', 'bigint', 'number', ptrArgType(), 'number', 'bigint'], [value, BigInt(t), vsize, ptrArgVal(duration), vorigin, BigInt(torigin)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_value_split(temp: Ptr, vsize: number, vorigin: number, bins: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('tint_value_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, vorigin, ptrArgVal(bins), ptrArgVal(count)]);
+export function tbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_value_time_boxes(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tint_value_time_boxes_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), ptrArgVal(count)]);
+export function tfloat_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tint_value_time_split(temp: Ptr, size: number, duration: Ptr, vorigin: number, torigin: TimestampTz, value_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('tint_value_time_split_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), size, ptrArgVal(duration), vorigin, BigInt(torigin), ptrArgVal(value_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
+export function tfloat_value_bins(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_value_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tintbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), ptrArgVal(count)]);
+export function tfloat_value_boxes(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_value_boxes_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintbox_value_tiles(box: Ptr, xsize: number, xorigin: number, count: Ptr): Ptr {
-	const _r = callPtr('tintbox_value_tiles_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(box), xsize, xorigin, ptrArgVal(count)]);
+export function tfloat_value_split(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_value_split_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintbox_value_time_tiles(box: Ptr, xsize: number, duration: Ptr, xorigin: number, torigin: TimestampTz, count: Ptr): Ptr {
-	const _r = callPtr('tintbox_value_time_tiles_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', ptrArgType()], [ptrArgVal(box), xsize, ptrArgVal(duration), xorigin, BigInt(torigin), ptrArgVal(count)]);
+export function tfloat_value_time_boxes(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_value_time_boxes_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloat_value_time_split(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, value_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tfloat_value_time_split_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(value_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloatbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloatbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloatbox_value_tiles(box: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloatbox_value_tiles_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(box), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloatbox_value_time_tiles(box: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tfloatbox_value_time_tiles_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType()], [ptrArgVal(box), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tint_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_value_bins(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tint_value_bins_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_value_boxes(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tint_value_boxes_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_value_split(temp: Ptr, vsize: number, vorigin: number, border_inc: boolean, bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tint_value_split_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(bins), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_value_time_boxes(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tint_value_time_boxes_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tint_value_time_split(temp: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, value_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tint_value_time_split_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(value_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_time_tiles(box: Ptr, duration: Ptr, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tintbox_time_tiles_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(box), ptrArgVal(duration), BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_value_tiles(box: Ptr, vsize: number, vorigin: number, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tintbox_value_tiles_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(box), vsize, vorigin, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_value_time_tiles(box: Ptr, vsize: number, duration: Ptr, vorigin: number, torigin: TimestampTz, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tintbox_value_time_tiles_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'bigint', 'number', ptrArgType()], [ptrArgVal(box), vsize, ptrArgVal(duration), vorigin, BigInt(torigin), border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -8684,8 +9344,8 @@ export function geo_out(gs: Ptr): string {
 	return _r;
 }
 
-export function geog_from_hexewkb(wkt: string): Ptr {
-	const _r = callPtr('geog_from_hexewkb_w', ['string'], [wkt]);
+export function geog_from_hexewkb(hexwkb: string): Ptr {
+	const _r = callPtr('geog_from_hexewkb_w', ['string'], [hexwkb]);
 	checkMeosError();
 	return _r;
 }
@@ -8696,8 +9356,8 @@ export function geog_in(str: string, typmod: number): Ptr {
 	return _r;
 }
 
-export function geom_from_hexewkb(wkt: string): Ptr {
-	const _r = callPtr('geom_from_hexewkb_w', ['string'], [wkt]);
+export function geom_from_hexewkb(hexwkb: string): Ptr {
+	const _r = callPtr('geom_from_hexewkb_w', ['string'], [hexwkb]);
 	checkMeosError();
 	return _r;
 }
@@ -8758,6 +9418,36 @@ export function geo_is_empty(gs: Ptr): boolean {
 
 export function geo_is_unitary(gs: Ptr): boolean {
 	const _r = call<number>('geo_is_unitary_w', 'number', [ptrArgType()], [ptrArgVal(gs)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function geo_mem_size(gs: Ptr): number {
+	const _r = call<number>('geo_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_area(gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('geo_area_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(gs), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_centroid(gs: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('geo_centroid_w', [ptrArgType(), 'number'], [ptrArgVal(gs), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_length(gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('geo_length_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(gs), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_perimeter(gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('geo_perimeter_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -8828,14 +9518,80 @@ export function line_point_n(geom: Ptr, n: number): Ptr {
 	return _r;
 }
 
+export function geo_affine(gs: Ptr, a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Ptr {
+	const _r = callPtr('geo_affine_w', [ptrArgType(), 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number'], [ptrArgVal(gs), a, b, c, d, e, f, g, h, i, xoff, yoff, zoff]);
+	checkMeosError();
+	return _r;
+}
+
 export function geo_reverse(gs: Ptr): Ptr {
 	const _r = callPtr('geo_reverse_w', [ptrArgType()], [ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
 
+export function geo_rotate(gs: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('geo_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(gs), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_rotate_geo(gs: Ptr, angle: number, origin: Ptr): Ptr {
+	const _r = callPtr('geo_rotate_geo_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(gs), angle, ptrArgVal(origin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_rotate_x(gs: Ptr, angle: number): Ptr {
+	const _r = callPtr('geo_rotate_x_w', [ptrArgType(), 'number'], [ptrArgVal(gs), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_rotate_y(gs: Ptr, angle: number): Ptr {
+	const _r = callPtr('geo_rotate_y_w', [ptrArgType(), 'number'], [ptrArgVal(gs), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_rotate_z(gs: Ptr, angle: number): Ptr {
+	const _r = callPtr('geo_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(gs), angle]);
+	checkMeosError();
+	return _r;
+}
+
 export function geo_round(gs: Ptr, maxdd: number): Ptr {
 	const _r = callPtr('geo_round_w', [ptrArgType(), 'number'], [ptrArgVal(gs), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_scale(gs: Ptr, xfactor: number, yfactor: number, zfactor: number): Ptr {
+	const _r = callPtr('geo_scale_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(gs), xfactor, yfactor, zfactor]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_scale_geo(gs: Ptr, scale: Ptr, sorigin: Ptr): Ptr {
+	const _r = callPtr('geo_scale_geo_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(scale), ptrArgVal(sorigin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_segmentize(gs: Ptr, max_seg_length: number): Ptr {
+	const _r = callPtr('geo_segmentize_w', [ptrArgType(), 'number'], [ptrArgVal(gs), max_seg_length]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_translate(gs: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
+	const _r = callPtr('geo_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(gs), deltax, deltay, deltaz]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_transscale(gs: Ptr, deltax: number, deltay: number, xfactor: number, yfactor: number): Ptr {
+	const _r = callPtr('geo_transscale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(gs), deltax, deltay, xfactor, yfactor]);
 	checkMeosError();
 	return _r;
 }
@@ -8858,8 +9614,8 @@ export function geo_transform(geom: Ptr, srid_to: number): Ptr {
 	return _r;
 }
 
-export function geo_transform_pipeline(gs: Ptr, pipeline: string, srid_to: number, is_forward: boolean): Ptr {
-	const _r = callPtr('geo_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(gs), pipeline, srid_to, is_forward ? 1 : 0]);
+export function geo_transform_pipeline(gs: Ptr, pipelinestr: string, srid: number, is_forward: boolean): Ptr {
+	const _r = callPtr('geo_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(gs), pipelinestr, srid, is_forward ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -8966,14 +9722,20 @@ export function geom_intersection2d_coll(gs1: Ptr, gs2: Ptr): Ptr {
 	return _r;
 }
 
-export function geom_min_bounding_radius(geom: Ptr, radius: Ptr): Ptr {
-	const _r = callPtr('geom_min_bounding_radius_w', [ptrArgType(), ptrArgType()], [ptrArgVal(geom), ptrArgVal(radius)]);
+export function geom_minimum_bounding_radius(geom: Ptr, radius: Ptr): Ptr {
+	const _r = callPtr('geom_minimum_bounding_radius_w', [ptrArgType(), ptrArgType()], [ptrArgVal(geom), ptrArgVal(radius)]);
 	checkMeosError();
 	return _r;
 }
 
 export function geom_oriented_envelope(gs: Ptr): Ptr {
 	const _r = callPtr('geom_oriented_envelope_w', [ptrArgType()], [ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geom_shortestline(gs1: Ptr, gs2: Ptr): Ptr {
+	const _r = callPtr('geom_shortestline_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8990,8 +9752,20 @@ export function geom_shortestline3d(gs1: Ptr, gs2: Ptr): Ptr {
 	return _r;
 }
 
-export function geom_unary_union(gs: Ptr, prec: number): Ptr {
-	const _r = callPtr('geom_unary_union_w', [ptrArgType(), 'number'], [ptrArgVal(gs), prec]);
+export function geom_symdifference2d(gs1: Ptr, gs2: Ptr): Ptr {
+	const _r = callPtr('geom_symdifference2d_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geom_unary_union(gs: Ptr): Ptr {
+	const _r = callPtr('geom_unary_union_w', [ptrArgType()], [ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geom_union2d(gs1: Ptr, gs2: Ptr): Ptr {
+	const _r = callPtr('geom_union2d_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
 	checkMeosError();
 	return _r;
 }
@@ -9020,6 +9794,12 @@ export function geog_dwithin(g1: Ptr, g2: Ptr, tolerance: number, use_spheroid: 
 	return _r;
 }
 
+export function geog_disjoint(gs1: Ptr, gs2: Ptr, use_spheroid: boolean): boolean {
+	const _r = call<number>('geog_disjoint_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs1), ptrArgVal(gs2), use_spheroid ? 1 : 0]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function geog_intersects(gs1: Ptr, gs2: Ptr, use_spheroid: boolean): boolean {
 	const _r = call<number>('geog_intersects_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs1), ptrArgVal(gs2), use_spheroid ? 1 : 0]) !== 0;
 	checkMeosError();
@@ -9034,6 +9814,12 @@ export function geom_contains(gs1: Ptr, gs2: Ptr): boolean {
 
 export function geom_covers(gs1: Ptr, gs2: Ptr): boolean {
 	const _r = call<number>('geom_covers_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function geom_disjoint(gs1: Ptr, gs2: Ptr): boolean {
+	const _r = call<number>('geom_disjoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -9116,8 +9902,32 @@ export function geo_split_n_stboxes(gs: Ptr, box_count: number, count: Ptr): Ptr
 	return _r;
 }
 
-export function geog_distance(g1: Ptr, g2: Ptr): number {
-	const _r = call<number>('geog_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(g1), ptrArgVal(g2)]);
+export function geo_distance(gs1: Ptr, gs2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('geo_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs1), ptrArgVal(gs2), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geo_shortestline(gs1: Ptr, gs2: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('geo_shortestline_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs1), ptrArgVal(gs2), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geog_distance(g1: Ptr, g2: Ptr, use_spheroid: boolean): number {
+	const _r = call<number>('geog_distance_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(g1), ptrArgVal(g2), use_spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geog_shortestline(gs1: Ptr, gs2: Ptr, use_spheroid: boolean): Ptr {
+	const _r = callPtr('geog_shortestline_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs1), ptrArgVal(gs2), use_spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function geom_distance(gs1: Ptr, gs2: Ptr): number {
+	const _r = call<number>('geom_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
 	checkMeosError();
 	return _r;
 }
@@ -9128,8 +9938,20 @@ export function geom_distance2d(gs1: Ptr, gs2: Ptr): number {
 	return _r;
 }
 
+export function geom_max_distance(gs1: Ptr, gs2: Ptr): number {
+	const _r = call<number>('geom_max_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function geom_max_distance2d(gs1: Ptr, gs2: Ptr): number {
 	const _r = call<number>('geom_max_distance2d_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geom_max_distance3d(gs1: Ptr, gs2: Ptr): number {
+	const _r = call<number>('geom_max_distance3d_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs1), ptrArgVal(gs2)]);
 	checkMeosError();
 	return _r;
 }
@@ -9176,8 +9998,20 @@ export function spatialset_as_text(set: Ptr, maxdd: number): string {
 	return _r;
 }
 
+export function spatialset_as_ewkb(s: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('spatialset_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function spatialset_as_ewkt(set: Ptr, maxdd: number): string {
 	const _r = call<string>('spatialset_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(set), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function spatialset_as_hexewkb(s: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('spatialset_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -9190,6 +10024,12 @@ export function geoset_make(values: Ptr, count: number): Ptr {
 
 export function geo_to_set(gs: Ptr): Ptr {
 	const _r = callPtr('geo_to_set_w', [ptrArgType()], [ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geoset_to_geo(s: Ptr): Ptr {
+	const _r = callPtr('geoset_to_geo_w', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
@@ -9272,6 +10112,18 @@ export function union_set_geo(s: Ptr, gs: Ptr): Ptr {
 	return _r;
 }
 
+export function distance_geoset_geoset(s1: Ptr, s2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('distance_geoset_geoset_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(s1), ptrArgVal(s2), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function distance_set_geo(s: Ptr, gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('distance_set_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(s), ptrArgVal(gs), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
 export function spatialset_set_srid(s: Ptr, srid: number): Ptr {
 	const _r = callPtr('spatialset_set_srid_w', [ptrArgType(), 'number'], [ptrArgVal(s), srid]);
 	checkMeosError();
@@ -9292,6 +10144,18 @@ export function spatialset_transform(s: Ptr, srid: number): Ptr {
 
 export function spatialset_transform_pipeline(s: Ptr, pipelinestr: string, srid: number, is_forward: boolean): Ptr {
 	const _r = callPtr('spatialset_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(s), pipelinestr, srid, is_forward ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function stbox_as_ewkb(box: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('stbox_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function stbox_as_hexewkb(box: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('stbox_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -9776,6 +10640,12 @@ export function stbox_ne(box1: Ptr, box2: Ptr): boolean {
 	return _r;
 }
 
+export function stbox_sortkey(box: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('stbox_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(size)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tspatial_out(temp: Ptr, maxdd: number): string {
 	const _r = call<string>('tspatial_out_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), maxdd]);
 	checkMeosError();
@@ -9830,8 +10700,20 @@ export function tgeompoint_in(str: string): Ptr {
 	return _r;
 }
 
+export function tspatial_as_ewkb(temp: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('tspatial_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tspatial_as_ewkt(temp: Ptr, maxdd: number): string {
 	const _r = call<string>('tspatial_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function tspatial_as_hexewkb(temp: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('tspatial_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -9950,6 +10832,18 @@ export function tgeometry_to_tgeography(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tgeogpoint_to_tgeompoint(temp: Ptr): Ptr {
+	const _r = callPtr('tgeogpoint_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tgeompoint_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tgeometry_to_tgeompoint(temp: Ptr): Ptr {
 	const _r = callPtr('tgeometry_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -9962,8 +10856,8 @@ export function tgeompoint_to_tgeometry(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tpoint_as_mvtgeom(temp: Ptr, bounds: Ptr, extent: number, buffer: number, clip_geom: boolean): number {
-	const _r = call<number>('tpoint_as_mvtgeom_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), ptrArgVal(bounds), extent, buffer, clip_geom ? 1 : 0]);
+export function tpoint_as_mvtgeom(temp: Ptr, bounds: Ptr, extent: number, buffer: number, clip_geom: boolean, gsarr: Ptr, timesarr: Ptr, count: Ptr): boolean {
+	const _r = call<number>('tpoint_as_mvtgeom_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(bounds), extent, buffer, clip_geom ? 1 : 0, ptrArgVal(gsarr), ptrArgVal(timesarr), ptrArgVal(count)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -9998,8 +10892,8 @@ export function bearing_tpoint_tpoint(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
-export function tgeo_centroid(temp: Ptr): Ptr {
-	const _r = callPtr('tgeo_centroid_w', [ptrArgType()], [ptrArgVal(temp)]);
+export function tgeo_centroid(temp: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('tgeo_centroid_w', [ptrArgType(), 'number'], [ptrArgVal(temp), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -10028,6 +10922,12 @@ export function tgeo_traversed_area(temp: Ptr, unary_union: boolean): Ptr {
 	return _r;
 }
 
+export function tgeo_value(temp: Ptr): Ptr {
+	const _r = callPtr('tgeo_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tgeo_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): Ptr {
 	const _r = callPtr('tgeo_value_at_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
 	checkMeosError();
@@ -10046,6 +10946,12 @@ export function tgeo_values(temp: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
+export function tgeo_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeo_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpoint_angular_difference(temp: Ptr): Ptr {
 	const _r = callPtr('tpoint_angular_difference_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -10058,8 +10964,8 @@ export function tpoint_azimuth(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tpoint_cumulative_length(temp: Ptr): Ptr {
-	const _r = callPtr('tpoint_cumulative_length_w', [ptrArgType()], [ptrArgVal(temp)]);
+export function tpoint_cumulative_length(temp: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('tpoint_cumulative_length_w', [ptrArgType(), 'number'], [ptrArgVal(temp), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -10094,14 +11000,14 @@ export function tpoint_is_simple(temp: Ptr): boolean {
 	return _r;
 }
 
-export function tpoint_length(temp: Ptr): number {
-	const _r = call<number>('tpoint_length_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+export function tpoint_length(temp: Ptr, spheroid: boolean): number {
+	const _r = call<number>('tpoint_length_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function tpoint_speed(temp: Ptr): Ptr {
-	const _r = callPtr('tpoint_speed_w', [ptrArgType()], [ptrArgVal(temp)]);
+export function tpoint_speed(temp: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('tpoint_speed_w', [ptrArgType(), 'number'], [ptrArgVal(temp), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -10118,14 +11024,62 @@ export function tpoint_twcentroid(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tgeo_affine(temp: Ptr, a: Ptr): Ptr {
-	const _r = callPtr('tgeo_affine_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(a)]);
+export function tgeo_affine(temp: Ptr, a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Ptr {
+	const _r = callPtr('tgeo_affine_w', [ptrArgType(), 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number'], [ptrArgVal(temp), a, b, c, d, e, f, g, h, i, xoff, yoff, zoff]);
 	checkMeosError();
 	return _r;
 }
 
-export function tgeo_scale(temp: Ptr, scale: Ptr, sorigin: Ptr): Ptr {
-	const _r = callPtr('tgeo_scale_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(scale), ptrArgVal(sorigin)]);
+export function tgeo_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('tgeo_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_rotate_geo(temp: Ptr, angle: number, origin: Ptr): Ptr {
+	const _r = callPtr('tgeo_rotate_geo_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), angle, ptrArgVal(origin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_rotate_x(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tgeo_rotate_x_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_rotate_y(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tgeo_rotate_y_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_rotate_z(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tgeo_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_scale(temp: Ptr, xfactor: number, yfactor: number, zfactor: number): Ptr {
+	const _r = callPtr('tgeo_scale_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), xfactor, yfactor, zfactor]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_scale_geo(temp: Ptr, scale: Ptr, sorigin: Ptr): Ptr {
+	const _r = callPtr('tgeo_scale_geo_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(scale), ptrArgVal(sorigin)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_translate(temp: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
+	const _r = callPtr('tgeo_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, deltaz]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_transscale(temp: Ptr, deltax: number, deltay: number, xfactor: number, yfactor: number): Ptr {
+	const _r = callPtr('tgeo_transscale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, xfactor, yfactor]);
 	checkMeosError();
 	return _r;
 }
@@ -10336,6 +11290,12 @@ export function tgeo_stboxes(temp: Ptr, count: Ptr): Ptr {
 
 export function tgeo_space_boxes(temp: Ptr, xsize: number, ysize: number, zsize: number, sorigin: Ptr, bitmatrix: boolean, border_inc: boolean, count: Ptr): Ptr {
 	const _r = callPtr('tgeo_space_boxes_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(sorigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('tgeo_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -10748,6 +11708,12 @@ export function acontains_tgeo_geo(temp: Ptr, gs: Ptr): number {
 	return _r;
 }
 
+export function acontains_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('acontains_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function acovers_geo_tgeo(gs: Ptr, temp: Ptr): number {
 	const _r = call<number>('acovers_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
@@ -10784,20 +11750,20 @@ export function adisjoint_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
-export function adwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number): number {
-	const _r = call<number>('adwithin_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
+export function adwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('adwithin_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function adwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number): number {
-	const _r = call<number>('adwithin_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist]);
+export function adwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('adwithin_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function adwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number): number {
-	const _r = call<number>('adwithin_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
+export function adwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('adwithin_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -10904,20 +11870,20 @@ export function edisjoint_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
-export function edwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number): number {
-	const _r = call<number>('edwithin_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
+export function edwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('edwithin_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function edwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number): number {
-	const _r = call<number>('edwithin_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist]);
+export function edwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('edwithin_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function edwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number): number {
-	const _r = call<number>('edwithin_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
+export function edwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number, spheroid: boolean): number {
+	const _r = call<number>('edwithin_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -11024,20 +11990,20 @@ export function tdisjoint_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
-export function tdwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number): Ptr {
-	const _r = callPtr('tdwithin_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
+export function tdwithin_geo_tgeo(gs: Ptr, temp: Ptr, dist: number, spheroid: boolean): Ptr {
+	const _r = callPtr('tdwithin_geo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number): Ptr {
-	const _r = callPtr('tdwithin_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist]);
+export function tdwithin_tgeo_geo(temp: Ptr, gs: Ptr, dist: number, spheroid: boolean): Ptr {
+	const _r = callPtr('tdwithin_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number): Ptr {
-	const _r = callPtr('tdwithin_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
+export function tdwithin_tgeo_tgeo(temp1: Ptr, temp2: Ptr, dist: number, spheroid: boolean): Ptr {
+	const _r = callPtr('tdwithin_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist, spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -11078,14 +12044,14 @@ export function ttouches_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
-export function edwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, count: Ptr): Ptr {
-	const _r = callPtr('edwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, ptrArgVal(count)]);
+export function edwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, spheroid: boolean, count: Ptr): Ptr {
+	const _r = callPtr('edwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, spheroid ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function adwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, count: Ptr): Ptr {
-	const _r = callPtr('adwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, ptrArgVal(count)]);
+export function adwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, spheroid: boolean, count: Ptr): Ptr {
+	const _r = callPtr('adwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', 'number', ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, spheroid ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -11126,8 +12092,8 @@ export function adisjoint_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, 
 	return _r;
 }
 
-export function tdwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, count: Ptr, periods: Ptr): Ptr {
-	const _r = callPtr('tdwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, ptrArgVal(count), ptrArgVal(periods)]);
+export function tdwithin_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, dist: number, spheroid: boolean, count: Ptr, periods: Ptr): Ptr {
+	const _r = callPtr('tdwithin_tgeoarr_tgeoarr_w', [ptrArgType(), 'number', ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, dist, spheroid ? 1 : 0, ptrArgVal(count), ptrArgVal(periods)]);
 	checkMeosError();
 	return _r;
 }
@@ -11150,26 +12116,26 @@ export function tdisjoint_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, 
 	return _r;
 }
 
-export function tdistance_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
-	const _r = callPtr('tdistance_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+export function tdistance_tgeo_geo(temp: Ptr, gs: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('tdistance_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function tdistance_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
-	const _r = callPtr('tdistance_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function tdistance_tgeo_tgeo(temp1: Ptr, temp2: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('tdistance_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nad_stbox_geo(box: Ptr, gs: Ptr): number {
-	const _r = call<number>('nad_stbox_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(gs)]);
+export function nad_stbox_geo(box: Ptr, gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('nad_stbox_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(box), ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nad_stbox_stbox(box1: Ptr, box2: Ptr): number {
-	const _r = call<number>('nad_stbox_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
+export function nad_stbox_stbox(box1: Ptr, box2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('nad_stbox_stbox_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(box1), ptrArgVal(box2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -11180,50 +12146,56 @@ export function stbox_spatial_distance(box1: Ptr, box2: Ptr): number {
 	return _r;
 }
 
-export function nad_tgeo_geo(temp: Ptr, gs: Ptr): number {
-	const _r = call<number>('nad_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+export function nad_tgeo_geo(temp: Ptr, gs: Ptr, spheroid: boolean): number {
+	const _r = call<number>('nad_tgeo_geo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nad_tgeo_stbox(temp: Ptr, box: Ptr): number {
-	const _r = call<number>('nad_tgeo_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+export function nad_tgeo_stbox(temp: Ptr, box: Ptr, spheroid: boolean): number {
+	const _r = call<number>('nad_tgeo_stbox_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(box), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nad_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('nad_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function nad_tgeo_tgeo(temp1: Ptr, temp2: Ptr, spheroid: boolean): number {
+	const _r = call<number>('nad_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nai_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
-	const _r = callPtr('nai_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+export function nai_tgeo_geo(temp: Ptr, gs: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('nai_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function nai_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
-	const _r = callPtr('nai_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function nai_tgeo_tgeo(temp1: Ptr, temp2: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('nai_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function shortestline_tgeo_geo(temp: Ptr, gs: Ptr): Ptr {
-	const _r = callPtr('shortestline_tgeo_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+export function shortestline_tgeo_geo(temp: Ptr, gs: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('shortestline_tgeo_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function shortestline_tgeo_tgeo(temp1: Ptr, temp2: Ptr): Ptr {
-	const _r = callPtr('shortestline_tgeo_tgeo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+export function shortestline_tgeo_tgeo(temp1: Ptr, temp2: Ptr, spheroid: boolean): Ptr {
+	const _r = callPtr('shortestline_tgeo_tgeo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), spheroid ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function mindistance_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number): number {
-	const _r = call<number>('mindistance_tgeoarr_tgeoarr_w', 'number', [ptrArgType(), 'number', ptrArgType(), 'number'], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2]);
+export function mindistance_tgeoarr_tgeoarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number, spheroid: boolean): number {
+	const _r = call<number>('mindistance_tgeoarr_tgeoarr_w', 'number', [ptrArgType(), 'number', ptrArgType(), 'number', 'number'], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2, spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpoint_tcentroid_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('tpoint_tcentroid_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
 	checkMeosError();
 	return _r;
 }
@@ -11240,8 +12212,14 @@ export function tpoint_tcentroid_transfn(state: Ptr, temp: Ptr): Ptr {
 	return _r;
 }
 
-export function tspatial_extent_transfn(box: Ptr, temp: Ptr): Ptr {
-	const _r = callPtr('tspatial_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+export function stbox_extent_transfn(state: Ptr, box: Ptr): Ptr {
+	const _r = callPtr('stbox_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tspatial_extent_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tspatial_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -11282,14 +12260,14 @@ export function stbox_time_tiles(bounds: Ptr, duration: Ptr, torigin: TimestampT
 	return _r;
 }
 
-export function tgeo_space_split(temp: Ptr, xsize: number, ysize: number, zsize: number, sorigin: Ptr, bitmatrix: boolean, border_inc: boolean): number {
-	const _r = call<number>('tgeo_space_split_w', 'number', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), 'number', 'number'], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(sorigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0]);
+export function tgeo_space_split(temp: Ptr, xsize: number, ysize: number, zsize: number, sorigin: Ptr, bitmatrix: boolean, border_inc: boolean, space_bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeo_space_split_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(sorigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(space_bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
-export function tgeo_space_time_split(temp: Ptr, xsize: number, ysize: number, zsize: number, duration: Ptr, sorigin: Ptr, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): number {
-	const _r = call<number>('tgeo_space_time_split_w', 'number', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType(), 'bigint', 'number', 'number'], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(duration), ptrArgVal(sorigin), BigInt(torigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0]);
+export function tgeo_space_time_split(temp: Ptr, xsize: number, ysize: number, zsize: number, duration: Ptr, sorigin: Ptr, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean, space_bins: Ptr, time_bins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeo_space_time_split_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType(), 'bigint', 'number', 'number', ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(duration), ptrArgVal(sorigin), BigInt(torigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(space_bins), ptrArgVal(time_bins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -11321,8 +12299,20 @@ export function geo_cluster_within(geoms: Ptr, ngeoms: number, tolerance: number
 
 // === meos_cbuffer.h ===
 
+export function cbuffer_as_ewkb(cb: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('cbuffer_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(cb), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function cbuffer_as_ewkt(cb: Ptr, maxdd: number): string {
 	const _r = call<string>('cbuffer_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(cb), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function cbuffer_as_hexewkb(cb: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('cbuffer_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(cb), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -11413,6 +12403,12 @@ export function cbuffer_hash(cb: Ptr): number {
 
 export function cbuffer_hash_extended(cb: Ptr, seed: number): number {
 	const _r = Number(call<bigint>('cbuffer_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(cb), BigInt(seed)]));
+	checkMeosError();
+	return _r;
+}
+
+export function cbuffer_mem_size(cb: Ptr): number {
+	const _r = call<number>('cbuffer_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(cb)]);
 	checkMeosError();
 	return _r;
 }
@@ -11579,18 +12575,6 @@ export function cbuffer_ne(cb1: Ptr, cb2: Ptr): boolean {
 	return _r;
 }
 
-export function cbuffer_nsame(cb1: Ptr, cb2: Ptr): boolean {
-	const _r = call<number>('cbuffer_nsame_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb1), ptrArgVal(cb2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
-export function cbuffer_same(cb1: Ptr, cb2: Ptr): boolean {
-	const _r = call<number>('cbuffer_same_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb1), ptrArgVal(cb2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
 export function cbufferset_in(str: string): Ptr {
 	const _r = callPtr('cbufferset_in_w', ['string'], [str]);
 	checkMeosError();
@@ -11693,6 +12677,12 @@ export function union_set_cbuffer(s: Ptr, cb: Ptr): Ptr {
 	return _r;
 }
 
+export function distance_cbufferset_cbufferset(s1: Ptr, s2: Ptr): number {
+	const _r = call<number>('distance_cbufferset_cbufferset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tcbuffer_in(str: string): Ptr {
 	const _r = callPtr('tcbuffer_in_w', ['string'], [str]);
 	checkMeosError();
@@ -11777,6 +12767,12 @@ export function tcbuffer_start_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tcbuffer_value(temp: Ptr): Ptr {
+	const _r = callPtr('tcbuffer_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tcbuffer_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tcbuffer_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -11791,6 +12787,12 @@ export function tcbuffer_value_n(temp: Ptr, n: number): Ptr {
 
 export function tcbuffer_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tcbuffer_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tcbuffer_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -11815,6 +12817,24 @@ export function tgeometry_to_tcbuffer(temp: Ptr): Ptr {
 
 export function tcbuffer_expand(temp: Ptr, dist: number): Ptr {
 	const _r = callPtr('tcbuffer_expand_w', [ptrArgType(), 'number'], [ptrArgVal(temp), dist]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('tcbuffer_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_rotate_z(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tcbuffer_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_translate(temp: Ptr, deltax: number, deltay: number): Ptr {
+	const _r = callPtr('tcbuffer_translate_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), deltax, deltay]);
 	checkMeosError();
 	return _r;
 }
@@ -11899,6 +12919,12 @@ export function nad_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 
 export function mindistance_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr, threshold: number): number {
 	const _r = call<number>('mindistance_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), threshold]);
+	checkMeosError();
+	return _r;
+}
+
+export function mindistance_tcbufferarr_tcbufferarr(arr1: Ptr, count1: number, arr2: Ptr, count2: number): number {
+	const _r = call<number>('mindistance_tcbufferarr_tcbufferarr_w', 'number', [ptrArgType(), 'number', ptrArgType(), 'number'], [ptrArgVal(arr1), count1, ptrArgVal(arr2), count2]);
 	checkMeosError();
 	return _r;
 }
@@ -12095,6 +13121,18 @@ export function acovers_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function adisjoint_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('adisjoint_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function adisjoint_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('adisjoint_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function adisjoint_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 	const _r = call<number>('adisjoint_tcbuffer_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -12109,6 +13147,18 @@ export function adisjoint_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): number {
 
 export function adisjoint_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('adisjoint_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function adwithin_cbuffer_tcbuffer(cb: Ptr, temp: Ptr, dist: number): number {
+	const _r = call<number>('adwithin_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(cb), ptrArgVal(temp), dist]);
+	checkMeosError();
+	return _r;
+}
+
+export function adwithin_geo_tcbuffer(gs: Ptr, temp: Ptr, dist: number): number {
+	const _r = call<number>('adwithin_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
 	checkMeosError();
 	return _r;
 }
@@ -12131,6 +13181,18 @@ export function adwithin_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr, dist: number)
 	return _r;
 }
 
+export function aintersects_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('aintersects_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function aintersects_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('aintersects_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function aintersects_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 	const _r = call<number>('aintersects_tcbuffer_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -12149,6 +13211,18 @@ export function aintersects_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function atouches_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('atouches_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function atouches_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('atouches_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function atouches_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 	const _r = call<number>('atouches_tcbuffer_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -12161,8 +13235,20 @@ export function atouches_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): number {
 	return _r;
 }
 
+export function atouches_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('atouches_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function econtains_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
 	const _r = call<number>('econtains_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function econtains_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('econtains_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -12215,6 +13301,18 @@ export function ecovers_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function edisjoint_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('edisjoint_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function edisjoint_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('edisjoint_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function edisjoint_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 	const _r = call<number>('edisjoint_tcbuffer_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -12223,6 +13321,24 @@ export function edisjoint_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 
 export function edisjoint_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): number {
 	const _r = call<number>('edisjoint_tcbuffer_cbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(cb)]);
+	checkMeosError();
+	return _r;
+}
+
+export function edisjoint_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('edisjoint_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function edwithin_cbuffer_tcbuffer(cb: Ptr, temp: Ptr, dist: number): number {
+	const _r = call<number>('edwithin_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(cb), ptrArgVal(temp), dist]);
+	checkMeosError();
+	return _r;
+}
+
+export function edwithin_geo_tcbuffer(gs: Ptr, temp: Ptr, dist: number): number {
+	const _r = call<number>('edwithin_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
 	checkMeosError();
 	return _r;
 }
@@ -12245,6 +13361,18 @@ export function edwithin_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr, dist: number)
 	return _r;
 }
 
+export function eintersects_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('eintersects_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function eintersects_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('eintersects_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function eintersects_tcbuffer_geo(temp: Ptr, gs: Ptr): number {
 	const _r = call<number>('eintersects_tcbuffer_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -12259,6 +13387,18 @@ export function eintersects_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): number {
 
 export function eintersects_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('eintersects_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function etouches_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
+	const _r = call<number>('etouches_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function etouches_geo_tcbuffer(gs: Ptr, temp: Ptr): number {
+	const _r = call<number>('etouches_geo_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -12337,6 +13477,12 @@ export function tcovers_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): Ptr {
 
 export function tcovers_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): Ptr {
 	const _r = callPtr('tcovers_tcbuffer_tcbuffer_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdwithin_cbuffer_tcbuffer(cb: Ptr, temp: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_cbuffer_tcbuffer_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(cb), ptrArgVal(temp), dist]);
 	checkMeosError();
 	return _r;
 }
@@ -12503,6 +13649,12 @@ export function h3index_in(str: string): number {
 	return _r;
 }
 
+export function bigint_to_h3index(i: number): number {
+	const _r = Number(call<bigint>('bigint_to_h3index_w', 'bigint', ['bigint'], [BigInt(i)]));
+	checkMeosError();
+	return _r;
+}
+
 export function h3index_out(cell: number): string {
 	const _r = call<string>('h3index_out_w', 'string', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
@@ -12571,6 +13723,12 @@ export function h3index_cmp(a: number, b: number): number {
 
 export function h3index_hash(cell: number): number {
 	const _r = call<number>('h3index_hash_w', 'number', ['bigint'], [BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3index_hash_extended(cell: number, seed: number): number {
+	const _r = Number(call<bigint>('h3index_hash_extended_w', 'bigint', ['bigint', 'bigint'], [BigInt(cell), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
@@ -12689,20 +13847,14 @@ export function th3index_in(str: string): Ptr {
 	return _r;
 }
 
-export function th3indexinst_in(str: string): Ptr {
-	const _r = callPtr('th3indexinst_in_w', ['string'], [str]);
+export function th3index_out(temp: Ptr): string {
+	const _r = call<string>('th3index_out_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
-export function th3indexseq_in(str: string, interp: number): Ptr {
-	const _r = callPtr('th3indexseq_in_w', ['string', 'number'], [str, interp]);
-	checkMeosError();
-	return _r;
-}
-
-export function th3indexseqset_in(str: string): Ptr {
-	const _r = callPtr('th3indexseqset_in_w', ['string'], [str]);
+export function th3index_from_mfjson(mfjson: string): Ptr {
+	const _r = callPtr('th3index_from_mfjson_w', ['string'], [mfjson]);
 	checkMeosError();
 	return _r;
 }
@@ -12715,6 +13867,30 @@ export function th3index_make(value: number, t: TimestampTz): Ptr {
 
 export function th3indexinst_make(value: number, t: TimestampTz): Ptr {
 	const _r = callPtr('th3indexinst_make_w', ['bigint', 'bigint'], [BigInt(value), BigInt(t)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3index_from_base_temp(value: number, temp: Ptr): Ptr {
+	const _r = callPtr('th3index_from_base_temp_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3indexseq_from_base_tstzset(value: number, s: Ptr): Ptr {
+	const _r = callPtr('th3indexseq_from_base_tstzset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3indexseq_from_base_tstzspan(value: number, s: Ptr): Ptr {
+	const _r = callPtr('th3indexseq_from_base_tstzspan_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3indexseqset_from_base_tstzspanset(value: number, ss: Ptr): Ptr {
+	const _r = callPtr('th3indexseqset_from_base_tstzspanset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -12743,6 +13919,12 @@ export function th3index_end_value(temp: Ptr): number {
 	return _r;
 }
 
+export function th3index_value(temp: Ptr): number {
+	const _r = Number(call<bigint>('th3index_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
+	checkMeosError();
+	return _r;
+}
+
 export function th3index_value_n(temp: Ptr, n: number): number {
 	const _r = Number(call<bigint>('th3index_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(temp), n]));
 	checkMeosError();
@@ -12751,6 +13933,12 @@ export function th3index_value_n(temp: Ptr, n: number): number {
 
 export function th3index_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('th3index_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3index_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('th3index_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -12769,6 +13957,18 @@ export function tbigint_to_th3index(temp: Ptr): Ptr {
 
 export function th3index_to_tbigint(temp: Ptr): Ptr {
 	const _r = callPtr('th3index_to_tbigint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3index_at_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('th3index_at_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function th3index_minus_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('th3index_minus_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -12929,14 +14129,26 @@ export function th3index_child_pos_to_cell(child_pos: Ptr, parent: Ptr, child_re
 	return _r;
 }
 
-export function tgeogpoint_to_th3index(temp: Ptr, resolution: number): Ptr {
-	const _r = callPtr('tgeogpoint_to_th3index_w', [ptrArgType(), 'number'], [ptrArgVal(temp), resolution]);
+export function tgeogpoint_to_th3index(temp: Ptr, resolution: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeogpoint_to_th3index_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), resolution, border_inc ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
 
-export function tgeompoint_to_th3index(temp: Ptr, resolution: number): Ptr {
-	const _r = callPtr('tgeompoint_to_th3index_w', [ptrArgType(), 'number'], [ptrArgVal(temp), resolution]);
+export function tgeompoint_to_th3index(temp: Ptr, resolution: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeompoint_to_th3index_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), resolution, border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeogpoint_h3index_split(temp: Ptr, resolution: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeogpoint_h3index_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), resolution, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_h3index_split(temp: Ptr, resolution: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeompoint_h3index_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), resolution, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -12959,6 +14171,114 @@ export function h3index_to_set(cell: number): Ptr {
 	return _r;
 }
 
+export function h3indexset_in(str: string): Ptr {
+	const _r = callPtr('h3indexset_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_out(s: Ptr): string {
+	const _r = call<string>('h3indexset_out_w', 'string', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_make(values: Ptr, count: number): Ptr {
+	const _r = callPtr('h3indexset_make_w', [ptrArgType(), 'number'], [ptrArgVal(values), count]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_end_value(s: Ptr): number {
+	const _r = Number(call<bigint>('h3indexset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_start_value(s: Ptr): number {
+	const _r = Number(call<bigint>('h3indexset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_value_n(s: Ptr, n: number): number {
+	const _r = Number(call<bigint>('h3indexset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_values(s: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('h3indexset_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contained_h3index_set(cell: number, s: Ptr): boolean {
+	const _r = call<number>('contained_h3index_set_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_set_h3index(s: Ptr, cell: number): boolean {
+	const _r = call<number>('contains_set_h3index_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_h3index_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_h3index_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_set_h3index(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('intersection_set_h3index_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_h3index_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('minus_h3index_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_set_h3index(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('minus_set_h3index_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_h3index_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('union_h3index_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_set_h3index(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('union_set_h3index_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3index_union_transfn(state: Ptr, cell: number): Ptr {
+	const _r = callPtr('h3index_union_transfn_w', [ptrArgType(), 'bigint'], [ptrArgVal(state), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_grid_disk(cells: Ptr, k: number): Ptr {
+	const _r = callPtr('h3indexset_grid_disk_w', [ptrArgType(), 'number'], [ptrArgVal(cells), k]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3indexset_cover_cells(cells: Ptr, resolution: number): Ptr {
+	const _r = callPtr('h3indexset_cover_cells_w', [ptrArgType(), 'number'], [ptrArgVal(cells), resolution]);
+	checkMeosError();
+	return _r;
+}
+
 export function geo_to_h3index_cell(point: Ptr, resolution: number): number {
 	const _r = Number(call<bigint>('geo_to_h3index_cell_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(point), resolution]));
 	checkMeosError();
@@ -12967,6 +14287,12 @@ export function geo_to_h3index_cell(point: Ptr, resolution: number): number {
 
 export function geo_to_h3index_set(gs: Ptr, resolution: number): Ptr {
 	const _r = callPtr('geo_to_h3index_set_w', [ptrArgType(), 'number'], [ptrArgVal(gs), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function h3index_cell_to_cover(cell: number, resolution: number): Ptr {
+	const _r = callPtr('h3index_cell_to_cover_w', ['bigint', 'number'], [BigInt(cell), resolution]);
 	checkMeosError();
 	return _r;
 }
@@ -12991,6 +14317,12 @@ export function h3index_tstzspan_to_stbox(cell: number, s: Ptr): Ptr {
 
 export function ever_eq_h3indexset_th3index(cells: Ptr, th3idx: Ptr): number {
 	const _r = call<number>('ever_eq_h3indexset_th3index_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cells), ptrArgVal(th3idx)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_eq_th3index_h3indexset(th3idx: Ptr, cells: Ptr): number {
+	const _r = call<number>('ever_eq_th3index_h3indexset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(th3idx), ptrArgVal(cells)]);
 	checkMeosError();
 	return _r;
 }
@@ -13075,6 +14407,21 @@ export function th3index_edge_length(temp: Ptr): Ptr {
 
 export function tgeogpoint_great_circle_distance(a: Ptr, b: Ptr): Ptr {
 	const _r = callPtr('tgeogpoint_great_circle_distance_w', [ptrArgType(), ptrArgType()], [ptrArgVal(a), ptrArgVal(b)]);
+	checkMeosError();
+	return _r;
+}
+
+
+// === pg_numeric.h ===
+
+export function numeric_in(str: string, typmod: number): number {
+	const _r = call<number>('numeric_in_w', 'number', ['string', 'number'], [str, typmod]);
+	checkMeosError();
+	return _r;
+}
+
+export function numeric_out(num: number): string {
+	const _r = call<string>('numeric_out_w', 'string', ['number'], [num]);
 	checkMeosError();
 	return _r;
 }
@@ -13364,6 +14711,12 @@ export function jsonb_hash_extended(jb: Ptr, seed: number): number {
 	return _r;
 }
 
+export function jsonb_mem_size(jb: Ptr): number {
+	const _r = call<number>('jsonb_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(jb)]);
+	checkMeosError();
+	return _r;
+}
+
 export function jsonb_object_field(jb: Ptr, key: string): Ptr {
 	const _r = callPtr('jsonb_object_field_w', [ptrArgType(), 'string'], [ptrArgVal(jb), key]);
 	checkMeosError();
@@ -13532,6 +14885,12 @@ export function jsonpath_copy(jp: Ptr): Ptr {
 	return _r;
 }
 
+export function jsonpath_mem_size(jp: Ptr): number {
+	const _r = call<number>('jsonpath_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(jp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function jsonpath_out(jp: Ptr): string {
 	const _r = call<string>('jsonpath_out_w', 'string', [ptrArgType()], [ptrArgVal(jp)]);
 	checkMeosError();
@@ -13544,8 +14903,8 @@ export function jsonbset_in(str: string): Ptr {
 	return _r;
 }
 
-export function jsonbset_out(s: Ptr, maxdd: number): string {
-	const _r = call<string>('jsonbset_out_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), maxdd]);
+export function jsonbset_out(s: Ptr): string {
+	const _r = call<string>('jsonbset_out_w', 'string', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
@@ -13558,6 +14917,18 @@ export function jsonbset_make(values: Ptr, count: number): Ptr {
 
 export function jsonb_to_set(jb: Ptr): Ptr {
 	const _r = callPtr('jsonb_to_set_w', [ptrArgType()], [ptrArgVal(jb)]);
+	checkMeosError();
+	return _r;
+}
+
+export function jsonbset_to_textset(s: Ptr): Ptr {
+	const _r = callPtr('jsonbset_to_textset_w', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function textset_to_jsonbset(s: Ptr): Ptr {
+	const _r = callPtr('textset_to_jsonbset_w', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
@@ -13598,14 +14969,26 @@ export function jsonbset_array_length(set: Ptr): Ptr {
 	return _r;
 }
 
-export function jsonbset_object_field(set: Ptr, key: string, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('jsonbset_object_field_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(set), key, astext ? 1 : 0, null_handle]);
+export function jsonbset_object_field(set: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_object_field_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(set), key, null_handle]);
 	checkMeosError();
 	return _r;
 }
 
-export function jsonbset_array_element(set: Ptr, idx: number, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('jsonbset_array_element_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(set), idx, astext ? 1 : 0, null_handle]);
+export function jsonbset_object_field_text(set: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_object_field_text_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(set), key, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function jsonbset_array_element(set: Ptr, idx: number, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_array_element_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(set), idx, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function jsonbset_array_element_text(set: Ptr, idx: number, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_array_element_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(set), idx, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -13694,8 +15077,14 @@ export function jsonbset_delete_path(set: Ptr, path_elems: Ptr, path_len: number
 	return _r;
 }
 
-export function jsonbset_extract_path(set: Ptr, path_elems: Ptr, path_len: number, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('jsonbset_extract_path_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(set), ptrArgVal(path_elems), path_len, astext ? 1 : 0, null_handle]);
+export function jsonbset_extract_path(set: Ptr, path_elems: Ptr, path_len: number, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_extract_path_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(set), ptrArgVal(path_elems), path_len, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function jsonbset_extract_path_text(set: Ptr, path_elems: Ptr, path_len: number, null_handle: number): Ptr {
+	const _r = callPtr('jsonbset_extract_path_text_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(set), ptrArgVal(path_elems), path_len, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -13856,6 +15245,12 @@ export function tjsonb_start_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tjsonb_value(temp: Ptr): Ptr {
+	const _r = callPtr('tjsonb_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tjsonb_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tjsonb_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -13870,6 +15265,12 @@ export function tjsonb_value_n(temp: Ptr, n: number): Ptr {
 
 export function tjsonb_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tjsonb_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tjsonb_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -13922,8 +15323,8 @@ export function tjson_extract_path(temp: Ptr, path_elems: Ptr, path_len: number,
 	return _r;
 }
 
-export function tjson_object_field(temp: Ptr, key: string, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('tjson_object_field_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(temp), key, astext ? 1 : 0, null_handle]);
+export function tjson_object_field(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjson_object_field_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -13934,8 +15335,14 @@ export function tjson_strip_nulls(temp: Ptr, strip_in_arrays: boolean): Ptr {
 	return _r;
 }
 
-export function tjsonb_array_element(temp: Ptr, idx: number, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('tjsonb_array_element_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), idx, astext ? 1 : 0, null_handle]);
+export function tjsonb_array_element(temp: Ptr, idx: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_array_element_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), idx, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_array_element_text(temp: Ptr, idx: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_array_element_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), idx, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -13994,8 +15401,14 @@ export function tjsonb_exists_array(temp: Ptr, keys: Ptr, count: number, any: bo
 	return _r;
 }
 
-export function tjsonb_extract_path(temp: Ptr, path_elems: Ptr, path_len: number, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('tjsonb_extract_path_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), ptrArgVal(path_elems), path_len, astext ? 1 : 0, null_handle]);
+export function tjsonb_extract_path(temp: Ptr, path_elems: Ptr, path_len: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_extract_path_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(path_elems), path_len, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_extract_path_text(temp: Ptr, path_elems: Ptr, path_len: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_extract_path_text_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(temp), ptrArgVal(path_elems), path_len, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -14006,8 +15419,14 @@ export function tjsonb_insert(temp: Ptr, keys: Ptr, count: number, newjb: Ptr, a
 	return _r;
 }
 
-export function tjsonb_object_field(temp: Ptr, key: string, astext: boolean, null_handle: number): Ptr {
-	const _r = callPtr('tjsonb_object_field_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(temp), key, astext ? 1 : 0, null_handle]);
+export function tjsonb_object_field(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_object_field_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_object_field_text(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_object_field_text_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -14054,6 +15473,12 @@ export function tjsonb_strip_nulls(temp: Ptr, strip_in_arrays: boolean): Ptr {
 	return _r;
 }
 
+export function tjsonb_to_tbigint(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_to_tbigint_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
 export function tjsonb_to_tbool(temp: Ptr, key: string, null_handle: number): Ptr {
 	const _r = callPtr('tjsonb_to_tbool_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
 	checkMeosError();
@@ -14062,6 +15487,30 @@ export function tjsonb_to_tbool(temp: Ptr, key: string, null_handle: number): Pt
 
 export function tjsonb_to_tfloat(temp: Ptr, key: string, interp: number, null_handle: number): Ptr {
 	const _r = callPtr('tjsonb_to_tfloat_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(temp), key, interp, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_to_tgeogpoint(temp: Ptr, key: string, interp: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_to_tgeogpoint_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(temp), key, interp, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_to_tgeography(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_to_tgeography_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_to_tgeometry(temp: Ptr, key: string, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_to_tgeometry_w', [ptrArgType(), 'string', 'number'], [ptrArgVal(temp), key, null_handle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tjsonb_to_tgeompoint(temp: Ptr, key: string, interp: number, null_handle: number): Ptr {
+	const _r = callPtr('tjsonb_to_tgeompoint_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(temp), key, interp, null_handle]);
 	checkMeosError();
 	return _r;
 }
@@ -14189,8 +15638,20 @@ export function tne_tjsonb_jsonb(temp: Ptr, jb: Ptr): Ptr {
 
 // === meos_npoint.h ===
 
+export function npoint_as_ewkb(np: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('npoint_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(np), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function npoint_as_ewkt(np: Ptr, maxdd: number): string {
 	const _r = call<string>('npoint_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(np), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function npoint_as_hexewkb(np: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('npoint_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(np), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -14237,6 +15698,36 @@ export function npoint_out(np: Ptr, maxdd: number): string {
 	return _r;
 }
 
+export function nsegment_as_hexewkb(ns: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('nsegment_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ns), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_as_hexwkb(ns: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('nsegment_as_hexwkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ns), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_as_wkb(ns: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('nsegment_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ns), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_from_hexwkb(hexwkb: string): Ptr {
+	const _r = callPtr('nsegment_from_hexwkb_w', ['string'], [hexwkb]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_from_wkb(wkb: Ptr, size: number): Ptr {
+	const _r = callPtr('nsegment_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	checkMeosError();
+	return _r;
+}
+
 export function nsegment_in(str: string): Ptr {
 	const _r = callPtr('nsegment_in_w', ['string'], [str]);
 	checkMeosError();
@@ -14249,8 +15740,38 @@ export function nsegment_out(ns: Ptr, maxdd: number): string {
 	return _r;
 }
 
+export function nsegment_as_ewkb(ns: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('nsegment_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ns), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_as_ewkt(ns: Ptr, maxdd: number): string {
+	const _r = call<string>('nsegment_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(ns), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_as_text(ns: Ptr, maxdd: number): string {
+	const _r = call<string>('nsegment_as_text_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(ns), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function npoint_copy(np: Ptr): Ptr {
+	const _r = callPtr('npoint_copy_w', [ptrArgType()], [ptrArgVal(np)]);
+	checkMeosError();
+	return _r;
+}
+
 export function npoint_make(rid: number, pos: number): Ptr {
 	const _r = callPtr('npoint_make_w', ['bigint', 'number'], [BigInt(rid), pos]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_copy(ns: Ptr): Ptr {
+	const _r = callPtr('nsegment_copy_w', [ptrArgType()], [ptrArgVal(ns)]);
 	checkMeosError();
 	return _r;
 }
@@ -14447,12 +15968,6 @@ export function npoint_ne(np1: Ptr, np2: Ptr): boolean {
 	return _r;
 }
 
-export function npoint_same(np1: Ptr, np2: Ptr): boolean {
-	const _r = call<number>('npoint_same_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(np1), ptrArgVal(np2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
 export function nsegment_cmp(ns1: Ptr, ns2: Ptr): number {
 	const _r = call<number>('nsegment_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(ns1), ptrArgVal(ns2)]);
 	checkMeosError();
@@ -14603,6 +16118,12 @@ export function union_set_npoint(s: Ptr, np: Ptr): Ptr {
 	return _r;
 }
 
+export function distance_npointset_npointset(s1: Ptr, s2: Ptr): number {
+	const _r = call<number>('distance_npointset_npointset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tnpoint_in(str: string): Ptr {
 	const _r = callPtr('tnpoint_in_w', ['string'], [str]);
 	checkMeosError();
@@ -14717,6 +16238,12 @@ export function tnpoint_trajectory(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tnpoint_value(temp: Ptr): Ptr {
+	const _r = callPtr('tnpoint_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tnpoint_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean, value: Ptr): boolean {
 	const _r = call<number>('tnpoint_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
@@ -14731,6 +16258,12 @@ export function tnpoint_value_n(temp: Ptr, n: number): Ptr {
 
 export function tnpoint_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tnpoint_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tnpoint_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tnpoint_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -14957,6 +16490,126 @@ export function tne_tnpoint_npoint(temp: Ptr, np: Ptr): Ptr {
 	return _r;
 }
 
+export function contained_rid_bigint_tnpoint(rid: number, temp: Ptr): boolean {
+	const _r = call<number>('contained_rid_bigint_tnpoint_w', 'number', ['bigint', ptrArgType()], [BigInt(rid), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_rid_bigintset_tnpoint(s: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('contained_rid_bigintset_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_rid_npoint_tnpoint(np: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('contained_rid_npoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(np), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_rid_tnpoint_bigintset(temp: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contained_rid_tnpoint_bigintset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contained_rid_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('contained_rid_tnpoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_rid_bigintset_tnpoint(s: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('contains_rid_bigintset_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_rid_tnpoint_bigint(temp: Ptr, rid: number): boolean {
+	const _r = call<number>('contains_rid_tnpoint_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(rid)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_rid_tnpoint_bigintset(temp: Ptr, s: Ptr): boolean {
+	const _r = call<number>('contains_rid_tnpoint_bigintset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_rid_tnpoint_npoint(temp: Ptr, np: Ptr): boolean {
+	const _r = call<number>('contains_rid_tnpoint_npoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(np)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_rid_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('contains_rid_tnpoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_rid_bigintset_tnpoint(s: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overlaps_rid_bigintset_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_rid_tnpoint_bigintset(temp: Ptr, s: Ptr): boolean {
+	const _r = call<number>('overlaps_rid_tnpoint_bigintset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overlaps_rid_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overlaps_rid_tnpoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_bigint_tnpoint(rid: number, temp: Ptr): boolean {
+	const _r = call<number>('same_rid_bigint_tnpoint_w', 'number', ['bigint', ptrArgType()], [BigInt(rid), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_bigintset_tnpoint(s: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('same_rid_bigintset_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_npoint_tnpoint(np: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('same_rid_npoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(np), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_tnpoint_bigint(temp: Ptr, rid: number): boolean {
+	const _r = call<number>('same_rid_tnpoint_bigint_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(rid)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_tnpoint_bigintset(temp: Ptr, s: Ptr): boolean {
+	const _r = call<number>('same_rid_tnpoint_bigintset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_tnpoint_npoint(temp: Ptr, np: Ptr): boolean {
+	const _r = call<number>('same_rid_tnpoint_npoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(np)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function same_rid_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('same_rid_tnpoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 
 // === meos_pointcloud.h ===
 
@@ -15014,32 +16667,38 @@ export function pcpoint_hash_extended(pt: Ptr, seed: number): number {
 	return _r;
 }
 
-export function pcpoint_get_x(pt: Ptr, schema: Ptr, out: Ptr): boolean {
-	const _r = call<number>('pcpoint_get_x_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(schema), ptrArgVal(out)]) !== 0;
+export function pcpoint_mem_size(pt: Ptr): number {
+	const _r = call<number>('pcpoint_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(pt)]);
 	checkMeosError();
 	return _r;
 }
 
-export function pcpoint_get_y(pt: Ptr, schema: Ptr, out: Ptr): boolean {
-	const _r = call<number>('pcpoint_get_y_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(schema), ptrArgVal(out)]) !== 0;
+export function pcpoint_get_x(pt: Ptr, out: Ptr): boolean {
+	const _r = call<number>('pcpoint_get_x_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(out)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
-export function pcpoint_get_z(pt: Ptr, schema: Ptr, out: Ptr): boolean {
-	const _r = call<number>('pcpoint_get_z_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(schema), ptrArgVal(out)]) !== 0;
+export function pcpoint_get_y(pt: Ptr, out: Ptr): boolean {
+	const _r = call<number>('pcpoint_get_y_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(out)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
-export function pcpoint_get_dim(pt: Ptr, schema: Ptr, name: string, out: Ptr): boolean {
-	const _r = call<number>('pcpoint_get_dim_w', 'number', [ptrArgType(), ptrArgType(), 'string', ptrArgType()], [ptrArgVal(pt), ptrArgVal(schema), name, ptrArgVal(out)]) !== 0;
+export function pcpoint_get_z(pt: Ptr, out: Ptr): boolean {
+	const _r = call<number>('pcpoint_get_z_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(out)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
-export function pcpoint_to_tpcbox(pt: Ptr, schema: Ptr): Ptr {
-	const _r = callPtr('pcpoint_to_tpcbox_w', [ptrArgType(), ptrArgType()], [ptrArgVal(pt), ptrArgVal(schema)]);
+export function pcpoint_get_dim(pt: Ptr, name: string, out: Ptr): boolean {
+	const _r = call<number>('pcpoint_get_dim_w', 'number', [ptrArgType(), 'string', ptrArgType()], [ptrArgVal(pt), name, ptrArgVal(out)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function pcpoint_to_tpcbox(pt: Ptr): Ptr {
+	const _r = callPtr('pcpoint_to_tpcbox_w', [ptrArgType()], [ptrArgVal(pt)]);
 	checkMeosError();
 	return _r;
 }
@@ -15104,6 +16763,23 @@ export function meos_pc_schema_ndims(pcid: number): number {
 export function meos_set_pointcloud_schemas_xml(path: string): void {
 	call<void>('meos_set_pointcloud_schemas_xml_w', null, ['string'], [path]);
 	checkMeosError();
+}
+
+export function meos_initialize_pointcloud(): void {
+	call<void>('meos_initialize_pointcloud_w', null, [], []);
+	checkMeosError();
+}
+
+export function rtree_create_tpcbox(): Ptr {
+	const _r = callPtr('rtree_create_tpcbox_w', [], []);
+	checkMeosError();
+	return _r;
+}
+
+export function sptree_create_tpcbox(kind: number): Ptr {
+	const _r = callPtr('sptree_create_tpcbox_w', ['number'], [kind]);
+	checkMeosError();
+	return _r;
 }
 
 export function pcpoint_cmp(pt1: Ptr, pt2: Ptr): number {
@@ -15222,6 +16898,12 @@ export function pcpatch_hash(pa: Ptr): number {
 
 export function pcpatch_hash_extended(pa: Ptr, seed: number): number {
 	const _r = Number(call<bigint>('pcpatch_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(pa), BigInt(seed)]));
+	checkMeosError();
+	return _r;
+}
+
+export function pcpatch_mem_size(pa: Ptr): number {
+	const _r = call<number>('pcpatch_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(pa)]);
 	checkMeosError();
 	return _r;
 }
@@ -15478,6 +17160,42 @@ export function pcpatch_union_transfn(state: Ptr, pa: Ptr): Ptr {
 	return _r;
 }
 
+export function tpcbox_as_ewkb(box: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('tpcbox_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_as_hexewkb(box: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('tpcbox_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_as_hexwkb(box: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('tpcbox_as_hexwkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_as_wkb(box: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('tpcbox_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_from_hexwkb(hexwkb: string): Ptr {
+	const _r = callPtr('tpcbox_from_hexwkb_w', ['string'], [hexwkb]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_from_wkb(wkb: Ptr, size: number): Ptr {
+	const _r = callPtr('tpcbox_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcbox_in(str: string): Ptr {
 	const _r = callPtr('tpcbox_in_w', ['string'], [str]);
 	checkMeosError();
@@ -15490,8 +17208,8 @@ export function tpcbox_out(box: Ptr, maxdd: number): string {
 	return _r;
 }
 
-export function tpcbox_make(hasx: boolean, hasz: boolean, hast: boolean, geodetic: boolean, srid: number, pcid: number, xmin: number, xmax: number, ymin: number, ymax: number, zmin: number, zmax: number, period: Ptr): Ptr {
-	const _r = callPtr('tpcbox_make_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', ptrArgType()], [hasx ? 1 : 0, hasz ? 1 : 0, hast ? 1 : 0, geodetic ? 1 : 0, srid, pcid, xmin, xmax, ymin, ymax, zmin, zmax, ptrArgVal(period)]);
+export function tpcbox_make(hasx: boolean, hasz: boolean, hast: boolean, geodetic: boolean, pcid: number, xmin: number, xmax: number, ymin: number, ymax: number, zmin: number, zmax: number, period: Ptr): Ptr {
+	const _r = callPtr('tpcbox_make_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', ptrArgType()], [hasx ? 1 : 0, hasz ? 1 : 0, hast ? 1 : 0, geodetic ? 1 : 0, pcid, xmin, xmax, ymin, ymax, zmin, zmax, ptrArgVal(period)]);
 	checkMeosError();
 	return _r;
 }
@@ -15502,8 +17220,8 @@ export function tpcbox_copy(box: Ptr): Ptr {
 	return _r;
 }
 
-export function pcpatch_to_tpcbox(pa: Ptr, srid: number): Ptr {
-	const _r = callPtr('pcpatch_to_tpcbox_w', [ptrArgType(), 'number'], [ptrArgVal(pa), srid]);
+export function pcpatch_to_tpcbox(pa: Ptr): Ptr {
+	const _r = callPtr('pcpatch_to_tpcbox_w', [ptrArgType()], [ptrArgVal(pa)]);
 	checkMeosError();
 	return _r;
 }
@@ -15682,6 +17400,12 @@ export function tpcbox_ne(box1: Ptr, box2: Ptr): boolean {
 	return _r;
 }
 
+export function tpcbox_sortkey(box: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('tpcbox_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(size)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcbox_lt(box1: Ptr, box2: Ptr): boolean {
 	const _r = call<number>('tpcbox_lt_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]) !== 0;
 	checkMeosError();
@@ -15802,8 +17526,44 @@ export function overafter_tpcbox_tpcbox(box1: Ptr, box2: Ptr): boolean {
 	return _r;
 }
 
-export function tpointcloud_to_tgeompoint(temp: Ptr): Ptr {
-	const _r = callPtr('tpointcloud_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+export function tpcpoint_in(str: string): Ptr {
+	const _r = callPtr('tpcpoint_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_out(temp: Ptr): string {
+	const _r = call<string>('tpcpoint_out_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_from_mfjson(mfjson: string): Ptr {
+	const _r = callPtr('tpcpoint_from_mfjson_w', ['string'], [mfjson]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_in(str: string): Ptr {
+	const _r = callPtr('tpcpatch_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_out(temp: Ptr): string {
+	const _r = call<string>('tpcpatch_out_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_from_mfjson(mfjson: string): Ptr {
+	const _r = callPtr('tpcpatch_from_mfjson_w', ['string'], [mfjson]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_to_tgeompoint(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -15856,6 +17616,12 @@ export function tpcpoint_end_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tpcpoint_value(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcpoint_value_n(temp: Ptr, n: number): Ptr {
 	const _r = callPtr('tpcpoint_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
@@ -15864,6 +17630,12 @@ export function tpcpoint_value_n(temp: Ptr, n: number): Ptr {
 
 export function tpcpoint_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tpcpoint_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -15882,6 +17654,12 @@ export function tpcpoint_at_value(temp: Ptr, pt: Ptr): Ptr {
 
 export function tpcpoint_minus_value(temp: Ptr, pt: Ptr): Ptr {
 	const _r = callPtr('tpcpoint_minus_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pt)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_pcid(temp: Ptr): number {
+	const _r = call<number>('tpcpoint_pcid_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -15928,6 +17706,12 @@ export function tpcpatch_end_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tpcpatch_value(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcpatch_value_n(temp: Ptr, n: number): Ptr {
 	const _r = callPtr('tpcpatch_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
@@ -15936,6 +17720,12 @@ export function tpcpatch_value_n(temp: Ptr, n: number): Ptr {
 
 export function tpcpatch_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tpcpatch_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -15954,6 +17744,36 @@ export function tpcpatch_at_value(temp: Ptr, pa: Ptr): Ptr {
 
 export function tpcpatch_minus_value(temp: Ptr, pa: Ptr): Ptr {
 	const _r = callPtr('tpcpatch_minus_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pa)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_pcid(temp: Ptr): number {
+	const _r = call<number>('tpcpatch_pcid_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_start_npoints(temp: Ptr): number {
+	const _r = call<number>('tpcpatch_start_npoints_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_end_npoints(temp: Ptr): number {
+	const _r = call<number>('tpcpatch_end_npoints_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_npoints(temp: Ptr): number {
+	const _r = Number(call<bigint>('tpcpatch_npoints_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_swath(temp: Ptr, maxt: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_swath_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(maxt)]);
 	checkMeosError();
 	return _r;
 }
@@ -16240,6 +18060,318 @@ export function same_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
 	return _r;
 }
 
+export function left_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('left_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function left_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('left_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function left_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('left_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overleft_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overleft_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overleft_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overleft_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overleft_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overleft_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function right_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('right_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function right_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('right_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function right_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('right_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overright_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overright_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overright_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overright_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overright_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overright_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function below_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('below_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function below_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('below_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function below_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('below_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbelow_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overbelow_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbelow_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overbelow_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbelow_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overbelow_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function above_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('above_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function above_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('above_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function above_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('above_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overabove_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overabove_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overabove_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overabove_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overabove_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overabove_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function front_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('front_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function front_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('front_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function front_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('front_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overfront_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overfront_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overfront_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overfront_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overfront_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overfront_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function back_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('back_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function back_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('back_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function back_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('back_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overback_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overback_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overback_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overback_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overback_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overback_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function before_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('before_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function before_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('before_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function before_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('before_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbefore_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overbefore_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbefore_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overbefore_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overbefore_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overbefore_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function after_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('after_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function after_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('after_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function after_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('after_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overafter_tpcbox_tpointcloud(box: Ptr, temp: Ptr): boolean {
+	const _r = call<number>('overafter_tpcbox_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overafter_tpointcloud_tpcbox(temp: Ptr, box: Ptr): boolean {
+	const _r = call<number>('overafter_tpointcloud_tpcbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function overafter_tpointcloud_tpointcloud(temp1: Ptr, temp2: Ptr): boolean {
+	const _r = call<number>('overafter_tpointcloud_tpointcloud_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function tpc_extent_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tpc_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcbox_extent_transfn(state: Ptr, box: Ptr): Ptr {
+	const _r = callPtr('tpcbox_extent_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_tdensity_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_tdensity_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_tnpoints_transfn(state: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_tnpoints_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function eintersects_tpcpoint_geo(temp: Ptr, gs: Ptr): boolean {
 	const _r = call<number>('eintersects_tpcpoint_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]) !== 0;
 	checkMeosError();
@@ -16255,8 +18387,20 @@ export function nad_tpcpoint_geo(temp: Ptr, gs: Ptr): number {
 
 // === meos_pose.h ===
 
+export function pose_as_ewkb(pose: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('pose_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pose), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function pose_as_ewkt(pose: Ptr, maxdd: number): string {
 	const _r = call<string>('pose_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(pose), maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function pose_as_hexewkb(pose: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('pose_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pose), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -16287,6 +18431,12 @@ export function pose_from_wkb(wkb: Ptr, size: number): Ptr {
 
 export function pose_from_hexwkb(hexwkb: string): Ptr {
 	const _r = callPtr('pose_from_hexwkb_w', ['string'], [hexwkb]);
+	checkMeosError();
+	return _r;
+}
+
+export function pose_from_text(str: string): Ptr {
+	const _r = callPtr('pose_from_text_w', ['string'], [str]);
 	checkMeosError();
 	return _r;
 }
@@ -16327,6 +18477,12 @@ export function tpose_as_geopose(temp: Ptr, conformance: number, precision: numb
 	return _r;
 }
 
+export function tpose_as_geopose_stream_header(temp: Ptr, precision: number): string {
+	const _r = call<string>('tpose_as_geopose_stream_header_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), precision]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpose_as_geopose_stream_element(temp: Ptr, inst: Ptr, precision: number): string {
 	const _r = call<string>('tpose_as_geopose_stream_element_w', 'string', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(inst), precision]);
 	checkMeosError();
@@ -16347,6 +18503,24 @@ export function geopose_frames(count: Ptr): Ptr {
 
 export function geopose_frame(frame_id: number): Ptr {
 	const _r = callPtr('geopose_frame_w', ['number'], [frame_id]);
+	checkMeosError();
+	return _r;
+}
+
+export function geopose_frame_name(frame_id: number): string {
+	const _r = call<string>('geopose_frame_name_w', 'string', ['number'], [frame_id]);
+	checkMeosError();
+	return _r;
+}
+
+export function geopose_frame_srid(frame_id: number): number {
+	const _r = call<number>('geopose_frame_srid_w', 'number', ['number'], [frame_id]);
+	checkMeosError();
+	return _r;
+}
+
+export function geopose_frame_is_geographic(frame_id: number): boolean {
+	const _r = call<number>('geopose_frame_is_geographic_w', 'number', ['number'], [frame_id]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -16383,6 +18557,36 @@ export function tpose_compose_tpose(body: Ptr, frame: Ptr): Ptr {
 
 export function tpose_inverse(temp: Ptr): Ptr {
 	const _r = callPtr('tpose_inverse_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('tpose_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_rotate_x(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tpose_rotate_x_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_rotate_y(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tpose_rotate_y_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_rotate_z(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tpose_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_translate(temp: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
+	const _r = callPtr('tpose_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, deltaz]);
 	checkMeosError();
 	return _r;
 }
@@ -16443,6 +18647,12 @@ export function pose_hash(pose: Ptr): number {
 
 export function pose_hash_extended(pose: Ptr, seed: number): number {
 	const _r = Number(call<bigint>('pose_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(pose), BigInt(seed)]));
+	checkMeosError();
+	return _r;
+}
+
+export function pose_mem_size(pose: Ptr): number {
+	const _r = call<number>('pose_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(pose)]);
 	checkMeosError();
 	return _r;
 }
@@ -16609,18 +18819,6 @@ export function pose_ne(pose1: Ptr, pose2: Ptr): boolean {
 	return _r;
 }
 
-export function pose_nsame(pose1: Ptr, pose2: Ptr): boolean {
-	const _r = call<number>('pose_nsame_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pose1), ptrArgVal(pose2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
-export function pose_same(pose1: Ptr, pose2: Ptr): boolean {
-	const _r = call<number>('pose_same_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pose1), ptrArgVal(pose2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
 export function poseset_in(str: string): Ptr {
 	const _r = callPtr('poseset_in_w', ['string'], [str]);
 	checkMeosError();
@@ -16719,6 +18917,12 @@ export function union_pose_set(pose: Ptr, s: Ptr): Ptr {
 
 export function union_set_pose(s: Ptr, pose: Ptr): Ptr {
 	const _r = callPtr('union_set_pose_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(pose)]);
+	checkMeosError();
+	return _r;
+}
+
+export function distance_poseset_poseset(s1: Ptr, s2: Ptr): number {
+	const _r = call<number>('distance_poseset_poseset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
 	checkMeosError();
 	return _r;
 }
@@ -16831,6 +19035,12 @@ export function tpose_trajectory(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tpose_value(temp: Ptr): Ptr {
+	const _r = callPtr('tpose_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpose_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): Ptr {
 	const _r = callPtr('tpose_value_at_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
 	checkMeosError();
@@ -16845,6 +19055,12 @@ export function tpose_value_n(temp: Ptr, n: number): Ptr {
 
 export function tpose_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tpose_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tpose_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -17089,6 +19305,12 @@ export function posechain_as_text(pc: Ptr, maxdd: number): string {
 	return _r;
 }
 
+export function posechain_as_ewkb(pc: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('posechain_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pc), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function posechain_as_ewkt(pc: Ptr, maxdd: number): string {
 	const _r = call<string>('posechain_as_ewkt_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(pc), maxdd]);
 	checkMeosError();
@@ -17097,6 +19319,12 @@ export function posechain_as_ewkt(pc: Ptr, maxdd: number): string {
 
 export function posechain_as_wkb(pc: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('posechain_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pc), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function posechain_as_hexewkb(pc: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('posechain_as_hexewkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pc), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
@@ -17221,6 +19449,12 @@ export function posechain_hash_extended(pc: Ptr, seed: number): number {
 	return _r;
 }
 
+export function posechain_mem_size(pc: Ptr): number {
+	const _r = call<number>('posechain_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
 export function posechain_round(pc: Ptr, maxdd: number): Ptr {
 	const _r = callPtr('posechain_round_w', [ptrArgType(), 'number'], [ptrArgVal(pc), maxdd]);
 	checkMeosError();
@@ -17245,8 +19479,8 @@ export function posechain_transform(pc: Ptr, srid_to: number): Ptr {
 	return _r;
 }
 
-export function posechain_transform_pipeline(pc: Ptr, pipeline: string, srid_to: number, is_forward: boolean): Ptr {
-	const _r = callPtr('posechain_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(pc), pipeline, srid_to, is_forward ? 1 : 0]);
+export function posechain_transform_pipeline(pc: Ptr, pipelinestr: string, srid: number, is_forward: boolean): Ptr {
+	const _r = callPtr('posechain_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number'], [ptrArgVal(pc), pipelinestr, srid, is_forward ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -17281,18 +19515,6 @@ export function posechain_ne(pc1: Ptr, pc2: Ptr): boolean {
 	return _r;
 }
 
-export function posechain_same(pc1: Ptr, pc2: Ptr): boolean {
-	const _r = call<number>('posechain_same_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc1), ptrArgVal(pc2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
-export function posechain_nsame(pc1: Ptr, pc2: Ptr): boolean {
-	const _r = call<number>('posechain_nsame_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc1), ptrArgVal(pc2)]) !== 0;
-	checkMeosError();
-	return _r;
-}
-
 export function posechain_cmp(pc1: Ptr, pc2: Ptr): number {
 	const _r = call<number>('posechain_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc1), ptrArgVal(pc2)]);
 	checkMeosError();
@@ -17319,6 +19541,24 @@ export function posechain_gt(pc1: Ptr, pc2: Ptr): boolean {
 
 export function posechain_ge(pc1: Ptr, pc2: Ptr): boolean {
 	const _r = call<number>('posechain_ge_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc1), ptrArgVal(pc2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function distance_posechain_geo(pc: Ptr, gs: Ptr): number {
+	const _r = call<number>('distance_posechain_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function distance_posechain_posechain(pc1: Ptr, pc2: Ptr): number {
+	const _r = call<number>('distance_posechain_posechain_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc1), ptrArgVal(pc2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function distance_posechain_stbox(pc: Ptr, box: Ptr): number {
+	const _r = call<number>('distance_posechain_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pc), ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }
@@ -17425,6 +19665,12 @@ export function union_set_posechain(s: Ptr, pc: Ptr): Ptr {
 	return _r;
 }
 
+export function distance_posechainset_posechainset(s1: Ptr, s2: Ptr): number {
+	const _r = call<number>('distance_posechainset_posechainset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tposechain_in(str: string): Ptr {
 	const _r = callPtr('tposechain_in_w', ['string'], [str]);
 	checkMeosError();
@@ -17437,8 +19683,32 @@ export function tposechain_from_mfjson(mfjson: string): Ptr {
 	return _r;
 }
 
+export function tposechaininst_make(pc: Ptr, t: TimestampTz): Ptr {
+	const _r = callPtr('tposechaininst_make_w', [ptrArgType(), 'bigint'], [ptrArgVal(pc), BigInt(t)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tposechain_from_base_temp(pc: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tposechain_from_base_temp_w', [ptrArgType(), ptrArgType()], [ptrArgVal(pc), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechainseq_from_base_tstzset(pc: Ptr, s: Ptr): Ptr {
+	const _r = callPtr('tposechainseq_from_base_tstzset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(pc), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechainseq_from_base_tstzspan(pc: Ptr, s: Ptr, interp: number): Ptr {
+	const _r = callPtr('tposechainseq_from_base_tstzspan_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(pc), ptrArgVal(s), interp]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechainseqset_from_base_tstzspanset(pc: Ptr, ss: Ptr, interp: number): Ptr {
+	const _r = callPtr('tposechainseqset_from_base_tstzspanset_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(pc), ptrArgVal(ss), interp]);
 	checkMeosError();
 	return _r;
 }
@@ -17449,8 +19719,170 @@ export function tposechain_to_tpose(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tposechain_end_value(temp: Ptr): Ptr {
+	const _r = callPtr('tposechain_end_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tposechain_num_poses(temp: Ptr): number {
 	const _r = call<number>('tposechain_num_poses_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_start_value(temp: Ptr): Ptr {
+	const _r = callPtr('tposechain_start_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_value(temp: Ptr): Ptr {
+	const _r = callPtr('tposechain_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): Ptr {
+	const _r = callPtr('tposechain_value_at_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_value_n(temp: Ptr, n: number): Ptr {
+	const _r = callPtr('tposechain_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_values(temp: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tposechain_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tposechain_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('tposechain_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_rotate_x(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tposechain_rotate_x_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_rotate_y(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tposechain_rotate_y_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_rotate_z(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('tposechain_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_translate(temp: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
+	const _r = callPtr('tposechain_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, deltaz]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_at_value(temp: Ptr, pc: Ptr): Ptr {
+	const _r = callPtr('tposechain_at_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_minus_value(temp: Ptr, pc: Ptr): Ptr {
+	const _r = callPtr('tposechain_minus_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdistance_tposechain_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tdistance_tposechain_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdistance_tposechain_posechain(temp: Ptr, pc: Ptr): Ptr {
+	const _r = callPtr('tdistance_tposechain_posechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdistance_tposechain_tposechain(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tdistance_tposechain_tposechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tposechain_geo(temp: Ptr, gs: Ptr): number {
+	const _r = call<number>('nad_tposechain_geo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tposechain_posechain(temp: Ptr, pc: Ptr): number {
+	const _r = call<number>('nad_tposechain_posechain_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tposechain_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('nad_tposechain_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nad_tposechain_tposechain(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('nad_tposechain_tposechain_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nai_tposechain_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('nai_tposechain_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nai_tposechain_posechain(temp: Ptr, pc: Ptr): Ptr {
+	const _r = callPtr('nai_tposechain_posechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nai_tposechain_tposechain(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('nai_tposechain_tposechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function shortestline_tposechain_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('shortestline_tposechain_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function shortestline_tposechain_posechain(temp: Ptr, pc: Ptr): Ptr {
+	const _r = callPtr('shortestline_tposechain_posechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
+export function shortestline_tposechain_tposechain(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('shortestline_tposechain_tposechain_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
@@ -17554,8 +19986,44 @@ export function tne_tposechain_posechain(temp: Ptr, posechain: Ptr): Ptr {
 
 // === meos_quadbin.h ===
 
+export function quadbin_as_hexwkb(cell: number, variant: number, size_out: Ptr): string {
+	const _r = call<string>('quadbin_as_hexwkb_w', 'string', ['bigint', 'number', ptrArgType()], [BigInt(cell), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_as_wkb(cell: number, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('quadbin_as_wkb_w', ['bigint', 'number', ptrArgType()], [BigInt(cell), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_from_hexwkb(hexwkb: string): number {
+	const _r = Number(call<bigint>('quadbin_from_hexwkb_w', 'bigint', ['string'], [hexwkb]));
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_from_wkb(wkb: Ptr, size: number): number {
+	const _r = Number(call<bigint>('quadbin_from_wkb_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]));
+	checkMeosError();
+	return _r;
+}
+
 export function quadbin_in(str: string): number {
 	const _r = Number(call<bigint>('quadbin_in_w', 'bigint', ['string'], [str]));
+	checkMeosError();
+	return _r;
+}
+
+export function bigint_to_quadbin(i: number): number {
+	const _r = Number(call<bigint>('bigint_to_quadbin_w', 'bigint', ['bigint'], [BigInt(i)]));
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_out(cell: number): string {
+	const _r = call<string>('quadbin_out_w', 'string', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -17632,8 +20100,8 @@ export function quadbin_tile_to_cell(x: number, y: number, z: number): number {
 	return _r;
 }
 
-export function quadbin_cell_to_tile(cell: number, x: Ptr, y: Ptr, z: Ptr): boolean {
-	const _r = call<number>('quadbin_cell_to_tile_w', 'number', ['bigint', ptrArgType(), ptrArgType(), ptrArgType()], [BigInt(cell), ptrArgVal(x), ptrArgVal(y), ptrArgVal(z)]) !== 0;
+export function quadbin_cell_to_tile(cell: number, count: Ptr): Ptr {
+	const _r = callPtr('quadbin_cell_to_tile_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -17680,6 +20148,12 @@ export function geo_to_quadbin_cell(point: Ptr, resolution: number): number {
 	return _r;
 }
 
+export function geo_to_quadbin_set(gs: Ptr, resolution: number): Ptr {
+	const _r = callPtr('geo_to_quadbin_set_w', [ptrArgType(), 'number'], [ptrArgVal(gs), resolution]);
+	checkMeosError();
+	return _r;
+}
+
 export function quadbin_cell_to_geompoint(cell: number): Ptr {
 	const _r = callPtr('quadbin_cell_to_geompoint_w', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
@@ -17688,6 +20162,18 @@ export function quadbin_cell_to_geompoint(cell: number): Ptr {
 
 export function quadbin_cell_to_geom(cell: number): Ptr {
 	const _r = callPtr('quadbin_cell_to_geom_w', ['bigint'], [BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_eq_quadbinset_tquadbin(cells: Ptr, tqb: Ptr): number {
+	const _r = call<number>('ever_eq_quadbinset_tquadbin_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cells), ptrArgVal(tqb)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_eq_tquadbin_quadbinset(tqb: Ptr, cells: Ptr): number {
+	const _r = call<number>('ever_eq_tquadbin_quadbinset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(tqb), ptrArgVal(cells)]);
 	checkMeosError();
 	return _r;
 }
@@ -17740,14 +20226,152 @@ export function quadbin_grid_disk(origin: number, k: number): Ptr {
 	return _r;
 }
 
+export function quadbinset_grid_disk(cells: Ptr, k: number): Ptr {
+	const _r = callPtr('quadbinset_grid_disk_w', [ptrArgType(), 'number'], [ptrArgVal(cells), k]);
+	checkMeosError();
+	return _r;
+}
+
 export function quadbin_cell_to_children_set(origin: number, children_resolution: number): Ptr {
 	const _r = callPtr('quadbin_cell_to_children_set_w', ['bigint', 'number'], [BigInt(origin), children_resolution]);
 	checkMeosError();
 	return _r;
 }
 
+export function quadbinset_compact_cells(cells: Ptr): Ptr {
+	const _r = callPtr('quadbinset_compact_cells_w', [ptrArgType()], [ptrArgVal(cells)]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_uncompact_cells(cells: Ptr, resolution: number): Ptr {
+	const _r = callPtr('quadbinset_uncompact_cells_w', [ptrArgType(), 'number'], [ptrArgVal(cells), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_cell_to_cover(cell: number, resolution: number): Ptr {
+	const _r = callPtr('quadbin_cell_to_cover_w', ['bigint', 'number'], [BigInt(cell), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_cover_cells(cells: Ptr, resolution: number): Ptr {
+	const _r = callPtr('quadbinset_cover_cells_w', [ptrArgType(), 'number'], [ptrArgVal(cells), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_in(str: string): Ptr {
+	const _r = callPtr('quadbinset_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_out(s: Ptr): string {
+	const _r = call<string>('quadbinset_out_w', 'string', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_make(values: Ptr, count: number): Ptr {
+	const _r = callPtr('quadbinset_make_w', [ptrArgType(), 'number'], [ptrArgVal(values), count]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_end_value(s: Ptr): number {
+	const _r = Number(call<bigint>('quadbinset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_start_value(s: Ptr): number {
+	const _r = Number(call<bigint>('quadbinset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_value_n(s: Ptr, n: number): number {
+	const _r = Number(call<bigint>('quadbinset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
+	checkMeosError();
+	return _r;
+}
+
+export function quadbinset_values(s: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('quadbinset_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contained_quadbin_set(cell: number, s: Ptr): boolean {
+	const _r = call<number>('contained_quadbin_set_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_set_quadbin(s: Ptr, cell: number): boolean {
+	const _r = call<number>('contains_set_quadbin_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_quadbin_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_quadbin_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_set_quadbin(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('intersection_set_quadbin_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_quadbin_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('minus_quadbin_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_set_quadbin(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('minus_set_quadbin_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_quadbin_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('union_quadbin_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_set_quadbin(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('union_set_quadbin_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function quadbin_union_transfn(state: Ptr, cell: number): Ptr {
+	const _r = callPtr('quadbin_union_transfn_w', [ptrArgType(), 'bigint'], [ptrArgVal(state), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tquadbin_in(str: string): Ptr {
 	const _r = callPtr('tquadbin_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_out(temp: Ptr): string {
+	const _r = call<string>('tquadbin_out_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_from_mfjson(mfjson: string): Ptr {
+	const _r = callPtr('tquadbin_from_mfjson_w', ['string'], [mfjson]);
 	checkMeosError();
 	return _r;
 }
@@ -17760,6 +20384,30 @@ export function tquadbin_make(value: number, t: TimestampTz): Ptr {
 
 export function tquadbininst_make(value: number, t: TimestampTz): Ptr {
 	const _r = callPtr('tquadbininst_make_w', ['bigint', 'bigint'], [BigInt(value), BigInt(t)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_from_base_temp(value: number, temp: Ptr): Ptr {
+	const _r = callPtr('tquadbin_from_base_temp_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbinseq_from_base_tstzset(value: number, s: Ptr): Ptr {
+	const _r = callPtr('tquadbinseq_from_base_tstzset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbinseq_from_base_tstzspan(value: number, s: Ptr): Ptr {
+	const _r = callPtr('tquadbinseq_from_base_tstzspan_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbinseqset_from_base_tstzspanset(value: number, ss: Ptr): Ptr {
+	const _r = callPtr('tquadbinseqset_from_base_tstzspanset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -17788,6 +20436,12 @@ export function tquadbin_end_value(temp: Ptr): number {
 	return _r;
 }
 
+export function tquadbin_value(temp: Ptr): number {
+	const _r = Number(call<bigint>('tquadbin_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
+	checkMeosError();
+	return _r;
+}
+
 export function tquadbin_value_n(temp: Ptr, n: number): number {
 	const _r = Number(call<bigint>('tquadbin_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(temp), n]));
 	checkMeosError();
@@ -17796,6 +20450,12 @@ export function tquadbin_value_n(temp: Ptr, n: number): number {
 
 export function tquadbin_values(temp: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('tquadbin_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tquadbin_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -17820,6 +20480,18 @@ export function tbigint_to_tquadbin(temp: Ptr): Ptr {
 
 export function tquadbin_to_tbigint(temp: Ptr): Ptr {
 	const _r = callPtr('tquadbin_to_tbigint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_at_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('tquadbin_at_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_minus_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('tquadbin_minus_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -17932,8 +20604,38 @@ export function tne_tquadbin_tquadbin(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
+export function tgeogpoint_to_tquadbin(temp: Ptr, resolution: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeogpoint_to_tquadbin_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), resolution, border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_to_tquadbin(temp: Ptr, resolution: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeompoint_to_tquadbin_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), resolution, border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeogpoint_quadbin_split(temp: Ptr, resolution: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeogpoint_quadbin_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), resolution, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_quadbin_split(temp: Ptr, resolution: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeompoint_quadbin_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), resolution, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tquadbin_cell_to_quadkey(temp: Ptr): Ptr {
 	const _r = callPtr('tquadbin_cell_to_quadkey_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_grid_distance(origin: Ptr, dest: Ptr): Ptr {
+	const _r = callPtr('tquadbin_grid_distance_w', [ptrArgType(), ptrArgType()], [ptrArgVal(origin), ptrArgVal(dest)]);
 	checkMeosError();
 	return _r;
 }
@@ -18031,14 +20733,20 @@ export function raquet_height(rq: Ptr): number {
 	return _r;
 }
 
-export function raquet_nodata(rq: Ptr): number {
-	const _r = call<number>('raquet_nodata_w', 'number', [ptrArgType()], [ptrArgVal(rq)]);
+export function raquet_band_pixel_type(rq: Ptr): string {
+	const _r = call<string>('raquet_band_pixel_type_w', 'string', [ptrArgType()], [ptrArgVal(rq)]);
 	checkMeosError();
 	return _r;
 }
 
-export function raquet_pixtype(rq: Ptr): string {
-	const _r = call<string>('raquet_pixtype_w', 'string', [ptrArgType()], [ptrArgVal(rq)]);
+export function raquet_band_has_nodata_value(rq: Ptr): boolean {
+	const _r = call<number>('raquet_band_has_nodata_value_w', 'number', [ptrArgType()], [ptrArgVal(rq)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raquet_band_nodata_value(rq: Ptr): number {
+	const _r = call<number>('raquet_band_nodata_value_w', 'number', [ptrArgType()], [ptrArgVal(rq)]);
 	checkMeosError();
 	return _r;
 }
@@ -18061,6 +20769,12 @@ export function raquet_hash_extended(rq: Ptr, seed: number): number {
 	return _r;
 }
 
+export function raquet_mem_size(rq: Ptr): number {
+	const _r = call<number>('raquet_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(rq)]);
+	checkMeosError();
+	return _r;
+}
+
 export function raster_from_wkb(wkb: Ptr, size: number): Ptr {
 	const _r = callPtr('raster_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
 	checkMeosError();
@@ -18073,14 +20787,50 @@ export function raster_from_hexwkb(hexwkb: string): Ptr {
 	return _r;
 }
 
-export function raster_as_wkb(rast: Ptr, size_out: Ptr): Ptr {
-	const _r = callPtr('raster_as_wkb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rast), ptrArgVal(size_out)]);
+export function raster_as_wkb(rast: Ptr, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('raster_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(rast), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
 
-export function raster_as_hexwkb(rast: Ptr, size_out: Ptr): string {
-	const _r = call<string>('raster_as_hexwkb_w', 'string', [ptrArgType(), ptrArgType()], [ptrArgVal(rast), ptrArgVal(size_out)]);
+export function raster_as_hexwkb(rast: Ptr, variant: number, size_out: Ptr): string {
+	const _r = call<string>('raster_as_hexwkb_w', 'string', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(rast), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_copy(rast: Ptr): Ptr {
+	const _r = callPtr('raster_copy_w', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_make(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number, pixeltype: string, nodataval: number, has_nodata: boolean, pixels: Ptr, size: number): Ptr {
+	const _r = callPtr('raster_make_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'string', 'number', 'number', ptrArgType(), 'number'], [width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata ? 1 : 0, ptrArgVal(pixels), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_make_empty(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number): Ptr {
+	const _r = callPtr('raster_make_empty_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number'], [width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_add_band(rast: Ptr, index: number, pixeltype: string, initialvalue: number, nodataval: number, has_nodata: boolean): Ptr {
+	const _r = callPtr('raster_add_band_w', [ptrArgType(), 'number', 'string', 'number', 'number', 'number'], [ptrArgVal(rast), index, pixeltype, initialvalue, nodataval, has_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_add_band_raster(torast: Ptr, fromrast: Ptr, fromband: number, toindex: number): Ptr {
+	const _r = callPtr('raster_add_band_raster_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(torast), ptrArgVal(fromrast), fromband, toindex]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_mem_size(rast: Ptr): number {
+	const _r = call<number>('raster_mem_size_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
 	checkMeosError();
 	return _r;
 }
@@ -18091,8 +20841,408 @@ export function raster_num_bands(rast: Ptr): number {
 	return _r;
 }
 
+export function raster_width(rast: Ptr): number {
+	const _r = call<number>('raster_width_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_height(rast: Ptr): number {
+	const _r = call<number>('raster_height_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_srid(rast: Ptr): number {
+	const _r = call<number>('raster_srid_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_upper_left_x(rast: Ptr): number {
+	const _r = call<number>('raster_upper_left_x_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_upper_left_y(rast: Ptr): number {
+	const _r = call<number>('raster_upper_left_y_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_scale_x(rast: Ptr): number {
+	const _r = call<number>('raster_scale_x_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_scale_y(rast: Ptr): number {
+	const _r = call<number>('raster_scale_y_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_skew_x(rast: Ptr): number {
+	const _r = call<number>('raster_skew_x_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_skew_y(rast: Ptr): number {
+	const _r = call<number>('raster_skew_y_w', 'number', [ptrArgType()], [ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_band_pixel_type(rast: Ptr, band: number): string {
+	const _r = call<string>('raster_band_pixel_type_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(rast), band]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_band_has_nodata_value(rast: Ptr, band: number): boolean {
+	const _r = call<number>('raster_band_has_nodata_value_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(rast), band]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_band_nodata_value(rast: Ptr, band: number): number {
+	const _r = call<number>('raster_band_nodata_value_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(rast), band]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_band_pixels(rast: Ptr, band: number, size_out: Ptr): Ptr {
+	const _r = callPtr('raster_band_pixels_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(rast), band, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_count(stats: Ptr): number {
+	const _r = Number(call<bigint>('bandstats_count_w', 'bigint', [ptrArgType()], [ptrArgVal(stats)]));
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_sum(stats: Ptr): number {
+	const _r = call<number>('bandstats_sum_w', 'number', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_mean(stats: Ptr): number {
+	const _r = call<number>('bandstats_mean_w', 'number', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_stddev(stats: Ptr): number {
+	const _r = call<number>('bandstats_stddev_w', 'number', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_min(stats: Ptr): number {
+	const _r = call<number>('bandstats_min_w', 'number', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_max(stats: Ptr): number {
+	const _r = call<number>('bandstats_max_w', 'number', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_clip(rast: Ptr, bands: Ptr, nbands: number, gs: Ptr, nodata: Ptr, nnodata: number, crop: boolean, touched: boolean): Ptr {
+	const _r = callPtr('raster_clip_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(rast), ptrArgVal(bands), nbands, ptrArgVal(gs), ptrArgVal(nodata), nnodata, crop ? 1 : 0, touched ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_transform(rast: Ptr, srid: number, algorithm: string, max_err: number, scale_x: number, scale_y: number): Ptr {
+	const _r = callPtr('raster_transform_w', [ptrArgType(), 'number', 'string', 'number', 'number', 'number'], [ptrArgVal(rast), srid, algorithm, max_err, scale_x, scale_y]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_transform_pipeline(rast: Ptr, pipelinestr: string, srid: number, is_forward: boolean, algorithm: string, max_err: number, scale_x: number, scale_y: number): Ptr {
+	const _r = callPtr('raster_transform_pipeline_w', [ptrArgType(), 'string', 'number', 'number', 'string', 'number', 'number', 'number'], [ptrArgVal(rast), pipelinestr, srid, is_forward ? 1 : 0, algorithm, max_err, scale_x, scale_y]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_transform_raster(rast: Ptr, alignto: Ptr, algorithm: string, max_err: number): Ptr {
+	const _r = callPtr('raster_transform_raster_w', [ptrArgType(), ptrArgType(), 'string', 'number'], [ptrArgVal(rast), ptrArgVal(alignto), algorithm, max_err]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_rescale(rast: Ptr, scale_x: number, scale_y: number, algorithm: string, max_err: number): Ptr {
+	const _r = callPtr('raster_rescale_w', [ptrArgType(), 'number', 'number', 'string', 'number'], [ptrArgVal(rast), scale_x, scale_y, algorithm, max_err]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_dump_as_polygons(rast: Ptr, band: number, exclude_nodata: boolean, count: Ptr): Ptr {
+	const _r = callPtr('raster_dump_as_polygons_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(rast), band, exclude_nodata ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_dump_values(rast: Ptr, band: number, exclude_nodata: boolean, nodata: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('raster_dump_values_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(rast), band, exclude_nodata ? 1 : 0, ptrArgVal(nodata), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_pixel_as_points(rast: Ptr, band: number, exclude_nodata: boolean, count: Ptr): Ptr {
+	const _r = callPtr('raster_pixel_as_points_w', [ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(rast), band, exclude_nodata ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_summary_stats(rast: Ptr, band: number, exclude_nodata: boolean): Ptr {
+	const _r = callPtr('raster_summary_stats_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(rast), band, exclude_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_value_count(rast: Ptr, band: number, exclude_nodata: boolean, searchvalues: Ptr, nsearch: number, roundto: number, count: Ptr): Ptr {
+	const _r = callPtr('raster_value_count_w', [ptrArgType(), 'number', 'number', ptrArgType(), 'number', 'number', ptrArgType()], [ptrArgVal(rast), band, exclude_nodata ? 1 : 0, ptrArgVal(searchvalues), nsearch, roundto, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_set_values(rast: Ptr, band: number, x: number, y: number, width: number, height: number, values: Ptr, nodata: Ptr, noset: Ptr, nosetwidth: number, nosetheight: number, count: number, keepnodata: boolean): Ptr {
+	const _r = callPtr('raster_set_values_w', [ptrArgType(), 'number', 'number', 'number', 'number', 'number', ptrArgType(), ptrArgType(), ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(rast), band, x, y, width, height, ptrArgVal(values), ptrArgVal(nodata), ptrArgVal(noset), nosetwidth, nosetheight, count, keepnodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_reclass(rast: Ptr, band: number, expr: string, pixeltype: string, has_nodata: boolean, nodataval: number): Ptr {
+	const _r = callPtr('raster_reclass_w', [ptrArgType(), 'number', 'string', 'string', 'number', 'number'], [ptrArgVal(rast), band, expr, pixeltype, has_nodata ? 1 : 0, nodataval]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_slope(rast: Ptr, band: number, customextent: Ptr, pixeltype: string, units: string, scale: number, interpolate_nodata: boolean): Ptr {
+	const _r = callPtr('raster_slope_w', [ptrArgType(), 'number', ptrArgType(), 'string', 'string', 'number', 'number'], [ptrArgVal(rast), band, ptrArgVal(customextent), pixeltype, units, scale, interpolate_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_tpi(rast: Ptr, band: number, customextent: Ptr, pixeltype: string, interpolate_nodata: boolean): Ptr {
+	const _r = callPtr('raster_tpi_w', [ptrArgType(), 'number', ptrArgType(), 'string', 'number'], [ptrArgVal(rast), band, ptrArgVal(customextent), pixeltype, interpolate_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_tri(rast: Ptr, band: number, customextent: Ptr, pixeltype: string, interpolate_nodata: boolean): Ptr {
+	const _r = callPtr('raster_tri_w', [ptrArgType(), 'number', ptrArgType(), 'string', 'number'], [ptrArgVal(rast), band, ptrArgVal(customextent), pixeltype, interpolate_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_map_algebra(rast: Ptr, band: number, stat: string, pixeltype: string, extenttype: string, customextent: Ptr, distancex: number, distancey: number): Ptr {
+	const _r = callPtr('raster_map_algebra_w', [ptrArgType(), 'number', 'string', 'string', 'string', ptrArgType(), 'number', 'number'], [ptrArgVal(rast), band, stat, pixeltype, extenttype, ptrArgVal(customextent), distancex, distancey]);
+	checkMeosError();
+	return _r;
+}
+
+export function geomval_arr_free(gvarr: Ptr, count: number): void {
+	call<void>('geomval_arr_free_w', null, [ptrArgType(), 'number'], [ptrArgVal(gvarr), count]);
+	checkMeosError();
+}
+
+export function pixel_arr_free(pixarr: Ptr, count: number): void {
+	call<void>('pixel_arr_free_w', null, [ptrArgType(), 'number'], [ptrArgVal(pixarr), count]);
+	checkMeosError();
+}
+
+export function add_float_raster(d: number, rast: Ptr): Ptr {
+	const _r = callPtr('add_float_raster_w', ['number', ptrArgType()], [d, ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function add_raster_float(rast: Ptr, d: number): Ptr {
+	const _r = callPtr('add_raster_float_w', [ptrArgType(), 'number'], [ptrArgVal(rast), d]);
+	checkMeosError();
+	return _r;
+}
+
+export function add_raster_raster(rast1: Ptr, rast2: Ptr): Ptr {
+	const _r = callPtr('add_raster_raster_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function div_float_raster(d: number, rast: Ptr): Ptr {
+	const _r = callPtr('div_float_raster_w', ['number', ptrArgType()], [d, ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function div_raster_float(rast: Ptr, d: number): Ptr {
+	const _r = callPtr('div_raster_float_w', [ptrArgType(), 'number'], [ptrArgVal(rast), d]);
+	checkMeosError();
+	return _r;
+}
+
+export function div_raster_raster(rast1: Ptr, rast2: Ptr): Ptr {
+	const _r = callPtr('div_raster_raster_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function mul_float_raster(d: number, rast: Ptr): Ptr {
+	const _r = callPtr('mul_float_raster_w', ['number', ptrArgType()], [d, ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function mul_raster_float(rast: Ptr, d: number): Ptr {
+	const _r = callPtr('mul_raster_float_w', [ptrArgType(), 'number'], [ptrArgVal(rast), d]);
+	checkMeosError();
+	return _r;
+}
+
+export function mul_raster_raster(rast1: Ptr, rast2: Ptr): Ptr {
+	const _r = callPtr('mul_raster_raster_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function sub_float_raster(d: number, rast: Ptr): Ptr {
+	const _r = callPtr('sub_float_raster_w', ['number', ptrArgType()], [d, ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function sub_raster_float(rast: Ptr, d: number): Ptr {
+	const _r = callPtr('sub_raster_float_w', [ptrArgType(), 'number'], [ptrArgVal(rast), d]);
+	checkMeosError();
+	return _r;
+}
+
+export function sub_raster_raster(rast1: Ptr, rast2: Ptr): Ptr {
+	const _r = callPtr('sub_raster_raster_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_same_alignment(rast1: Ptr, rast2: Ptr): boolean {
+	const _r = call<number>('raster_same_alignment_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_not_same_alignment_reason(rast1: Ptr, rast2: Ptr): string {
+	const _r = call<string>('raster_not_same_alignment_reason_w', 'string', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_same_alignment_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('raster_same_alignment_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_same_alignment_finalfn(state: Ptr): boolean {
+	const _r = call<number>('raster_same_alignment_finalfn_w', 'number', [ptrArgType()], [ptrArgVal(state)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_same_alignment_transfn(state: Ptr, rast: Ptr): Ptr {
+	const _r = callPtr('raster_same_alignment_transfn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(rast)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_summary_stats_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('raster_summary_stats_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_summary_stats_finalfn(state: Ptr): Ptr {
+	const _r = callPtr('raster_summary_stats_finalfn_w', [ptrArgType()], [ptrArgVal(state)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_summary_stats_transfn(state: Ptr, rast: Ptr, band: number, exclude_nodata: boolean): Ptr {
+	const _r = callPtr('raster_summary_stats_transfn_w', [ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(state), ptrArgVal(rast), band, exclude_nodata ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_union_combinefn(state1: Ptr, state2: Ptr): Ptr {
+	const _r = callPtr('raster_union_combinefn_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state1), ptrArgVal(state2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_union_finalfn(state: Ptr): Ptr {
+	const _r = callPtr('raster_union_finalfn_w', [ptrArgType()], [ptrArgVal(state)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_union_transfn(state: Ptr, rast: Ptr, band: number, uniontype: string): Ptr {
+	const _r = callPtr('raster_union_transfn_w', [ptrArgType(), ptrArgType(), 'number', 'string'], [ptrArgVal(state), ptrArgVal(rast), band, uniontype]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasteralignstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('rasteralignstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasteralignstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('rasteralignstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasterstatsstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('rasterstatsstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasterstatsstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('rasterstatsstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasterunionstate_deserialize(bytes: Ptr, size: number): Ptr {
+	const _r = callPtr('rasterunionstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	checkMeosError();
+	return _r;
+}
+
+export function rasterunionstate_serialize(state: Ptr, size_out: Ptr): Ptr {
+	const _r = callPtr('rasterunionstate_serialize_w', [ptrArgType(), ptrArgType()], [ptrArgVal(state), ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
 export function raquet_to_stbox(rq: Ptr): Ptr {
 	const _r = callPtr('raquet_to_stbox_w', [ptrArgType()], [ptrArgVal(rq)]);
+	checkMeosError();
+	return _r;
+}
+
+export function raster_to_stbox(rast: Ptr): Ptr {
+	const _r = callPtr('raster_to_stbox_w', [ptrArgType()], [ptrArgVal(rast)]);
 	checkMeosError();
 	return _r;
 }
@@ -18139,8 +21289,8 @@ export function raquet_gt(rq1: Ptr, rq2: Ptr): boolean {
 	return _r;
 }
 
-export function raster_value(traj: Ptr, rast: Ptr, band: number): Ptr {
-	const _r = callPtr('raster_value_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(traj), ptrArgVal(rast), band]);
+export function raster_value(traj: Ptr, rast: Ptr, band: number, exclude_nodata: boolean, resample: string): Ptr {
+	const _r = callPtr('raster_value_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'string'], [ptrArgVal(traj), ptrArgVal(rast), band, exclude_nodata ? 1 : 0, resample]);
 	checkMeosError();
 	return _r;
 }
@@ -18213,12 +21363,6 @@ export function raster_tile_value(traj: Ptr, rq: Ptr): Ptr {
 
 export function raster_tile_value_array(traj: Ptr, rqarr: Ptr, count: number): Ptr {
 	const _r = callPtr('raster_tile_value_array_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(traj), ptrArgVal(rqarr), count]);
-	checkMeosError();
-	return _r;
-}
-
-export function trajectory_quadbins(traj: Ptr, zoom: number, count: Ptr): Ptr {
-	const _r = callPtr('trajectory_quadbins_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(traj), zoom, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -18400,6 +21544,24 @@ export function trgeometry_start_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function trgeometry_value(temp: Ptr): Ptr {
+	const _r = callPtr('trgeometry_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_values(temp: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('trgeometry_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('trgeometry_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function trgeometry_value_n(temp: Ptr, n: number): Ptr {
 	const _r = callPtr('trgeometry_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
@@ -18436,6 +21598,12 @@ export function trgeometry_space_boxes(temp: Ptr, xsize: number, ysize: number, 
 	return _r;
 }
 
+export function trgeometry_time_boxes(temp: Ptr, duration: Ptr, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean, count: Ptr): Ptr {
+	const _r = callPtr('trgeometry_time_boxes_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', 'number', ptrArgType()], [ptrArgVal(temp), ptrArgVal(duration), BigInt(torigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function trgeometry_space_time_boxes(temp: Ptr, xsize: number, ysize: number, zsize: number, duration: Ptr, sorigin: Ptr, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean, count: Ptr): Ptr {
 	const _r = callPtr('trgeometry_space_time_boxes_w', [ptrArgType(), 'number', 'number', 'number', ptrArgType(), ptrArgType(), 'bigint', 'number', 'number', ptrArgType()], [ptrArgVal(temp), xsize, ysize, zsize, ptrArgVal(duration), ptrArgVal(sorigin), BigInt(torigin), bitmatrix ? 1 : 0, border_inc ? 1 : 0, ptrArgVal(count)]);
 	checkMeosError();
@@ -18456,36 +21624,6 @@ export function trgeometry_split_n_stboxes(temp: Ptr, box_count: number, count: 
 
 export function trgeometry_split_each_n_stboxes(temp: Ptr, elem_count: number, count: Ptr): Ptr {
 	const _r = callPtr('trgeometry_split_each_n_stboxes_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), elem_count, ptrArgVal(count)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_hausdorff_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('trgeometry_hausdorff_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_frechet_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('trgeometry_frechet_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_dyntimewarp_distance(temp1: Ptr, temp2: Ptr): number {
-	const _r = call<number>('trgeometry_dyntimewarp_distance_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_frechet_path(temp1: Ptr, temp2: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('trgeometry_frechet_path_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), ptrArgVal(count)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_dyntimewarp_path(temp1: Ptr, temp2: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('trgeometry_dyntimewarp_path_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -18574,8 +21712,38 @@ export function trgeometry_round(temp: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
+export function trgeometry_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
+	const _r = callPtr('trgeometry_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_rotate_x(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('trgeometry_rotate_x_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_rotate_y(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('trgeometry_rotate_y_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_rotate_z(temp: Ptr, angle: number): Ptr {
+	const _r = callPtr('trgeometry_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
+	checkMeosError();
+	return _r;
+}
+
 export function trgeometry_set_interp(temp: Ptr, interp: number): Ptr {
 	const _r = callPtr('trgeometry_set_interp_w', [ptrArgType(), 'number'], [ptrArgVal(temp), interp]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_translate(temp: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
+	const _r = callPtr('trgeometry_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, deltaz]);
 	checkMeosError();
 	return _r;
 }
@@ -18706,18 +21874,6 @@ export function trgeometry_minus_tstzspanset(temp: Ptr, ss: Ptr): Ptr {
 	return _r;
 }
 
-export function trgeometry_at_elevation(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_at_elevation_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_elevation(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_minus_elevation_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
 export function tdistance_trgeometry_geo(temp: Ptr, gs: Ptr): Ptr {
 	const _r = callPtr('tdistance_trgeometry_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
@@ -18798,6 +21954,24 @@ export function shortestline_trgeometry_tpoint(temp1: Ptr, temp2: Ptr): Ptr {
 
 export function shortestline_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): Ptr {
 	const _r = callPtr('shortestline_trgeometry_trgeometry_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdwithin_geo_trgeometry(gs: Ptr, temp: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_geo_trgeometry_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdwithin_trgeometry_geo(temp: Ptr, gs: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_trgeometry_geo_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), dist]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdwithin_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr, dist: number): Ptr {
+	const _r = callPtr('tdwithin_trgeometry_trgeometry_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp1), ptrArgVal(temp2), dist]);
 	checkMeosError();
 	return _r;
 }
@@ -19021,212 +22195,380 @@ export function adwithin_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr, dist: num
 
 // === meos_s2cell.h ===
 
+export function s2cell_as_hexwkb(cell: number, variant: number, size_out: Ptr): string {
+	const _r = call<string>('s2cell_as_hexwkb_w', 'string', ['bigint', 'number', ptrArgType()], [BigInt(cell), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cell_as_wkb(cell: number, variant: number, size_out: Ptr): Ptr {
+	const _r = callPtr('s2cell_as_wkb_w', ['bigint', 'number', ptrArgType()], [BigInt(cell), variant, ptrArgVal(size_out)]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cell_from_hexwkb(hexwkb: string): number {
+	const _r = Number(call<bigint>('s2cell_from_hexwkb_w', 'bigint', ['string'], [hexwkb]));
+	checkMeosError();
+	return _r;
+}
+
+export function s2cell_from_wkb(wkb: Ptr, size: number): number {
+	const _r = Number(call<bigint>('s2cell_from_wkb_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]));
+	checkMeosError();
+	return _r;
+}
+
 export function s2cell_in(str: string): number {
-	const _r = call<number>('s2cell_in_w', 'number', ['string'], [str]);
+	const _r = Number(call<bigint>('s2cell_in_w', 'bigint', ['string'], [str]));
+	checkMeosError();
+	return _r;
+}
+
+export function bigint_to_s2cell(i: number): number {
+	const _r = Number(call<bigint>('bigint_to_s2cell_w', 'bigint', ['bigint'], [BigInt(i)]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_out(cell: number): string {
-	const _r = call<string>('s2cell_out_w', 'string', ['number'], [cell]);
+	const _r = call<string>('s2cell_out_w', 'string', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_eq(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_eq_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_eq_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_ne(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_ne_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_ne_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_lt(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_lt_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_lt_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_le(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_le_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_le_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_gt(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_gt_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_gt_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_ge(a: number, b: number): boolean {
-	const _r = call<number>('s2cell_ge_w', 'number', ['number', 'number'], [a, b]) !== 0;
+	const _r = call<number>('s2cell_ge_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cmp(a: number, b: number): number {
-	const _r = call<number>('s2cell_cmp_w', 'number', ['number', 'number'], [a, b]);
+	const _r = call<number>('s2cell_cmp_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_hash(cell: number): number {
-	const _r = call<number>('s2cell_hash_w', 'number', ['number'], [cell]);
+	const _r = call<number>('s2cell_hash_w', 'number', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_hash_extended(cell: number, seed: number): number {
-	const _r = Number(call<bigint>('s2cell_hash_extended_w', 'bigint', ['number', 'bigint'], [cell, BigInt(seed)]));
+	const _r = Number(call<bigint>('s2cell_hash_extended_w', 'bigint', ['bigint', 'bigint'], [BigInt(cell), BigInt(seed)]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_is_valid_cell(cell: number): boolean {
-	const _r = call<number>('s2cell_is_valid_cell_w', 'number', ['number'], [cell]) !== 0;
+	const _r = call<number>('s2cell_is_valid_cell_w', 'number', ['bigint'], [BigInt(cell)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_token(cell: number): string {
-	const _r = call<string>('s2cell_cell_to_token_w', 'string', ['number'], [cell]);
+	const _r = call<string>('s2cell_cell_to_token_w', 'string', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_token_to_cell(token: string): number {
-	const _r = call<number>('s2cell_token_to_cell_w', 'number', ['string'], [token]);
+	const _r = Number(call<bigint>('s2cell_token_to_cell_w', 'bigint', ['string'], [token]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_get_resolution(cell: number): number {
-	const _r = call<number>('s2cell_get_resolution_w', 'number', ['number'], [cell]);
+	const _r = call<number>('s2cell_get_resolution_w', 'number', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_get_face(cell: number): number {
-	const _r = call<number>('s2cell_get_face_w', 'number', ['number'], [cell]);
+	const _r = call<number>('s2cell_get_face_w', 'number', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_parent(cell: number, level: number): number {
-	const _r = call<number>('s2cell_cell_to_parent_w', 'number', ['number', 'number'], [cell, level]);
+	const _r = Number(call<bigint>('s2cell_cell_to_parent_w', 'bigint', ['bigint', 'number'], [BigInt(cell), level]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_child(cell: number, level: number, position: number): number {
-	const _r = call<number>('s2cell_cell_to_child_w', 'number', ['number', 'number', 'number'], [cell, level, position]);
+	const _r = Number(call<bigint>('s2cell_cell_to_child_w', 'bigint', ['bigint', 'number', 'number'], [BigInt(cell), level, position]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_children(cell: number, level: number, count: Ptr): Ptr {
-	const _r = callPtr('s2cell_cell_to_children_w', ['number', 'number', ptrArgType()], [cell, level, ptrArgVal(count)]);
+	const _r = callPtr('s2cell_cell_to_children_w', ['bigint', 'number', ptrArgType()], [BigInt(cell), level, ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_contains(cell: number, other: number): boolean {
-	const _r = call<number>('s2cell_cell_contains_w', 'number', ['number', 'number'], [cell, other]) !== 0;
+	const _r = call<number>('s2cell_cell_contains_w', 'number', ['bigint', 'bigint'], [BigInt(cell), BigInt(other)]) !== 0;
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_common_ancestor_level(a: number, b: number): number {
-	const _r = call<number>('s2cell_common_ancestor_level_w', 'number', ['number', 'number'], [a, b]);
+	const _r = call<number>('s2cell_common_ancestor_level_w', 'number', ['bigint', 'bigint'], [BigInt(a), BigInt(b)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_range_min(cell: number): number {
-	const _r = call<number>('s2cell_range_min_w', 'number', ['number'], [cell]);
+	const _r = Number(call<bigint>('s2cell_range_min_w', 'bigint', ['bigint'], [BigInt(cell)]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_range_max(cell: number): number {
-	const _r = call<number>('s2cell_range_max_w', 'number', ['number'], [cell]);
+	const _r = Number(call<bigint>('s2cell_range_max_w', 'bigint', ['bigint'], [BigInt(cell)]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_edge_neighbors(cell: number, count: Ptr): Ptr {
-	const _r = callPtr('s2cell_edge_neighbors_w', ['number', ptrArgType()], [cell, ptrArgVal(count)]);
+	const _r = callPtr('s2cell_edge_neighbors_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_point_to_cell(longitude: number, latitude: number, level: number): number {
-	const _r = call<number>('s2cell_point_to_cell_w', 'number', ['number', 'number', 'number'], [longitude, latitude, level]);
+	const _r = Number(call<bigint>('s2cell_point_to_cell_w', 'bigint', ['number', 'number', 'number'], [longitude, latitude, level]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_area(cell: number): number {
-	const _r = call<number>('s2cell_cell_area_w', 'number', ['number'], [cell]);
+	const _r = call<number>('s2cell_cell_area_w', 'number', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_edge_length(cell: number, edge: number): number {
-	const _r = call<number>('s2cell_edge_length_w', 'number', ['number', 'number'], [cell, edge]);
+	const _r = call<number>('s2cell_edge_length_w', 'number', ['bigint', 'number'], [BigInt(cell), edge]);
 	checkMeosError();
 	return _r;
 }
 
 export function geo_to_s2cell_cell(point: Ptr, level: number): number {
-	const _r = call<number>('geo_to_s2cell_cell_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(point), level]);
+	const _r = Number(call<bigint>('geo_to_s2cell_cell_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(point), level]));
+	checkMeosError();
+	return _r;
+}
+
+export function geo_to_s2cell_set(gs: Ptr, level: number): Ptr {
+	const _r = callPtr('geo_to_s2cell_set_w', [ptrArgType(), 'number'], [ptrArgVal(gs), level]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_geogpoint(cell: number): Ptr {
-	const _r = callPtr('s2cell_cell_to_geogpoint_w', ['number'], [cell]);
+	const _r = callPtr('s2cell_cell_to_geogpoint_w', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_geog(cell: number): Ptr {
-	const _r = callPtr('s2cell_cell_to_geog_w', ['number'], [cell]);
+	const _r = callPtr('s2cell_cell_to_geog_w', ['bigint'], [BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_eq_s2cellset_ts2cell(cells: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_eq_s2cellset_ts2cell_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cells), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_eq_ts2cell_s2cellset(temp: Ptr, cells: Ptr): number {
+	const _r = call<number>('ever_eq_ts2cell_s2cellset_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(cells)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_to_stbox(cell: number): Ptr {
-	const _r = callPtr('s2cell_to_stbox_w', ['number'], [cell]);
+	const _r = callPtr('s2cell_to_stbox_w', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_timestamptz_to_stbox(cell: number, t: TimestampTz): Ptr {
-	const _r = callPtr('s2cell_timestamptz_to_stbox_w', ['number', 'bigint'], [cell, BigInt(t)]);
+	const _r = callPtr('s2cell_timestamptz_to_stbox_w', ['bigint', 'bigint'], [BigInt(cell), BigInt(t)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_tstzspan_to_stbox(cell: number, s: Ptr): Ptr {
-	const _r = callPtr('s2cell_tstzspan_to_stbox_w', ['number', ptrArgType()], [cell, ptrArgVal(s)]);
+	const _r = callPtr('s2cell_tstzspan_to_stbox_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_edge_neighbors_set(cell: number): Ptr {
-	const _r = callPtr('s2cell_edge_neighbors_set_w', ['number'], [cell]);
+	const _r = callPtr('s2cell_edge_neighbors_set_w', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_cell_to_children_set(cell: number, children_level: number): Ptr {
-	const _r = callPtr('s2cell_cell_to_children_set_w', ['number', 'number'], [cell, children_level]);
+	const _r = callPtr('s2cell_cell_to_children_set_w', ['bigint', 'number'], [BigInt(cell), children_level]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_compact_cells(cells: Ptr): Ptr {
+	const _r = callPtr('s2cellset_compact_cells_w', [ptrArgType()], [ptrArgVal(cells)]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_uncompact_cells(cells: Ptr, resolution: number): Ptr {
+	const _r = callPtr('s2cellset_uncompact_cells_w', [ptrArgType(), 'number'], [ptrArgVal(cells), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cell_cell_to_cover(cell: number, resolution: number): Ptr {
+	const _r = callPtr('s2cell_cell_to_cover_w', ['bigint', 'number'], [BigInt(cell), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_cover_cells(cells: Ptr, resolution: number): Ptr {
+	const _r = callPtr('s2cellset_cover_cells_w', [ptrArgType(), 'number'], [ptrArgVal(cells), resolution]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_in(str: string): Ptr {
+	const _r = callPtr('s2cellset_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_out(s: Ptr): string {
+	const _r = call<string>('s2cellset_out_w', 'string', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_make(values: Ptr, count: number): Ptr {
+	const _r = callPtr('s2cellset_make_w', [ptrArgType(), 'number'], [ptrArgVal(values), count]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_end_value(s: Ptr): number {
+	const _r = Number(call<bigint>('s2cellset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_start_value(s: Ptr): number {
+	const _r = Number(call<bigint>('s2cellset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_value_n(s: Ptr, n: number): number {
+	const _r = Number(call<bigint>('s2cellset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
+	checkMeosError();
+	return _r;
+}
+
+export function s2cellset_values(s: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('s2cellset_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contained_s2cell_set(cell: number, s: Ptr): boolean {
+	const _r = call<number>('contained_s2cell_set_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function contains_set_s2cell(s: Ptr, cell: number): boolean {
+	const _r = call<number>('contains_set_s2cell_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_s2cell_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('intersection_s2cell_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function intersection_set_s2cell(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('intersection_set_s2cell_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_s2cell_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('minus_s2cell_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function minus_set_s2cell(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('minus_set_s2cell_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_s2cell_set(cell: number, s: Ptr): Ptr {
+	const _r = callPtr('union_s2cell_set_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function union_set_s2cell(s: Ptr, cell: number): Ptr {
+	const _r = callPtr('union_set_s2cell_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function s2cell_union_transfn(state: Ptr, cell: number): Ptr {
+	const _r = callPtr('s2cell_union_transfn_w', [ptrArgType(), 'bigint'], [ptrArgVal(state), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -19237,14 +22579,50 @@ export function ts2cell_in(str: string): Ptr {
 	return _r;
 }
 
+export function ts2cell_out(temp: Ptr): string {
+	const _r = call<string>('ts2cell_out_w', 'string', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_from_mfjson(mfjson: string): Ptr {
+	const _r = callPtr('ts2cell_from_mfjson_w', ['string'], [mfjson]);
+	checkMeosError();
+	return _r;
+}
+
 export function ts2cell_make(value: number, t: TimestampTz): Ptr {
-	const _r = callPtr('ts2cell_make_w', ['number', 'bigint'], [value, BigInt(t)]);
+	const _r = callPtr('ts2cell_make_w', ['bigint', 'bigint'], [BigInt(value), BigInt(t)]);
 	checkMeosError();
 	return _r;
 }
 
 export function ts2cellinst_make(value: number, t: TimestampTz): Ptr {
-	const _r = callPtr('ts2cellinst_make_w', ['number', 'bigint'], [value, BigInt(t)]);
+	const _r = callPtr('ts2cellinst_make_w', ['bigint', 'bigint'], [BigInt(value), BigInt(t)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_from_base_temp(value: number, temp: Ptr): Ptr {
+	const _r = callPtr('ts2cell_from_base_temp_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cellseq_from_base_tstzset(value: number, s: Ptr): Ptr {
+	const _r = callPtr('ts2cellseq_from_base_tstzset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cellseq_from_base_tstzspan(value: number, s: Ptr): Ptr {
+	const _r = callPtr('ts2cellseq_from_base_tstzspan_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cellseqset_from_base_tstzspanset(value: number, ss: Ptr): Ptr {
+	const _r = callPtr('ts2cellseqset_from_base_tstzspanset_w', ['bigint', ptrArgType()], [BigInt(value), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -19262,19 +22640,25 @@ export function ts2cellseqset_make(sequences: Ptr, count: number): Ptr {
 }
 
 export function ts2cell_start_value(temp: Ptr): number {
-	const _r = call<number>('ts2cell_start_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	const _r = Number(call<bigint>('ts2cell_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
 	checkMeosError();
 	return _r;
 }
 
 export function ts2cell_end_value(temp: Ptr): number {
-	const _r = call<number>('ts2cell_end_value_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
+	const _r = Number(call<bigint>('ts2cell_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_value(temp: Ptr): number {
+	const _r = Number(call<bigint>('ts2cell_value_w', 'bigint', [ptrArgType()], [ptrArgVal(temp)]));
 	checkMeosError();
 	return _r;
 }
 
 export function ts2cell_value_n(temp: Ptr, n: number): number {
-	const _r = call<number>('ts2cell_value_n_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	const _r = Number(call<bigint>('ts2cell_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(temp), n]));
 	checkMeosError();
 	return _r;
 }
@@ -19285,14 +22669,20 @@ export function ts2cell_values(temp: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
+export function ts2cell_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('ts2cell_unnest_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(values), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ts2cell_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): number {
-	const _r = call<number>('ts2cell_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
+	const _r = Number(call<bigint>('ts2cell_value_at_timestamptz_w', 'bigint', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]));
 	checkMeosError();
 	return _r;
 }
 
 export function s2cell_to_set(cell: number): Ptr {
-	const _r = callPtr('s2cell_to_set_w', ['number'], [cell]);
+	const _r = callPtr('s2cell_to_set_w', ['bigint'], [BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -19309,50 +22699,86 @@ export function ts2cell_to_tbigint(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tgeogpoint_to_ts2cell(temp: Ptr, level: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeogpoint_to_ts2cell_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), level, border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_to_ts2cell(temp: Ptr, level: number, border_inc: boolean): Ptr {
+	const _r = callPtr('tgeompoint_to_ts2cell_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temp), level, border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeogpoint_s2cell_split(temp: Ptr, level: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeogpoint_s2cell_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), level, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeompoint_s2cell_split(temp: Ptr, level: number, border_inc: boolean, cells: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tgeompoint_s2cell_split_w', [ptrArgType(), 'number', 'number', ptrArgType(), ptrArgType()], [ptrArgVal(temp), level, border_inc ? 1 : 0, ptrArgVal(cells), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_at_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('ts2cell_at_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_minus_value(temp: Ptr, cell: number): Ptr {
+	const _r = callPtr('ts2cell_minus_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_s2cell_ts2cell(cell: number, temp: Ptr): number {
-	const _r = call<number>('ever_eq_s2cell_ts2cell_w', 'number', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = call<number>('ever_eq_s2cell_ts2cell_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function ever_eq_ts2cell_s2cell(temp: Ptr, cell: number): number {
-	const _r = call<number>('ever_eq_ts2cell_s2cell_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = call<number>('ever_eq_ts2cell_s2cell_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function ever_ne_s2cell_ts2cell(cell: number, temp: Ptr): number {
-	const _r = call<number>('ever_ne_s2cell_ts2cell_w', 'number', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = call<number>('ever_ne_s2cell_ts2cell_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function ever_ne_ts2cell_s2cell(temp: Ptr, cell: number): number {
-	const _r = call<number>('ever_ne_ts2cell_s2cell_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = call<number>('ever_ne_ts2cell_s2cell_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function always_eq_s2cell_ts2cell(cell: number, temp: Ptr): number {
-	const _r = call<number>('always_eq_s2cell_ts2cell_w', 'number', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = call<number>('always_eq_s2cell_ts2cell_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function always_eq_ts2cell_s2cell(temp: Ptr, cell: number): number {
-	const _r = call<number>('always_eq_ts2cell_s2cell_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = call<number>('always_eq_ts2cell_s2cell_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
 
 export function always_ne_s2cell_ts2cell(cell: number, temp: Ptr): number {
-	const _r = call<number>('always_ne_s2cell_ts2cell_w', 'number', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = call<number>('always_ne_s2cell_ts2cell_w', 'number', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function always_ne_ts2cell_s2cell(temp: Ptr, cell: number): number {
-	const _r = call<number>('always_ne_ts2cell_s2cell_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = call<number>('always_ne_ts2cell_s2cell_w', 'number', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -19382,13 +22808,13 @@ export function always_ne_ts2cell_ts2cell(temp1: Ptr, temp2: Ptr): number {
 }
 
 export function teq_s2cell_ts2cell(cell: number, temp: Ptr): Ptr {
-	const _r = callPtr('teq_s2cell_ts2cell_w', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = callPtr('teq_s2cell_ts2cell_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function teq_ts2cell_s2cell(temp: Ptr, cell: number): Ptr {
-	const _r = callPtr('teq_ts2cell_s2cell_w', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = callPtr('teq_ts2cell_s2cell_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -19400,13 +22826,13 @@ export function teq_ts2cell_ts2cell(temp1: Ptr, temp2: Ptr): Ptr {
 }
 
 export function tne_s2cell_ts2cell(cell: number, temp: Ptr): Ptr {
-	const _r = callPtr('tne_s2cell_ts2cell_w', ['number', ptrArgType()], [cell, ptrArgVal(temp)]);
+	const _r = callPtr('tne_s2cell_ts2cell_w', ['bigint', ptrArgType()], [BigInt(cell), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
 
 export function tne_ts2cell_s2cell(temp: Ptr, cell: number): Ptr {
-	const _r = callPtr('tne_ts2cell_s2cell_w', [ptrArgType(), 'number'], [ptrArgVal(temp), cell]);
+	const _r = callPtr('tne_ts2cell_s2cell_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(cell)]);
 	checkMeosError();
 	return _r;
 }
@@ -19419,6 +22845,12 @@ export function tne_ts2cell_ts2cell(temp1: Ptr, temp2: Ptr): Ptr {
 
 export function ts2cell_cell_to_token(temp: Ptr): Ptr {
 	const _r = callPtr('ts2cell_cell_to_token_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_grid_distance(origin: Ptr, dest: Ptr): Ptr {
+	const _r = callPtr('ts2cell_grid_distance_w', [ptrArgType(), ptrArgType()], [ptrArgVal(origin), ptrArgVal(dest)]);
 	checkMeosError();
 	return _r;
 }
@@ -20761,14 +24193,14 @@ export function add_timestamp_interval(ts: number, interv: Ptr): number {
 	return _r;
 }
 
-export function add_timestamptz_interval(tstz: TimestampTz, interv: Ptr): number {
-	const _r = call<number>('add_timestamptz_interval_w', 'number', ['bigint', ptrArgType()], [BigInt(tstz), ptrArgVal(interv)]);
+export function add_timestamptz_interval(tstz: TimestampTz, interv: Ptr): TimestampTz {
+	const _r = call<TimestampTz>('add_timestamptz_interval_w', 'number', ['bigint', ptrArgType()], [BigInt(tstz), ptrArgVal(interv)]);
 	checkMeosError();
 	return _r;
 }
 
-export function add_timestamptz_interval_at_zone(tstz: TimestampTz, interv: Ptr, zone: string): number {
-	const _r = call<number>('add_timestamptz_interval_at_zone_w', 'number', ['bigint', ptrArgType(), 'string'], [BigInt(tstz), ptrArgVal(interv), zone]);
+export function add_timestamptz_interval_at_zone(tstz: TimestampTz, interv: Ptr, zone: string): TimestampTz {
+	const _r = call<TimestampTz>('add_timestamptz_interval_at_zone_w', 'number', ['bigint', ptrArgType(), 'string'], [BigInt(tstz), ptrArgVal(interv), zone]);
 	checkMeosError();
 	return _r;
 }

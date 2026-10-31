@@ -8,6 +8,7 @@ import {
 	span_from_hexwkb,
 	adjacent_span_span,
 	distance_tstzspan_tstzspan,
+	interval_us_free,
 	tstzspan_shift_scale,
 	tstzspan_expand,
 	tstzspan_tprecision,
@@ -114,7 +115,7 @@ export class TsTzSpan extends Span {
 	 * Returns `0` if they overlap or are adjacent.
 	 */
 	distance(other: this): number {
-		return distance_tstzspan_tstzspan(this._inner, other.inner);
+		return interval_us_free(distance_tstzspan_tstzspan(this._inner, other.inner));
 	}
 
 	// -------------------------------------------------------------------------

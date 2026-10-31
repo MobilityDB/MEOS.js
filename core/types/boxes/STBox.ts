@@ -535,8 +535,8 @@ export class STBox {
 	 * Returns the nearest-approach distance (in spatial units) between `this` and `other`.
 	 * Returns `0` if the boxes overlap.
 	 */
-	distance(other: STBox): number {
-		return nad_stbox_stbox(this._inner, other.inner);
+	distance(other: STBox, spheroid = true): number {
+		return nad_stbox_stbox(this._inner, other.inner, spheroid);
 	}
 
 	// -------------------------------------------------------------------------

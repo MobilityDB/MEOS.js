@@ -355,7 +355,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: tpoint_length
 	 */
 	length(): number {
-		return tpoint_length(this._inner);
+		return tpoint_length(this._inner, true);
 	}
 
 	/**
@@ -363,7 +363,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: tpoint_speed
 	 */
 	speed(): Ptr {
-		return tpoint_speed(this._inner);
+		return tpoint_speed(this._inner, true);
 	}
 
 	/**
@@ -408,7 +408,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: tpoint_cumulative_length
 	 */
 	cumulativeLength(): Ptr {
-		return tpoint_cumulative_length(this._inner);
+		return tpoint_cumulative_length(this._inner, true);
 	}
 
 	/**
@@ -626,7 +626,7 @@ export class TGeomPoint extends Temporal<string> {
 	/** Returns true if this is ever within `dist` of geometry `wkt`. MEOS: edwithin_tgeo_geo */
 	everDWithin(wkt: string, dist: number): boolean {
 		const gs = geo_from_text(wkt, 0);
-		const r = edwithin_tgeo_geo(this._inner, gs, dist) > 0;
+		const r = edwithin_tgeo_geo(this._inner, gs, dist, true) > 0;
 		meos_free(gs);
 		return r;
 	}
@@ -643,7 +643,7 @@ export class TGeomPoint extends Temporal<string> {
 
 	/** Returns true if this is ever within `dist` of other TGeomPoint. MEOS: edwithin_tgeo_tgeo */
 	everDWithinTemporal(other: TGeomPoint, dist: number): boolean {
-		return edwithin_tgeo_tgeo(this._inner, other.inner, dist) > 0;
+		return edwithin_tgeo_tgeo(this._inner, other.inner, dist, true) > 0;
 	}
 
 	// -------------------------------------------------------------------------
@@ -685,7 +685,7 @@ export class TGeomPoint extends Temporal<string> {
 	/** Returns a TBool (Ptr) that is true at instants where this is within `dist` of `wkt`. MEOS: tdwithin_tgeo_geo */
 	temporalDWithin(wkt: string, dist: number): Ptr {
 		const gs = geo_from_text(wkt, 0);
-		const r = tdwithin_tgeo_geo(this._inner, gs, dist);
+		const r = tdwithin_tgeo_geo(this._inner, gs, dist, true);
 		meos_free(gs);
 		return r;
 	}
@@ -707,7 +707,7 @@ export class TGeomPoint extends Temporal<string> {
 
 	/** Returns a TBool (Ptr) for temporal dwithin with other TGeomPoint. MEOS: tdwithin_tgeo_tgeo */
 	temporalDWithinTemporal(other: TGeomPoint, dist: number): Ptr {
-		return tdwithin_tgeo_tgeo(this._inner, other.inner, dist);
+		return tdwithin_tgeo_tgeo(this._inner, other.inner, dist, true);
 	}
 
 	// -------------------------------------------------------------------------
@@ -720,7 +720,7 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	temporalDistance(wkt: string): Ptr {
 		const gs = geo_from_text(wkt, 0);
-		const r = tdistance_tgeo_geo(this._inner, gs);
+		const r = tdistance_tgeo_geo(this._inner, gs, true);
 		meos_free(gs);
 		return r;
 	}
@@ -730,7 +730,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: tdistance_tgeo_tgeo
 	 */
 	temporalDistanceTemporal(other: TGeomPoint): Ptr {
-		return tdistance_tgeo_tgeo(this._inner, other.inner);
+		return tdistance_tgeo_tgeo(this._inner, other.inner, true);
 	}
 
 	/**
@@ -739,7 +739,7 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	nad(wkt: string): number {
 		const gs = geo_from_text(wkt, 0);
-		const r = nad_tgeo_geo(this._inner, gs);
+		const r = nad_tgeo_geo(this._inner, gs, true);
 		meos_free(gs);
 		return r;
 	}
@@ -749,7 +749,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: nad_tgeo_stbox
 	 */
 	nadSTBox(box: Ptr): number {
-		return nad_tgeo_stbox(this._inner, box);
+		return nad_tgeo_stbox(this._inner, box, true);
 	}
 
 	/**
@@ -757,7 +757,7 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: nad_tgeo_tgeo
 	 */
 	nadTemporal(other: TGeomPoint): number {
-		return nad_tgeo_tgeo(this._inner, other.inner);
+		return nad_tgeo_tgeo(this._inner, other.inner, true);
 	}
 
 	/**
@@ -766,7 +766,7 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	nai(wkt: string): Ptr {
 		const gs = geo_from_text(wkt, 0);
-		const r = nai_tgeo_geo(this._inner, gs);
+		const r = nai_tgeo_geo(this._inner, gs, true);
 		meos_free(gs);
 		return r;
 	}
@@ -776,6 +776,6 @@ export class TGeomPoint extends Temporal<string> {
 	 * MEOS: nai_tgeo_tgeo
 	 */
 	naiTemporal(other: TGeomPoint): Ptr {
-		return nai_tgeo_tgeo(this._inner, other.inner);
+		return nai_tgeo_tgeo(this._inner, other.inner, true);
 	}
 }

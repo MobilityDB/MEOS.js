@@ -124,6 +124,13 @@ export function temporal_duration_us(temp: Ptr, ignoreGaps: boolean): number {
 	return _r;
 }
 
+/** An Interval* a MEOS function answers, as total microseconds (month ≈ 30 days); frees it. */
+export function interval_us_free(iv: Ptr): number {
+	const _r = call<number>('interval_us_free_w', 'number', [ptrArgType()], [ptrArgVal(iv)]);
+	checkMeosError();
+	return _r;
+}
+
 /** Serialise a Span to hex-encoded WKB; discards size_out. */
 export function span_as_hexwkb(s: Ptr, variant: number): string {
 	const _r = call<string>('span_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);

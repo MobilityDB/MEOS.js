@@ -318,13 +318,13 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns the total geodetic length in metres. MEOS: tpoint_length */
-	length(): number {
-		return tpoint_length(this._inner);
+	length(spheroid = true): number {
+		return tpoint_length(this._inner, spheroid);
 	}
 
 	/** Returns the instantaneous speed as a TFloat (Ptr). MEOS: tpoint_speed */
-	speed(): Ptr {
-		return tpoint_speed(this._inner);
+	speed(spheroid = true): Ptr {
+		return tpoint_speed(this._inner, spheroid);
 	}
 
 	/** Returns the geodetic direction (azimuth) in radians. MEOS: tpoint_direction */
@@ -354,8 +354,8 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns the cumulative geodetic length as a TFloat (Ptr). MEOS: tpoint_cumulative_length */
-	cumulativeLength(): Ptr {
-		return tpoint_cumulative_length(this._inner);
+	cumulativeLength(spheroid = true): Ptr {
+		return tpoint_cumulative_length(this._inner, spheroid);
 	}
 
 	/** Returns the angular difference at each instant as a TFloat (Ptr). MEOS: tpoint_angular_difference */
@@ -535,9 +535,9 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns true if this is ever within `dist` of geometry `wkt`. MEOS: edwithin_tgeo_geo */
-	everDWithin(wkt: string, dist: number): boolean {
+	everDWithin(wkt: string, dist: number, spheroid = true): boolean {
 		const gs = geog_in(wkt, -1);
-		const r = edwithin_tgeo_geo(this._inner, gs, dist) > 0;
+		const r = edwithin_tgeo_geo(this._inner, gs, dist, spheroid) > 0;
 		meos_free(gs);
 		return r;
 	}
@@ -553,8 +553,8 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns true if this is ever within `dist` of other TGeogPoint. MEOS: edwithin_tgeo_tgeo */
-	everDWithinTemporal(other: TGeogPoint, dist: number): boolean {
-		return edwithin_tgeo_tgeo(this._inner, other.inner, dist) > 0;
+	everDWithinTemporal(other: TGeogPoint, dist: number, spheroid = true): boolean {
+		return edwithin_tgeo_tgeo(this._inner, other.inner, dist, spheroid) > 0;
 	}
 
 	// -------------------------------------------------------------------------
@@ -594,9 +594,9 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns a TBool (Ptr) that is true at instants where this is within `dist` of `wkt`. MEOS: tdwithin_tgeo_geo */
-	temporalDWithin(wkt: string, dist: number): Ptr {
+	temporalDWithin(wkt: string, dist: number, spheroid = true): Ptr {
 		const gs = geog_in(wkt, -1);
-		const r = tdwithin_tgeo_geo(this._inner, gs, dist);
+		const r = tdwithin_tgeo_geo(this._inner, gs, dist, spheroid);
 		meos_free(gs);
 		return r;
 	}
@@ -617,8 +617,8 @@ export class TGeogPoint extends Temporal<string> {
 	}
 
 	/** Returns a TBool (Ptr) for temporal dwithin with other TGeogPoint. MEOS: tdwithin_tgeo_tgeo */
-	temporalDWithinTemporal(other: TGeogPoint, dist: number): Ptr {
-		return tdwithin_tgeo_tgeo(this._inner, other.inner, dist);
+	temporalDWithinTemporal(other: TGeogPoint, dist: number, spheroid = true): Ptr {
+		return tdwithin_tgeo_tgeo(this._inner, other.inner, dist, spheroid);
 	}
 
 	// -------------------------------------------------------------------------
@@ -629,9 +629,9 @@ export class TGeogPoint extends Temporal<string> {
 	 * Returns a TFloat (Ptr) of the geodetic distance to geometry `wkt` at each instant.
 	 * MEOS: tdistance_tgeo_geo
 	 */
-	temporalDistance(wkt: string): Ptr {
+	temporalDistance(wkt: string, spheroid = true): Ptr {
 		const gs = geog_in(wkt, -1);
-		const r = tdistance_tgeo_geo(this._inner, gs);
+		const r = tdistance_tgeo_geo(this._inner, gs, spheroid);
 		meos_free(gs);
 		return r;
 	}
@@ -640,38 +640,38 @@ export class TGeogPoint extends Temporal<string> {
 	 * Returns a TFloat (Ptr) of the distance to other TGeogPoint at each instant.
 	 * MEOS: tdistance_tgeo_tgeo
 	 */
-	temporalDistanceTemporal(other: TGeogPoint): Ptr {
-		return tdistance_tgeo_tgeo(this._inner, other.inner);
+	temporalDistanceTemporal(other: TGeogPoint, spheroid = true): Ptr {
+		return tdistance_tgeo_tgeo(this._inner, other.inner, spheroid);
 	}
 
 	/** Returns the nearest approach distance (NAD) to geometry `wkt`. MEOS: nad_tgeo_geo */
-	nad(wkt: string): number {
+	nad(wkt: string, spheroid = true): number {
 		const gs = geog_in(wkt, -1);
-		const r = nad_tgeo_geo(this._inner, gs);
+		const r = nad_tgeo_geo(this._inner, gs, spheroid);
 		meos_free(gs);
 		return r;
 	}
 
 	/** Returns the nearest approach distance to an STBox (raw Ptr). MEOS: nad_tgeo_stbox */
-	nadSTBox(box: Ptr): number {
-		return nad_tgeo_stbox(this._inner, box);
+	nadSTBox(box: Ptr, spheroid = true): number {
+		return nad_tgeo_stbox(this._inner, box, spheroid);
 	}
 
 	/** Returns the nearest approach distance to another TGeogPoint. MEOS: nad_tgeo_tgeo */
-	nadTemporal(other: TGeogPoint): number {
-		return nad_tgeo_tgeo(this._inner, other.inner);
+	nadTemporal(other: TGeogPoint, spheroid = true): number {
+		return nad_tgeo_tgeo(this._inner, other.inner, spheroid);
 	}
 
 	/** Returns the nearest approach instant to geometry `wkt` as a TGeogPoint (Ptr). MEOS: nai_tgeo_geo */
-	nai(wkt: string): Ptr {
+	nai(wkt: string, spheroid = true): Ptr {
 		const gs = geog_in(wkt, -1);
-		const r = nai_tgeo_geo(this._inner, gs);
+		const r = nai_tgeo_geo(this._inner, gs, spheroid);
 		meos_free(gs);
 		return r;
 	}
 
 	/** Returns the nearest approach instant to another TGeogPoint as a TGeogPoint (Ptr). MEOS: nai_tgeo_tgeo */
-	naiTemporal(other: TGeogPoint): Ptr {
-		return nai_tgeo_tgeo(this._inner, other.inner);
+	naiTemporal(other: TGeogPoint, spheroid = true): Ptr {
+		return nai_tgeo_tgeo(this._inner, other.inner, spheroid);
 	}
 }

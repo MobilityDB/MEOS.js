@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos.js';
-import { pg_timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated.js';
+import { timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated.js';
 import { TBox } from '../../../core/types/boxes/TBox.js';
 import { IntSpan } from '../../../core/types/collections/number/IntSpan.js';
 import { FloatSpan } from '../../../core/types/collections/number/FloatSpan.js';
@@ -151,7 +151,7 @@ describe('TBox - Construction', () => {
 
 describe('TBox - New constructors', () => {
 	it('fromTimestamp creates T-only box at a single timestamp', () => {
-		const t = pg_timestamptz_in(T0, -1);
+		const t = timestamptz_in(T0, -1);
 		const b = TBox.fromTimestamp(t);
 		assert.equal(b.hasX(), false);
 		assert.equal(b.hasT(), true);
@@ -159,7 +159,7 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromIntTimestamp creates XT box with int X and single timestamp', () => {
-		const t = pg_timestamptz_in(T0, -1);
+		const t = timestamptz_in(T0, -1);
 		const b = TBox.fromIntTimestamp(5, t);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
@@ -169,7 +169,7 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromFloatTimestamp creates XT box with float X and single timestamp', () => {
-		const t = pg_timestamptz_in(T0, -1);
+		const t = timestamptz_in(T0, -1);
 		const b = TBox.fromFloatTimestamp(3.14, t);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
@@ -212,7 +212,7 @@ describe('TBox - New constructors', () => {
 
 	it('fromNumSpanTimestamp creates XT box from numspan and single timestamp', () => {
 		const xs = FloatSpan.fromBounds(1.0, 9.0);
-		const t = pg_timestamptz_in(T0, -1);
+		const t = timestamptz_in(T0, -1);
 		const b = TBox.fromNumSpanTimestamp(xs.inner, t);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
