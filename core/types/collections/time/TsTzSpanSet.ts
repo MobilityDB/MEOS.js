@@ -11,6 +11,7 @@ import {
 	tstzspanset_timestamptz_n,
 	distance_tstzspanset_tstzspan,
 	distance_tstzspanset_tstzspanset,
+	interval_us_free,
 	tstzspanset_shift_scale,
 	tstzspanset_tprecision,
 	tstzspanset_to_datespanset,
@@ -134,8 +135,8 @@ export class TsTzSpanSet extends SpanSet<TsTzSpan> {
 	 */
 	distance(other: TsTzSpan | TsTzSpanSet): number {
 		if (other instanceof TsTzSpan)
-			return distance_tstzspanset_tstzspan(this._inner, other.inner);
-		return distance_tstzspanset_tstzspanset(this._inner, other.inner);
+			return interval_us_free(distance_tstzspanset_tstzspan(this._inner, other.inner));
+		return interval_us_free(distance_tstzspanset_tstzspanset(this._inner, other.inner));
 	}
 
 	// -------------------------------------------------------------------------

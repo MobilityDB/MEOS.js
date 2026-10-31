@@ -3,6 +3,7 @@ import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	tnumber_integral,
 	tnumber_twavg,
+	tnumber_avg_value,
 	tnumber_abs,
 	tnumber_delta_value,
 	tnumber_trend,
@@ -62,6 +63,9 @@ export abstract class TNumber extends Temporal<number> {
 
 	/** Returns the time-weighted average. MEOS: tnumber_twavg */
 	timeWeightedAverage(): number { return tnumber_twavg(this._inner); }
+
+	/** Returns the average value. MEOS: tnumber_avg_value */
+	avgValue(): number { return tnumber_avg_value(this._inner); }
 
 
 	// -------------------------------------------------------------------------

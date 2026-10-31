@@ -162,6 +162,21 @@ double temporal_duration_us_w(Temporal *temp, int ignore_gaps) {
   return us;
 }
 
+/*
+ * interval_us_free_w: an Interval* a MEOS function answers (the distance of
+ * two timestamptz values, sets, spans or span sets), as total microseconds
+ * with the formula of temporal_duration_us_w, freeing the interval.
+ */
+EMSCRIPTEN_KEEPALIVE
+double interval_us_free_w(Interval *iv) {
+  if (!iv) return 0.0;
+  double us = (double) iv->time
+            + (double) iv->day   * 86400000000.0
+            + (double) iv->month * 30.0 * 86400000000.0;
+  free(iv);
+  return us;
+}
+
 /* span_as_hexwkb: allocates size_out on the stack (caller does not need it). */
 EMSCRIPTEN_KEEPALIVE
 char * span_as_hexwkb_w(const Span * s, uint8_t variant) {

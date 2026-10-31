@@ -7,6 +7,7 @@ import {
 	tstzset_end_value,
 	tstzset_value_n,
 	distance_tstzset_tstzset,
+	interval_us_free,
 	tstzset_to_dateset,
 	tstzset_shift_scale,
 	tstzset_tprecision,
@@ -91,7 +92,7 @@ export class TsTzSet extends MeosSet<TimestampTz> {
 	 * Returns `0` if they share at least one timestamp.
 	 */
 	distance(other: TsTzSet): number {
-		return distance_tstzset_tstzset(this._inner, other.inner);
+		return interval_us_free(distance_tstzset_tstzset(this._inner, other.inner));
 	}
 
 	// -------------------------------------------------------------------------

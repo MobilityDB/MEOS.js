@@ -7,6 +7,7 @@ import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
 import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
 import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
+import { MeosInvalidArgTypeError } from '../../../../core/functions/errors.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min
@@ -289,33 +290,15 @@ describe('Temporal - atMin / atMax / minusMin / minusMax', () => {
 	const T2 = '2000-01-01 00:02:00+00';
 	const T3 = '2000-01-01 00:03:00+00';
 
-	it('atMin keeps only false instants in {t,f,t}', () => {
-		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const r = t.atMin();
-		assert.equal(r.toString(), `{f@${T2}}`);
-		t.free(); r.free();
-	});
-
-	it('atMax keeps only true instants in {t,f,t}', () => {
-		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const r = t.atMax();
-		assert.equal(r.toString(), `{t@${T1}, t@${T3}}`);
-		t.free(); r.free();
-	});
-
-	it('minusMin excludes false instants', () => {
-		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const r = t.minusMin();
-		assert.equal(r.toString(), `{t@${T1}, t@${T3}}`);
-		t.free(); r.free();
-	});
-
-	it('minusMax excludes true instants', () => {
-		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const r = t.minusMax();
-		assert.equal(r.toString(), `{f@${T2}}`);
-		t.free(); r.free();
-	});
+	// A Boolean carries no order whose minimum or maximum means something,
+	// so MEOS refuses all four on a temporal Boolean, as SQL defines none.
+	for (const op of ['atMin', 'atMax', 'minusMin', 'minusMax'] as const) {
+		it(`${op} refuses a temporal Boolean`, () => {
+			const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
+			assert.throws(() => t[op](), MeosInvalidArgTypeError);
+			t.free();
+		});
+	}
 });
 
 describe('Temporal - atTsTzSpan / minusTsTzSpan', () => {
