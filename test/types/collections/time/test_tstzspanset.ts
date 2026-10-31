@@ -421,7 +421,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 	it('shift by 1 hour: each span moves forward 1 hour', () => {
 		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
 		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
-		const r = ss.shiftScale(interv, 0);
+		const r = ss.shift(interv);
 		assert.ok(r.inner !== 0);
 		assert.ok(r.lower() > ss.lower());
 		r.free();
@@ -432,10 +432,22 @@ describe('TsTzSpanSet - shiftScale', () => {
 	it('scale to 4h total duration: upper bound extends', () => {
 		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1})}`); // 1h span
 		const dur = interval_make(0, 0, 0, 0, 4, 0, 0);       // 4 hours
-		const r = ss.shiftScale(0, dur);
+		const r = ss.scale(dur);
 		assert.ok(r.upper() > ss.upper());
 		r.free();
 		ss.free();
+		meos_free(dur);
+	});
+
+	it('shift by 1 hour and scale to 4h: the span set starts 1 hour later', () => {
+		const ss = TsTzSpanSet.fromString(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
+		const interv = interval_make(0, 0, 0, 0, 1, 0, 0); // 1 hour
+		const dur = interval_make(0, 0, 0, 0, 4, 0, 0);    // 4 hours
+		const r = ss.shiftScale(interv, dur);
+		assert.ok(r.lower() > ss.lower());
+		r.free();
+		ss.free();
+		meos_free(interv);
 		meos_free(dur);
 	});
 });

@@ -2081,6 +2081,18 @@ export function tstzspan_tprecision(s: Ptr, duration: Ptr, torigin: TimestampTz)
 	return _r;
 }
 
+export function tstzspanset_scale(ss: Ptr, duration: Ptr): Ptr {
+	const _r = callPtr('tstzspanset_scale_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(duration)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_shift(ss: Ptr, shift: Ptr): Ptr {
+	const _r = callPtr('tstzspanset_shift_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(shift)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tstzspanset_shift_scale(ss: Ptr, shift: Ptr, duration: Ptr): Ptr {
 	const _r = callPtr('tstzspanset_shift_scale_w', [ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(shift), ptrArgVal(duration)]);
 	checkMeosError();

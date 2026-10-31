@@ -1916,6 +1916,16 @@ Span * tstzspan_tprecision_w(const Span * s, const Interval * duration, long lon
 }
 
 EMSCRIPTEN_KEEPALIVE
+SpanSet * tstzspanset_scale_w(const SpanSet * ss, const Interval * duration) {
+  return tstzspanset_scale(ss, duration);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * tstzspanset_shift_w(const SpanSet * ss, const Interval * shift) {
+  return tstzspanset_shift(ss, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
 SpanSet * tstzspanset_shift_scale_w(const SpanSet * ss, const Interval * shift, const Interval * duration) {
   return tstzspanset_shift_scale(ss, shift, duration);
 }
