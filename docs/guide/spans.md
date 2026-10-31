@@ -36,11 +36,13 @@ const t = IntSpan.fromBounds(1, 10, true, true);  // stored internally as [1, 11
 > **Note for integer spans:** MEOS normalises all integer spans to half-open form.
 > `fromBounds(1, 10, true, true)` is stored as `[1, 11)`. `lower()` returns `1`, `upper()` returns `11`.
 
-### From hex WKB
+### From WKB
 
 ```ts
 const hexwkb = s.asHexWKB();
 const copy = IntSpan.fromHexWKB(hexwkb);
+const bytes = s.asBinary();   // Uint8Array
+const again = IntSpan.fromBinary(bytes);
 ```
 
 ## Reading bounds

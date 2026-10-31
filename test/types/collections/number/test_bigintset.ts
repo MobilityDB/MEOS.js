@@ -30,6 +30,17 @@ describe('BigIntSet - Construction', () => {
 		s2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const s1 = BigIntSet.fromString('{1, 3, 7}');
+		const wkb = s1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const s2 = BigIntSet.fromBinary(wkb);
+		assert.equal(s2.toString(), s1.toString());
+		s1.free();
+		s2.free();
+	});
+
 	it('copy produces a distinct pointer with identical WKT', () => {
 		const s = BigIntSet.fromString('{1, 3, 7}');
 		const c = s.copy();

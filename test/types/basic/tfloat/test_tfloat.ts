@@ -495,3 +495,47 @@ describe('TFloat - fromBaseTemporal / fromBaseTime', () => {
 		ss.free(); r.free();
 	});
 });
+
+describe('TFloat - WKB', () => {
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t1 = TFloat.fromString(`[1.5@${T0}, 2.25@${T1}, 0.125@${T2}]`);
+		const hex = t1.asHexWKB();
+		assert.ok(typeof hex === 'string' && hex.length > 0);
+		const t2 = TFloat.fromHexWKB(hex);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(), hex);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromBinary round-trips through asBinary', () => {
+		const t1 = TFloat.fromString(`[1.5@${T0}, 2.25@${T1}, 0.125@${T2}]`);
+		const wkb = t1.asBinary();
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), t1.asHexWKB());
+		const t2 = TFloat.fromBinary(wkb);
+		assert.equal(t2.toString(), t1.toString());
+		t1.free();
+		t2.free();
+	});
+
+	it('asHexWKB writes the byte order its variant names', () => {
+		const t1 = TFloat.fromString(`[1.5@${T0}, 2.25@${T1}, 0.125@${T2}]`);
+		const ndr = t1.asHexWKB(0x08);
+		const xdr = t1.asHexWKB(0x10);
+		assert.equal(ndr.slice(0, 2), '01');
+		assert.equal(xdr.slice(0, 2), '00');
+		const t2 = TFloat.fromHexWKB(xdr);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(0x08), ndr);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromHexWKB and fromBinary refuse the WKB of another temporal type', () => {
+		const o = TInt.fromString(`[1@${T0}, 2@${T1}]`);
+		assert.throws(() => TFloat.fromHexWKB(o.asHexWKB()), TypeError);
+		assert.throws(() => TFloat.fromBinary(o.asBinary()), TypeError);
+		o.free();
+	});
+});

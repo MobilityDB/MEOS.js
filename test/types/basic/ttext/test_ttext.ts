@@ -5,6 +5,7 @@ import { TText } from '../../../../core/types/basic/ttext/TText.js';
 import { TTextInst } from '../../../../core/types/basic/ttext/TTextInst.js';
 import { TTextSeq } from '../../../../core/types/basic/ttext/TTextSeq.js';
 import { TTextSeqSet } from '../../../../core/types/basic/ttext/TTextSeqSet.js';
+import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
 import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
@@ -341,5 +342,49 @@ describe('TemporalFactory - createTText', () => {
 		assert.ok(r instanceof TTextSeqSet);
 		i1.free(); i2.free(); i3.free(); i4.free();
 		s1.free(); s2.free(); ss.free();
+	});
+});
+
+describe('TText - WKB', () => {
+	it('fromHexWKB round-trips through asHexWKB', () => {
+		const t1 = TText.fromString(`["a"@${TS1}, "bc"@${TS2}]`);
+		const hex = t1.asHexWKB();
+		assert.ok(typeof hex === 'string' && hex.length > 0);
+		const t2 = TText.fromHexWKB(hex);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(), hex);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromBinary round-trips through asBinary', () => {
+		const t1 = TText.fromString(`["a"@${TS1}, "bc"@${TS2}]`);
+		const wkb = t1.asBinary();
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), t1.asHexWKB());
+		const t2 = TText.fromBinary(wkb);
+		assert.equal(t2.toString(), t1.toString());
+		t1.free();
+		t2.free();
+	});
+
+	it('asHexWKB writes the byte order its variant names', () => {
+		const t1 = TText.fromString(`["a"@${TS1}, "bc"@${TS2}]`);
+		const ndr = t1.asHexWKB(0x08);
+		const xdr = t1.asHexWKB(0x10);
+		assert.equal(ndr.slice(0, 2), '01');
+		assert.equal(xdr.slice(0, 2), '00');
+		const t2 = TText.fromHexWKB(xdr);
+		assert.equal(t2.toString(), t1.toString());
+		assert.equal(t2.asHexWKB(0x08), ndr);
+		t1.free();
+		t2.free();
+	});
+
+	it('fromHexWKB and fromBinary refuse the WKB of another temporal type', () => {
+		const o = TBool.fromString(`[t@${TS1}, f@${TS2}]`);
+		assert.throws(() => TText.fromHexWKB(o.asHexWKB()), TypeError);
+		assert.throws(() => TText.fromBinary(o.asBinary()), TypeError);
+		o.free();
 	});
 });

@@ -37,6 +37,17 @@ describe('FloatSpan - Construction', () => {
 		s2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const s1 = FloatSpan.fromString('[1.5, 10.5)');
+		const wkb = s1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const s2 = FloatSpan.fromBinary(wkb);
+		assert.equal(s2.toString(), s1.toString());
+		s1.free();
+		s2.free();
+	});
+
 	it('copy produces a distinct pointer with identical bounds', () => {
 		const s = FloatSpan.fromString('[1.5, 10.5)');
 		const c = s.copy();

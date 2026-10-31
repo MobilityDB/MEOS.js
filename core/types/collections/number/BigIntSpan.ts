@@ -7,11 +7,13 @@ import {
 	bigintspan_upper,
 	bigintspan_width,
 	span_from_hexwkb,
+	span_from_wkb,
 	adjacent_span_span,
 	distance_bigintspan_bigintspan,
 	bigintspan_expand,
 	bigintspan_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { Span } from '../base/Span.js';
 
 /**
@@ -67,6 +69,14 @@ export class BigIntSpan extends Span {
 	 */
 	static fromHexWKB(hexwkb: string): BigIntSpan {
 		return new BigIntSpan(span_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `BigIntSpan` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): BigIntSpan {
+		return new BigIntSpan(withWkb(wkb, (ptr, size) => span_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

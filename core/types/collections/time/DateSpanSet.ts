@@ -3,6 +3,7 @@ import {
 	datespanset_in,
 	datespanset_out,
 	spanset_from_hexwkb,
+	spanset_from_wkb,
 	span_to_spanset,
 	datespanset_start_date,
 	datespanset_end_date,
@@ -13,6 +14,7 @@ import {
 	datespanset_to_tstzspanset,
 	datespanset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { SpanSet } from '../base/SpanSet.js';
 import { DateSpan } from './DateSpan.js';
 
@@ -56,6 +58,14 @@ export class DateSpanSet extends SpanSet<DateSpan> {
 	 */
 	static fromHexWKB(hexwkb: string): DateSpanSet {
 		return new DateSpanSet(spanset_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `DateSpanSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): DateSpanSet {
+		return new DateSpanSet(withWkb(wkb, (ptr, size) => spanset_from_wkb(ptr, size)));
 	}
 
 	/**

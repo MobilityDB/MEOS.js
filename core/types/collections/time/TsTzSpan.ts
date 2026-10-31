@@ -6,6 +6,7 @@ import {
 	tstzspan_lower,
 	tstzspan_upper,
 	span_from_hexwkb,
+	span_from_wkb,
 	adjacent_span_span,
 	distance_tstzspan_tstzspan,
 	interval_us_free,
@@ -16,6 +17,7 @@ import {
 	tstzspan_tprecision,
 	tstzspan_to_datespan,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { Span } from '../base/Span.js';
 
 /**
@@ -70,6 +72,14 @@ export class TsTzSpan extends Span {
 	 */
 	static fromHexWKB(hexwkb: string): TsTzSpan {
 		return new TsTzSpan(span_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `TsTzSpan` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): TsTzSpan {
+		return new TsTzSpan(withWkb(wkb, (ptr, size) => span_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

@@ -3,6 +3,7 @@ import {
 	textset_in,
 	textset_out,
 	set_from_hexwkb,
+	set_from_wkb,
 	textset_start_value,
 	textset_end_value,
 	textset_value_n,
@@ -10,6 +11,7 @@ import {
 	textset_upper,
 	textset_initcap,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { MeosSet } from '../base/MeosSet.js';
 
 /**
@@ -47,6 +49,14 @@ export class TextSet extends MeosSet<string> {
 	 */
 	static fromHexWKB(hexwkb: string): TextSet {
 		return new TextSet(set_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `TextSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): TextSet {
+		return new TextSet(withWkb(wkb, (ptr, size) => set_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

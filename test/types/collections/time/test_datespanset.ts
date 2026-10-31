@@ -39,6 +39,17 @@ describe('DateSpanSet - Construction', () => {
 		ss2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const ss1 = DateSpanSet.fromString(WKT_AB);
+		const wkb = ss1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const ss2 = DateSpanSet.fromBinary(wkb);
+		assert.equal(ss2.toString(), ss1.toString());
+		ss1.free();
+		ss2.free();
+	});
+
 	it('fromSpan wraps a single DateSpan', () => {
 		const s = DateSpan.fromString('[2000-01-01, 2000-01-21)');
 		const ss = DateSpanSet.fromSpan(s);

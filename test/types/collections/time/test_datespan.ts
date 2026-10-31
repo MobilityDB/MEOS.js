@@ -42,6 +42,17 @@ describe('DateSpan - Construction', () => {
 		s2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const s1 = DateSpan.fromString('[2000-01-01, 2000-01-11)');
+		const wkb = s1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const s2 = DateSpan.fromBinary(wkb);
+		assert.equal(s2.toString(), s1.toString());
+		s1.free();
+		s2.free();
+	});
+
 	it('copy produces a distinct pointer with same bounds', () => {
 		const s = DateSpan.fromString('[2000-01-01, 2000-01-11)');
 		const c = s.copy();

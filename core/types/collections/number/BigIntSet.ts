@@ -3,12 +3,14 @@ import {
 	bigintset_in,
 	bigintset_out,
 	set_from_hexwkb,
+	set_from_wkb,
 	bigintset_start_value,
 	bigintset_end_value,
 	bigintset_value_n,
 	distance_bigintset_bigintset,
 	bigintset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { MeosSet } from '../base/MeosSet.js';
 
 /**
@@ -46,6 +48,14 @@ export class BigIntSet extends MeosSet<number> {
 	 */
 	static fromHexWKB(hexwkb: string): BigIntSet {
 		return new BigIntSet(set_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `BigIntSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): BigIntSet {
+		return new BigIntSet(withWkb(wkb, (ptr, size) => set_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

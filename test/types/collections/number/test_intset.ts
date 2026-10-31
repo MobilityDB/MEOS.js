@@ -41,6 +41,17 @@ describe('IntSet - Construction', () => {
 		s2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const s1 = IntSet.fromString(`{${V1}, ${V2}, ${V3}}`);
+		const wkb = s1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const s2 = IntSet.fromBinary(wkb);
+		assert.equal(s2.toString(), s1.toString());
+		s1.free();
+		s2.free();
+	});
+
 	it('copy produces a distinct pointer with same content', () => {
 		const s = IntSet.fromString(`{${V1}, ${V2}}`);
 		const c = s.copy();

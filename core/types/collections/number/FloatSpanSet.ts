@@ -3,6 +3,7 @@ import {
 	floatspanset_in,
 	floatspanset_out,
 	spanset_from_hexwkb,
+	spanset_from_wkb,
 	span_to_spanset,
 	floatspanset_lower,
 	floatspanset_upper,
@@ -17,6 +18,7 @@ import {
 	floatspanset_round,
 	floatspanset_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { SpanSet } from '../base/SpanSet.js';
 import { FloatSpan } from './FloatSpan.js';
 
@@ -59,6 +61,14 @@ export class FloatSpanSet extends SpanSet<FloatSpan> {
 	 */
 	static fromHexWKB(hexwkb: string): FloatSpanSet {
 		return new FloatSpanSet(spanset_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `FloatSpanSet` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): FloatSpanSet {
+		return new FloatSpanSet(withWkb(wkb, (ptr, size) => spanset_from_wkb(ptr, size)));
 	}
 
 	/**

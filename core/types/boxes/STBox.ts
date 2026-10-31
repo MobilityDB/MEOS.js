@@ -1,10 +1,13 @@
 import type { Ptr, TimestampTz } from '../../functions/functions.generated.js';
-import { getModule } from '../../runtime/meos.js';
 import {
 	stbox_in,
 	stbox_out,
 	stbox_from_hexwkb,
 	stbox_as_hexwkb,
+	stbox_as_wkb,
+	stbox_from_wkb,
+	stbox_as_ewkb,
+	stbox_as_hexewkb,
 	stbox_make,
 	stbox_copy,
 	stbox_hash,
@@ -70,6 +73,7 @@ import {
 	tstzspanset_to_stbox,
 	meos_free,
 } from '../../functions/functions.generated.js';
+import { readWkb, withSizeOut, withWkb } from '../../functions/wkb.js';
 
 /**
  * A spatio-temporal bounding box with an optional spatial (XYZ) dimension and an optional temporal (T) dimension.
@@ -141,6 +145,30 @@ export class STBox {
 	 */
 	static fromHexWKB(hexwkb: string): STBox {
 		return new STBox(stbox_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises an `STBox` from the WKB bytes produced by {@link asBinary} or {@link asEWKB}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): STBox {
+		return new STBox(withWkb(wkb, (ptr, size) => stbox_from_wkb(ptr, size)));
+	}
+
+	/**
+	 * Deserialises an `STBox` from a hex-encoded EWKB string produced by {@link asHexEWKB}.
+	 * @param hexewkb Hex-encoded EWKB string.
+	 */
+	static fromHexEWKB(hexewkb: string): STBox {
+		return STBox.fromHexWKB(hexewkb);
+	}
+
+	/**
+	 * Deserialises an `STBox` from the EWKB bytes produced by {@link asEWKB}.
+	 * @param ewkb EWKB bytes.
+	 */
+	static fromEWKB(ewkb: Uint8Array): STBox {
+		return STBox.fromBinary(ewkb);
 	}
 
 	/**
@@ -236,14 +264,45 @@ export class STBox {
 	}
 
 	/**
-	 * Serialises this box to a hex-encoded WKB string.
-	 * @param variant WKB encoding variant (default `4` = Extended WKB).
+	 * Serialises this box to its Well-Known Binary (WKB) bytes.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * The SRID is written by `asEWKB` and `asHexEWKB`.
+	 * MEOS: stbox_as_wkb
 	 */
-	asHexWKB(variant = 4): string {
-		const sizePtr = (
-			getModule() as unknown as { allocate(slab: Uint8Array, allocator: number): number }
-		).allocate(new Uint8Array(8), 0) as Ptr;
-		return stbox_as_hexwkb(this._inner, variant, sizePtr);
+	asBinary(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => stbox_as_wkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this box to a hex-encoded WKB string.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * The SRID is written by `asEWKB` and `asHexEWKB`.
+	 * MEOS: stbox_as_hexwkb
+	 */
+	asHexWKB(variant = 0): string {
+		return withSizeOut((sizeOut) => stbox_as_hexwkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this box to its Extended Well-Known Binary (EWKB) bytes,
+	 * which carry the SRID. The default variant `0` writes the native byte
+	 * order; `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose it.
+	 * MEOS: stbox_as_ewkb
+	 */
+	asEWKB(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => stbox_as_ewkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this box to a hex-encoded EWKB string, which carries the
+	 * SRID. The default variant `0` writes the native byte order; `0x08`
+	 * (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose it.
+	 * MEOS: stbox_as_hexewkb
+	 */
+	asHexEWKB(variant = 0): string {
+		return withSizeOut((sizeOut) => stbox_as_hexewkb(this._inner, variant, sizeOut));
 	}
 
 	// -------------------------------------------------------------------------

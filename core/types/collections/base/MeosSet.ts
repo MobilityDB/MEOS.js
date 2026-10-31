@@ -3,6 +3,7 @@ import {
 	set_copy,
 	set_from_hexwkb,
 	set_as_hexwkb,
+	set_as_wkb,
 	set_num_values,
 	set_hash,
 	set_to_span,
@@ -25,6 +26,7 @@ import {
 	set_ge,
 	meos_free,
 } from '../../../functions/functions.generated.js';
+import { readWkb } from '../../../functions/wkb.js';
 
 /**
  * Abstract base class for all MEOS set types (ordered sets of discrete values).
@@ -85,10 +87,22 @@ export abstract class MeosSet<T> {
 	abstract toString(): string;
 
 	/**
-	 * Serialises this set to a hex-encoded WKB string.
-	 * @param variant WKB encoding variant (default `4` = Extended WKB).
+	 * Serialises this set to its Well-Known Binary (WKB) bytes.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: set_as_wkb
 	 */
-	asHexWKB(variant = 4): string {
+	asBinary(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => set_as_wkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this set to a hex-encoded WKB string.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: set_as_hexwkb
+	 */
+	asHexWKB(variant = 0): string {
 		return set_as_hexwkb(this._inner, variant);
 	}
 

@@ -1,12 +1,14 @@
-import { Temporal } from '../../temporal/Temporal.js';
+import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
+import { readWkb, withSizeOut } from '../../../functions/wkb.js';
 import {
 	tgeompoint_in,
 	tgeompoint_from_mfjson,
-	temporal_from_hexwkb,
 	temporal_round,
 	tspatial_as_text,
 	tspatial_as_ewkt,
+	tspatial_as_ewkb,
+	tspatial_as_hexewkb,
 	tspatial_to_stbox,
 	tspatial_srid,
 	tspatial_set_srid,
@@ -124,11 +126,35 @@ export class TGeomPoint extends Temporal<string> {
 	}
 
 	/**
-	 * Parse a TGeomPoint from a hex-encoded WKB string.
+	 * Reads a TGeomPoint from its hex-encoded WKB or EWKB, as {@link asHexWKB} and {@link asHexEWKB} write it.
 	 * MEOS: temporal_from_hexwkb
 	 */
 	static fromHexWKB(hexwkb: string): TGeomPoint {
-		return new TGeomPoint(temporal_from_hexwkb(hexwkb));
+		return new TGeomPoint(temporalFromHexWKB(hexwkb, 'geometry', 'TGeomPoint'));
+	}
+
+	/**
+	 * Reads a TGeomPoint from its WKB or EWKB bytes, as {@link asBinary} and {@link asEWKB} write them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromBinary(wkb: Uint8Array): TGeomPoint {
+		return new TGeomPoint(temporalFromBinary(wkb, 'geometry', 'TGeomPoint'));
+	}
+
+	/**
+	 * Reads a TGeomPoint from its hex-encoded EWKB, as {@link asHexEWKB} writes it.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexEWKB(hexewkb: string): TGeomPoint {
+		return TGeomPoint.fromHexWKB(hexewkb);
+	}
+
+	/**
+	 * Reads a TGeomPoint from its EWKB bytes, as {@link asEWKB} writes them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromEWKB(ewkb: Uint8Array): TGeomPoint {
+		return TGeomPoint.fromBinary(ewkb);
 	}
 
 	/**
@@ -239,6 +265,26 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	asEWKT(maxdd = 15): string {
 		return tspatial_as_ewkt(this._inner, maxdd);
+	}
+
+	/**
+	 * Returns the Extended Well-Known Binary (EWKB) representation, which
+	 * carries the SRID. The default variant `0` writes the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose it.
+	 * MEOS: tspatial_as_ewkb
+	 */
+	asEWKB(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => tspatial_as_ewkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Returns the hex-encoded Extended Well-Known Binary (EWKB)
+	 * representation, which carries the SRID. The default variant `0` writes
+	 * the native byte order; `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose it.
+	 * MEOS: tspatial_as_hexewkb
+	 */
+	asHexEWKB(variant = 0): string {
+		return withSizeOut((sizeOut) => tspatial_as_hexewkb(this._inner, variant, sizeOut));
 	}
 
 	// -------------------------------------------------------------------------

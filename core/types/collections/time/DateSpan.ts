@@ -6,10 +6,12 @@ import {
 	datespan_lower,
 	datespan_upper,
 	span_from_hexwkb,
+	span_from_wkb,
 	distance_datespan_datespan,
 	datespan_to_tstzspan,
 	datespan_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { Span } from '../base/Span.js';
 
 /**
@@ -64,6 +66,14 @@ export class DateSpan extends Span {
 	 */
 	static fromHexWKB(hexwkb: string): DateSpan {
 		return new DateSpan(span_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises a `DateSpan` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): DateSpan {
+		return new DateSpan(withWkb(wkb, (ptr, size) => span_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

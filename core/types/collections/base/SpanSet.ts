@@ -2,6 +2,7 @@ import type { Ptr } from '../../../functions/functions.generated.js';
 import {
 	spanset_copy,
 	spanset_as_hexwkb,
+	spanset_as_wkb,
 	spanset_hash,
 	spanset_lower_inc,
 	spanset_upper_inc,
@@ -40,6 +41,7 @@ import {
 	spanset_ge,
 	meos_free,
 } from '../../../functions/functions.generated.js';
+import { readWkb } from '../../../functions/wkb.js';
 import { Span } from './Span.js';
 
 /**
@@ -104,10 +106,22 @@ export abstract class SpanSet<S extends Span> {
 	abstract toString(): string;
 
 	/**
-	 * Serialises this span set to a hex-encoded WKB string.
-	 * @param variant WKB encoding variant (default `4` = Extended WKB).
+	 * Serialises this span set to its Well-Known Binary (WKB) bytes.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: spanset_as_wkb
 	 */
-	asHexWKB(variant = 4): string {
+	asBinary(variant = 0): Uint8Array {
+		return readWkb((sizeOut) => spanset_as_wkb(this._inner, variant, sizeOut));
+	}
+
+	/**
+	 * Serialises this span set to a hex-encoded WKB string.
+	 * The default variant `0` writes plain WKB in the native byte order;
+	 * `0x08` (`WKB_NDR`) and `0x10` (`WKB_XDR`) choose the byte order.
+	 * MEOS: spanset_as_hexwkb
+	 */
+	asHexWKB(variant = 0): string {
 		return spanset_as_hexwkb(this._inner, variant);
 	}
 

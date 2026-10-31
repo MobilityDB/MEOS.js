@@ -7,11 +7,13 @@ import {
 	intspan_upper,
 	intspan_width,
 	span_from_hexwkb,
+	span_from_wkb,
 	distance_intspan_intspan,
 	intspan_to_floatspan,
 	intspan_expand,
 	intspan_shift_scale,
 } from '../../../functions/functions.generated.js';
+import { withWkb } from '../../../functions/wkb.js';
 import { Span } from '../base/Span.js';
 
 /**
@@ -67,6 +69,14 @@ export class IntSpan extends Span {
 	 */
 	static fromHexWKB(hexwkb: string): IntSpan {
 		return new IntSpan(span_from_hexwkb(hexwkb));
+	}
+
+	/**
+	 * Deserialises an `IntSpan` from the WKB bytes produced by {@link asBinary}.
+	 * @param wkb WKB bytes.
+	 */
+	static fromBinary(wkb: Uint8Array): IntSpan {
+		return new IntSpan(withWkb(wkb, (ptr, size) => span_from_wkb(ptr, size)));
 	}
 
 	// -------------------------------------------------------------------------

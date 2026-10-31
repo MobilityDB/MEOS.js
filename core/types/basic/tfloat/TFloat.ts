@@ -1,4 +1,5 @@
 import { TNumber } from '../tnumber/TNumber.js';
+import { temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tfloat_in,
@@ -113,6 +114,22 @@ export class TFloat extends TNumber {
 	 */
 	static fromMFJSON(mfjson: string): TFloat {
 		return new TFloat(tfloat_from_mfjson(mfjson));
+	}
+
+	/**
+	 * Reads a TFloat from its hex-encoded WKB, as {@link asHexWKB} writes it.
+	 * MEOS: temporal_from_hexwkb
+	 */
+	static fromHexWKB(hexwkb: string): TFloat {
+		return new TFloat(temporalFromHexWKB(hexwkb, 'float8', 'TFloat'));
+	}
+
+	/**
+	 * Reads a TFloat from its WKB bytes, as {@link asBinary} writes them.
+	 * MEOS: temporal_from_wkb
+	 */
+	static fromBinary(wkb: Uint8Array): TFloat {
+		return new TFloat(temporalFromBinary(wkb, 'float8', 'TFloat'));
 	}
 
 	/**

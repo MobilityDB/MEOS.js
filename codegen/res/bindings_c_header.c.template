@@ -122,14 +122,11 @@ void meos_free(void *ptr) { free(ptr); }
 
 /* --- Hand-written wrappers (special logic) --- */
 
-/*
- * temporal_as_hexwkb: collapses variant + size_out.
- * variant -1 (0xFF) = WKB_EXTENDED, native endian.
- */
+/* temporal_as_hexwkb: allocates size_out on the stack (caller does not need it). */
 EMSCRIPTEN_KEEPALIVE
-char *temporal_as_hexwkb_w(Temporal *temp) {
+char *temporal_as_hexwkb_w(const Temporal *temp, uint8_t variant) {
     size_t sz;
-    return temporal_as_hexwkb(temp, (uint8) -1, &sz);
+    return temporal_as_hexwkb(temp, variant, &sz);
 }
 
 /* temporal_as_mfjson: srs "" is treated as NULL. */

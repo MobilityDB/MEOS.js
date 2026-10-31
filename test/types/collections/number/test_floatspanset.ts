@@ -57,6 +57,17 @@ describe('FloatSpanSet - Construction', () => {
 		ss2.free();
 	});
 
+	it('fromBinary round-trips through asBinary', () => {
+		const ss1 = FloatSpanSet.fromString(WKT_AB);
+		const wkb = ss1.asBinary();
+		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
+		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
+		const ss2 = FloatSpanSet.fromBinary(wkb);
+		assert.equal(ss2.toString(), ss1.toString());
+		ss1.free();
+		ss2.free();
+	});
+
 	it('fromSpan wraps a single FloatSpan', () => {
 		const s = FloatSpan.fromBounds(1.0, 7.0);
 		const ss = FloatSpanSet.fromSpan(s);
