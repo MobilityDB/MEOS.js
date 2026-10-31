@@ -168,9 +168,15 @@ const isTsTz = (t: string)		=> clean(t) === 'TimestampTz';
 const isTs = (t: string) 		=> clean(t) === 'Timestamp';
 const isDateADT = (t: string) 	=> clean(t) === 'DateADT';
 const isVoid = (t: string) 		=> clean(t) === 'void';
+/**
+ * True for the 64-bit integer types, which ccall passes and returns as BigInt.
+ * size_t, ssize_t and uintptr_t are pointer-sized, so 64-bit in wasm64: a
+ * `size_t size` argument, as the *_from_wkb readers take, is a BigInt too.
+ */
 const isInt64 = (t: string) => {
 	const c = clean(t);
-	return c === 'int64' || c === 'int64_t' || c === 'uint64' || c === 'uint64_t';
+	return c === 'int64' || c === 'int64_t' || c === 'uint64' || c === 'uint64_t' ||
+		c === 'size_t' || c === 'ssize_t' || c === 'uintptr_t';
 };
 
 const isString = (t: string) => {

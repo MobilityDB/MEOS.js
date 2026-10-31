@@ -1014,7 +1014,7 @@ export function set_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function set_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('set_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('set_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -1032,7 +1032,7 @@ export function span_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function span_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('span_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('span_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -1050,7 +1050,7 @@ export function spanset_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function spanset_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('spanset_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('spanset_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -4536,7 +4536,7 @@ export function set_union_transfn(state: Ptr, s: Ptr): Ptr {
 }
 
 export function setstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('setstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('setstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -4584,7 +4584,7 @@ export function spanset_union_transfn(state: Ptr, ss: Ptr): Ptr {
 }
 
 export function spansetstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('spansetstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('spansetstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -4752,7 +4752,7 @@ export function tbox_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function tbox_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('tbox_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('tbox_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -5466,7 +5466,7 @@ export function temporal_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function temporal_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('temporal_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('temporal_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -8718,7 +8718,7 @@ export function nad_tint_tint(temp1: Ptr, temp2: Ptr): number {
 }
 
 export function taggstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('taggstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('taggstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -9369,7 +9369,7 @@ export function geo_as_text(gs: Ptr, precision: number): string {
 }
 
 export function geo_from_ewkb(wkb: Ptr, wkb_size: number, srid: number): Ptr {
-	const _r = callPtr('geo_from_ewkb_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(wkb), wkb_size, srid]);
+	const _r = callPtr('geo_from_ewkb_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(wkb), BigInt(wkb_size), srid]);
 	checkMeosError();
 	return _r;
 }
@@ -10227,7 +10227,7 @@ export function stbox_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function stbox_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('stbox_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('stbox_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -12402,7 +12402,7 @@ export function cbuffer_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function cbuffer_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('cbuffer_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('cbuffer_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -13848,7 +13848,7 @@ export function h3_get_icosahedron_faces(cell: number): Ptr {
 }
 
 export function h3index_from_wkb(wkb: Ptr, size: number): number {
-	const _r = Number(call<bigint>('h3index_from_wkb_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]));
+	const _r = Number(call<bigint>('h3index_from_wkb_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]));
 	checkMeosError();
 	return _r;
 }
@@ -15741,7 +15741,7 @@ export function npoint_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function npoint_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('npoint_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('npoint_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -15783,7 +15783,7 @@ export function nsegment_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function nsegment_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('nsegment_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('nsegment_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -17251,7 +17251,7 @@ export function tpcbox_from_hexwkb(hexwkb: string): Ptr {
 }
 
 export function tpcbox_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('tpcbox_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('tpcbox_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -18484,7 +18484,7 @@ export function pose_as_wkb(pose: Ptr, variant: number, size_out: Ptr): Ptr {
 }
 
 export function pose_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('pose_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('pose_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -19396,7 +19396,7 @@ export function posechain_as_hexwkb(pc: Ptr, variant: number, size_out: Ptr): st
 }
 
 export function posechain_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('posechain_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('posechain_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -20065,7 +20065,7 @@ export function quadbin_from_hexwkb(hexwkb: string): number {
 }
 
 export function quadbin_from_wkb(wkb: Ptr, size: number): number {
-	const _r = Number(call<bigint>('quadbin_from_wkb_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]));
+	const _r = Number(call<bigint>('quadbin_from_wkb_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]));
 	checkMeosError();
 	return _r;
 }
@@ -20704,7 +20704,7 @@ export function tquadbin_grid_distance(origin: Ptr, dest: Ptr): Ptr {
 // === meos_raster.h ===
 
 export function raquet_pixtype_size(pixtype: number): number {
-	const _r = call<number>('raquet_pixtype_size_w', 'number', ['number'], [pixtype]);
+	const _r = Number(call<bigint>('raquet_pixtype_size_w', 'bigint', ['number'], [pixtype]));
 	checkMeosError();
 	return _r;
 }
@@ -20728,7 +20728,7 @@ export function raquet_out(rq: Ptr): string {
 }
 
 export function raquet_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('raquet_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('raquet_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -20752,7 +20752,7 @@ export function raquet_as_hexwkb(rq: Ptr, variant: number, size_out: Ptr): strin
 }
 
 export function raquet_make(quadbin: number, width: number, height: number, pixtype: number, nodata: number, has_nodata: boolean, pixels: Ptr, pixels_size: number): Ptr {
-	const _r = callPtr('raquet_make_w', ['bigint', 'number', 'number', 'number', 'number', 'number', ptrArgType(), 'number'], [BigInt(quadbin), width, height, pixtype, nodata, has_nodata ? 1 : 0, ptrArgVal(pixels), pixels_size]);
+	const _r = callPtr('raquet_make_w', ['bigint', 'number', 'number', 'number', 'number', 'number', ptrArgType(), 'bigint'], [BigInt(quadbin), width, height, pixtype, nodata, has_nodata ? 1 : 0, ptrArgVal(pixels), BigInt(pixels_size)]);
 	checkMeosError();
 	return _r;
 }
@@ -20770,7 +20770,7 @@ export function raquet_read(path: string, quadbin: number): Ptr {
 }
 
 export function raquet_read_bytes(data: Ptr, size: number, quadbin: number): Ptr {
-	const _r = callPtr('raquet_read_bytes_w', [ptrArgType(), 'number', 'bigint'], [ptrArgVal(data), size, BigInt(quadbin)]);
+	const _r = callPtr('raquet_read_bytes_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(data), BigInt(size), BigInt(quadbin)]);
 	checkMeosError();
 	return _r;
 }
@@ -20836,7 +20836,7 @@ export function raquet_mem_size(rq: Ptr): number {
 }
 
 export function raster_from_wkb(wkb: Ptr, size: number): Ptr {
-	const _r = callPtr('raster_from_wkb_w', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]);
+	const _r = callPtr('raster_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -20866,7 +20866,7 @@ export function raster_copy(rast: Ptr): Ptr {
 }
 
 export function raster_make(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number, pixeltype: string, nodataval: number, has_nodata: boolean, pixels: Ptr, size: number): Ptr {
-	const _r = callPtr('raster_make_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'string', 'number', 'number', ptrArgType(), 'number'], [width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata ? 1 : 0, ptrArgVal(pixels), size]);
+	const _r = callPtr('raster_make_w', ['number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'number', 'string', 'number', 'number', ptrArgType(), 'bigint'], [width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata ? 1 : 0, ptrArgVal(pixels), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -21260,7 +21260,7 @@ export function raster_union_transfn(state: Ptr, rast: Ptr, band: number, uniont
 }
 
 export function rasteralignstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('rasteralignstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('rasteralignstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -21272,7 +21272,7 @@ export function rasteralignstate_serialize(state: Ptr, size_out: Ptr): Ptr {
 }
 
 export function rasterstatsstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('rasterstatsstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('rasterstatsstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -21284,7 +21284,7 @@ export function rasterstatsstate_serialize(state: Ptr, size_out: Ptr): Ptr {
 }
 
 export function rasterunionstate_deserialize(bytes: Ptr, size: number): Ptr {
-	const _r = callPtr('rasterunionstate_deserialize_w', [ptrArgType(), 'number'], [ptrArgVal(bytes), size]);
+	const _r = callPtr('rasterunionstate_deserialize_w', [ptrArgType(), 'bigint'], [ptrArgVal(bytes), BigInt(size)]);
 	checkMeosError();
 	return _r;
 }
@@ -21410,7 +21410,7 @@ export function araster_value_gdal(traj: Ptr, path: string, band: number, vspan:
 }
 
 export function raster_tile_value_quadbin(traj: Ptr, pixels: Ptr, pixels_size: number, width: number, height: number, quadbin: number, pixtype: number, nodata: number, has_nodata: boolean): Ptr {
-	const _r = callPtr('raster_tile_value_quadbin_w', [ptrArgType(), ptrArgType(), 'number', 'number', 'number', 'bigint', 'number', 'number', 'number'], [ptrArgVal(traj), ptrArgVal(pixels), pixels_size, width, height, BigInt(quadbin), pixtype, nodata, has_nodata ? 1 : 0]);
+	const _r = callPtr('raster_tile_value_quadbin_w', [ptrArgType(), ptrArgType(), 'bigint', 'number', 'number', 'bigint', 'number', 'number', 'number'], [ptrArgVal(traj), ptrArgVal(pixels), BigInt(pixels_size), width, height, BigInt(quadbin), pixtype, nodata, has_nodata ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -22274,7 +22274,7 @@ export function s2cell_from_hexwkb(hexwkb: string): number {
 }
 
 export function s2cell_from_wkb(wkb: Ptr, size: number): number {
-	const _r = Number(call<bigint>('s2cell_from_wkb_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(wkb), size]));
+	const _r = Number(call<bigint>('s2cell_from_wkb_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]));
 	checkMeosError();
 	return _r;
 }
