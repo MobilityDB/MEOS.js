@@ -83,13 +83,12 @@ b.xminInc();  // true
 b.xmaxInc();  // true
 ```
 
-### TimestampTz returns BigInt
+### Temporal bounds
 
-`tmin()` and `tmax()` return `BigInt` at runtime, even though the TypeScript type is `number`.
-This is a quirk of the WASM binding: compare with `0n`, not `0`:
+`tmin()` and `tmax()` return a `TimestampTz`, a `number` of microseconds since 2000-01-01 UTC:
 
 ```ts
-b.tmin() === 0n  // correct comparison for epoch 2000-01-01
+b.tmin() === 0  // epoch 2000-01-01
 ```
 
 ## Topological predicates

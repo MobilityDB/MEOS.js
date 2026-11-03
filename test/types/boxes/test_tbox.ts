@@ -294,9 +294,9 @@ describe('TBox - Accessors', () => {
 		b.free();
 	});
 
-	it('tmin returns 0n for MEOS epoch (2000-01-01)', () => {
+	it('tmin returns 0 for MEOS epoch (2000-01-01)', () => {
 		const b = TBox.fromString(WKT_T);
-		assert.equal(b.tmin(), 0n);
+		assert.equal(b.tmin(), 0);
 		b.free();
 	});
 
