@@ -616,6 +616,11 @@ int rtree_insert_w(RTree * rtree, void * box, int64_t id) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int rtree_load_w(RTree * rtree, const void * boxes, const int64_t * ids, int count) {
+  return (int) rtree_load(rtree, boxes, ids, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int rtree_insert_temporal_w(RTree * rtree, const Temporal * temp, int64_t id) {
   return (int) rtree_insert_temporal(rtree, temp, id);
 }
@@ -718,6 +723,11 @@ int sptree_height_w(const SPTree * sptree) {
 EMSCRIPTEN_KEEPALIVE
 int sptree_insert_w(SPTree * sptree, void * box, int64_t id) {
   return (int) sptree_insert(sptree, box, id);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int sptree_load_w(SPTree * sptree, const void * boxes, const int64_t * ids, int count) {
+  return (int) sptree_load(sptree, boxes, ids, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -9495,6 +9505,16 @@ Temporal * tgeo_affine_w(const Temporal * temp, double a, double b, double c, do
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tgeo_force2d_w(const Temporal * temp) {
+  return tgeo_force2d(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tgeo_force3d_w(const Temporal * temp, double zvalue) {
+  return tgeo_force3d(temp, zvalue);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tgeo_rotate_w(const Temporal * temp, double angle, double x0, double y0) {
   return tgeo_rotate(temp, angle, x0, y0);
 }
@@ -14735,6 +14755,11 @@ TPCBox * pcpatch_to_tpcbox_w(const Pcpatch * pa) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TPCBox * tpointcloud_to_tpcbox_w(const Temporal * temp) {
+  return tpointcloud_to_tpcbox(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int tpcbox_hasx_w(const TPCBox * box) {
   return (int) tpcbox_hasx(box);
 }
@@ -15902,6 +15927,11 @@ Temporal * tpose_rotate_y_w(const Temporal * temp, double angle) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_force2d_w(const Temporal * temp) {
+  return tpose_force2d(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tpose_rotate_z_w(const Temporal * temp, double angle) {
   return tpose_rotate_z(temp, angle);
 }
@@ -15939,6 +15969,11 @@ Pose * pose_make_point3d_w(const GSERIALIZED * gs, double W, double X, double Y,
 EMSCRIPTEN_KEEPALIVE
 Pose * pose_make_point3d_ypr_w(const GSERIALIZED * gs, double yaw, double pitch, double roll) {
   return pose_make_point3d_ypr(gs, yaw, pitch, roll);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * pose_to_geog_w(const Pose * pose) {
+  return pose_to_geog(pose);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -18539,6 +18574,11 @@ Temporal * trgeometry_delete_tstzspan_w(const Temporal * temp, const Span * s, i
 EMSCRIPTEN_KEEPALIVE
 Temporal * trgeometry_delete_tstzspanset_w(const Temporal * temp, const SpanSet * ss, int connect) {
   return trgeometry_delete_tstzspanset(temp, ss, (bool) connect);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * trgeometry_force2d_w(const Temporal * temp) {
+  return trgeometry_force2d(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE

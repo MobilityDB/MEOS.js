@@ -577,6 +577,12 @@ export function rtree_insert(rtree: Ptr, box: Ptr, id: number): boolean {
 	return _r;
 }
 
+export function rtree_load(rtree: Ptr, boxes: Ptr, ids: Ptr, count: number): boolean {
+	const _r = call<number>('rtree_load_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(rtree), ptrArgVal(boxes), ptrArgVal(ids), count]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function rtree_insert_temporal(rtree: Ptr, temp: Ptr, id: number): boolean {
 	const _r = call<number>('rtree_insert_temporal_w', 'number', [ptrArgType(), ptrArgType(), 'bigint'], [ptrArgVal(rtree), ptrArgVal(temp), BigInt(id)]) !== 0;
 	checkMeosError();
@@ -697,6 +703,12 @@ export function sptree_height(sptree: Ptr): number {
 
 export function sptree_insert(sptree: Ptr, box: Ptr, id: number): boolean {
 	const _r = call<number>('sptree_insert_w', 'number', [ptrArgType(), ptrArgType(), 'bigint'], [ptrArgVal(sptree), ptrArgVal(box), BigInt(id)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function sptree_load(sptree: Ptr, boxes: Ptr, ids: Ptr, count: number): boolean {
+	const _r = call<number>('sptree_load_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(sptree), ptrArgVal(boxes), ptrArgVal(ids), count]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -11009,6 +11021,18 @@ export function tgeo_affine(temp: Ptr, a: number, b: number, c: number, d: numbe
 	return _r;
 }
 
+export function tgeo_force2d(temp: Ptr): Ptr {
+	const _r = callPtr('tgeo_force2d_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tgeo_force3d(temp: Ptr, zvalue: number): Ptr {
+	const _r = callPtr('tgeo_force3d_w', [ptrArgType(), 'number'], [ptrArgVal(temp), zvalue]);
+	checkMeosError();
+	return _r;
+}
+
 export function tgeo_rotate(temp: Ptr, angle: number, x0: number, y0: number): Ptr {
 	const _r = callPtr('tgeo_rotate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), angle, x0, y0]);
 	checkMeosError();
@@ -17147,6 +17171,12 @@ export function pcpatch_to_tpcbox(pa: Ptr): Ptr {
 	return _r;
 }
 
+export function tpointcloud_to_tpcbox(temp: Ptr): Ptr {
+	const _r = callPtr('tpointcloud_to_tpcbox_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcbox_hasx(box: Ptr): boolean {
 	const _r = call<number>('tpcbox_hasx_w', 'number', [ptrArgType()], [ptrArgVal(box)]) !== 0;
 	checkMeosError();
@@ -18492,6 +18522,12 @@ export function tpose_rotate_y(temp: Ptr, angle: number): Ptr {
 	return _r;
 }
 
+export function tpose_force2d(temp: Ptr): Ptr {
+	const _r = callPtr('tpose_force2d_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpose_rotate_z(temp: Ptr, angle: number): Ptr {
 	const _r = callPtr('tpose_rotate_z_w', [ptrArgType(), 'number'], [ptrArgVal(temp), angle]);
 	checkMeosError();
@@ -18536,6 +18572,12 @@ export function pose_make_point3d(gs: Ptr, W: number, X: number, Y: number, Z: n
 
 export function pose_make_point3d_ypr(gs: Ptr, yaw: number, pitch: number, roll: number): Ptr {
 	const _r = callPtr('pose_make_point3d_ypr_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(gs), yaw, pitch, roll]);
+	checkMeosError();
+	return _r;
+}
+
+export function pose_to_geog(pose: Ptr): Ptr {
+	const _r = callPtr('pose_to_geog_w', [ptrArgType()], [ptrArgVal(pose)]);
 	checkMeosError();
 	return _r;
 }
@@ -21561,6 +21603,12 @@ export function trgeometry_delete_tstzspan(temp: Ptr, s: Ptr, connect: boolean):
 
 export function trgeometry_delete_tstzspanset(temp: Ptr, ss: Ptr, connect: boolean): Ptr {
 	const _r = callPtr('trgeometry_delete_tstzspanset_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(ss), connect ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_force2d(temp: Ptr): Ptr {
+	const _r = callPtr('trgeometry_force2d_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
