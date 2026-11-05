@@ -86,24 +86,55 @@ export function meos_free(ptr: Ptr): void {
 	call<void>('meos_free', null, [ptrArgType()], [ptrArgVal(ptr)]);
 }
 
-/** Hex WKB of the given variant; discards size_out. */
+const UTF8 = new TextDecoder();
+
+/**
+ * The string a MEOS writer answers, read for the size it states and freed.
+ *
+ * `write(sizeOut)` receives the address of a `size_t` the writer fills with the
+ * size of the string it returns, its terminator included, as wkb.ts's `readWkb`
+ * gives a byte buffer's. The string and the size slot are freed with `_meos_free`.
+ * A null string, for which MEOS wrote no size, answers '', as ccall's 'string'
+ * return answers it.
+ */
+export function readString(write: (sizeOut: Ptr) => Ptr): string {
+	const mod = getModule();
+	// size_t is 8 bytes in wasm64
+	const sizeOut: Ptr = mod.allocate(new Uint8Array(8), mod.ALLOC_NORMAL) as Ptr;
+	let str: Ptr = 0;
+	try {
+		str = write(sizeOut);
+		checkMeosError();
+		if (!str) return '';
+		// Read the heap after the call: a growth during it replaces the view
+		const heap = mod.HEAPU8;
+		const size = Number(
+			new DataView(heap.buffer, heap.byteOffset + sizeOut, 8).getBigUint64(0, /* littleEndian */ true)
+		);
+		return UTF8.decode(heap.subarray(str, str + size - 1));
+	} finally {
+		if (str) (mod._meos_free as (p: bigint) => void)(BigInt(str));
+		(mod._meos_free as (p: bigint) => void)(BigInt(sizeOut));
+	}
+}
+
+/** Hex WKB of the given variant. */
 export function temporal_as_hexwkb(temp: Ptr, variant: number): string {
-	const _r = call<string>('temporal_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), variant]);
-	checkMeosError();
-	return _r;
+	return readString(_sizeOut => callPtr(
+		'temporal_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()],
+		[ptrArgVal(temp), variant, ptrArgVal(_sizeOut)]
+	));
 }
 
 /** Pass empty string for srs to use NULL. */
 export function temporal_as_mfjson(
 	temp: Ptr, withBbox: boolean, flags: number, precision: number, srs: string
 ): string {
-	const _r = call<string>(
-		'temporal_as_mfjson_w', 'string',
-		[ptrArgType(), 'number', 'number', 'number', 'string'],
-		[ptrArgVal(temp), withBbox ? 1 : 0, flags, precision, srs]
-	);
-	checkMeosError();
-	return _r;
+	return readString(_sizeOut => callPtr(
+		'temporal_as_mfjson_w',
+		[ptrArgType(), 'number', 'number', 'number', 'string', ptrArgType()],
+		[ptrArgVal(temp), withBbox ? 1 : 0, flags, precision, srs, ptrArgVal(_sizeOut)]
+	));
 }
 
 /** 0-based index (MEOS is 1-based internally). */
@@ -131,11 +162,11 @@ export function interval_us_free(iv: Ptr): number {
 	return _r;
 }
 
-/** Serialise a Span to hex-encoded WKB; discards size_out. */
+/** Serialise a Span to hex-encoded WKB. */
 export function span_as_hexwkb(s: Ptr, variant: number): string {
-	const _r = call<string>('span_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);
-	checkMeosError();
-	return _r;
+	return readString(_sizeOut => callPtr(
+		'span_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]
+	));
 }
 
 /*
@@ -200,11 +231,11 @@ export function tstzspanset_upper(ss: Ptr): TimestampTz {
 	return Number(_r);
 }
 
-/** Serialise a SpanSet to hex-encoded WKB; discards size_out. */
+/** Serialise a SpanSet to hex-encoded WKB. */
 export function spanset_as_hexwkb(ss: Ptr, variant: number): string {
-	const _r = call<string>('spanset_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(ss), variant]);
-	checkMeosError();
-	return _r;
+	return readString(_sizeOut => callPtr(
+		'spanset_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ss), variant, ptrArgVal(_sizeOut)]
+	));
 }
 
 /** Duration of a TsTzSpanSet as total microseconds (month ≈ 30 days). */
@@ -229,11 +260,11 @@ export function tstzspanset_timestamptz_n(ss: Ptr, n: number): TimestampTz {
 	return Number(_r);
 }
 
-/** Serialise a Set to hex-encoded WKB; discards size_out. */
+/** Serialise a Set to hex-encoded WKB. */
 export function set_as_hexwkb(s: Ptr, variant: number): string {
-	const _r = call<string>('set_as_hexwkb_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), variant]);
-	checkMeosError();
-	return _r;
+	return readString(_sizeOut => callPtr(
+		'set_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]
+	));
 }
 
 export function tstzset_start_value(s: Ptr): TimestampTz {

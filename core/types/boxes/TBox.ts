@@ -67,7 +67,7 @@ import {
 	tbox_cmp,
 	meos_free,
 } from '../../functions/functions.generated.js';
-import { readWkb, withSizeOut, withWkb } from '../../functions/wkb.js';
+import { readWkb, withWkb } from '../../functions/wkb.js';
 
 /**
  * A temporal bounding box with an optional numeric (X) dimension and an optional temporal (T) dimension.
@@ -292,7 +292,7 @@ export class TBox {
 	 * MEOS: tbox_as_hexwkb
 	 */
 	asHexWKB(variant = 0): string {
-		return withSizeOut((sizeOut) => tbox_as_hexwkb(this._inner, variant, sizeOut));
+		return tbox_as_hexwkb(this._inner, variant);
 	}
 
 	// -------------------------------------------------------------------------

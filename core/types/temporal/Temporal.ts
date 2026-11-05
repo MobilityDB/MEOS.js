@@ -51,6 +51,7 @@ import {
 	temporal_basetype_name,
 	temporal_from_hexwkb,
 	temporal_from_wkb,
+	temporal_as_mfjson,
 } from '../../functions/functions.generated.js';
 import { readWkb, withWkb } from '../../functions/wkb.js';
 
@@ -298,12 +299,7 @@ export abstract class Temporal<V> {
 	 * @param srs       Spatial Reference System string, or null to omit
 	 */
 	asMFJSON(withBbox = true, flags = 3, precision = 6, srs: string | null = null): string {
-		return call<string>(
-			'temporal_as_mfjson_w',
-			'string',
-			[ptrArgType(), 'number', 'number', 'number', 'string'],
-			[ptrArgVal(this._inner), withBbox ? 1 : 0, flags, precision, srs ?? '']
-		);
+		return temporal_as_mfjson(this._inner, withBbox, flags, precision, srs ?? '');
 	}
 
 	/**
