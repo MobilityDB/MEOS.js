@@ -13,8 +13,12 @@
  * array entry carries:
  *   name        -> C function name
  *   file        -> originating header (meos.h / meos_geo.h)
- *   returnType  -> { c: string, canonical: string }
- *   params      -> [{ name, cType, canonical }]
+ *   returnType  -> { c, canonical, typedef? }
+ *   params      -> [{ name, cType, canonical, typedef? }]
+ *
+ * Every type decision reads `canonical`, resolving the names the catalog keeps
+ * through its top-level `typedefs`, and names a type of its own from `typedef`
+ * (see TypeMap). `c` / `cType` is only the spelling the C wrapper declares.
  *
  * Run: npm run generate
  */
@@ -32,11 +36,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 interface ReturnType {
 	c: string;
 	canonical: string;
+	typedef?: string;
 }
 interface Param {
 	name: string;
 	cType: string;
 	canonical: string;
+	typedef?: string;
 }
 interface IdlFunction {
 	name: string;
@@ -50,9 +56,19 @@ interface IdlFunction {
 interface IdlEnum {
 	name: string;
 }
+interface IdlNamed {
+	name: string;
+}
+interface IdlTypedef {
+	name: string;
+	canonical: string;
+}
 interface Idl {
 	functions: IdlFunction[];
 	enums?: IdlEnum[];
+	structs?: IdlNamed[];
+	callbacks?: IdlNamed[];
+	typedefs?: IdlTypedef[];
 }
 
 // -------------------------------------------------------------------------
@@ -155,98 +171,185 @@ const MANUAL_FUNCTIONS = new Set([
 const OUTPUT_SIZE_PARAMS = new Set<string>();
 
 // -------------------------------------------------------------------------
-// TYPE PREDICATES
+// TYPE MAPPING
 // -------------------------------------------------------------------------
 
 /**
- * Strips "const" qualifiers and normalises whitespace so that all predicates
- * below work on a canonical form of the C type string.
+ * Strips "const" qualifiers and normalises whitespace.
  */
-const clean = (t: string) 		=> t.replace(/\bconst\b/g, '').replace(/\s+/g, ' ').trim();
-
-const isBool = (t: string) 		=> clean(t) === 'bool';
-const isTsTz = (t: string)		=> clean(t) === 'TimestampTz';
-const isTs = (t: string) 		=> clean(t) === 'Timestamp';
-const isDateADT = (t: string) 	=> clean(t) === 'DateADT';
-const isVoid = (t: string) 		=> clean(t) === 'void';
-/**
- * True for the 64-bit integer types, which ccall passes and returns as BigInt.
- * size_t, ssize_t and uintptr_t are pointer-sized, so 64-bit in wasm64: a
- * `size_t size` argument, as the *_from_wkb readers take, is a BigInt too.
- */
-const isInt64 = (t: string) => {
-	const c = clean(t);
-	return c === 'int64' || c === 'int64_t' || c === 'uint64' || c === 'uint64_t' ||
-		c === 'size_t' || c === 'ssize_t' || c === 'uintptr_t';
-};
-
-const isString = (t: string) => {
-	const c = clean(t);
-	return c === 'char *' || c === 'char*';
-};
-const isDouble = (t: string) => {
-	const c = clean(t);
-	return c === 'double' || c === 'float8';
-};
-const isFloat = (t: string) => {
-	const c = clean(t);
-	return c === 'float' || c === 'float4';
-};
-
-/** Detects C function-pointer params such as "void (*callback)(void *)". */
-const isFuncPtr = (t: string) => t.includes('(*)');
-
-/** True for any type containing "**" (pointer-to-pointer or array-of-pointers). */
-const isDblPtr = (t: string) => clean(t).includes('**');
-
-/** True for raw WKB byte-buffer returns (uint8_t * / uint8 *). */
-const isRawBytes = (t: string) => {
-	const c = clean(t);
-	return c === 'uint8_t *' || c === 'uint8 *';
-};
+const clean = (t: string) => t.replace(/\bconst\b/g, '').replace(/\s+/g, ' ').trim();
 
 /**
- * True only for the PostgreSQL Interval struct passed by value.
- * "Interval *" (pointer) is NOT matched here, it is treated as an opaque
- * Ptr like any other single pointer, so functions that take or return
- * Interval* are generated normally.
+ * How a slot crosses the ccall boundary.
+ *
+ *   void      no value
+ *   bool      int at the C boundary, boolean in TypeScript
+ *   string    char *, a JavaScript string
+ *   text      text *, converted to and from char * by the C wrapper
+ *   int64     a signed 64-bit integer, a BigInt at the boundary
+ *   uint64    an unsigned 64-bit integer, a BigInt at the boundary
+ *   number    a signed integer of at most 32 bits, an enum, or a floating point
+ *   uint32    an unsigned 32-bit integer
+ *   ptr       any pointer, a BigInt at the boundary and a Ptr in TypeScript
+ *   datum     a PostgreSQL Datum, whose meaning depends on the base type
+ *   callback  a C function pointer
+ *   byvalue   a structure passed by value
  */
-const isInterval = (t: string) => clean(t) === 'Interval';
+type Kind =
+	| 'void' | 'bool' | 'string' | 'text' | 'int64' | 'uint64' | 'number' | 'uint32'
+	| 'ptr' | 'datum' | 'callback' | 'byvalue';
 
-/**
- * True for the PostgreSQL Datum tagged value in any pointer arity
- * (Datum, Datum *, const Datum, ...).  A Datum is an opaque uintptr_t whose
- * interpretation depends on the runtime base type: for Float8 / text / geometry
- * it holds a *pointer*, not the value (and is only 32-bit under WASM32), so it
- * can never be marshalled safely to a JS scalar.  Datum only ever appears on
- * INTERNAL functions (meos_internal.h); the user-facing API is the typed
- * *_meos.c wrappers declared in the public headers, e.g.
- *   temporal_start_value(Datum, internal) -> tint_start_value / tfloat_start_value / ttext_start_value
- * Functions whose signature mentions Datum are therefore skipped entirely.
- */
-const isDatum = (t: string) => /\bDatum\b/.test(clean(t));
+interface Mapped {
+	kind: Kind;
+	/** The name the slot spells its scalar with: a kept name, a typedef or a C type. */
+	name: string;
+	/** The TypeScript type of the slot. */
+	ts: string;
+}
 
-/**
- * True for the PostgreSQL text type passed as a single pointer (text *).
- * These require cstring_to_text / text_to_cstring conversion in the C wrapper
- * so that the JS side always works with plain char* strings.
- */
-const isTextSingle = (t: string) => {
-	const c = clean(t);
-	return c === 'text *' || c === 'text*';
+/** C standard types, by how they cross the ccall boundary in wasm64. */
+const C_WIDTHS: Record<string, Kind> = {
+	'int8_t': 'number', 'int16_t': 'number', 'int32_t': 'number', 'int': 'number',
+	'short': 'number', 'char': 'number', 'signed char': 'number',
+	'uint8_t': 'number', 'uint16_t': 'number', 'unsigned char': 'number',
+	'unsigned short': 'number',
+	'uint32_t': 'uint32', 'unsigned int': 'uint32', 'unsigned': 'uint32',
+	'int64_t': 'int64', 'long': 'int64', 'long long': 'int64', 'ssize_t': 'int64',
+	'intptr_t': 'int64',
+	'uint64_t': 'uint64', 'unsigned long': 'uint64', 'unsigned long long': 'uint64',
+	'size_t': 'uint64', 'uintptr_t': 'uint64',
+	'float': 'number', 'double': 'number',
 };
 
-/**
- * True for text** (array of PostgreSQL text pointers).
- * These are passed through as opaque Ptr without string conversion.
- */
-const isTextDouble = (t: string) => {
-	const c = clean(t);
-	return c === 'text **' || c === 'text**';
-};
+/** TypeScript aliases the header template declares for kept PostgreSQL names. */
+const TS_KEPT_ALIASES = new Set(['TimestampTz', 'DateADT']);
 
-/** True for any single-pointer type that is not a double pointer. */
-const isPtr = (t: string) => clean(t).endsWith('*') && !isDblPtr(t);
+/**
+ * Maps a slot's type from the catalog alone.
+ *
+ * The slot's `canonical` states its type as MEOS declares it: a C standard
+ * type, a structure, an enum or a callback by its name, or a name PostgreSQL
+ * declares (TimestampTz, DateADT, Datum, text, ...) that the top-level
+ * `typedefs` list resolves to its C type. The slot's `typedef` names a type of
+ * its own over a width (H3Index over uint64_t), which the binding exposes under
+ * that name. A name none of these resolve is recorded as unresolved, and the
+ * generator stops on it rather than guessing a mapping. C_WIDTHS, the C
+ * standard types, is the one place a type is written by hand.
+ */
+class TypeMap {
+	private readonly structs: Set<string>;
+	private readonly enums: Set<string>;
+	private readonly callbacks: Set<string>;
+	private readonly typedefs: Map<string, string>;
+	/** Names a slot `typedef` gives a type of its own, with the TypeScript type each aliases. */
+	readonly ownTypes = new Map<string, string>();
+	readonly unresolved: string[] = [];
+
+	constructor(idl: Idl) {
+		this.structs = new Set((idl.structs ?? []).map(s => s.name));
+		this.enums = new Set((idl.enums ?? []).map(e => e.name));
+		this.callbacks = new Set((idl.callbacks ?? []).map(c => c.name));
+		this.typedefs = new Map((idl.typedefs ?? []).map(t => [t.name, t.canonical]));
+	}
+
+	/** True when the name is one a binding can map: a C type or a catalog entry. */
+	private known(base: string): boolean {
+		return base === 'void' || base === 'bool' || base in C_WIDTHS ||
+			this.structs.has(base) || this.enums.has(base) ||
+			this.callbacks.has(base) || this.typedefs.has(base);
+	}
+
+	/** The C type a kept name stands for, following `typedefs` to a C type. */
+	private resolve(name: string): string {
+		let t = name;
+		for (let hops = 0; this.typedefs.has(t) && hops < 8; hops++)
+			t = clean(this.typedefs.get(t)!);
+		return t;
+	}
+
+	/** Maps one slot; `where` names the function and slot an error reports. */
+	map(slot: { canonical?: string; typedef?: string }, where: string): Mapped {
+		const canon = slot.canonical;
+		if (canon === undefined) return this.fail('the slot states no canonical type', where);
+		// A function pointer spelled out rather than named by a callback entry.
+		if (/\(\s*\*\s*\)/.test(canon)) return { kind: 'callback', name: canon, ts: 'Ptr' };
+
+		const c = clean(canon);
+		const stars = (c.match(/\*/g) ?? []).length;
+		const spelled = c.replace(/\*/g, '').trim();
+		// A structure only `struct` names, which the catalog does not lay out.
+		const tagged = /^(struct|union|enum)\s+/.test(spelled);
+		const base = spelled.replace(/^(struct|union|enum)\s+/, '').trim();
+
+		if (!tagged && !this.known(base))
+			return this.fail(`type '${base}' of '${canon}' is neither a C type nor a catalog entry`, where);
+
+		if (stars > 0) {
+			if (base === 'Datum') return { kind: 'datum', name: base, ts: 'Ptr' };
+			if (stars === 1 && base === 'char') return { kind: 'string', name: base, ts: 'string' };
+			if (stars === 1 && base === 'text') return { kind: 'text', name: base, ts: 'string' };
+			return { kind: 'ptr', name: base, ts: 'Ptr' };
+		}
+
+		if (base === 'void') return { kind: 'void', name: base, ts: 'void' };
+		if (base === 'bool') return { kind: 'bool', name: base, ts: 'boolean' };
+		if (base === 'Datum') return { kind: 'datum', name: base, ts: 'number' };
+		if (this.callbacks.has(base)) return { kind: 'callback', name: base, ts: 'Ptr' };
+		if (this.enums.has(base) || /^enum\s/.test(spelled))
+			return { kind: 'number', name: base, ts: 'number' };
+		if (tagged || this.structs.has(base)) return { kind: 'byvalue', name: base, ts: base };
+
+		const width = this.resolve(base);
+		const kind = C_WIDTHS[width];
+		if (kind === undefined)
+			return this.fail(`type '${base}' resolves to '${width}', which is not a C scalar`, where);
+
+		if (slot.typedef !== undefined) {
+			// A type of its own over a width, exposed under its name: a bigint when
+			// the width is 64 bits, so no value above 2^53 is rounded.
+			this.ownTypes.set(slot.typedef, is64Kind(kind) ? 'bigint' : 'number');
+			return { kind, name: slot.typedef, ts: slot.typedef };
+		}
+		return { kind, name: base, ts: TS_KEPT_ALIASES.has(base) ? base : 'number' };
+	}
+
+	/** Maps the type a pointer slot points to, for the bool+result idiom. */
+	mapPointee(slot: { canonical: string; typedef?: string }, where: string): Mapped {
+		const canonical = slot.canonical.replace(/\*\s*$/, '').trim();
+		return this.map({ canonical, typedef: slot.typedef }, where);
+	}
+
+	private fail(reason: string, where: string): Mapped {
+		this.unresolved.push(`${where}: ${reason}`);
+		return { kind: 'number', name: '?', ts: 'never' };
+	}
+}
+
+const is64Kind = (k: Kind) => k === 'int64' || k === 'uint64';
+
+/** Set once the catalog is read; every generator function maps through it. */
+let types: TypeMap;
+
+const retOf = (fn: IdlFunction): Mapped => types.map(fn.returnType, `${fn.name} result`);
+const argOf = (fn: IdlFunction, p: Param): Mapped => types.map(p, `${fn.name} param '${p.name}'`);
+
+/** True for a slot whose 64 bits ccall carries as a BigInt. */
+const is64 = (m: Mapped) => is64Kind(m.kind);
+
+/** True for the PostgreSQL timestamps the C wrapper declares as long long. */
+const isTimestamp = (m: Mapped) =>
+	m.kind === 'int64' && (m.name === 'TimestampTz' || m.name === 'Timestamp');
+
+/**
+ * The expression a TypeScript wrapper returns for a 64-bit value, which ccall
+ * hands back as a signed BigInt: read as unsigned when the width is, kept a
+ * BigInt for a type of its own over 64 bits, and a number otherwise, as every
+ * other integer the binding returns is.
+ */
+function from64(m: Mapped, expr: string): string {
+	const v = m.kind === 'uint64' ? `BigInt.asUintN(64, ${expr})` : expr;
+	return types.ownTypes.get(m.ts) === 'bigint' ? v : `Number(${v})`;
+}
 
 // -------------------------------------------------------------------------
 // BOOL+RESULT PATTERN DETECTION
@@ -259,8 +362,10 @@ const isPtr = (t: string) => clean(t).endsWith('*') && !isDblPtr(t);
 interface BoolResultInfo {
 	/** The hidden output parameter whose address is passed to the inner call. */
 	resultParam: Param;
-	/** Dereferenced base C type written into *result (e.g. "int64", "double", "Set *"). */
+	/** Dereferenced C type written into *result, as the header spells it (e.g. "int64", "Set *"). */
 	resultBaseType: string;
+	/** The mapped type of *result. */
+	result: Mapped;
 	/** C return type for the generated _w wrapper. */
 	cWrapRet: string;
 	/** TypeScript return type for the generated TS wrapper. */
@@ -301,23 +406,26 @@ interface BoolResultInfo {
  * Returns null if the function does not match the pattern.
  */
 function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
-	if (!isBool(fn.returnType.c)) return null;
+	if (retOf(fn).kind !== 'bool') return null;
 
 	// A "result" param must be either a single or double pointer. A single
 	// pointer to const is an input MEOS reads, never an answer it writes,
 	// e.g. bool index_result_id(const MeosArray *result, int n, int64 *id).
-	const rp = fn.params.find(
-		p => p.name === 'result' &&
-			((isPtr(p.cType) && !/^\s*const\b/.test(p.cType)) || isDblPtr(p.cType))
-	);
+	const rp = fn.params.find(p => {
+		if (p.name !== 'result') return false;
+		const c = clean(p.canonical ?? '');
+		return c.includes('**') || (c.endsWith('*') && !/^\s*const\b/.test(p.canonical));
+	});
 	if (!rp) return null;
+	const where = `${fn.name} param '${rp.name}'`;
 
 	// Double-pointer case: bool fn(..., T **result) -> wrapper returns T*
-	if (isDblPtr(rp.cType)) {
+	if (clean(rp.canonical).includes('**')) {
 		const ptrType = clean(rp.cType).replace(/\*$/, '').trim();
 		return {
 			resultParam: rp,
 			resultBaseType: ptrType,
+			result: types.mapPointee(rp, where),
 			cWrapRet: ptrType,
 			tsWrapRet: 'Ptr',
 		};
@@ -325,41 +433,23 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
 
 	// Single-pointer case: bool fn(..., T *result) -> wrapper returns T
 	const base = clean(rp.cType).replace(/\*$/, '').trim();
+	const m = types.mapPointee(rp, where);
+	if (m.kind === 'byvalue' || m.kind === 'datum' || m.kind === 'callback' || m.kind === 'void')
+		types.unresolved.push(`${where}: *result of type '${m.name}' has no ccall value`);
 
-	// Map the dereferenced C base type to its C wrapper return type.
+	// The C wrapper's return type for the dereferenced value.
 	let cRet: string;
-	if (isInt64(base) || isTsTz(base) || isTs(base))
-		cRet = 'long long';
-
-	else if (base === 'double' || base === 'float8') 
-		cRet = 'double';
-
-	else if (base === 'bool') 
-		cRet = 'int';
-
+	if (is64(m)) cRet = 'long long';
+	else if (m.name === 'double') cRet = 'double';
+	else if (m.kind === 'bool') cRet = 'int';
 	else cRet = base;
-
-	// Map the dereferenced C base type to its TypeScript return type.
-	let tsRet: string;
-	if (base === 'TimestampTz')
-		tsRet = 'TimestampTz';
-
-	else if (base === 'DateADT')
-		tsRet = 'DateADT';
-
-	else if (base === 'double' || base === 'float8' || base === 'float')
-		tsRet = 'number';
-
-	else if (base === 'bool')
-		tsRet = 'boolean';
-
-	else tsRet = 'number';
 
 	return {
 		resultParam: rp,
 		resultBaseType: base,
+		result: m,
 		cWrapRet: cRet,
-		tsWrapRet: tsRet,
+		tsWrapRet: m.ts,
 	};
 }
 
@@ -374,30 +464,29 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
  * The generator aims for full API coverage: all pointer and double-pointer types
  * (including T**, uint8_t*, Interval*, text**) are mapped to the opaque Ptr
  * (number) type, matching the strategy used by the Java generator which maps
- * every unresolvable pointer type to java.Pointer.
+ * every unresolvable pointer type to java.Pointer.  A function pointer the
+ * catalog states, spelled out or named by its callback entry, is a Ptr too:
+ * the address Module.addFunction() returns for a JavaScript function, which
+ * the C wrapper passes on under the callback's own C type.
  *
  * The only cases that remain un-generatable are:
  *
  *   - Datum return or param: Datum is an opaque, internal-only tagged value
- *     (see isDatum) that cannot be marshalled to a JS scalar.  It appears only
- *     on internal functions; the user-facing API is the typed *_meos.c wrapper.
+ *     that cannot be marshalled to a JS scalar.  It appears only on internal
+ *     functions; the user-facing API is the typed *_meos.c wrapper.
  *
- *   - Function-pointer params: Emscripten cannot marshal C function pointers
- *     automatically.  These require hand-written wrappers using
- *     Module.addFunction() and are listed in MANUAL_FUNCTIONS if needed.
- *
- *   - Interval by value (struct, no pointer): passing a C struct by value
- *     through Emscripten ccall is not supported.  Interval* (pointer) is
- *     handled normally as Ptr.
+ *   - A structure by value (Interval, no pointer): passing a C struct by value
+ *     through Emscripten ccall is not supported.  A pointer to one is handled
+ *     normally as Ptr.
  */
 function shouldSkip(fn: IdlFunction): string | null {
-	if (isDatum(fn.returnType.c))
+	if (retOf(fn).kind === 'datum')
 		return 'internal Datum return — use the typed *_meos.c wrapper';
 	for (const p of fn.params) {
-		if (isDatum(p.cType))
+		const m = argOf(fn, p);
+		if (m.kind === 'datum')
 			return `internal Datum param '${p.name}' — use the typed *_meos.c wrapper`;
-		if (isFuncPtr(p.cType)) return `function-pointer param '${p.name}'`;
-		if (isInterval(p.cType)) return `Interval by-value param '${p.name}'`;
+		if (m.kind === 'byvalue') return `${m.name} by-value param '${p.name}'`;
 	}
 	return null;
 }
@@ -416,10 +505,10 @@ function shouldSkip(fn: IdlFunction): string | null {
  *   text *     -> const char *  (converted via cstring_to_text in the body)
  *   everything else passes through unchanged
  */
-function cWrapParamType(cType: string): string {
-	if (isBool(cType)) return 'int';
-	if (isTsTz(cType) || isTs(cType)) return 'long long';
-	if (isTextSingle(cType)) return 'const char *';
+function cWrapParamType(cType: string, m: Mapped): string {
+	if (m.kind === 'bool') return 'int';
+	if (isTimestamp(m)) return 'long long';
+	if (m.kind === 'text') return 'const char *';
 	return cType;
 }
 
@@ -431,10 +520,10 @@ function cWrapParamType(cType: string): string {
  *   TimestampTz/Timestamp → long long
  *   text * -> char *   (converted via text_to_cstring in the body)
  */
-function cWrapRetType(cType: string): string {
-	if (isBool(cType)) return 'int';
-	if (isTsTz(cType) || isTs(cType)) return 'long long';
-	if (isTextSingle(cType)) return 'char *';
+function cWrapRetType(cType: string, m: Mapped): string {
+	if (m.kind === 'bool') return 'int';
+	if (isTimestamp(m)) return 'long long';
+	if (m.kind === 'text') return 'char *';
 	return cType;
 }
 
@@ -447,11 +536,10 @@ function cWrapRetType(cType: string): string {
  *   Timestamp   -> (Timestamp) name
  *   text *      -> cstring_to_text(name)  convert C string to PG text*
  */
-function cCastExpr(name: string, cType: string): string {
-	if (isBool(cType)) return `(bool) ${name}`;
-	if (isTsTz(cType)) return `(TimestampTz) ${name}`;
-	if (isTs(cType)) return `(Timestamp) ${name}`;
-	if (isTextSingle(cType)) return `cstring_to_text(${name})`;
+function cCastExpr(name: string, m: Mapped): string {
+	if (m.kind === 'bool') return `(bool) ${name}`;
+	if (isTimestamp(m)) return `(${m.name}) ${name}`;
+	if (m.kind === 'text') return `cstring_to_text(${name})`;
 	return name;
 }
 
@@ -502,24 +590,23 @@ function stringSizeOut(fn: IdlFunction): string | undefined {
 function generateCWrapper(fn: IdlFunction): string {
 	const boolResult = detectBoolResult(fn);
 	if (boolResult) {
-		const { resultParam, resultBaseType, cWrapRet } = boolResult;
+		const { resultParam, resultBaseType, result, cWrapRet } = boolResult;
 		const visible = fn.params.filter(
 			p => p !== resultParam && !OUTPUT_SIZE_PARAMS.has(p.name)
 		);
 		const hasSzOut = fn.params.some(p => OUTPUT_SIZE_PARAMS.has(p.name));
-		const sig = visible.map(p => `${cWrapParamType(p.cType)} ${p.name}`).join(', ');
+		const sig = visible.map(p => `${cWrapParamType(p.cType, argOf(fn, p))} ${p.name}`).join(', ');
 		const args = fn.params
 			.map(p => {
 				if (p === resultParam) return '&r';
 				if (OUTPUT_SIZE_PARAMS.has(p.name)) return '&sz';
-				return cCastExpr(p.name, p.cType);
+				return cCastExpr(p.name, argOf(fn, p));
 			})
 			.join(', ');
 		const zeroVal = cWrapRet === 'double' ? '0.0' : cWrapRet.endsWith('*') ? 'NULL' : '0';
 		let castRet = 'r';
-		if (isInt64(resultBaseType) || isTsTz(resultBaseType) || isTs(resultBaseType))
-			castRet = '(long long) r';
-		else if (resultBaseType === 'bool') castRet = '(int) r';
+		if (cWrapRet === 'long long') castRet = '(long long) r';
+		else if (result.kind === 'bool') castRet = '(int) r';
 		const lines = [
 			'EMSCRIPTEN_KEEPALIVE',
 			`${cWrapRet} ${fn.name}_w(${sig}) {`,
@@ -532,24 +619,24 @@ function generateCWrapper(fn: IdlFunction): string {
 		return lines.join('\n');
 	}
 
-	const ret = fn.returnType.c;
-	const wrapRet = cWrapRetType(ret);
+	const ret = retOf(fn);
+	const wrapRet = cWrapRetType(fn.returnType.c, ret);
 	const visible = fn.params.filter(p => !OUTPUT_SIZE_PARAMS.has(p.name));
 	const hasSzOut = fn.params.some(p => OUTPUT_SIZE_PARAMS.has(p.name));
 
-	const sig = visible.map(p => `${cWrapParamType(p.cType)} ${p.name}`).join(', ');
+	const sig = visible.map(p => `${cWrapParamType(p.cType, argOf(fn, p))} ${p.name}`).join(', ');
 	const args = fn.params
-		.map(p => (OUTPUT_SIZE_PARAMS.has(p.name) ? '&sz' : cCastExpr(p.name, p.cType)))
+		.map(p => (OUTPUT_SIZE_PARAMS.has(p.name) ? '&sz' : cCastExpr(p.name, argOf(fn, p))))
 		.join(', ');
 
 	const lines: string[] = ['EMSCRIPTEN_KEEPALIVE', `${wrapRet} ${fn.name}_w(${sig}) {`];
 	if (hasSzOut) lines.push('  size_t sz;');
 	const callExpr = `${fn.name}(${args})`;
-	if (isVoid(ret)) {
+	if (ret.kind === 'void') {
 		lines.push(`  ${callExpr};`);
-	} else if (isBool(ret)) {
+	} else if (ret.kind === 'bool') {
 		lines.push(`  return (int) ${callExpr};`);
-	} else if (isTextSingle(ret)) {
+	} else if (ret.kind === 'text') {
 		lines.push(`  text *_t = ${callExpr};`);
 		lines.push(`  if (!_t) return NULL;`);
 		lines.push(`  return text_to_cstring(_t);`);
@@ -567,21 +654,27 @@ function generateCWrapper(fn: IdlFunction): string {
 /**
  * A `char *` return read for the size MEOS writes, through the template's
  * `readString`, as wkb.ts's `readWkb` reads a byte buffer: the size leaves the
- * TypeScript signature and the string and its size slot are freed.
+ * TypeScript signature and the string and its size slot are freed. Each other
+ * slot crosses as #generateTsWrapper passes it.
  */
 function generateSizedStringWrapper(fn: IdlFunction, sizeOut: string): string {
 	const params = fn.params
 		.filter(p => p.name !== sizeOut)
-		.map(p => `${safeName(p.name)}: ${tsParamType(p.cType)}`)
+		.map(p => `${safeName(p.name)}: ${tsType(argOf(fn, p))}`)
 		.join(', ');
 	const argTypes = fn.params
-		.map(p => (tsParamType(p.cType) === 'Ptr' ? 'ptrArgType()' : `'${emArgType(p.cType)}'`))
+		.map(p => {
+			if (p.name === sizeOut) return 'ptrArgType()';
+			const m = argOf(fn, p);
+			return m.ts === 'Ptr' ? 'ptrArgType()' : `'${emArgType(m)}'`;
+		})
 		.join(', ');
 	const argVals = fn.params
 		.map(p => {
 			if (p.name === sizeOut) return 'ptrArgVal(_sizeOut)';
-			if (tsParamType(p.cType) === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
-			return toCallArg(safeName(p.name), p.cType);
+			const m = argOf(fn, p);
+			if (m.ts === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
+			return toCallArg(safeName(p.name), m);
 		})
 		.join(', ');
 	return [
@@ -592,95 +685,50 @@ function generateSizedStringWrapper(fn: IdlFunction, sizeOut: string): string {
 }
 
 /**
- * Emscripten ccall argument type tag for a given C type.
+ * Emscripten ccall argument type tag for a mapped slot.
  *
  * ccall accepts four runtime type tags: 'number', 'string', 'boolean', 'bigint'.
- * TimestampTz / Timestamp are int64 and must be passed as BigInt.
- * char* / text* are marshalled as JavaScript strings.
+ * Every 64-bit integer (TimestampTz, TimeADT, int64_t, size_t, H3Index, ...)
+ * crosses as a BigInt. char* / text* are marshalled as JavaScript strings.
+ * A pointer crosses as a BigInt too, through ptrArgType().
  * void params return null (no arg type).
- * Everything else (int, pointer, enum…) maps to 'number'.
+ * Everything else (int, enum, double…) maps to 'number'.
  */
 type EmType = 'number' | 'string' | 'bigint' | null;
 
-function emArgType(cType: string): EmType {
-	if (isString(cType) || isTextSingle(cType)) return 'string';
-	if (isTsTz(cType) || isTs(cType) || isInt64(cType)) return 'bigint';
-	if (isVoid(cType)) return null;
+function emArgType(m: Mapped): EmType {
+	if (m.kind === 'string' || m.kind === 'text') return 'string';
+	if (is64(m)) return 'bigint';
+	if (m.kind === 'void') return null;
 	return 'number';
 }
 
 /**
- * Emscripten ccall return type tag for a given C return type.
+ * Emscripten ccall return type tag for a mapped result.
  *
- * All numeric types (bool-as-int, int, double, long long, pointer) are
- * represented as 'number' at the ccall boundary.  Strings come back as
- * 'string'.  Void returns null.
+ * Every 64-bit integer comes back as 'bigint', strings as 'string', every other
+ * scalar (bool-as-int, int, enum, double) as 'number'.  Void returns null.
  */
-function emRetType(cType: string): EmType {
-	if (isVoid(cType)) return null;
-	if (isString(cType) || isTextSingle(cType)) return 'string';
-	if (isInt64(cType)) return 'bigint';
+function emRetType(m: Mapped): EmType {
+	if (m.kind === 'void') return null;
+	if (m.kind === 'string' || m.kind === 'text') return 'string';
+	if (is64(m)) return 'bigint';
 	return 'number';
 }
 
 /**
- * C integer types that map to TypeScript "number" (not Ptr).
- * Used in tsParamType to distinguish plain integers from opaque pointers.
- */
-const INT_C_TYPES = new Set([
-	'int',
-	'int32',
-	'int32_t',
-	'uint32',
-	'uint32_t',
-	'int16',
-	'int16_t',
-	'uint16',
-	'uint16_t',
-	'int64',
-	'int64_t',
-	'uint64',
-	'uint64_t',
-	'int8',
-	'int8_t',
-	'uint8',
-	'uint8_t',
-	'size_t',
-	'uintptr_t',
-	'short',
-	'long',
-]);
-
-/**
- * Maps a C param type to its TypeScript equivalent for the generated wrapper.
+ * The TypeScript type of a mapped slot (see TypeMap.map).
  *
- * Key mappings:
- *   bool           -> boolean
- *   TimestampTz    -> TimestampTz  (type alias for number, microseconds since 2000-01-01 UTC)
- *   Timestamp      -> number
- *   DateADT        -> DateADT      (type alias for number, days since 2000-01-01)
- *   double/float   -> number
- *   char* / text*  -> string
- *   T* / T**       -> Ptr          (opaque WASM linear memory address)
- *   integer types  -> number
- *   enums / other  -> number
+ *   bool               -> boolean
+ *   TimestampTz        -> TimestampTz  (alias for number, microseconds since 2000-01-01 UTC)
+ *   DateADT            -> DateADT      (alias for number, days since 2000-01-01)
+ *   char* / text*      -> string
+ *   T* / T**           -> Ptr          (opaque WASM linear memory address)
+ *   a slot `typedef`   -> that name    (alias for bigint over 64 bits, e.g. H3Index)
+ *   every other scalar -> number
  */
-function tsParamType(cType: string): string {
-	if (isBool(cType)) return 'boolean';
-	if (isTsTz(cType)) return 'TimestampTz';
-	if (isTs(cType)) return 'number';
-	if (isDateADT(cType)) return 'DateADT';
-	if (isDouble(cType) || isFloat(cType)) return 'number';
-	if (isString(cType) || isTextSingle(cType)) return 'string';
-	if (isPtr(cType) || isDblPtr(cType)) return 'Ptr';
-	if (INT_C_TYPES.has(clean(cType))) return 'number';
-	return 'number';
-}
-
-/** Maps a C return type to its TypeScript equivalent (delegates to tsParamType for non-void). */
-function tsRetType(cType: string): string {
-	if (isVoid(cType)) return 'void';
-	return tsParamType(cType);
+function tsType(m: Mapped): string {
+	return m.ts;
 }
 
 /**
@@ -688,13 +736,20 @@ function tsRetType(cType: string): string {
  *
  * ccall expects:
  *   bool        				-> 1 / 0      (not true/false)
- *   TimestampTz / Timestamp 	-> BigInt(n)  (ccall bigint arg)
+ *   64-bit integer held as number 	-> BigInt(n)  (ccall bigint arg)
  *   everything else 			-> pass through unchanged
  */
-function toCallArg(name: string, cType: string): string {
-	if (isBool(cType)) return `${name} ? 1 : 0`;
-	if (isTsTz(cType) || isTs(cType) || isInt64(cType)) return `BigInt(${name})`;
+function toCallArg(name: string, m: Mapped): string {
+	if (m.kind === 'bool') return `${name} ? 1 : 0`;
+	if (is64(m) && types.ownTypes.get(m.ts) !== 'bigint') return `BigInt(${name})`;
 	return name;
+}
+
+/** The expression a wrapper returns for a scalar ccall hands back as 'number'. */
+function fromNumber(m: Mapped, expr: string): string {
+	// ccall reads a wasm i32 as signed, so an unsigned 32-bit value above 2^31
+	// arrives negative until it is read as unsigned.
+	return m.kind === 'uint32' ? `(${expr}) >>> 0` : expr;
 }
 
 /**
@@ -783,26 +838,29 @@ function generateTsWrapper(fn: IdlFunction): string {
 	const sizeOut = stringSizeOut(fn);
 	if (sizeOut) return generateSizedStringWrapper(fn, sizeOut);
 	const boolResult = detectBoolResult(fn);
+	const resultParam = boolResult?.resultParam;
+	const visible = fn.params.filter(
+		p => p !== resultParam && !OUTPUT_SIZE_PARAMS.has(p.name)
+	);
+	const params = visible
+		.map(p => `${safeName(p.name)}: ${tsType(argOf(fn, p))}`)
+		.join(', ');
+	const argTypes = `[${visible
+		.map(p => {
+			const m = argOf(fn, p);
+			if (m.ts === 'Ptr') return 'ptrArgType()';
+			const t = emArgType(m);
+			return t === null ? 'null' : `'${t}'`;
+		})
+		.join(', ')}]`;
+	const argVals = `[${visible.map(p => {
+		const m = argOf(fn, p);
+		if (m.ts === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
+		return toCallArg(safeName(p.name), m);
+	}).join(', ')}]`;
+
 	if (boolResult) {
-		const { resultParam, tsWrapRet } = boolResult;
-		const visible = fn.params.filter(
-			p => p !== resultParam && !OUTPUT_SIZE_PARAMS.has(p.name)
-		);
-		const params = visible
-			.map(p => `${safeName(p.name)}: ${tsParamType(p.cType)}`)
-			.join(', ');
-		const argTypes = `[${visible
-			.map(p => {
-				if (tsParamType(p.cType) === 'Ptr') return 'ptrArgType()';
-				const t = emArgType(p.cType);
-				return t === null ? 'null' : `'${t}'`;
-			})
-			.join(', ')}]`;
-		const argVals = `[${visible.map(p => {
-			if (tsParamType(p.cType) === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
-			return toCallArg(safeName(p.name), p.cType);
-		}).join(', ')}]`;
-		const { resultBaseType } = boolResult;
+		const { result, tsWrapRet } = boolResult;
 		const lines = [`export function ${fn.name}(${params}): ${tsWrapRet} {`];
 		if (tsWrapRet === 'Ptr') {
 			lines.push(`\tconst _r = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
@@ -810,13 +868,13 @@ function generateTsWrapper(fn: IdlFunction): string {
 			lines.push(
 				`\tconst _r = call<number>('${fn.name}_w', 'number', ${argTypes}, ${argVals}) !== 0;`
 			);
-		} else if (isInt64(resultBaseType)) {
+		} else if (is64(result)) {
 			lines.push(
-				`\tconst _r = Number(call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals}));`
+				`\tconst _r = ${from64(result, `call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals})`)};`
 			);
 		} else {
 			lines.push(
-				`\tconst _r = call<${tsWrapRet}>('${fn.name}_w', 'number', ${argTypes}, ${argVals});`
+				`\tconst _r = ${fromNumber(result, `call<${tsWrapRet}>('${fn.name}_w', 'number', ${argTypes}, ${argVals})`)};`
 			);
 		}
 		lines.push(`\tcheckMeosError();`);
@@ -825,38 +883,22 @@ function generateTsWrapper(fn: IdlFunction): string {
 		return lines.join('\n');
 	}
 
-	const ret = fn.returnType.c;
-	const visible = fn.params.filter(p => !OUTPUT_SIZE_PARAMS.has(p.name));
-
-	const params = visible
-		.map(p => `${safeName(p.name)}: ${tsParamType(p.cType)}`)
-		.join(', ');
-	const retTs = tsRetType(ret);
+	const ret = retOf(fn);
+	const retTs = tsType(ret);
 	const emRet = emRetType(ret);
 	const emRetStr = emRet === null ? 'null' : `'${emRet}'`;
-	const argTypes = `[${visible
-		.map(p => {
-			if (tsParamType(p.cType) === 'Ptr') return 'ptrArgType()';
-			const t = emArgType(p.cType);
-			return t === null ? 'null' : `'${t}'`;
-		})
-		.join(', ')}]`;
-	const argVals = `[${visible.map(p => {
-		if (tsParamType(p.cType) === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
-		return toCallArg(safeName(p.name), p.cType);
-	}).join(', ')}]`;
 
 	const lines: string[] = [`export function ${fn.name}(${params}): ${retTs} {`];
-	if (isVoid(ret)) {
+	if (ret.kind === 'void') {
 		lines.push(`\tcall<void>('${fn.name}_w', null, ${argTypes}, ${argVals});`);
 		lines.push(`\tcheckMeosError();`);
-	} else if (isBool(ret)) {
+	} else if (ret.kind === 'bool') {
 		lines.push(
 			`\tconst _r = call<number>('${fn.name}_w', 'number', ${argTypes}, ${argVals}) !== 0;`
 		);
 		lines.push(`\tcheckMeosError();`);
 		lines.push(`\treturn _r;`);
-	} else if (isString(ret) || isTextSingle(ret)) {
+	} else if (ret.kind === 'string' || ret.kind === 'text') {
 		lines.push(
 			`\tconst _r = call<string>('${fn.name}_w', 'string', ${argTypes}, ${argVals});`
 		);
@@ -866,15 +908,15 @@ function generateTsWrapper(fn: IdlFunction): string {
 		lines.push(`\tconst _r = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
 		lines.push(`\tcheckMeosError();`);
 		lines.push(`\treturn _r;`);
-	} else if (isInt64(ret)) {
+	} else if (is64(ret)) {
 		lines.push(
-			`\tconst _r = Number(call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals}));`
+			`\tconst _r = ${from64(ret, `call<bigint>('${fn.name}_w', 'bigint', ${argTypes}, ${argVals})`)};`
 		);
 		lines.push(`\tcheckMeosError();`);
 		lines.push(`\treturn _r;`);
 	} else {
 		lines.push(
-			`\tconst _r = call<${retTs}>('${fn.name}_w', ${emRetStr}, ${argTypes}, ${argVals});`
+			`\tconst _r = ${fromNumber(ret, `call<${retTs}>('${fn.name}_w', ${emRetStr}, ${argTypes}, ${argVals})`)};`
 		);
 		lines.push(`\tcheckMeosError();`);
 		lines.push(`\treturn _r;`);
@@ -894,6 +936,7 @@ function main(): void {
 
 	console.log('Reading IDL:', idlPath);
 	const idl: Idl = JSON.parse(fs.readFileSync(idlPath, 'utf-8'));
+	types = new TypeMap(idl);
 
 	// The emitted surface is every function the catalog calls public. `api` is
 	// derived from the @ingroup doxygen tag in MEOS's own sources, so the binding
@@ -923,6 +966,7 @@ function main(): void {
 		'utf-8'
 	);
 
+	const tsHeaderEnd = tsOut.length;
 	const stats = { generated: 0, skipped: 0, manual: 0, duplicates: 0 };
 	const seen = new Set<string>();
 	let lastFile = '';
@@ -959,6 +1003,17 @@ function main(): void {
 		stats.generated++;
 	}
 
+	stopOnUnresolvedTypes();
+
+	// Each type of its own a slot `typedef` names is declared once, as an alias
+	// of the TypeScript type its width crosses as.
+	const ownTypes = [...types.ownTypes].sort(([a], [b]) => a.localeCompare(b))
+		.map(([name, ts]) => `export type ${name} = ${ts};\n`).join('');
+	if (ownTypes)
+		tsOut = tsOut.slice(0, tsHeaderEnd) +
+			'\n// --- Types of their own the catalog names over a width ---\n\n' +
+			ownTypes + tsOut.slice(tsHeaderEnd);
+
 	assertEveryWrapperChecksForErrors(tsOut);
 
 	fs.writeFileSync(bindingsPath, cOut);
@@ -969,6 +1024,25 @@ function main(): void {
 	);
 	console.log('  ->', bindingsPath);
 	console.log('  ->', functionsPath);
+}
+
+/**
+ * Fail generation if any slot of an emitted function has a type the catalog
+ * does not resolve (see TypeMap): a wrapper over a type the generator guessed
+ * marshals a value ccall reads differently from how MEOS writes it, which no
+ * error state reports.
+ */
+function stopOnUnresolvedTypes(): void {
+	const unresolved = [...new Set(types.unresolved)];
+	if (unresolved.length === 0) return;
+	console.error(
+		`\nERROR: ${unresolved.length} slot(s) have a type the catalog does not resolve:\n` +
+		unresolved.map((u) => `  - ${u}`).join('\n') +
+		'\n\nA slot maps from its `canonical` type, a name the catalog keeps resolving through ' +
+		'its top-level `typedefs`. Regenerate the catalog with a MEOS-API that states them, or ' +
+		'map the C type in C_WIDTHS.\n'
+	);
+	process.exit(1);
 }
 
 /**

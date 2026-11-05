@@ -19,7 +19,6 @@ Day 0 = 2000-01-01, day 1 = 2000-01-02, day -1 = 1999-12-31.
 
 Timestamps are stored as **microseconds since 2000-01-01 00:00:00 UTC**
 (a `number` alias called `TimestampTz`).
-At runtime, `tbox_tmin()` and `tbox_tmax()` return `BigInt`, see [TBox guide](./tbox.md).
 
 ## Date spans
 

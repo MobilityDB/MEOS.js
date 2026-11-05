@@ -75,11 +75,11 @@ b.ymin(); b.ymax(); // 0, 10
 
 ### Temporal bounds
 
-`tmin()` and `tmax()` return `BigInt` (microseconds since 2000-01-01 UTC):
+`tmin()` and `tmax()` return a `TimestampTz`, a `number` of microseconds since 2000-01-01 UTC:
 
 ```ts
-const tmin: bigint = b.tmin();
-const tmax: bigint = b.tmax();
+const tmin: number = b.tmin();
+const tmax: number = b.tmax();
 
 b.tminInc(); // true
 b.tmaxInc(); // true
