@@ -45,6 +45,7 @@ interface IdlFunction {
 	family: string;
 	returnType: ReturnType;
 	params: Param[];
+	shape?: { outParams?: string[] };
 }
 interface IdlEnum {
 	name: string;
@@ -486,6 +487,18 @@ function cCastExpr(name: string, cType: string): string {
  *        return text_to_cstring(_t);
  *      }
  */
+/**
+ * The `size_t *` a `char *` return's shape lists in `outParams`, or undefined. It
+ * states the size of the string the call answers, its terminator included, so the
+ * C wrapper keeps it and the TypeScript wrapper reads the string for it
+ * (#generateSizedStringWrapper).
+ */
+function stringSizeOut(fn: IdlFunction): string | undefined {
+	if (clean(fn.returnType.c) !== 'char *' || fn.returnType.c.includes('const')) return undefined;
+	const outs = fn.shape?.outParams ?? [];
+	return fn.params.find(p => outs.includes(p.name) && clean(p.cType) === 'size_t *')?.name;
+}
+
 function generateCWrapper(fn: IdlFunction): string {
 	const boolResult = detectBoolResult(fn);
 	if (boolResult) {
@@ -550,6 +563,33 @@ function generateCWrapper(fn: IdlFunction): string {
 // -------------------------------------------------------------------------
 // TYPESCRIPT WRAPPER GENERATION
 // -------------------------------------------------------------------------
+
+/**
+ * A `char *` return read for the size MEOS writes, through the template's
+ * `readString`, as wkb.ts's `readWkb` reads a byte buffer: the size leaves the
+ * TypeScript signature and the string and its size slot are freed.
+ */
+function generateSizedStringWrapper(fn: IdlFunction, sizeOut: string): string {
+	const params = fn.params
+		.filter(p => p.name !== sizeOut)
+		.map(p => `${safeName(p.name)}: ${tsParamType(p.cType)}`)
+		.join(', ');
+	const argTypes = fn.params
+		.map(p => (tsParamType(p.cType) === 'Ptr' ? 'ptrArgType()' : `'${emArgType(p.cType)}'`))
+		.join(', ');
+	const argVals = fn.params
+		.map(p => {
+			if (p.name === sizeOut) return 'ptrArgVal(_sizeOut)';
+			if (tsParamType(p.cType) === 'Ptr') return `ptrArgVal(${safeName(p.name)})`;
+			return toCallArg(safeName(p.name), p.cType);
+		})
+		.join(', ');
+	return [
+		`export function ${fn.name}(${params}): string {`,
+		`\treturn readString(_sizeOut => callPtr('${fn.name}_w', [${argTypes}], [${argVals}]));`,
+		'}',
+	].join('\n');
+}
 
 /**
  * Emscripten ccall argument type tag for a given C type.
@@ -740,6 +780,8 @@ const safeName = (n: string) => (TS_KEYWORDS.has(n) ? `${n}_` : n);
  *      }
  */
 function generateTsWrapper(fn: IdlFunction): string {
+	const sizeOut = stringSizeOut(fn);
+	if (sizeOut) return generateSizedStringWrapper(fn, sizeOut);
 	const boolResult = detectBoolResult(fn);
 	if (boolResult) {
 		const { resultParam, tsWrapRet } = boolResult;
@@ -953,7 +995,9 @@ function assertEveryWrapperChecksForErrors(tsOut: string): void {
 		const name = /^export function (\w+)/.exec(block)?.[1];
 		if (!name || ALLOWED.has(name)) continue;
 		const callsMeos = /\bcall(<[^>]*>)?\(|\bcallPtr\(/.test(block);
-		if (callsMeos && !block.includes('checkMeosError()')) offenders.push(name);
+		// readString checks once the writer it is given has returned
+		const checks = block.includes('checkMeosError()') || block.includes('return readString(');
+		if (callsMeos && !checks) offenders.push(name);
 	}
 
 	if (offenders.length > 0) {

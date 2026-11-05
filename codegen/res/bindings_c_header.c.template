@@ -122,19 +122,17 @@ void meos_free(void *ptr) { free(ptr); }
 
 /* --- Hand-written wrappers (special logic) --- */
 
-/* temporal_as_hexwkb: allocates size_out on the stack (caller does not need it). */
 EMSCRIPTEN_KEEPALIVE
-char *temporal_as_hexwkb_w(const Temporal *temp, uint8_t variant) {
-    size_t sz;
-    return temporal_as_hexwkb(temp, variant, &sz);
+char *temporal_as_hexwkb_w(const Temporal *temp, uint8_t variant, size_t *size_out) {
+    return temporal_as_hexwkb(temp, variant, size_out);
 }
 
 /* temporal_as_mfjson: srs "" is treated as NULL. */
 EMSCRIPTEN_KEEPALIVE
 char *temporal_as_mfjson_w(Temporal *temp, int with_bbox, int flags,
-                            int precision, const char *srs) {
+                            int precision, const char *srs, size_t *size_out) {
   return temporal_as_mfjson(temp, (bool) with_bbox, flags, precision,
-                             (srs && srs[0]) ? srs : NULL);
+                             (srs && srs[0]) ? srs : NULL, size_out);
 }
 
 /* n is 0-based from JS; MEOS expects 1-based. */
@@ -174,11 +172,9 @@ double interval_us_free_w(Interval *iv) {
   return us;
 }
 
-/* span_as_hexwkb: allocates size_out on the stack (caller does not need it). */
 EMSCRIPTEN_KEEPALIVE
-char * span_as_hexwkb_w(const Span * s, uint8_t variant) {
-  size_t sz;
-  return span_as_hexwkb(s, variant, &sz);
+char * span_as_hexwkb_w(const Span * s, uint8_t variant, size_t *size_out) {
+  return span_as_hexwkb(s, variant, size_out);
 }
 
 /*
@@ -263,11 +259,9 @@ long long tstzspanset_upper_w(const SpanSet *ss) {
     return (long long) DatumGetTimestampTz(ss->elems[ss->count - 1].upper);
 }
 
-/* spanset_as_hexwkb: collapses size_out. */
 EMSCRIPTEN_KEEPALIVE
-char *spanset_as_hexwkb_w(const SpanSet *ss, uint8_t variant) {
-    size_t sz;
-    return spanset_as_hexwkb(ss, variant, &sz);
+char *spanset_as_hexwkb_w(const SpanSet *ss, uint8_t variant, size_t *size_out) {
+    return spanset_as_hexwkb(ss, variant, size_out);
 }
 
 /*
@@ -300,11 +294,9 @@ long long tstzspanset_timestamptz_n_w(const SpanSet *ss, int n) {
     return (long long) r;
 }
 
-/* set_as_hexwkb_w: collapses size_out (int * in set_as_hexwkb signature). */
 EMSCRIPTEN_KEEPALIVE
-char *set_as_hexwkb_w(const Set *s, uint8_t variant) {
-    int sz;
-    return set_as_hexwkb(s, variant, &sz);
+char *set_as_hexwkb_w(const Set *s, uint8_t variant, size_t *size_out) {
+    return set_as_hexwkb(s, variant, size_out);
 }
 
 /*

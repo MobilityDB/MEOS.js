@@ -73,7 +73,7 @@ import {
 	tstzspanset_to_stbox,
 	meos_free,
 } from '../../functions/functions.generated.js';
-import { readWkb, withSizeOut, withWkb } from '../../functions/wkb.js';
+import { readWkb, withWkb } from '../../functions/wkb.js';
 
 /**
  * A spatio-temporal bounding box with an optional spatial (XYZ) dimension and an optional temporal (T) dimension.
@@ -282,7 +282,7 @@ export class STBox {
 	 * MEOS: stbox_as_hexwkb
 	 */
 	asHexWKB(variant = 0): string {
-		return withSizeOut((sizeOut) => stbox_as_hexwkb(this._inner, variant, sizeOut));
+		return stbox_as_hexwkb(this._inner, variant);
 	}
 
 	/**
@@ -302,7 +302,7 @@ export class STBox {
 	 * MEOS: stbox_as_hexewkb
 	 */
 	asHexEWKB(variant = 0): string {
-		return withSizeOut((sizeOut) => stbox_as_hexewkb(this._inner, variant, sizeOut));
+		return stbox_as_hexewkb(this._inner, variant);
 	}
 
 	// -------------------------------------------------------------------------

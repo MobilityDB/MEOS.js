@@ -71,16 +71,3 @@ export function withWkb<T>(wkb: Uint8Array, read: (ptr: Ptr, size: number) => T)
 	}
 }
 
-/**
- * Calls a MEOS `*_as_hexwkb` or `*_as_hexewkb` writer that reports its length
- * through a `size_t *`, giving it a size slot that is freed afterwards.
- */
-export function withSizeOut<T>(write: (sizeOut: Ptr) => T): T {
-	const mod = getModule();
-	const sizeOut: Ptr = mod.allocate(new Uint8Array(8), mod.ALLOC_NORMAL) as Ptr;
-	try {
-		return write(sizeOut);
-	} finally {
-		(mod._meos_free as (p: bigint) => void)(BigInt(sizeOut));
-	}
-}

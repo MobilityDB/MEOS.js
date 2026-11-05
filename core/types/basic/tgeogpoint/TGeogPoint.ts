@@ -1,6 +1,6 @@
 import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
-import { readWkb, withSizeOut } from '../../../functions/wkb.js';
+import { readWkb } from '../../../functions/wkb.js';
 import {
 	tgeogpoint_in,
 	tgeogpoint_from_mfjson,
@@ -276,7 +276,7 @@ export class TGeogPoint extends Temporal<string> {
 	 * MEOS: tspatial_as_hexewkb
 	 */
 	asHexEWKB(variant = 0): string {
-		return withSizeOut((sizeOut) => tspatial_as_hexewkb(this._inner, variant, sizeOut));
+		return tspatial_as_hexewkb(this._inner, variant);
 	}
 
 	// -------------------------------------------------------------------------
