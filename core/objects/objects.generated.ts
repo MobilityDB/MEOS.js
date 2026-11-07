@@ -37,6 +37,13 @@ function _ptrArray(ptrs: Ptr[]): Ptr {
 	return mod.allocate(bytes, mod.ALLOC_NORMAL) as Ptr;
 }
 
+/** The caller's bytes copied into the heap, freed with _free. */
+function _bytes(bytes: Uint8Array): Ptr {
+	const out = _alloc(Math.max(bytes.length, 1));
+	getModule().HEAPU8.set(bytes, out);
+	return out;
+}
+
 /** A copy of `size` bytes at `ptr` in a buffer of its own, freed with _free. */
 function _copy(ptr: Ptr, size: number): Ptr {
 	const out = _alloc(size);
@@ -220,6 +227,40 @@ function _takeMatch(ptr: Ptr): Match | null {
 	if (!ptr) return null;
 	try {
 		return _readMatch(ptr);
+	} finally {
+		_free(ptr);
+	}
+}
+
+/** The MEOS ValueCount struct, carried as a value. */
+export interface ValueCount {
+	value: number;
+	count: number;
+	percent: number;
+}
+
+function _readValueCount(ptr: Ptr): ValueCount {
+	const _v = _view(ptr, 24);
+	return {
+		value: _v.getFloat64(0, true),
+		count: _v.getUint32(8, true),
+		percent: _v.getFloat64(16, true),
+	};
+}
+
+function _putValueCount(value: ValueCount): Ptr {
+	const ptr = _alloc(24);
+	const _v = _view(ptr, 24);
+	_v.setFloat64(0, value.value, true);
+	_v.setUint32(8, value.count, true);
+	_v.setFloat64(16, value.percent, true);
+	return ptr;
+}
+
+function _takeValueCount(ptr: Ptr): ValueCount | null {
+	if (!ptr) return null;
+	try {
+		return _readValueCount(ptr);
 	} finally {
 		_free(ptr);
 	}
@@ -439,6 +480,16 @@ export class Set extends Collection {
 	/** MEOS: set_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Set {
 		return wrapSet(F.set_from_hexwkb(hexwkb)) as Set;
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromWKB(wkb: Uint8Array): Set {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapSet(F.set_from_wkb(_wkb, wkb.length)) as Set;
+		} finally {
+			_free(_wkb);
+		}
 	}
 }
 
@@ -675,6 +726,17 @@ export class BigIntSet extends Set {
 	/** MEOS: bigintset_in */
 	static in(str: string): BigIntSet {
 		return wrapSet(F.bigintset_in(str)) as BigIntSet;
+	}
+
+	/** MEOS: bigintset_make */
+	static make(values: number[]): BigIntSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return wrapSet(F.bigintset_make(_values, values.length)) as BigIntSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -936,6 +998,16 @@ export class Span extends Collection {
 	/** MEOS: span_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Span {
 		return wrapSpan(F.span_from_hexwkb(hexwkb)) as Span;
+	}
+
+	/** MEOS: span_from_wkb */
+	static fromWKB(wkb: Uint8Array): Span {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapSpan(F.span_from_wkb(_wkb, wkb.length)) as Span;
+		} finally {
+			_free(_wkb);
+		}
 	}
 }
 
@@ -1583,6 +1655,16 @@ export class SpanSet extends Collection {
 		return wrapSpanSet(F.spanset_from_hexwkb(hexwkb)) as SpanSet;
 	}
 
+	/** MEOS: spanset_from_wkb */
+	static fromWKB(wkb: Uint8Array): SpanSet {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapSpanSet(F.spanset_from_wkb(_wkb, wkb.length)) as SpanSet;
+		} finally {
+			_free(_wkb);
+		}
+	}
+
 	/** MEOS: spanset_make */
 	static make(spans: Span[]): SpanSet {
 		const _spans = _structArray(spans.map(x => x.ptr), 24);
@@ -2202,6 +2284,11 @@ export class Cbuffer extends Value {
 		return wrapSetOrNull(F.union_cbuffer_set(this.ptr, s.ptr)) as Set | null;
 	}
 
+	/** MEOS: cbuffer_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Cbuffer {
+		return Cbuffer.fromWKB(wkb);
+	}
+
 	/** MEOS: cbuffer_in */
 	static fromEWKT(str: string): Cbuffer {
 		return Cbuffer.in(str);
@@ -2220,6 +2307,16 @@ export class Cbuffer extends Value {
 	/** MEOS: cbuffer_in */
 	static fromText(str: string): Cbuffer {
 		return Cbuffer.in(str);
+	}
+
+	/** MEOS: cbuffer_from_wkb */
+	static fromWKB(wkb: Uint8Array): Cbuffer {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapCbuffer(F.cbuffer_from_wkb(_wkb, wkb.length)) as Cbuffer;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: cbuffer_in */
@@ -2386,6 +2483,11 @@ export class CbufferSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: cbufferset_in */
@@ -2603,6 +2705,17 @@ export class DateSet extends Set {
 	/** MEOS: dateset_in */
 	static in(str: string): DateSet {
 		return wrapSet(F.dateset_in(str)) as DateSet;
+	}
+
+	/** MEOS: dateset_make */
+	static make(values: number[]): DateSet {
+		const _values = _alloc(Math.max(values.length, 1) * 4);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 4); values.forEach((_x, _i) => _v.setInt32(_i * 4, _x, true)); }
+		try {
+			return wrapSet(F.dateset_make(_values, values.length)) as DateSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -3320,6 +3433,17 @@ export class FloatSet extends Set {
 	/** MEOS: floatset_in */
 	static in(str: string): FloatSet {
 		return wrapSet(F.floatset_in(str)) as FloatSet;
+	}
+
+	/** MEOS: floatset_make */
+	static make(values: number[]): FloatSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		try {
+			return wrapSet(F.floatset_make(_values, values.length)) as FloatSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -4406,6 +4530,16 @@ export class Geo extends Value {
 		}
 	}
 
+	/** MEOS: geo_from_ewkb */
+	static fromEWKB(wkb: Uint8Array, srid: number): Geo {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapGeo(F.geo_from_ewkb(_wkb, wkb.length, srid)) as Geo;
+		} finally {
+			_free(_wkb);
+		}
+	}
+
 	/** MEOS: geo_from_geojson */
 	static fromGeoJSON(geojson: string): Geo {
 		return wrapGeo(F.geo_from_geojson(geojson)) as Geo;
@@ -4559,6 +4693,11 @@ export class GeogSet extends GeoSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
+	}
+
 	/** MEOS: geogset_in */
 	static fromEWKT(str: string): GeogSet {
 		return GeogSet.in(str);
@@ -4674,6 +4813,11 @@ export class GeomSet extends GeoSet {
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
 		return this.asText(15);
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: geomset_in */
@@ -5438,6 +5582,11 @@ export class H3IndexSet extends SpatialSet {
 		}
 	}
 
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
+	}
+
 	/** MEOS: h3indexset_in */
 	static fromEWKT(str: string): H3IndexSet {
 		return H3IndexSet.in(str);
@@ -5456,6 +5605,17 @@ export class H3IndexSet extends SpatialSet {
 	/** MEOS: h3indexset_in */
 	static in(str: string): H3IndexSet {
 		return wrapSet(F.h3indexset_in(str)) as H3IndexSet;
+	}
+
+	/** MEOS: h3indexset_make */
+	static make(values: bigint[]): H3IndexSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		try {
+			return wrapSet(F.h3indexset_make(_values, values.length)) as H3IndexSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -5677,6 +5837,17 @@ export class IntSet extends Set {
 	/** MEOS: intset_in */
 	static in(str: string): IntSet {
 		return wrapSet(F.intset_in(str)) as IntSet;
+	}
+
+	/** MEOS: intset_make */
+	static make(values: number[]): IntSet {
+		const _values = _alloc(Math.max(values.length, 1) * 4);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 4); values.forEach((_x, _i) => _v.setInt32(_i * 4, _x, true)); }
+		try {
+			return wrapSet(F.intset_make(_values, values.length)) as IntSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -7250,6 +7421,11 @@ export class Npoint extends Value {
 		return wrapSetOrNull(F.union_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
+	/** MEOS: npoint_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Npoint {
+		return Npoint.fromWKB(wkb);
+	}
+
 	/** MEOS: npoint_in */
 	static fromEWKT(str: string): Npoint {
 		return Npoint.in(str);
@@ -7268,6 +7444,16 @@ export class Npoint extends Value {
 	/** MEOS: npoint_in */
 	static fromText(str: string): Npoint {
 		return Npoint.in(str);
+	}
+
+	/** MEOS: npoint_from_wkb */
+	static fromWKB(wkb: Uint8Array): Npoint {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapNpoint(F.npoint_from_wkb(_wkb, wkb.length)) as Npoint;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: npoint_in */
@@ -7383,6 +7569,11 @@ export class NpointSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: npointset_in */
@@ -7536,6 +7727,11 @@ export class Nsegment extends Value {
 		return wrapSTBox(F.nsegment_to_stbox(this.ptr)) as STBox;
 	}
 
+	/** MEOS: nsegment_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Nsegment {
+		return Nsegment.fromWKB(wkb);
+	}
+
 	/** MEOS: nsegment_in */
 	static fromEWKT(str: string): Nsegment {
 		return Nsegment.in(str);
@@ -7554,6 +7750,16 @@ export class Nsegment extends Value {
 	/** MEOS: nsegment_in */
 	static fromText(str: string): Nsegment {
 		return Nsegment.in(str);
+	}
+
+	/** MEOS: nsegment_from_wkb */
+	static fromWKB(wkb: Uint8Array): Nsegment {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapNsegment(F.nsegment_from_wkb(_wkb, wkb.length)) as Nsegment;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: nsegment_in */
@@ -7771,6 +7977,17 @@ export class Pcpatch extends Value {
 			_free(_points);
 		}
 	}
+
+	/** MEOS: pcpatch_make_coords */
+	static makeCoords(pcid: number, values: number[]): Pcpatch {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		try {
+			return wrapPcpatch(F.pcpatch_make_coords(pcid, _values, values.length)) as Pcpatch;
+		} finally {
+			_free(_values);
+		}
+	}
 }
 
 /**
@@ -7865,6 +8082,11 @@ export class PcpatchSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: pcpatchset_in */
@@ -7963,9 +8185,53 @@ export class Pcpoint extends Value {
 		return F.pcpoint_ge(this.ptr, pt2.ptr);
 	}
 
+	/** MEOS: pcpoint_get_dim */
+	getDim(name: string): number | null {
+		const _out = _alloc(8);
+		try {
+			if (!F.pcpoint_get_dim(this.ptr, name, _out)) return null;
+			return ((_v: DataView) => _v.getFloat64(0, true))(_view(_out, 8));
+		} finally {
+			_free(_out);
+		}
+	}
+
 	/** MEOS: pcpoint_get_pcid */
 	getPcid(): number {
 		return F.pcpoint_get_pcid(this.ptr);
+	}
+
+	/** MEOS: pcpoint_get_x */
+	getX(): number | null {
+		const _out = _alloc(8);
+		try {
+			if (!F.pcpoint_get_x(this.ptr, _out)) return null;
+			return ((_v: DataView) => _v.getFloat64(0, true))(_view(_out, 8));
+		} finally {
+			_free(_out);
+		}
+	}
+
+	/** MEOS: pcpoint_get_y */
+	getY(): number | null {
+		const _out = _alloc(8);
+		try {
+			if (!F.pcpoint_get_y(this.ptr, _out)) return null;
+			return ((_v: DataView) => _v.getFloat64(0, true))(_view(_out, 8));
+		} finally {
+			_free(_out);
+		}
+	}
+
+	/** MEOS: pcpoint_get_z */
+	getZ(): number | null {
+		const _out = _alloc(8);
+		try {
+			if (!F.pcpoint_get_z(this.ptr, _out)) return null;
+			return ((_v: DataView) => _v.getFloat64(0, true))(_view(_out, 8));
+		} finally {
+			_free(_out);
+		}
 	}
 
 	/** MEOS: pcpoint_gt */
@@ -8056,6 +8322,17 @@ export class Pcpoint extends Value {
 	/** MEOS: pcpoint_hex_in */
 	static hexIn(str: string): Pcpoint {
 		return wrapPcpoint(F.pcpoint_hex_in(str)) as Pcpoint;
+	}
+
+	/** MEOS: pcpoint_make */
+	static make(pcid: number, values: number[]): Pcpoint {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		try {
+			return wrapPcpoint(F.pcpoint_make(pcid, _values, values.length)) as Pcpoint;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -8151,6 +8428,11 @@ export class PcpointSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: pcpointset_in */
@@ -8553,6 +8835,11 @@ export class Pose extends Value {
 		}
 	}
 
+	/** MEOS: pose_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Pose {
+		return Pose.fromWKB(wkb);
+	}
+
 	/** MEOS: pose_from_text */
 	static fromEWKT(str: string): Pose {
 		return Pose.fromText(str);
@@ -8576,6 +8863,16 @@ export class Pose extends Value {
 	/** MEOS: pose_from_text */
 	static fromText(str: string): Pose {
 		return wrapPose(F.pose_from_text(str)) as Pose;
+	}
+
+	/** MEOS: pose_from_wkb */
+	static fromWKB(wkb: Uint8Array): Pose {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapPose(F.pose_from_wkb(_wkb, wkb.length)) as Pose;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: pose_in */
@@ -8887,6 +9184,11 @@ export class PoseChain extends Value {
 		return wrapSetOrNull(F.union_posechain_set(this.ptr, s.ptr)) as Set | null;
 	}
 
+	/** MEOS: posechain_from_wkb */
+	static fromEWKB(wkb: Uint8Array): PoseChain {
+		return PoseChain.fromWKB(wkb);
+	}
+
 	/** MEOS: posechain_in */
 	static fromEWKT(str: string): PoseChain {
 		return PoseChain.in(str);
@@ -8905,6 +9207,16 @@ export class PoseChain extends Value {
 	/** MEOS: posechain_in */
 	static fromText(str: string): PoseChain {
 		return PoseChain.in(str);
+	}
+
+	/** MEOS: posechain_from_wkb */
+	static fromWKB(wkb: Uint8Array): PoseChain {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapPoseChain(F.posechain_from_wkb(_wkb, wkb.length)) as PoseChain;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: posechain_in */
@@ -9020,6 +9332,11 @@ export class PoseChainSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: posechainset_in */
@@ -9150,6 +9467,11 @@ export class PoseSet extends SpatialSet {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
 	}
 
 	/** MEOS: poseset_in */
@@ -9322,6 +9644,11 @@ export class QuadbinSet extends SpatialSet {
 		}
 	}
 
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
+	}
+
 	/** MEOS: quadbinset_in */
 	static fromEWKT(str: string): QuadbinSet {
 		return QuadbinSet.in(str);
@@ -9340,6 +9667,17 @@ export class QuadbinSet extends SpatialSet {
 	/** MEOS: quadbinset_in */
 	static in(str: string): QuadbinSet {
 		return wrapSet(F.quadbinset_in(str)) as QuadbinSet;
+	}
+
+	/** MEOS: quadbinset_make */
+	static make(values: bigint[]): QuadbinSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		try {
+			return wrapSet(F.quadbinset_make(_values, values.length)) as QuadbinSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -9371,6 +9709,17 @@ export class RTree extends Value {
 	/** MEOS: rtree_insert_temporal_split */
 	insertTemporalSplit(temp: Temporal, id: number, maxboxes: number): boolean {
 		return F.rtree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
+	}
+
+	/** MEOS: rtree_load */
+	load(boxes: Ptr, ids: number[]): boolean {
+		const _ids = _alloc(Math.max(ids.length, 1) * 8);
+		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return F.rtree_load(this.ptr, boxes, _ids, ids.length);
+		} finally {
+			_free(_ids);
+		}
 	}
 
 	/** MEOS: rtree_mem_size */
@@ -9575,9 +9924,29 @@ export class Raquet extends Value {
 		return Raquet.in(str);
 	}
 
+	/** MEOS: raquet_from_wkb */
+	static fromWKB(wkb: Uint8Array): Raquet {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapRaquet(F.raquet_from_wkb(_wkb, wkb.length)) as Raquet;
+		} finally {
+			_free(_wkb);
+		}
+	}
+
 	/** MEOS: raquet_in */
 	static in(str: string): Raquet {
 		return wrapRaquet(F.raquet_in(str)) as Raquet;
+	}
+
+	/** MEOS: raquet_make */
+	static make(quadbin: Quadbin, width: number, height: number, pixtype: number, nodata: number, has_nodata: boolean, pixels: Uint8Array): Raquet {
+		const _pixels = _bytes(pixels);
+		try {
+			return wrapRaquet(F.raquet_make(quadbin, width, height, pixtype, nodata, has_nodata, _pixels, pixels.length)) as Raquet;
+		} finally {
+			_free(_pixels);
+		}
 	}
 
 	/** MEOS: raquet_pixtype_from_string */
@@ -9593,6 +9962,16 @@ export class Raquet extends Value {
 	/** MEOS: raquet_read */
 	static read(path: string, quadbin: Quadbin): Raquet | null {
 		return wrapRaquetOrNull(F.raquet_read(path, quadbin)) as Raquet | null;
+	}
+
+	/** MEOS: raquet_read_bytes */
+	static readBytes(data: Uint8Array, quadbin: Quadbin): Raquet | null {
+		const _data = _bytes(data);
+		try {
+			return wrapRaquetOrNull(F.raquet_read_bytes(_data, data.length, quadbin)) as Raquet | null;
+		} finally {
+			_free(_data);
+		}
 	}
 }
 
@@ -9688,6 +10067,20 @@ export class Raster extends Value {
 		return F.raster_band_pixel_type(this.ptr, band);
 	}
 
+	/** MEOS: raster_clip */
+	clip(bands: number[], gs: Geo, nodata: number[], crop: boolean, touched: boolean): Raster | null {
+		const _bands = _alloc(Math.max(bands.length, 1) * 4);
+		{ const _v = _view(_bands, Math.max(bands.length, 1) * 4); bands.forEach((_x, _i) => _v.setInt32(_i * 4, _x, true)); }
+		const _nodata = _alloc(Math.max(nodata.length, 1) * 8);
+		{ const _v = _view(_nodata, Math.max(nodata.length, 1) * 8); nodata.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		try {
+			return wrapRasterOrNull(F.raster_clip(this.ptr, _bands, bands.length, gs.ptr, _nodata, nodata.length, crop, touched)) as Raster | null;
+		} finally {
+			_free(_bands);
+			_free(_nodata);
+		}
+	}
+
 	/** MEOS: raster_copy */
 	copy(): Raster {
 		return wrapRaster(F.raster_copy(this.ptr)) as Raster;
@@ -9777,6 +10170,23 @@ export class Raster extends Value {
 		return F.raster_scale_y(this.ptr);
 	}
 
+	/** MEOS: raster_set_values */
+	setValues(band: number, x: number, y: number, width: number, height: number, values: number[], nodata: boolean[], noset: boolean[], nosetheight: number, count: number, keepnodata: boolean): Raster | null {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		const _nodata = _alloc(Math.max(nodata.length, 1) * 1);
+		{ const _v = _view(_nodata, Math.max(nodata.length, 1) * 1); nodata.forEach((_x, _i) => _v.setUint8(_i * 1, _x ? 1 : 0)); }
+		const _noset = _alloc(Math.max(noset.length, 1) * 1);
+		{ const _v = _view(_noset, Math.max(noset.length, 1) * 1); noset.forEach((_x, _i) => _v.setUint8(_i * 1, _x ? 1 : 0)); }
+		try {
+			return wrapRasterOrNull(F.raster_set_values(this.ptr, band, x, y, width, height, _values, _nodata, _noset, values.length, nosetheight, count, keepnodata)) as Raster | null;
+		} finally {
+			_free(_values);
+			_free(_nodata);
+			_free(_noset);
+		}
+	}
+
 	/** MEOS: raster_skew_x */
 	skewX(): number {
 		return F.raster_skew_x(this.ptr);
@@ -9849,6 +10259,29 @@ export class Raster extends Value {
 		return F.raster_upper_left_y(this.ptr);
 	}
 
+	/** MEOS: raster_value_count */
+	valueCount(band: number, exclude_nodata: boolean, searchvalues: number[], roundto: number): ValueCount[] {
+		const _searchvalues = _alloc(Math.max(searchvalues.length, 1) * 8);
+		{ const _v = _view(_searchvalues, Math.max(searchvalues.length, 1) * 8); searchvalues.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
+		const _count = _alloc(4);
+		try {
+			const _arr = F.raster_value_count(this.ptr, band, exclude_nodata, _searchvalues, searchvalues.length, roundto, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: ValueCount[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_readValueCount(_arr + _i * 24));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_searchvalues);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: raster_width */
 	width(): number {
 		return F.raster_width(this.ptr);
@@ -9867,6 +10300,26 @@ export class Raster extends Value {
 	/** MEOS: raster_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Raster | null {
 		return wrapRasterOrNull(F.raster_from_hexwkb(hexwkb)) as Raster | null;
+	}
+
+	/** MEOS: raster_from_wkb */
+	static fromWKB(wkb: Uint8Array): Raster | null {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapRasterOrNull(F.raster_from_wkb(_wkb, wkb.length)) as Raster | null;
+		} finally {
+			_free(_wkb);
+		}
+	}
+
+	/** MEOS: raster_make */
+	static make(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number, pixeltype: string, nodataval: number, has_nodata: boolean, pixels: Uint8Array): Raster | null {
+		const _pixels = _bytes(pixels);
+		try {
+			return wrapRasterOrNull(F.raster_make(width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata, _pixels, pixels.length)) as Raster | null;
+		} finally {
+			_free(_pixels);
+		}
 	}
 
 	/** MEOS: raster_make_empty */
@@ -9896,6 +10349,16 @@ export class Raster extends Value {
 			return wrapTemporalOrNull(F.raster_tile_value_array(traj.ptr, _rqarr, rqarr.length)) as Temporal | null;
 		} finally {
 			_free(_rqarr);
+		}
+	}
+
+	/** MEOS: raster_tile_value_quadbin */
+	static tileValueQuadbin(traj: Temporal, pixels: Uint8Array, width: number, height: number, quadbin: Quadbin, pixtype: number, nodata: number, has_nodata: boolean): Temporal | null {
+		const _pixels = _bytes(pixels);
+		try {
+			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin, pixtype, nodata, has_nodata)) as Temporal | null;
+		} finally {
+			_free(_pixels);
 		}
 	}
 
@@ -10044,6 +10507,11 @@ export class S2CellSet extends SpatialSet {
 		}
 	}
 
+	/** MEOS: set_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Set {
+		return Set.fromWKB(wkb);
+	}
+
 	/** MEOS: s2cellset_in */
 	static fromEWKT(str: string): S2CellSet {
 		return S2CellSet.in(str);
@@ -10062,6 +10530,17 @@ export class S2CellSet extends SpatialSet {
 	/** MEOS: s2cellset_in */
 	static in(str: string): S2CellSet {
 		return wrapSet(F.s2cellset_in(str)) as S2CellSet;
+	}
+
+	/** MEOS: s2cellset_make */
+	static make(values: bigint[]): S2CellSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		try {
+			return wrapSet(F.s2cellset_make(_values, values.length)) as S2CellSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 
@@ -10109,6 +10588,17 @@ export class SPTree extends Value {
 	/** MEOS: sptree_insert_temporal_split */
 	insertTemporalSplit(temp: Temporal, id: number, maxboxes: number): boolean {
 		return F.sptree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
+	}
+
+	/** MEOS: sptree_load */
+	load(boxes: Ptr, ids: number[]): boolean {
+		const _ids = _alloc(Math.max(ids.length, 1) * 8);
+		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return F.sptree_load(this.ptr, boxes, _ids, ids.length);
+		} finally {
+			_free(_ids);
+		}
 	}
 
 	/** MEOS: sptree_mem_size */
@@ -10913,6 +11403,11 @@ export class STBox extends Box {
 		return F.stbox_zmin(this.ptr);
 	}
 
+	/** MEOS: stbox_from_wkb */
+	static fromEWKB(wkb: Uint8Array): STBox {
+		return STBox.fromWKB(wkb);
+	}
+
 	/** MEOS: stbox_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): STBox {
 		return STBox.fromHexWKB(hexwkb);
@@ -10926,6 +11421,16 @@ export class STBox extends Box {
 	/** MEOS: stbox_in */
 	static fromText(str: string): STBox {
 		return STBox.in(str);
+	}
+
+	/** MEOS: stbox_from_wkb */
+	static fromWKB(wkb: Uint8Array): STBox {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapSTBox(F.stbox_from_wkb(_wkb, wkb.length)) as STBox;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: stbox_get_space_tile */
@@ -11766,6 +12271,16 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Temporal {
 		return wrapTemporal(F.temporal_from_hexwkb(hexwkb)) as Temporal;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromWKB(wkb: Uint8Array): Temporal {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapTemporal(F.temporal_from_wkb(_wkb, wkb.length)) as Temporal;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: temporal_merge_array */
@@ -12828,6 +13343,17 @@ export class TBigint extends TNumber {
 		return F.tbigint_value(this.ptr);
 	}
 
+	/** MEOS: tbigint_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): number | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tbigint_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return ((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_value, 8));
+		} finally {
+			_free(_value);
+		}
+	}
+
 	/** MEOS: tbigint_value_bins */
 	valueBins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
 		const _count = _alloc(4);
@@ -13167,6 +13693,17 @@ export class TBool extends TAlpha {
 	/** MEOS: tbool_value */
 	value(): boolean {
 		return F.tbool_value(this.ptr);
+	}
+
+	/** MEOS: tbool_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): boolean | null {
+		const _value = _alloc(1);
+		try {
+			if (!F.tbool_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return ((_v: DataView) => _v.getUint8(0) !== 0)(_view(_value, 1));
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tbool_value_n */
@@ -13829,6 +14366,16 @@ export class TBox extends Box {
 	/** MEOS: tbox_in */
 	static fromText(str: string): TBox {
 		return TBox.in(str);
+	}
+
+	/** MEOS: tbox_from_wkb */
+	static fromWKB(wkb: Uint8Array): TBox {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapTBox(F.tbox_from_wkb(_wkb, wkb.length)) as TBox;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: tbox_get_time_tile */
@@ -15027,6 +15574,11 @@ export class TCbuffer extends TSpatial {
 		return wrapTemporal(F.tcbuffer_from_base_temp(cb.ptr, temp.ptr)) as TCbuffer;
 	}
 
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
+	}
+
 	/** MEOS: tcbuffer_in */
 	static fromEWKT(str: string): TCbuffer {
 		return TCbuffer.in(str);
@@ -15669,6 +16221,17 @@ export class TFloat extends TNumber {
 	/** MEOS: tfloat_value */
 	value(): number {
 		return F.tfloat_value(this.ptr);
+	}
+
+	/** MEOS: tfloat_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): number | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tfloat_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return ((_v: DataView) => _v.getFloat64(0, true))(_view(_value, 8));
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tfloat_value_bins */
@@ -16605,6 +17168,11 @@ export class TGeogPoint extends TPoint {
 		return wrapTemporal(F.tgeogpoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
 	}
 
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
+	}
+
 	/** MEOS: tgeogpoint_in */
 	static fromEWKT(str: string): TGeogPoint {
 		return TGeogPoint.in(str);
@@ -16667,6 +17235,11 @@ export class TGeography extends TGeo {
 	/** MEOS: tgeography_to_tgeometry */
 	toTgeometry(): Temporal {
 		return wrapTemporal(F.tgeography_to_tgeometry(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tgeography_in */
@@ -16772,6 +17345,11 @@ export class TGeomPoint extends TPoint {
 	/** MEOS: tgeompoint_to_ts2cell */
 	toTs2cell(level: number, border_inc: boolean): Temporal {
 		return wrapTemporal(F.tgeompoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tgeompoint_in */
@@ -16988,6 +17566,11 @@ export class TGeometry extends TGeo {
 	override ttouches(temp2: TGeometry | Geometry): Temporal | null {
 		if (temp2 instanceof TGeometry) return this._ttouches_tgeo_tgeo(temp2 as TGeometry);
 		return super.ttouches(temp2 as Geometry);
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tgeometry_in */
@@ -17365,6 +17948,11 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: th3index_from_base_temp */
 	static fromBaseTemp(value: H3Index, temp: Temporal): TH3Index {
 		return wrapTemporal(F.th3index_from_base_temp(value, temp.ptr)) as TH3Index;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: th3index_in */
@@ -17939,6 +18527,17 @@ export class TInt extends TNumber {
 	/** MEOS: tint_value */
 	value(): number {
 		return F.tint_value(this.ptr);
+	}
+
+	/** MEOS: tint_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): number | null {
+		const _value = _alloc(4);
+		try {
+			if (!F.tint_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return ((_v: DataView) => _v.getInt32(0, true))(_view(_value, 4));
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tint_value_bins */
@@ -18983,6 +19582,11 @@ export class TNpoint extends TSpatial {
 		return wrapTemporal(F.tnpoint_from_base_temp(np.ptr, temp.ptr)) as TNpoint;
 	}
 
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
+	}
+
 	/** MEOS: tnpoint_in */
 	static fromEWKT(str: string): TNpoint {
 		return TNpoint.in(str);
@@ -19599,6 +20203,11 @@ export class TPCBox extends Box {
 		return F.tpcbox_zmin(this.ptr);
 	}
 
+	/** MEOS: tpcbox_from_wkb */
+	static fromEWKB(wkb: Uint8Array): TPCBox {
+		return TPCBox.fromWKB(wkb);
+	}
+
 	/** MEOS: tpcbox_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): TPCBox {
 		return TPCBox.fromHexWKB(hexwkb);
@@ -19612,6 +20221,16 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_in */
 	static fromText(str: string): TPCBox {
 		return TPCBox.in(str);
+	}
+
+	/** MEOS: tpcbox_from_wkb */
+	static fromWKB(wkb: Uint8Array): TPCBox {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapTPCBox(F.tpcbox_from_wkb(_wkb, wkb.length)) as TPCBox;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: tpcbox_in */
@@ -19818,6 +20437,11 @@ export class TPcpatch extends TSpatial {
 	/** MEOS: tpcpatch_from_base_temp */
 	static fromBaseTemp(pa: Pcpatch, temp: Temporal): TPcpatch {
 		return wrapTemporal(F.tpcpatch_from_base_temp(pa.ptr, temp.ptr)) as TPcpatch;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tpcpatch_in */
@@ -20062,6 +20686,11 @@ export class TPcpoint extends TSpatial {
 	/** MEOS: tpcpoint_from_base_temp */
 	static fromBaseTemp(pt: Pcpoint, temp: Temporal): TPcpoint {
 		return wrapTemporal(F.tpcpoint_from_base_temp(pt.ptr, temp.ptr)) as TPcpoint;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tpcpoint_in */
@@ -20531,6 +21160,11 @@ export class TPose extends TSpatial {
 		return wrapTemporal(F.tpose_from_base_temp(pose.ptr, temp.ptr)) as TPose;
 	}
 
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
+	}
+
 	/** MEOS: tpose_in */
 	static fromEWKT(str: string): TPose {
 		return TPose.in(str);
@@ -20858,6 +21492,11 @@ export class TPoseChain extends TSpatial {
 	/** MEOS: tposechain_from_base_temp */
 	static fromBaseTemp(pc: PoseChain, temp: Temporal): TPoseChain {
 		return wrapTemporal(F.tposechain_from_base_temp(pc.ptr, temp.ptr)) as TPoseChain;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tposechain_in */
@@ -21193,6 +21832,11 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_from_base_temp */
 	static fromBaseTemp(value: Quadbin, temp: Temporal): TQuadbin {
 		return wrapTemporal(F.tquadbin_from_base_temp(value, temp.ptr)) as TQuadbin;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: tquadbin_in */
@@ -22135,6 +22779,11 @@ export class TRGeometry extends TSpatial {
 		return wrapTemporalOrNull(F.trgeometry_yaw(this.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
+	}
+
 	/** MEOS: trgeometry_in */
 	static fromEWKT(str: string): TRGeometry {
 		return TRGeometry.in(str);
@@ -22452,6 +23101,11 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_from_base_temp */
 	static fromBaseTemp(value: S2CellId, temp: Temporal): TS2Cell {
 		return wrapTemporal(F.ts2cell_from_base_temp(value, temp.ptr)) as TS2Cell;
+	}
+
+	/** MEOS: temporal_from_wkb */
+	static fromEWKB(wkb: Uint8Array): Temporal {
+		return Temporal.fromWKB(wkb);
 	}
 
 	/** MEOS: ts2cell_in */
@@ -23387,6 +24041,17 @@ export class TsTzSet extends Set {
 	/** MEOS: tstzset_in */
 	static in(str: string): TsTzSet {
 		return wrapSet(F.tstzset_in(str)) as TsTzSet;
+	}
+
+	/** MEOS: tstzset_make */
+	static make(values: number[]): TsTzSet {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return wrapSet(F.tstzset_make(_values, values.length)) as TsTzSet;
+		} finally {
+			_free(_values);
+		}
 	}
 }
 

@@ -152,3 +152,28 @@ describe('generated object layer: operators', () => {
 		assert.throws(() => (t as unknown as { nad(x: unknown): number }).nad('x'), TypeError);
 	});
 });
+
+describe('generated object layer: byte arrays, scalar arrays and out-parameters', () => {
+	it('reads a value back from the WKB it writes', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using back = Temporal.fromWKB(t.asWKB(0));
+		assert.ok(back instanceof TFloatSeq);
+		assert.equal(back.toString(), t.toString());
+		using s = IntSpan.make(1, 5, true, false);
+		using sback = IntSpan.fromWKB(s.asWKB(0));
+		assert.equal(sback.toString(), '[1, 5)');
+	});
+
+	it('answers a value MEOS writes through a pointer, or null where it finds none', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		const start = t.startTimestamptz();
+		assert.equal(t.valueAtTimestamptz(start, true), 1);
+		using later = TFloat.in(`5@${T2}`);
+		assert.equal(t.valueAtTimestamptz(later.startTimestamptz() + 60_000_000, true), null);
+	});
+
+	it('takes an array of scalars for a counted array argument', () => {
+		using s = IntSet.make([3, 1, 2]);
+		assert.equal(s.toString(), '{1, 2, 3}');
+	});
+});
