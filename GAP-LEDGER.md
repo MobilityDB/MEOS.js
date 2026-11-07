@@ -50,47 +50,15 @@ The function answers a type no class stands for and no scalar or array rule read
 | STBox | toGbox | return GBOX * needs wrapping |
 | Temporal | toTaggstate | return struct SkipList * needs wrapping |
 
-## argument needs a class (69)
+## argument needs a class (32)
 
 The function takes a type no class stands for and no marshalling rule reads.
 
 | class | member | what is missing |
 |---|---|---|
-| BigIntSet | make | argument values is an array of int64_t, which has no class |
-| Cbuffer | fromWKB | argument wkb is an array of uint8_t, which has no class |
 | CbufferSet | make | argument values is an array of Cbuffer, which has no class |
-| DateSet | make | argument values is an array of DateADT, which has no class |
-| FloatSet | make | argument values is an array of double, which has no class |
-| Geo | fromEWKB | argument wkb is an array of uint8_t, which has no class |
-| H3IndexSet | make | argument values is an array of uint64_t, which has no class |
-| IntSet | make | argument values is an array of int, which has no class |
-| Npoint | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Nsegment | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Pcpatch | makeCoords | argument values is an array of double, which has no class |
-| Pcpoint | make | argument values is an array of double, which has no class |
 | Pcschema | fromDims | argument dims of type PCDimensionSpec * needs marshalling |
 | Pcschema | registerDims | argument dims of type PCDimensionSpec * needs marshalling |
-| Pose | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| PoseChain | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| QuadbinSet | make | argument values is an array of uint64_t, which has no class |
-| Raquet | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Raquet | make | argument pixels is an array of uint8_t, which has no class |
-| Raquet | readBytes | argument data is an array of uint8_t, which has no class |
-| Raster | clip | argument bands is an array of int, which has no class |
-| Raster | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Raster | make | argument pixels is an array of uint8_t, which has no class |
-| Raster | setValues | argument values is an array of double, which has no class |
-| Raster | tileValueQuadbin | argument pixels is an array of uint8_t, which has no class |
-| Raster | valueCount | argument searchvalues is an array of double, which has no class |
-| RTree | load | argument ids is an array of int64_t, which has no class |
-| S2CellSet | make | argument values is an array of uint64_t, which has no class |
-| Set | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Span | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| SpanSet | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| SPTree | load | argument ids is an array of int64_t, which has no class |
-| STBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| TBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| Temporal | fromWKB | argument wkb is an array of uint8_t, which has no class |
 | Text | alwaysEq | always_eq_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGe | always_ge_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGt | always_gt_text_ttext takes its receiver as text *, which no handle holds |
@@ -120,48 +88,36 @@ The function takes a type no class stands for and no marshalling rule reads.
 | Text | tlt | tlt_text_ttext takes its receiver as text *, which no handle holds |
 | Text | tne | tne_text_ttext takes its receiver as text *, which no handle holds |
 | Text | union | union_text_set takes its receiver as text *, which no handle holds |
-| TH3IndexSeq | make | argument values is an array of uint64_t, which has no class |
-| TPCBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
-| TQuadbinSeq | make | argument values is an array of uint64_t, which has no class |
-| TS2CellSeq | make | argument values is an array of uint64_t, which has no class |
-| TsTzSet | make | argument values is an array of TimestampTz, which has no class |
 
-## out-parameter needs a reader (62)
+## out-parameter needs a reader (54)
 
 The function answers a value through a pointer no reader in this generator reads.
 
 | class | member | what is missing |
 |---|---|---|
-| Geometry | minimumBoundingRadius | out-parameter radius of type double * |
+| Geometry | minimumBoundingRadius | 1 value(s) answered beside a GSERIALIZED * return |
 | Jsonb | each | out-parameter values of type Jsonb *** |
 | Jsonb | eachText | out-parameter values of type text *** |
-| JsonbSet | existsArray | out-parameter rescount of type int * |
-| Pcpoint | getDim | out-parameter out of type double * |
-| Pcpoint | getX | out-parameter out of type double * |
-| Pcpoint | getY | out-parameter out of type double * |
-| Pcpoint | getZ | out-parameter out of type double * |
+| JsonbSet | existsArray | 1 value(s) answered beside a bool * return |
 | Raster | dumpValues | out-parameter nodata of type bool ** |
 | RTree | join | out-parameter result of type MeosArray * |
 | RTree | search | out-parameter result of type MeosArray * |
 | RTree | searchTemporal | out-parameter result of type MeosArray * |
 | RTree | searchTemporalDedup | out-parameter result of type MeosArray * |
-| RTreeNNCursor | next | out-parameter id_out of type int64_t * |
-| SPNNCursor | next | out-parameter id_out of type int64_t * |
+| RTreeNNCursor | next | 2 value(s) answered beside a bool return |
+| SPNNCursor | next | 2 value(s) answered beside a bool return |
 | SPTree | join | out-parameter result of type MeosArray * |
 | SPTree | search | out-parameter result of type MeosArray * |
 | SPTree | searchTemporal | out-parameter result of type MeosArray * |
 | SPTree | searchTemporalDedup | out-parameter result of type MeosArray * |
 | TBigint | unnest | out-parameter values of type int64_t ** |
-| TBigint | valueAtTimestamptz | out-parameter value of type int64_t * |
 | TBigint | valueSplit | out-parameter bins of type int64_t ** |
 | TBigint | valueTimeSplit | out-parameter value_bins of type int64_t ** |
 | TBool | unnest | out-parameter values of type bool ** |
-| TBool | valueAtTimestamptz | out-parameter value of type bool * |
 | TCbuffer | unnest | out-parameter values of type Cbuffer *** |
 | TCbuffer | valueAtTimestamptz | out-parameter value of type Cbuffer ** |
 | Temporal | timeSplit | out-parameter bins of type TimestampTz ** |
 | TFloat | unnest | out-parameter values of type double ** |
-| TFloat | valueAtTimestamptz | out-parameter value of type double * |
 | TFloat | valueSplit | out-parameter bins of type double ** |
 | TFloat | valueTimeSplit | out-parameter value_bins of type double ** |
 | TGeo | spaceSplit | out-parameter space_bins of type GSERIALIZED *** |
@@ -175,7 +131,6 @@ The function answers a value through a pointer no reader in this generator reads
 | TGeomPoint | s2cellSplit | out-parameter cells of type uint64_t ** |
 | TH3Index | unnest | out-parameter values of type uint64_t ** |
 | TInt | unnest | out-parameter values of type int ** |
-| TInt | valueAtTimestamptz | out-parameter value of type int * |
 | TInt | valueSplit | out-parameter bins of type int ** |
 | TInt | valueTimeSplit | out-parameter value_bins of type int ** |
 | TJsonb | unnest | out-parameter values of type Jsonb *** |
@@ -207,17 +162,20 @@ A method of the class or an ancestor already has the name the operator would tak
 |---|---|---|
 | Jsonb | contained | contained_jsonb_set: a method of Jsonb or an ancestor is named contained |
 
-## name taken by an ancestor (8)
+## name taken by an ancestor (11)
 
 An ancestor already has a method of this name with other parameters, and TypeScript has no overloading by argument type.
 
 | class | member | what is missing |
 |---|---|---|
+| TH3IndexSeq | make | th3indexseq_make (bigint[],number[],boolean,boolean)=>TH3IndexSeq beside the inherited (H3Index,TimestampTz)=>TH3Index |
 | TH3IndexSeqSet | make | th3indexseqset_make (Temporal[])=>TH3IndexSeqSet beside the inherited (H3Index,TimestampTz)=>TH3Index |
 | TJsonb | contains | contains_tjsonb_jsonb answers Temporal, which the inherited contains (boolean) does not |
 | TJsonb | contains | contains_tjsonb_tjsonb answers Temporal, which the inherited contains (boolean) does not |
 | TJsonb | insert | tjsonb_insert (Text[],Jsonb,boolean)=>Temporal \| null beside the inherited (Temporal,boolean)=>Temporal |
+| TQuadbinSeq | make | tquadbinseq_make (bigint[],number[],boolean,boolean)=>TQuadbinSeq beside the inherited (Quadbin,TimestampTz)=>TQuadbin |
 | TQuadbinSeqSet | make | tquadbinseqset_make (Temporal[])=>TQuadbinSeqSet beside the inherited (Quadbin,TimestampTz)=>TQuadbin |
 | TRGeometry | asTsequence | trgeometry_as_tsequence (string)=>Temporal beside the inherited (number)=>Temporal |
 | TRGeometry | asTsequenceset | trgeometry_as_tsequenceset (string)=>Temporal beside the inherited (number)=>Temporal |
+| TS2CellSeq | make | ts2cellseq_make (bigint[],number[],boolean,boolean)=>TS2CellSeq beside the inherited (S2CellId,TimestampTz)=>TS2Cell |
 | TS2CellSeqSet | make | ts2cellseqset_make (Temporal[])=>TS2CellSeqSet beside the inherited (S2CellId,TimestampTz)=>TS2Cell |

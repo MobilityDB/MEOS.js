@@ -257,6 +257,7 @@ const ELEMENT_READERS: Record<string, { ts: string; width: number; read: string;
 	'int64_t': { ts: 'number', width: 8, read: 'Number(_v.getBigInt64({o}, true))', write: '_v.setBigInt64({o}, BigInt({x}), true)' },
 	'uint64_t': { ts: 'bigint', width: 8, read: '_v.getBigUint64({o}, true)', write: '_v.setBigUint64({o}, {x}, true)' },
 	'bool': { ts: 'boolean', width: 1, read: '_v.getUint8({o}) !== 0', write: '_v.setUint8({o}, {x} ? 1 : 0)' },
+	'uint8_t': { ts: 'number', width: 1, read: '_v.getUint8({o})', write: '_v.setUint8({o}, {x})' },
 };
 
 /**
@@ -354,6 +355,7 @@ class Generator {
 
 		const setup: string[] = [];
 		const teardown: string[] = [];
+		const outReads: { ts: string; expr: string }[] = [];
 		const decl: { name: string; ts: string }[] = [];
 
 		// An array ARGUMENT is one parameter to the caller and two to MEOS, the
@@ -383,9 +385,22 @@ class Generator {
 				args.set(p.name, '_sizeOut');
 				continue;
 			}
-			if (outs.has(p.name))
-				return this.defer(cls, oo, 'out-parameter needs a reader',
-					`out-parameter ${p.name} of type ${clean(p.canonical)}`);
+			if (outs.has(p.name)) {
+				// A scalar MEOS writes through a single pointer, read back after the
+				// call as OUT_PARAM_READERS of MEOS.NET's tools/objectgen.py reads it.
+				const pointee = clean(p.canonical).replace(/\*$/, '').trim();
+				const reader = clean(p.canonical).endsWith('**') ? undefined : ELEMENT_READERS[this.resolve(pointee)];
+				if (!reader)
+					return this.defer(cls, oo, 'out-parameter needs a reader',
+						`out-parameter ${p.name} of type ${clean(p.canonical)}`);
+				const tmp = `_${p.name}`;
+				setup.push(`const ${tmp} = _alloc(${reader.width});`);
+				teardown.push(`_free(${tmp});`);
+				args.set(p.name, tmp);
+				const kept = pointee === 'TimestampTz' || pointee === 'DateADT' ? pointee : reader.ts;
+				outReads.push({ ts: kept, expr: `((_v: DataView) => ${reader.read.replace('{o}', '0')})(_view(${tmp}, ${reader.width}))` });
+				continue;
+			}
 			if (lengthOf.has(p.name)) {
 				args.set(p.name, `${safe(lengthOf.get(p.name)!)}.length`);
 				continue;
@@ -402,6 +417,25 @@ class Generator {
 					setup.push(`const _${p.name} = _structArray(${p.tsName}.map(x => x.ptr), ${stride});`);
 					teardown.push(`_free(_${p.name});`);
 					args.set(p.name, `_${p.name}`);
+					continue;
+				}
+				// An array of scalars: WKB bytes are a Uint8Array copied in whole,
+				// every other scalar is written at its width, as MEOS.NET pins the
+				// caller's own array of scalars (#call_body there).
+				const scalar = elem ? undefined : ELEMENT_READERS[this.resolve(clean(arr.element.canonical))];
+				if (!elem && scalar) {
+					const tmp = `_${p.name}`;
+					if (scalar.width === 1 && scalar.ts === 'number') {
+						decl.push({ name: p.tsName, ts: 'Uint8Array' });
+						setup.push(`const ${tmp} = _bytes(${p.tsName});`);
+					} else {
+						decl.push({ name: p.tsName, ts: `${scalar.ts}[]` });
+						const w = scalar.width;
+						setup.push(`const ${tmp} = _alloc(Math.max(${p.tsName}.length, 1) * ${w});`,
+							`{ const _v = _view(${tmp}, Math.max(${p.tsName}.length, 1) * ${w}); ${p.tsName}.forEach((_x, _i) => ${scalar.write.replace('{o}', `_i * ${w}`).replace('{x}', '_x')}); }`);
+					}
+					teardown.push(`_free(${tmp});`);
+					args.set(p.name, tmp);
 					continue;
 				}
 				if (!elem)
@@ -438,7 +472,15 @@ class Generator {
 		let ret: string;
 		let body: string[];
 
-		if (arrayReturn && countOut && args.get(countOut) === '_count') {
+		if (outReads.length) {
+			// A `bool` beside the values MEOS writes says whether they exist, so
+			// the method answers the value or null, as MEOS.NET's #answer does.
+			if (outReads.length !== 1 || sig.ret !== 'boolean' || sig.folded || arrayReturn || sizeOut)
+				return this.defer(cls, oo, 'out-parameter needs a reader',
+					`${outReads.length} value(s) answered beside a ${sig.retCanonical} return`);
+			ret = `${outReads[0].ts} | null`;
+			body = [`if (!${call}) return null;`, `return ${outReads[0].expr};`];
+		} else if (arrayReturn && countOut && args.get(countOut) === '_count') {
 			const read = this.arrayElement(arrayReturn.element.canonical);
 			if (!read)
 				return this.defer(cls, oo, 'return needs a class',
@@ -1077,6 +1119,13 @@ function _ptrArray(ptrs: Ptr[]): Ptr {
 	ptrs.forEach((p, i) => view.setBigUint64(i * 8, BigInt(p), true));
 	const mod = getModule();
 	return mod.allocate(bytes, mod.ALLOC_NORMAL) as Ptr;
+}
+
+/** The caller's bytes copied into the heap, freed with _free. */
+function _bytes(bytes: Uint8Array): Ptr {
+	const out = _alloc(Math.max(bytes.length, 1));
+	getModule().HEAPU8.set(bytes, out);
+	return out;
 }
 
 /** A copy of \`size\` bytes at \`ptr\` in a buffer of its own, freed with _free. */
