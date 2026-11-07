@@ -10,6 +10,10 @@
       "types": "./dist/core/index.d.ts",
       "import": "./dist/core/index.js"
     },
+    "./objects": {
+      "types": "./dist/core/objects/objects.generated.d.ts",
+      "import": "./dist/core/objects/objects.generated.js"
+    },
     "./deckgl": {
       "types": "./dist/deckgl/index.d.ts",
       "import": "./dist/deckgl/index.js"
@@ -23,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "generate": "npx tsx codegen/FunctionsGenerator.ts",
+    "generate": "npx tsx codegen/FunctionsGenerator.ts && npx tsx codegen/ObjectGenerator.ts",
     "build:wasm": "docker build --output type=local,dest=./wasm --target wasm .",
     "build:ts": "tsc",
     "clean": "shx rm -rf dist",

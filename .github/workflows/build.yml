@@ -68,9 +68,9 @@ jobs:
           # of this repository, so a difference between the committed projection and a
           # freshly derived one is ordinary and a contributor cannot act on it.
           # Refresh it by running the chain and committing the result.
-          if ! git diff --quiet -- core/functions/functions.generated.ts core/c-src/bindings.c; then
+          if ! git diff --quiet -- core/functions/functions.generated.ts core/c-src/bindings.c core/objects/objects.generated.ts GAP-LEDGER.md; then
             echo "::notice::the committed sources differ from the freshly derived catalog (snapshot lags MobilityDB master):"
-            git diff --stat -- core/functions/functions.generated.ts core/c-src/bindings.c
+            git diff --stat -- core/functions/functions.generated.ts core/c-src/bindings.c core/objects/objects.generated.ts GAP-LEDGER.md
           else
             echo "the committed sources are in sync with the derived catalog."
           fi
