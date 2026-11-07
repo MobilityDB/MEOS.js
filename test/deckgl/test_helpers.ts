@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
 import { TGeomPoint } from '../../core/types/basic/tgeompoint/TGeomPoint.js';
-import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan.js';
 import { atGeometry, atTime, speedSeries, tripsWithSpeed } from '../../deckgl/helpers.js';
+import { TsTzSpan } from '../../core/objects/objects.generated.js';
 
 const T0 = '2024-01-15 09:00:00+00';
 const T1 = '2024-01-15 09:05:00+00';
@@ -47,11 +47,11 @@ describe('atTime (temporal restriction)', () => {
 
 	it('accepts a TsTzSpan instance and leaves it to the caller', () => {
 		using t = TGeomPoint.fromString(TRAJ);
-		using span = TsTzSpan.fromString(`[${T0}, ${T1}]`);
+		using span = TsTzSpan.in(`[${T0}, ${T1}]`);
 		const trips = atTime(t, span);
 		assert.equal(trips.length, 1);
 		// span still usable afterwards (not freed by the helper)
-		assert.ok(span.inner !== 0);
+		assert.ok(span.ptr !== 0);
 	});
 
 	it('returns [] when the period does not overlap', () => {

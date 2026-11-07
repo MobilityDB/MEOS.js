@@ -9,7 +9,7 @@
 
 import { TGeomPoint } from '../core/types/basic/tgeompoint/TGeomPoint.js';
 import { TFloat } from '../core/types/basic/tfloat/TFloat.js';
-import { TsTzSpan } from '../core/types/collections/time/TsTzSpan.js';
+import { TsTzSpan } from '../core/objects/objects.generated.js';
 import type { Trip, ToTripsOptions } from './adapter.js';
 import { tgeompointToTrips } from './adapter.js';
 import {
@@ -54,9 +54,9 @@ export function atTime(
 	opts: ToTripsOptions = {}
 ): Trip[] {
 	const ownsSpan = typeof period === 'string';
-	const span = ownsSpan ? TsTzSpan.fromString(period) : period;
+	const span = ownsSpan ? TsTzSpan.in(period) : period;
 	try {
-		const restricted = t.atTsTzSpan(span.inner);
+		const restricted = t.atTsTzSpan(span.ptr);
 		if (restricted.inner === 0) return []; // no temporal overlap
 		try {
 			return tgeompointToTrips(restricted, opts);

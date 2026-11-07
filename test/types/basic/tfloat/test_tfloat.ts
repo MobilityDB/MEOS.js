@@ -5,9 +5,7 @@ import { TFloat } from '../../../../core/types/basic/tfloat/TFloat.js';
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInt } from '../../../../core/types/basic/tint/TInt.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
+import { TsTzSet, TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generated.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min
@@ -474,23 +472,23 @@ describe('TFloat - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan (linear) creates a sequence', () => {
-		const span = TsTzSpan.fromString(`[${T1}, ${T3}]`);
-		const r = TFloat.fromBaseTime(2.5, span.inner, 'tstzspan');
+		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const r = TFloat.fromBaseTime(2.5, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.fromString(`{${T1}, ${T2}, ${T3}}`);
-		const r = TFloat.fromBaseTime(3.14, set.inner, 'tstzset');
+		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const r = TFloat.fromBaseTime(3.14, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
 		set.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.fromString(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
-		const r = TFloat.fromBaseTime(2.5, ss.inner, 'tstzspanset');
+		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const r = TFloat.fromBaseTime(2.5, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();
 	});

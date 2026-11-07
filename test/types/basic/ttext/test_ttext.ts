@@ -7,10 +7,8 @@ import { TTextSeq } from '../../../../core/types/basic/ttext/TTextSeq.js';
 import { TTextSeqSet } from '../../../../core/types/basic/ttext/TTextSeqSet.js';
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
 import { createTText } from '../../../../core/types/temporal/TemporalFactory.js';
+import { TsTzSet, TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generated.js';
 
 // µs offsets from 2000-01-01 UTC
 const T1 = 60_000_000;   // +1 min
@@ -237,23 +235,23 @@ describe('TText - fromBaseTemporal', () => {
 
 describe('TText - fromBaseTime', () => {
 	it('fromBaseTime with TsTzSpan creates a sequence', () => {
-		const span = TsTzSpan.fromString(`[${TS1}, ${TS2}]`);
-		const t = TText.fromBaseTime('hello', span.inner, 'tstzspan');
+		const span = TsTzSpan.in(`[${TS1}, ${TS2}]`);
+		const t = TText.fromBaseTime('hello', span.ptr, 'tstzspan');
 		assert.ok(t.inner !== 0);
 		assert.equal(t.startValue(), 'hello');
 		span.free(); t.free();
 	});
 
 	it('fromBaseTime with TsTzSet creates a discrete sequence', () => {
-		const set = TsTzSet.fromString(`{${TS1}, ${TS2}}`);
-		const t = TText.fromBaseTime('hello', set.inner, 'tstzset');
+		const set = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const t = TText.fromBaseTime('hello', set.ptr, 'tstzset');
 		assert.ok(t.inner !== 0);
 		set.free(); t.free();
 	});
 
 	it('fromBaseTime with TsTzSpanSet creates a sequence set', () => {
-		const ss = TsTzSpanSet.fromString(`{[${TS1}, ${TS2}], [${TS3}, ${TS4}]}`);
-		const t = TText.fromBaseTime('hello', ss.inner, 'tstzspanset');
+		const ss = TsTzSpanSet.in(`{[${TS1}, ${TS2}], [${TS3}, ${TS4}]}`);
+		const t = TText.fromBaseTime('hello', ss.ptr, 'tstzspanset');
 		assert.ok(t.inner !== 0);
 		ss.free(); t.free();
 	});
