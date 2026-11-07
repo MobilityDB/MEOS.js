@@ -558,12 +558,21 @@ class Generator {
 	 * trailing run takes defaults, so no required parameter follows one. The
 	 * sibling generators (#method_for of MEOS.NET) carry none; this projects the
 	 * catalog's own.
+	 *
+	 * Where SQL states none, the default of a type's writer is the one
+	 * `typeEncodings` states for that C argument (`encoderAux`, `writerAux`):
+	 * set_as_hexwkb's variant is 0, tbox_out's maxdd 15, temporal_as_mfjson's srs
+	 * null. These name the C parameter itself, so they need no reading of a SQL
+	 * literal, and a parameter takes one only where every encoding naming the
+	 * function as its writer states the same.
 	 */
 	private applySqlDefaults(f: IdlFunction, decl: { name: string; ts: string; default?: string }[]): void {
 		const sigs = (f as IdlFunction & { sqlSignatures?: { args: string[]; argDefaults?: (string | null)[]; sqlArgParams?: string[] }[] }).sqlSignatures ?? [];
-		if (!sigs.length) return;
+		const aux = this.writerDefaults(f.name);
+		if (!sigs.length && !aux.size) return;
 		const cNames = f.params.map(p => p.name);
 		const defaultOf = (cName: string): string | undefined => {
+			if (!sigs.length) return undefined;
 			let found: string | undefined;
 			for (const sig of sigs) {
 				const order = sig.sqlArgParams ?? cNames.slice(0, sig.args.length);
@@ -584,10 +593,47 @@ class Generator {
 		for (let i = decl.length - 1; i >= 0; i--) {
 			const cName = tsNameToC.get(decl[i].name);
 			const lit = cName ? defaultOf(cName) : undefined;
-			const value = lit !== undefined ? byTs(decl[i].ts, lit) : undefined;
+			const value = (lit !== undefined ? byTs(decl[i].ts, lit) : undefined)
+				?? (cName ? this.auxLiteral(aux.get(cName), decl[i].ts) : undefined);
 			if (value === undefined) break;
 			decl[i].default = value;
 		}
+	}
+
+	/**
+	 * The default every encoding naming `fn` as its writer states for each of its
+	 * C arguments (`encoders` with `encoderAux`, `writers` with `writerAux`), by
+	 * argument name; an argument two entries disagree on has none.
+	 */
+	private writerDefaults(fn: string): Map<string, unknown> {
+		type Aux = { name: string; kind?: string; default?: unknown }[];
+		const found = new Map<string, unknown>();
+		const clash = new Set<string>();
+		const take = (list: Aux | undefined) => {
+			for (const a of list ?? []) {
+				if (!('default' in a)) continue;
+				if (found.has(a.name) && found.get(a.name) !== a.default) clash.add(a.name);
+				else found.set(a.name, a.default);
+			}
+		};
+		for (const enc of Object.values(this.m.idl.typeEncodings ?? {}) as (Encoding & { encoderAux?: Record<string, Aux>; writerAux?: Record<string, Record<string, Aux>> })[]) {
+			for (const [format, writer] of Object.entries(enc.encoders ?? {}))
+				if (writer === fn) take(enc.encoderAux?.[format]);
+			for (const [format, bySql] of Object.entries(enc.writers ?? {}))
+				for (const [sql, writer] of Object.entries(bySql))
+					if (writer === fn) take(enc.writerAux?.[format]?.[sql]);
+		}
+		for (const c of clash) found.delete(c);
+		return found;
+	}
+
+	/** An encoding's default as a TypeScript literal of the parameter's type, or undefined. */
+	private auxLiteral(value: unknown, ts: string): string | undefined {
+		if (value === undefined) return undefined;
+		if (value === null) return /\| null$/.test(ts) ? 'null' : undefined;
+		if (typeof value === 'number' && ts === 'number') return String(value);
+		if (typeof value === 'boolean' && ts === 'boolean') return String(value);
+		return undefined;
 	}
 
 	/**
