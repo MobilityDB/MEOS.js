@@ -929,8 +929,112 @@ function generateTsWrapper(fn: IdlFunction): string {
 // ENTRY POINT
 // -------------------------------------------------------------------------
 
+/**
+ * What the generator does with each public function, decided in this one place
+ * for both the flat surface main() writes and the signatures the object layer
+ * (ObjectGenerator.ts) builds its methods on, so the two cannot disagree about
+ * which functions have a wrapper.
+ */
+type Verdict = 'emit' | 'manual' | 'duplicate' | 'skip';
+
+function* classify(fns: IdlFunction[]): Generator<{ fn: IdlFunction; verdict: Verdict; reason?: string }> {
+	const seen = new Set<string>();
+	for (const fn of fns) {
+		if (MANUAL_FUNCTIONS.has(fn.name)) {
+			yield { fn, verdict: 'manual' };
+			continue;
+		}
+		const key = `${fn.name}#${fn.params.length}`;
+		if (seen.has(key)) {
+			yield { fn, verdict: 'duplicate' };
+			continue;
+		}
+		seen.add(key);
+		const reason = shouldSkip(fn);
+		yield reason ? { fn, verdict: 'skip', reason } : { fn, verdict: 'emit' };
+	}
+}
+
+/** The catalog path the generators read, staged by tools/refresh.conf. */
+export const IDL_PATH = path.resolve(__dirname, 'res/meos-idl.json');
+
+/** One parameter of an emitted TypeScript wrapper. */
+export interface WrapperParam {
+	/** The parameter's name in the catalog. */
+	name: string;
+	/** Its name in the TypeScript wrapper. */
+	tsName: string;
+	/** The TypeScript type the wrapper takes. */
+	ts: string;
+	/** The slot's type as the catalog states it. */
+	canonical: string;
+	/** How the slot crosses the boundary. */
+	kind: Kind;
+}
+
+/** The signature of one emitted TypeScript wrapper, as main() writes it. */
+export interface WrapperSignature {
+	params: WrapperParam[];
+	/** The TypeScript type the wrapper answers. */
+	ret: string;
+	/** How the answer crossed the boundary. */
+	retKind: Kind;
+	/**
+	 * The catalog type of the value the wrapper answers: the return's, or for
+	 * the bool+result idiom the type MEOS writes through `result`, which the
+	 * wrapper answers in place of the flag.
+	 */
+	retCanonical: string;
+	/** The wrapper answers the value of a bool+result call (absent as 0/null). */
+	folded: boolean;
+}
+
+/**
+ * The signature of every wrapper the flat surface emits, keyed by C function
+ * name, computed by the same classification and type map main() uses.
+ */
+export function emittedSignatures(idl: Idl): Map<string, WrapperSignature> {
+	types = new TypeMap(idl);
+	const out = new Map<string, WrapperSignature>();
+	const fns = (idl.functions ?? []).filter(f => f.api === 'public');
+	for (const { fn, verdict } of classify(fns)) {
+		if (verdict !== 'emit') continue;
+		const sizeOut = stringSizeOut(fn);
+		const boolResult = sizeOut ? null : detectBoolResult(fn);
+		const visible = fn.params.filter(
+			p => p !== boolResult?.resultParam && p.name !== sizeOut && !OUTPUT_SIZE_PARAMS.has(p.name)
+		);
+		const params = visible.map(p => {
+			const m = argOf(fn, p);
+			return { name: p.name, tsName: safeName(p.name), ts: m.ts, canonical: p.canonical, kind: m.kind };
+		});
+		if (boolResult) {
+			out.set(fn.name, {
+				params, ret: boolResult.tsWrapRet, retKind: boolResult.result.kind,
+				retCanonical: clean(boolResult.resultParam.canonical).replace(/\*\s*$/, '').trim(),
+				folded: true,
+			});
+		} else {
+			const r = retOf(fn);
+			out.set(fn.name, {
+				params, ret: sizeOut ? 'string' : r.ts, retKind: sizeOut ? 'string' : r.kind,
+				retCanonical: clean(fn.returnType.canonical), folded: false,
+			});
+		}
+	}
+	stopOnUnresolvedTypes();
+	return out;
+}
+
+/** The types of their own the last emittedSignatures() run named, sorted. */
+export function ownTypeNames(): string[] {
+	return [...types.ownTypes.keys()].sort();
+}
+
+export type { Idl, IdlFunction, Kind };
+
 function main(): void {
-	const idlPath = path.resolve(__dirname, 'res/meos-idl.json');
+	const idlPath = IDL_PATH;
 	const bindingsPath = path.resolve(__dirname, '../core/c-src/bindings.c');
 	const functionsPath = path.resolve(__dirname, '../core/functions/functions.generated.ts');
 
@@ -968,24 +1072,18 @@ function main(): void {
 
 	const tsHeaderEnd = tsOut.length;
 	const stats = { generated: 0, skipped: 0, manual: 0, duplicates: 0 };
-	const seen = new Set<string>();
 	let lastFile = '';
 
-	for (const fn of fns) {
-		if (MANUAL_FUNCTIONS.has(fn.name)) {
+	for (const { fn, verdict, reason } of classify(fns)) {
+		if (verdict === 'manual') {
 			stats.manual++;
 			continue;
 		}
-
-		const key = `${fn.name}#${fn.params.length}`;
-		if (seen.has(key)) {
+		if (verdict === 'duplicate') {
 			stats.duplicates++;
 			continue;
 		}
-		seen.add(key);
-
-		const reason = shouldSkip(fn);
-		if (reason) {
+		if (verdict === 'skip') {
 			cOut += `/* SKIP ${fn.name}: ${reason} */\n`;
 			tsOut += `// SKIP ${fn.name}: ${reason}\n`;
 			stats.skipped++;
@@ -1086,4 +1184,6 @@ function assertEveryWrapperChecksForErrors(tsOut: string): void {
 	}
 }
 
-main();
+// Run only when invoked as a script, so ObjectGenerator.ts can import the
+// signatures without regenerating the flat surface.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
