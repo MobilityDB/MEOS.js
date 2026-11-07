@@ -15755,8 +15755,8 @@ export function nsegment_make(rid: number, pos1: number, pos2: number): Ptr {
 	return _r;
 }
 
-export function geompoint_to_npoint(gs: Ptr): Ptr {
-	const _r = callPtr('geompoint_to_npoint_w', [ptrArgType()], [ptrArgVal(gs)]);
+export function geompoint_to_npoint(gs: Ptr, tolerance: number): Ptr {
+	const _r = callPtr('geompoint_to_npoint_w', [ptrArgType(), 'number'], [ptrArgVal(gs), tolerance]);
 	checkMeosError();
 	return _r;
 }

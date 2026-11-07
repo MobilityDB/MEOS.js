@@ -13539,8 +13539,8 @@ Nsegment * nsegment_make_w(int64_t rid, double pos1, double pos2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Npoint * geompoint_to_npoint_w(const GSERIALIZED * gs) {
-  return geompoint_to_npoint(gs);
+Npoint * geompoint_to_npoint_w(const GSERIALIZED * gs, double tolerance) {
+  return geompoint_to_npoint(gs, tolerance);
 }
 
 EMSCRIPTEN_KEEPALIVE
