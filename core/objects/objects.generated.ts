@@ -278,12 +278,12 @@ export class Collection extends MeosObject {
 export class Set extends Collection {
 
 	/** MEOS: set_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.set_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: set_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.set_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -873,12 +873,12 @@ export class Span extends Collection {
 	}
 
 	/** MEOS: span_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.span_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: span_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.span_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -1438,12 +1438,12 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: spanset_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.spanset_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: spanset_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.spanset_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -2039,7 +2039,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.cbuffer_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -2049,12 +2049,12 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.cbuffer_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: cbuffer_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.cbuffer_as_hexwkb(this.ptr, variant);
 	}
 
@@ -2064,7 +2064,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.cbuffer_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -2388,22 +2388,22 @@ export class Cbuffer extends Value {
 export class SpatialSet extends Set {
 
 	/** MEOS: spatialset_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.spatialset_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: spatialset_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.spatialset_as_ewkt(this.ptr, maxdd);
 	}
 
 	/** MEOS: spatialset_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.spatialset_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: spatialset_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.spatialset_as_text(this.ptr, maxdd);
 	}
 
@@ -3323,7 +3323,7 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
@@ -3379,7 +3379,7 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.floatset_out(this.ptr, maxdd);
 	}
 
@@ -3591,7 +3591,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
@@ -3677,7 +3677,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.floatspan_out(this.ptr, maxdd);
 	}
 
@@ -3888,7 +3888,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
@@ -3965,7 +3965,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.floatspanset_out(this.ptr, maxdd);
 	}
 
@@ -4125,27 +4125,27 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_as_ewkb */
-	asEWKB(endian: string | null): Uint8Array {
+	asEWKB(endian: string | null = null): Uint8Array {
 		return readWkb(_sizeOut => F.geo_as_ewkb(this.ptr, endian, _sizeOut));
 	}
 
 	/** MEOS: geo_as_ewkt */
-	asEWKT(precision: number): string {
+	asEWKT(precision: number = 15): string {
 		return F.geo_as_ewkt(this.ptr, precision);
 	}
 
 	/** MEOS: geo_as_geojson */
-	asGeoJSON(option: number, precision: number, srs: string | null): string {
+	asGeoJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
 		return F.geo_as_geojson(this.ptr, option, precision, srs);
 	}
 
 	/** MEOS: geo_as_hexewkb */
-	asHexEWKB(endian: string | null): string {
+	asHexEWKB(endian: string | null = null): string {
 		return F.geo_as_hexewkb(this.ptr, endian);
 	}
 
 	/** MEOS: geo_as_text */
-	asText(precision: number): string {
+	asText(precision: number = 15): string {
 		return F.geo_as_text(this.ptr, precision);
 	}
 
@@ -4812,7 +4812,7 @@ export class Geography extends Geo {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number, precision: number, srs: string | null): string {
+	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -5181,7 +5181,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number, precision: number, srs: string | null): string {
+	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -7349,7 +7349,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.npoint_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -7359,12 +7359,12 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.npoint_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: npoint_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.npoint_as_hexwkb(this.ptr, variant);
 	}
 
@@ -7374,7 +7374,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.npoint_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -7725,7 +7725,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.nsegment_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -7735,12 +7735,12 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.nsegment_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: nsegment_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.nsegment_as_hexwkb(this.ptr, variant);
 	}
 
@@ -7750,7 +7750,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.nsegment_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -7906,7 +7906,7 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: pcpatch_hex_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.hexOut(maxdd);
 	}
 
@@ -7966,7 +7966,7 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: pcpatch_hex_out */
-	hexOut(maxdd: number): string {
+	hexOut(maxdd: number = 15): string {
 		return F.pcpatch_hex_out(this.ptr, maxdd);
 	}
 
@@ -8253,7 +8253,7 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: pcpoint_hex_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.hexOut(maxdd);
 	}
 
@@ -8357,7 +8357,7 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: pcpoint_hex_out */
-	hexOut(maxdd: number): string {
+	hexOut(maxdd: number = 15): string {
 		return F.pcpoint_hex_out(this.ptr, maxdd);
 	}
 
@@ -8665,7 +8665,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.pose_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -8680,12 +8680,12 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.pose_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: pose_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.pose_as_hexwkb(this.ptr, variant);
 	}
 
@@ -8695,7 +8695,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.pose_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -9054,7 +9054,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.posechain_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -9064,12 +9064,12 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.posechain_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: posechain_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.posechain_as_hexwkb(this.ptr, variant);
 	}
 
@@ -9079,7 +9079,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.posechain_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -9912,7 +9912,7 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.raquet_as_hexwkb(this.ptr, variant);
 	}
 
@@ -9922,7 +9922,7 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.raquet_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -10150,12 +10150,12 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.raster_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: raster_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.raster_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -11031,27 +11031,27 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.stbox_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: stbox_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.stbox_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: stbox_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.stbox_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: stbox_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
 	/** MEOS: stbox_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.stbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -11208,7 +11208,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.stbox_out(this.ptr, maxdd);
 	}
 
@@ -11712,12 +11712,12 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.temporal_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: temporal_as_mfjson */
-	asMFJSON(option: number, flags: number, precision: number, srs: string | null): string {
+	asMFJSON(option: number = 0, flags: number = 0, precision: number = 15, srs: string | null = null): string {
 		return F.temporal_as_mfjson(this.ptr, option, flags, precision, srs);
 	}
 
@@ -11737,7 +11737,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.temporal_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -14240,17 +14240,17 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.tbox_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: tbox_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
 	/** MEOS: tbox_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.tbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -14364,7 +14364,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.tbox_out(this.ptr, maxdd);
 	}
 
@@ -14903,17 +14903,17 @@ export class TSpatial extends Temporal {
 	}
 
 	/** MEOS: tspatial_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.tspatial_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: tspatial_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.tspatial_as_ewkt(this.ptr, maxdd);
 	}
 
 	/** MEOS: tspatial_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.tspatial_as_hexewkb(this.ptr, variant);
 	}
 
@@ -16119,7 +16119,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
@@ -16241,7 +16241,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.tfloat_out(this.ptr, maxdd);
 	}
 
@@ -20130,27 +20130,27 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: tpcbox_as_ewkb */
-	asEWKB(variant: number): Uint8Array {
+	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.tpcbox_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: tpcbox_as_hexewkb */
-	asHexEWKB(variant: number): string {
+	asHexEWKB(variant: number = 0): string {
 		return F.tpcbox_as_hexewkb(this.ptr, variant);
 	}
 
 	/** MEOS: tpcbox_as_hexwkb */
-	asHexWKB(variant: number): string {
+	asHexWKB(variant: number = 0): string {
 		return F.tpcbox_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: tpcbox_out */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
 
 	/** MEOS: tpcbox_as_wkb */
-	asWKB(variant: number): Uint8Array {
+	asWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.tpcbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
@@ -20274,7 +20274,7 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: tpcbox_out */
-	out(maxdd: number): string {
+	out(maxdd: number = 15): string {
 		return F.tpcbox_out(this.ptr, maxdd);
 	}
 

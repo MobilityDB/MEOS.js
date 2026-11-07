@@ -258,3 +258,15 @@ describe('generated object layer: members answering their receiver type', () => 
 		assert.equal(moved.lower(), 11);
 	});
 });
+
+describe('generated object layer: the defaults a type encoding states', () => {
+	it('writes WKB and text with the defaults typeEncodings gives the writer', () => {
+		// set_as_hexwkb's variant defaults to 0 and floatspan_out's maxdd to 15
+		// (typeEncodings encoderAux, writerAux).
+		using s = IntSet.in('{1, 2}');
+		using back = IntSet.fromHexWKB(s.asHexWKB());
+		assert.equal(back.toString(), '{1, 2}');
+		using f = FloatSpan.in('[1.5, 2.5]');
+		assert.equal(f.out(), f.toString());
+	});
+});
