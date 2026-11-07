@@ -11458,7 +11458,7 @@ export class STBox extends Box {
 	nad(gs: Geo | STBox | TRGeometry, spheroid?: boolean): number {
 		if (gs instanceof TRGeometry && spheroid === undefined) return this._nad_stbox_trgeometry(gs as TRGeometry);
 		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nad_stbox_geo(gs as Geo, spheroid as boolean);
-		if (gs instanceof STBox && typeof spheroid === 'boolean') return this._nad_stbox_stbox(gs as STBox, spheroid as boolean);
+		if (gs instanceof STBox && (spheroid === undefined || typeof spheroid === 'boolean')) return this._nad_stbox_stbox(gs as STBox, spheroid as boolean);
 		throw new TypeError(`STBox.nad: no overload takes these arguments`);
 	}
 
@@ -14610,6 +14610,21 @@ export class TBox extends Box {
 		return F.tbox_eq(this.ptr, box2.ptr);
 	}
 
+	/** MEOS: tbigintbox_expand */
+	expandBigint(i: number): this | null {
+		return wrapTBoxOrNull(F.tbigintbox_expand(this.ptr, i)) as this | null;
+	}
+
+	/** MEOS: tfloatbox_expand */
+	expandFloat(d: number): this | null {
+		return wrapTBoxOrNull(F.tfloatbox_expand(this.ptr, d)) as this | null;
+	}
+
+	/** MEOS: tintbox_expand */
+	expandInt(i: number): this | null {
+		return wrapTBoxOrNull(F.tintbox_expand(this.ptr, i)) as this | null;
+	}
+
 	/** MEOS: tbox_expand_time */
 	expandTime(interv: Interval): this | null {
 		const _interv = _putInterval(interv);
@@ -14756,6 +14771,21 @@ export class TBox extends Box {
 		}
 	}
 
+	/** MEOS: tbigintbox_shift_scale */
+	shiftScaleBigint(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapTBox(F.tbigintbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
+	/** MEOS: tfloatbox_shift_scale */
+	shiftScaleFloat(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapTBox(F.tfloatbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
+	/** MEOS: tintbox_shift_scale */
+	shiftScaleInt(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapTBox(F.tintbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
 	/** MEOS: tbox_shift_scale_time */
 	shiftScaleTime(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
@@ -14789,6 +14819,72 @@ export class TBox extends Box {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbox_time_tiles(this.ptr, _duration, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tbigintbox_time_tiles */
+	timeTilesBigint(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tbigintbox_time_tiles(this.ptr, _duration, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tfloatbox_time_tiles */
+	timeTilesFloat(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tfloatbox_time_tiles(this.ptr, _duration, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tintbox_time_tiles */
+	timeTilesInt(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tintbox_time_tiles(this.ptr, _duration, torigin, border_inc, _count);
 			if (!_arr) return [];
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
@@ -14848,6 +14944,132 @@ export class TBox extends Box {
 	/** MEOS: union_tbox_tbox */
 	union(box2: TBox, strict: boolean): this {
 		return wrapTBox(F.union_tbox_tbox(this.ptr, box2.ptr, strict)) as this;
+	}
+
+	/** MEOS: tbigintbox_value_tiles */
+	valueTilesBigint(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tbigintbox_value_tiles(this.ptr, vsize, vorigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tfloatbox_value_tiles */
+	valueTilesFloat(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tfloatbox_value_tiles(this.ptr, vsize, vorigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tintbox_value_tiles */
+	valueTilesInt(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tintbox_value_tiles(this.ptr, vsize, vorigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tbigintbox_value_time_tiles */
+	valueTimeTilesBigint(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tbigintbox_value_time_tiles(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tfloatbox_value_time_tiles */
+	valueTimeTilesFloat(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tfloatbox_value_time_tiles(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tintbox_value_time_tiles */
+	valueTimeTilesInt(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
+		const _duration = _putInterval(duration);
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tintbox_value_time_tiles(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_duration);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tbox_xmax */
@@ -14923,6 +15145,11 @@ export class TBox extends Box {
 	/** MEOS: numspan_timestamptz_to_tbox */
 	static fromNumspanTimestamptz(span: Span, t: TimestampTz): TBox {
 		return wrapTBox(F.numspan_timestamptz_to_tbox(span.ptr, t)) as TBox;
+	}
+
+	/** MEOS: numspan_tstzspan_to_tbox */
+	static fromNumspanTstzspan(s: Span, p: Span): TBox {
+		return wrapTBox(F.numspan_tstzspan_to_tbox(s.ptr, p.ptr)) as TBox;
 	}
 
 	/** MEOS: tbox_in */
@@ -25745,11 +25972,6 @@ export class TsTzSpan extends Span {
 	override minus(t: TimestampTz | Span | SpanSet): SpanSet | null {
 		if (typeof t === 'number') return this._minus_span_timestamptz(t as TimestampTz);
 		return super.minus(t as Span | SpanSet);
-	}
-
-	/** MEOS: numspan_tstzspan_to_tbox */
-	numspan(p: TsTzSpan): TBox {
-		return wrapTBox(F.numspan_tstzspan_to_tbox(this.ptr, p.ptr)) as TBox;
 	}
 
 	/** MEOS: tstzspan_out */
