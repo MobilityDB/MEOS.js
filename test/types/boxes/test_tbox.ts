@@ -3,11 +3,7 @@ import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos.js';
 import { timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated.js';
 import { TBox } from '../../../core/types/boxes/TBox.js';
-import { IntSpan } from '../../../core/types/collections/number/IntSpan.js';
-import { FloatSpan } from '../../../core/types/collections/number/FloatSpan.js';
-import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan.js';
-import { IntSet } from '../../../core/types/collections/number/IntSet.js';
-import { IntSpanSet } from '../../../core/types/collections/number/IntSpanSet.js';
+import { FloatSpan, IntSet, IntSpan, IntSpanSet, TsTzSpan } from '../../../core/objects/objects.generated.js';
 
 before(async () => {
 	await initMeos();
@@ -96,8 +92,8 @@ describe('TBox - Construction', () => {
 	});
 
 	it('fromSpan creates X-only box from IntSpan', () => {
-		const s = IntSpan.fromBounds(1, 10);
-		const b = TBox.fromSpan(s.inner);
+		const s = IntSpan.make(1, 10);
+		const b = TBox.fromSpan(s.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), false);
 		assert.equal(b.xmin(), 1);
@@ -107,8 +103,8 @@ describe('TBox - Construction', () => {
 	});
 
 	it('fromSpan creates X-only box from FloatSpan', () => {
-		const s = FloatSpan.fromBounds(1.5, 10.5);
-		const b = TBox.fromSpan(s.inner);
+		const s = FloatSpan.make(1.5, 10.5);
+		const b = TBox.fromSpan(s.ptr);
 		assert.equal(b.hasX(), true);
 		assert.ok(Math.abs(b.xmin() - 1.5) < 1e-9);
 		assert.ok(Math.abs(b.xmax() - 10.5) < 1e-9);
@@ -117,9 +113,9 @@ describe('TBox - Construction', () => {
 	});
 
 	it('make with X and T spans produces XT box', () => {
-		const xs = FloatSpan.fromBounds(1.5, 10.5);
-		const ts = TsTzSpan.fromString(`[${T0}, ${T1})`);
-		const b = TBox.make(xs.inner, ts.inner);
+		const xs = FloatSpan.make(1.5, 10.5);
+		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
+		const b = TBox.make(xs.ptr, ts.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		xs.free();
@@ -128,8 +124,8 @@ describe('TBox - Construction', () => {
 	});
 
 	it('make with only T span produces T-only box', () => {
-		const ts = TsTzSpan.fromString(`[${T0}, ${T1})`);
-		const b = TBox.make(0, ts.inner);
+		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
+		const b = TBox.make(0, ts.ptr);
 		assert.equal(b.hasX(), false);
 		assert.equal(b.hasT(), true);
 		ts.free();
@@ -137,8 +133,8 @@ describe('TBox - Construction', () => {
 	});
 
 	it('make with only X span produces X-only box', () => {
-		const xs = IntSpan.fromBounds(1, 10);
-		const b = TBox.make(xs.inner, 0);
+		const xs = IntSpan.make(1, 10);
+		const b = TBox.make(xs.ptr, 0);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), false);
 		xs.free();
@@ -189,8 +185,8 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromIntTsTzSpan creates XT box with int X and tstzspan T', () => {
-		const ts = TsTzSpan.fromString(`[${T0}, ${T1})`);
-		const b = TBox.fromIntTsTzSpan(7, ts.inner);
+		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
+		const b = TBox.fromIntTsTzSpan(7, ts.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		assert.equal(b.xmin(), 7);
@@ -199,8 +195,8 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromFloatTsTzSpan creates XT box with float X and tstzspan T', () => {
-		const ts = TsTzSpan.fromString(`[${T0}, ${T1})`);
-		const b = TBox.fromFloatTsTzSpan(2.5, ts.inner);
+		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
+		const b = TBox.fromFloatTsTzSpan(2.5, ts.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		assert.ok(Math.abs(b.xmin() - 2.5) < 1e-9);
@@ -209,9 +205,9 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromNumSpanTsTzSpan creates XT box from numspan and tstzspan', () => {
-		const xs = FloatSpan.fromBounds(1.0, 9.0);
-		const ts = TsTzSpan.fromString(`[${T0}, ${T1})`);
-		const b = TBox.fromNumSpanTsTzSpan(xs.inner, ts.inner);
+		const xs = FloatSpan.make(1.0, 9.0);
+		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
+		const b = TBox.fromNumSpanTsTzSpan(xs.ptr, ts.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		assert.ok(Math.abs(b.xmin() - 1.0) < 1e-9);
@@ -222,9 +218,9 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromNumSpanTimestamp creates XT box from numspan and single timestamp', () => {
-		const xs = FloatSpan.fromBounds(1.0, 9.0);
+		const xs = FloatSpan.make(1.0, 9.0);
 		const t = timestamptz_in(T0, -1);
-		const b = TBox.fromNumSpanTimestamp(xs.inner, t);
+		const b = TBox.fromNumSpanTimestamp(xs.ptr, t);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		xs.free();
@@ -232,8 +228,8 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromSet creates X-only box from IntSet', () => {
-		const s = IntSet.fromString('{2, 5, 8}');
-		const b = TBox.fromSet(s.inner);
+		const s = IntSet.in('{2, 5, 8}');
+		const b = TBox.fromSet(s.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), false);
 		assert.equal(b.xmin(), 2);
@@ -243,8 +239,8 @@ describe('TBox - New constructors', () => {
 	});
 
 	it('fromSpanSet creates X-only box from IntSpanSet', () => {
-		const ss = IntSpanSet.fromString('{[1, 5), [8, 12)}');
-		const b = TBox.fromSpanSet(ss.inner);
+		const ss = IntSpanSet.in('{[1, 5), [8, 12)}');
+		const b = TBox.fromSpanSet(ss.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), false);
 		assert.equal(b.xmin(), 1);
@@ -571,8 +567,8 @@ describe('TBox - Comparisons', () => {
 
 describe('TBox - Math', () => {
 	it('expandInt grows integer X bounds symmetrically', () => {
-		const xs = IntSpan.fromBounds(4, 8);
-		const b = TBox.make(xs.inner, 0);
+		const xs = IntSpan.make(4, 8);
+		const b = TBox.make(xs.ptr, 0);
 		const e = b.expandInt(2);
 		assert.equal(e.xmin(), 2);
 		assert.equal(e.xmax(), 9);
@@ -600,8 +596,8 @@ describe('TBox - Math', () => {
 	});
 
 	it('shiftScaleInt shifts integer X bounds forward', () => {
-		const xs = IntSpan.fromBounds(1, 5);
-		const b = TBox.make(xs.inner, 0);
+		const xs = IntSpan.make(1, 5);
+		const b = TBox.make(xs.ptr, 0);
 		const s = b.shiftScaleInt(3, 0, true, false);
 		assert.equal(s.xmin(), 4);
 		assert.equal(s.xmax(), 7);

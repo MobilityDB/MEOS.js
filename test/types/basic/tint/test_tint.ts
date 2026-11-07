@@ -5,12 +5,8 @@ import { TInt } from '../../../../core/types/basic/tint/TInt.js';
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { TFloat } from '../../../../core/types/basic/tfloat/TFloat.js';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
-import { IntSpan } from '../../../../core/types/collections/number/IntSpan.js';
-import { IntSpanSet } from '../../../../core/types/collections/number/IntSpanSet.js';
 import { TBox } from '../../../../core/types/boxes/TBox.js';
+import { IntSpan, IntSpanSet, TsTzSet, TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generated.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min
@@ -358,16 +354,16 @@ describe('TNumber - toValueSpan / toTBox', () => {
 describe('TNumber - atSpan / minusSpan', () => {
 	it('atSpan restricts to the value range', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const span = IntSpan.fromString('[1, 3]');
-		const r = t.atSpan(span.inner);
+		const span = IntSpan.in('[1, 3]');
+		const r = t.atSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); r.free(); span.free();
 	});
 
 	it('minusSpan excludes the value range', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const span = IntSpan.fromString('[1, 3]');
-		const r = t.minusSpan(span.inner);
+		const span = IntSpan.in('[1, 3]');
+		const r = t.minusSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); r.free(); span.free();
 	});
@@ -477,23 +473,23 @@ describe('TInt - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan creates a sequence', () => {
-		const span = TsTzSpan.fromString(`[${T1}, ${T3}]`);
-		const r = TInt.fromBaseTime(7, span.inner, 'tstzspan');
+		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const r = TInt.fromBaseTime(7, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.fromString(`{${T1}, ${T2}, ${T3}}`);
-		const r = TInt.fromBaseTime(42, set.inner, 'tstzset');
+		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const r = TInt.fromBaseTime(42, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
 		set.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.fromString(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
-		const r = TInt.fromBaseTime(7, ss.inner, 'tstzspanset');
+		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const r = TInt.fromBaseTime(7, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();
 	});
@@ -502,16 +498,16 @@ describe('TInt - fromBaseTemporal / fromBaseTime', () => {
 describe('TNumber - atSpanSet / minusSpanSet', () => {
 	it('atSpanSet restricts to instants whose value falls in any span', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const ss = IntSpanSet.fromString('{[1, 2], [4, 6]}');
-		const r = t.atSpanSet(ss.inner);
+		const ss = IntSpanSet.in('{[1, 2], [4, 6]}');
+		const r = t.atSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); ss.free(); r.free();
 	});
 
 	it('minusSpanSet excludes instants whose value falls in any span', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const ss = IntSpanSet.fromString('{[1, 2], [4, 6]}');
-		const r = t.minusSpanSet(ss.inner);
+		const ss = IntSpanSet.in('{[1, 2], [4, 6]}');
+		const r = t.minusSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);
 		t.free(); ss.free(); r.free();

@@ -5,10 +5,8 @@ import { meos_free, interval_make } from '../../../../core/functions/functions.g
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInt } from '../../../../core/types/basic/tint/TInt.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
-import { TsTzSpan } from '../../../../core/types/collections/time/TsTzSpan.js';
-import { TsTzSet } from '../../../../core/types/collections/time/TsTzSet.js';
-import { TsTzSpanSet } from '../../../../core/types/collections/time/TsTzSpanSet.js';
 import { MeosInvalidArgTypeError } from '../../../../core/functions/errors.js';
+import { TsTzSet, TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generated.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min
@@ -309,16 +307,16 @@ describe('Temporal - atTsTzSpan / minusTsTzSpan', () => {
 
 	it('atTsTzSpan restricts to instants in the span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const span = TsTzSpan.fromString(`[${T1}, ${T2}]`);
-		const r = t.atTsTzSpan(span.inner);
+		const span = TsTzSpan.in(`[${T1}, ${T2}]`);
+		const r = t.atTsTzSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); span.free(); r.free();
 	});
 
 	it('minusTsTzSpan excludes instants in the span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const span = TsTzSpan.fromString(`[${T1}, ${T2}]`);
-		const r = t.minusTsTzSpan(span.inner);
+		const span = TsTzSpan.in(`[${T1}, ${T2}]`);
+		const r = t.minusTsTzSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); span.free(); r.free();
 	});
@@ -403,23 +401,23 @@ describe('TBool - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan creates a sequence', () => {
-		const span = TsTzSpan.fromString(`[${T1}, ${T3}]`);
-		const r = TBool.fromBaseTime(false, span.inner, 'tstzspan');
+		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const r = TBool.fromBaseTime(false, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.fromString(`{${T1}, ${T2}, ${T3}}`);
-		const r = TBool.fromBaseTime(true, set.inner, 'tstzset');
+		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const r = TBool.fromBaseTime(true, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
 		set.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.fromString(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
-		const r = TBool.fromBaseTime(false, ss.inner, 'tstzspanset');
+		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const r = TBool.fromBaseTime(false, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();
 	});
@@ -432,8 +430,8 @@ describe('Temporal - atTsTzSet / minusTsTzSet', () => {
 
 	it('atTsTzSet restricts to instants in the set', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const set = TsTzSet.fromString(`{${T1}, ${T3}}`);
-		const r = t.atTsTzSet(set.inner);
+		const set = TsTzSet.in(`{${T1}, ${T3}}`);
+		const r = t.atTsTzSet(set.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 2);
 		t.free(); set.free(); r.free();
@@ -441,8 +439,8 @@ describe('Temporal - atTsTzSet / minusTsTzSet', () => {
 
 	it('minusTsTzSet excludes instants in the set', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const set = TsTzSet.fromString(`{${T1}, ${T3}}`);
-		const r = t.minusTsTzSet(set.inner);
+		const set = TsTzSet.in(`{${T1}, ${T3}}`);
+		const r = t.minusTsTzSet(set.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);
 		t.free(); set.free(); r.free();
@@ -456,8 +454,8 @@ describe('Temporal - atTsTzSpanSet / minusTsTzSpanSet', () => {
 
 	it('atTsTzSpanSet restricts to instants within any span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const ss = TsTzSpanSet.fromString(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
-		const r = t.atTsTzSpanSet(ss.inner);
+		const ss = TsTzSpanSet.in(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
+		const r = t.atTsTzSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 2);
 		t.free(); ss.free(); r.free();
@@ -465,8 +463,8 @@ describe('Temporal - atTsTzSpanSet / minusTsTzSpanSet', () => {
 
 	it('minusTsTzSpanSet excludes instants within any span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const ss = TsTzSpanSet.fromString(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
-		const r = t.minusTsTzSpanSet(ss.inner);
+		const ss = TsTzSpanSet.in(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
+		const r = t.minusTsTzSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);
 		t.free(); ss.free(); r.free();
@@ -500,7 +498,7 @@ describe('TBool - whenTrue / whenFalse', () => {
 	it('whenTrue returns a TsTzSpanSet covering the true periods', () => {
 		const t = TBool.fromString('[t@2001-01-01, f@2001-01-02, t@2001-01-03, t@2001-01-04]');
 		const ss = t.whenTrue();
-		assert.ok(ss.inner !== 0);
+		assert.ok(ss.ptr !== 0);
 		assert.ok(ss.numSpans() >= 1);
 		t.free();
 		ss.free();
@@ -509,7 +507,7 @@ describe('TBool - whenTrue / whenFalse', () => {
 	it('whenFalse returns a TsTzSpanSet covering the false periods', () => {
 		const t = TBool.fromString('[t@2001-01-01, f@2001-01-02, t@2001-01-03, t@2001-01-04]');
 		const ss = t.whenFalse();
-		assert.ok(ss.inner !== 0);
+		assert.ok(ss.ptr !== 0);
 		assert.ok(ss.numSpans() >= 1);
 		t.free();
 		ss.free();
@@ -527,8 +525,8 @@ describe('TBool - whenTrue / whenFalse', () => {
 		const t = TBool.fromString('{t@2001-01-01, f@2001-01-02, t@2001-01-03}');
 		const wt = t.whenTrue();
 		const wf = t.whenFalse();
-		assert.ok(wt.inner !== 0);
-		assert.ok(wf.inner !== 0);
+		assert.ok(wt.ptr !== 0);
+		assert.ok(wf.ptr !== 0);
 		t.free();
 		wt.free();
 		wf.free();

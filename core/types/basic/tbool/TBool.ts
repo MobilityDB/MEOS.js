@@ -1,5 +1,5 @@
 import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
-import { TsTzSpanSet } from '../../collections/time/TsTzSpanSet.js';
+import { TsTzSpanSet } from '../../../objects/objects.generated.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tbool_in,

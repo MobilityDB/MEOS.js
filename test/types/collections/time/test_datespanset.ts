@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../../core/runtime/meos.js';
-import { DateSpan } from '../../../../core/types/collections/time/DateSpan.js';
-import { DateSpanSet } from '../../../../core/types/collections/time/DateSpanSet.js';
+import { DateSpan, DateSpanSet } from '../../../../core/objects/objects.generated.js';
 
 before(async () => {
 	await initMeos();
@@ -18,19 +17,19 @@ const WKT_SINGLE = '{[2000-01-01, 2000-01-21)}';
 
 describe('DateSpanSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const ss = DateSpanSet.fromString(WKT_AB);
-		assert.ok(ss.inner !== 0);
+		const ss = DateSpanSet.in(WKT_AB);
+		assert.ok(ss.ptr !== 0);
 		ss.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const ss = DateSpanSet.fromString(WKT_AB);
+		const ss = DateSpanSet.in(WKT_AB);
 		assert.equal(ss.toString(), WKT_AB);
 		ss.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const ss1 = DateSpanSet.fromString(WKT_AB);
+		const ss1 = DateSpanSet.in(WKT_AB);
 		const hex = ss1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const ss2 = DateSpanSet.fromHexWKB(hex);
@@ -40,19 +39,19 @@ describe('DateSpanSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const ss1 = DateSpanSet.fromString(WKT_AB);
-		const wkb = ss1.asBinary();
+		const ss1 = DateSpanSet.in(WKT_AB);
+		const wkb = ss1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
-		const ss2 = DateSpanSet.fromBinary(wkb);
+		const ss2 = DateSpanSet.fromWKB(wkb);
 		assert.equal(ss2.toString(), ss1.toString());
 		ss1.free();
 		ss2.free();
 	});
 
 	it('fromSpan wraps a single DateSpan', () => {
-		const s = DateSpan.fromString('[2000-01-01, 2000-01-21)');
-		const ss = DateSpanSet.fromSpan(s);
+		const s = DateSpan.in('[2000-01-01, 2000-01-21)');
+		const ss = s.toSpanset();
 		assert.equal(ss.numSpans(), 1);
 		assert.equal(ss.toString(), WKT_SINGLE);
 		s.free();
@@ -60,10 +59,10 @@ describe('DateSpanSet - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const ss = DateSpanSet.fromString(WKT_AB);
+		const ss = DateSpanSet.in(WKT_AB);
 		const c = ss.copy();
-		assert.ok(c.inner !== 0);
-		assert.notEqual(c.inner, ss.inner);
+		assert.ok(c.ptr !== 0);
+		assert.notEqual(c.ptr, ss.ptr);
 		assert.equal(c.toString(), ss.toString());
 		ss.free();
 		c.free();
@@ -78,7 +77,7 @@ describe('DateSpanSet - Accessors', () => {
 	let ss: DateSpanSet; // {[D0,D10), [D20,D30)}
 
 	before(() => {
-		ss = DateSpanSet.fromString(WKT_AB);
+		ss = DateSpanSet.in(WKT_AB);
 	});
 
 	it('numSpans() = 2', () => {
@@ -126,23 +125,23 @@ describe('DateSpanSet - Accessors', () => {
 	});
 
 	it('spanN(0) matches startSpan()', () => {
-		const sp0 = ss.spanN(0);
+		const sp0 = ss.spanN(1);
 		const start = ss.startSpan();
-		assert.equal(sp0.toString(), start.toString());
-		sp0.free();
+		assert.equal(sp0!.toString(), start.toString());
+		sp0!.free();
 		start.free();
 	});
 
 	it('spanN(1) matches endSpan()', () => {
-		const sp1 = ss.spanN(1);
+		const sp1 = ss.spanN(2);
 		const end = ss.endSpan();
-		assert.equal(sp1.toString(), end.toString());
-		sp1.free();
+		assert.equal(sp1!.toString(), end.toString());
+		sp1!.free();
 		end.free();
 	});
 
 	it('boundingSpan() covers all spans', () => {
-		const bounding = ss.boundingSpan();
+		const bounding = ss.span();
 		assert.equal(bounding.toString(), '[2000-01-01, 2000-01-31)');
 		bounding.free();
 	});
@@ -163,29 +162,29 @@ describe('DateSpanSet - Topological predicates', () => {
 	let s_overlap: DateSpan; // [D0,D20)
 
 	before(() => {
-		ss1 = DateSpanSet.fromString(WKT_AB);
-		ss2 = DateSpanSet.fromString('{[2000-01-31, 2000-02-10)}');
-		ss_big = DateSpanSet.fromString('{[2000-01-01, 2000-02-10)}');
-		s_overlap = DateSpan.fromString('[2000-01-01, 2000-01-21)');
+		ss1 = DateSpanSet.in(WKT_AB);
+		ss2 = DateSpanSet.in('{[2000-01-31, 2000-02-10)}');
+		ss_big = DateSpanSet.in('{[2000-01-01, 2000-02-10)}');
+		s_overlap = DateSpan.in('[2000-01-01, 2000-01-21)');
 	});
 
 	it('isAdjacent(DateSpanSet): {[D0,D10),[D20,D30)} adj {[D30,...)} = true', () => {
-		assert.equal(ss1.isAdjacent(ss2), true);
+		assert.equal(ss1.adjacent(ss2), true);
 	});
 
 	it('isAdjacent(DateSpan): {[D0,D10),[D20,D30)} adj [D30,...) = true', () => {
-		const s = DateSpan.fromString('[2000-01-31, 2000-02-10)');
-		assert.equal(ss1.isAdjacent(s), true);
+		const s = DateSpan.in('[2000-01-31, 2000-02-10)');
+		assert.equal(ss1.adjacent(s), true);
 		s.free();
 	});
 
 	it('isContainedIn(DateSpanSet): ss1 in ss_big = true', () => {
-		assert.equal(ss1.isContainedIn(ss_big), true);
+		assert.equal(ss1.contained(ss_big), true);
 	});
 
 	it('isContainedIn(DateSpan): ss1 in [D0,D40) = true', () => {
-		const s = DateSpan.fromString('[2000-01-01, 2000-02-10)');
-		assert.equal(ss1.isContainedIn(s), true);
+		const s = DateSpan.in('[2000-01-01, 2000-02-10)');
+		assert.equal(ss1.contained(s), true);
 		s.free();
 	});
 
@@ -194,7 +193,7 @@ describe('DateSpanSet - Topological predicates', () => {
 	});
 
 	it('contains(DateSpan): ss_big contains [D10,D20) = true', () => {
-		const s = DateSpan.fromString('[2000-01-11, 2000-01-21)');
+		const s = DateSpan.in('[2000-01-11, 2000-01-21)');
 		assert.equal(ss_big.contains(s), true);
 		s.free();
 	});
@@ -221,36 +220,36 @@ describe('DateSpanSet - Position predicates', () => {
 	let ss2: DateSpanSet; // {[D20,D30)}
 
 	before(() => {
-		ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		ss2 = DateSpanSet.fromString('{[2000-01-21, 2000-01-31)}');
+		ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		ss2 = DateSpanSet.in('{[2000-01-21, 2000-01-31)}');
 	});
 
 	it('isBefore(DateSpanSet): ss1 before ss2 = true', () => {
-		assert.equal(ss1.isBefore(ss2), true);
+		assert.equal(ss1.left(ss2), true);
 	});
 
 	it('isBefore(DateSpan): ss1 before [D20,D30) = true', () => {
-		const s = DateSpan.fromString('[2000-01-21, 2000-01-31)');
-		assert.equal(ss1.isBefore(s), true);
+		const s = DateSpan.in('[2000-01-21, 2000-01-31)');
+		assert.equal(ss1.left(s), true);
 		s.free();
 	});
 
 	it('isAfter(DateSpanSet): ss2 after ss1 = true', () => {
-		assert.equal(ss2.isAfter(ss1), true);
+		assert.equal(ss2.right(ss1), true);
 	});
 
 	it('isAfter(DateSpan): ss2 after [D0,D10) = true', () => {
-		const s = DateSpan.fromString('[2000-01-01, 2000-01-11)');
-		assert.equal(ss2.isAfter(s), true);
+		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		assert.equal(ss2.right(s), true);
 		s.free();
 	});
 
 	it('isOverOrBefore(DateSpanSet)', () => {
-		assert.equal(ss1.isOverOrBefore(ss2), true);
+		assert.equal(ss1.overleft(ss2), true);
 	});
 
 	it('isOverOrAfter(DateSpanSet)', () => {
-		assert.equal(ss2.isOverOrAfter(ss1), true);
+		assert.equal(ss2.overright(ss1), true);
 	});
 });
 
@@ -260,32 +259,32 @@ describe('DateSpanSet - Position predicates', () => {
 
 describe('DateSpanSet - Distance', () => {
 	it('distance(DateSpanSet): overlapping = 0', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-21)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-11, 2000-01-31)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-21)}');
+		const ss2 = DateSpanSet.in('{[2000-01-11, 2000-01-31)}');
 		assert.equal(ss1.distance(ss2), 0);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance(DateSpanSet): disjoint > 0', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-21, 2000-01-31)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const ss2 = DateSpanSet.in('{[2000-01-21, 2000-01-31)}');
 		assert.ok(ss1.distance(ss2) > 0);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance(DateSpan): overlapping = 0', () => {
-		const ss = DateSpanSet.fromString('{[2000-01-01, 2000-01-21)}');
-		const s = DateSpan.fromString('[2000-01-11, 2000-01-31)');
+		const ss = DateSpanSet.in('{[2000-01-01, 2000-01-21)}');
+		const s = DateSpan.in('[2000-01-11, 2000-01-31)');
 		assert.equal(ss.distance(s), 0);
 		ss.free();
 		s.free();
 	});
 
 	it('distance(DateSpan): disjoint > 0', () => {
-		const ss = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const s = DateSpan.fromString('[2000-01-21, 2000-01-31)');
+		const ss = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const s = DateSpan.in('[2000-01-21, 2000-01-31)');
 		assert.ok(ss.distance(s) > 0);
 		ss.free();
 		s.free();
@@ -298,8 +297,8 @@ describe('DateSpanSet - Distance', () => {
 
 describe('DateSpanSet - Set operations', () => {
 	it('intersection(DateSpanSet): overlapping = non-null', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-21)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-11, 2000-01-31)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-21)}');
+		const ss2 = DateSpanSet.in('{[2000-01-11, 2000-01-31)}');
 		const inter = ss1.intersection(ss2);
 		assert.ok(inter !== null);
 		assert.equal(inter!.toString(), '{[2000-01-11, 2000-01-21)}');
@@ -309,8 +308,8 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('intersection(DateSpanSet): disjoint = null', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-21, 2000-01-31)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const ss2 = DateSpanSet.in('{[2000-01-21, 2000-01-31)}');
 		const inter = ss1.intersection(ss2);
 		assert.equal(inter, null);
 		ss1.free();
@@ -318,8 +317,8 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('intersection(DateSpan): overlapping = non-null', () => {
-		const ss = DateSpanSet.fromString('{[2000-01-01, 2000-01-21)}');
-		const s = DateSpan.fromString('[2000-01-11, 2000-01-31)');
+		const ss = DateSpanSet.in('{[2000-01-01, 2000-01-21)}');
+		const s = DateSpan.in('[2000-01-11, 2000-01-31)');
 		const inter = ss.intersection(s);
 		assert.ok(inter !== null);
 		assert.equal(inter!.toString(), '{[2000-01-11, 2000-01-21)}');
@@ -329,8 +328,8 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('minus(DateSpanSet): returns non-null when result is non-empty', () => {
-		const ss1 = DateSpanSet.fromString(WKT_AB); // {[D0,D10),[D20,D30)}
-		const ss2 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
+		const ss1 = DateSpanSet.in(WKT_AB); // {[D0,D10),[D20,D30)}
+		const ss2 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
 		const diff = ss1.minus(ss2);
 		assert.ok(diff !== null);
 		assert.equal(diff!.toString(), '{[2000-01-21, 2000-01-31)}');
@@ -340,8 +339,8 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('minus(DateSpanSet): returns null when result is empty', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-01, 2000-01-21)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const ss2 = DateSpanSet.in('{[2000-01-01, 2000-01-21)}');
 		const diff = ss1.minus(ss2);
 		assert.equal(diff, null);
 		ss1.free();
@@ -349,8 +348,8 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('minus(DateSpan): removes overlapping part', () => {
-		const ss = DateSpanSet.fromString(WKT_AB);
-		const s = DateSpan.fromString('[2000-01-01, 2000-01-11)');
+		const ss = DateSpanSet.in(WKT_AB);
+		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
 		const diff = ss.minus(s);
 		assert.ok(diff !== null);
 		assert.equal(diff!.toString(), '{[2000-01-21, 2000-01-31)}');
@@ -360,21 +359,21 @@ describe('DateSpanSet - Set operations', () => {
 	});
 
 	it('union(DateSpanSet): merges disjoint spansets', () => {
-		const ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const ss2 = DateSpanSet.fromString('{[2000-01-21, 2000-01-31)}');
+		const ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const ss2 = DateSpanSet.in('{[2000-01-21, 2000-01-31)}');
 		const u = ss1.union(ss2);
-		assert.equal(u.toString(), WKT_AB);
-		u.free();
+		assert.equal(u!.toString(), WKT_AB);
+		u!.free();
 		ss1.free();
 		ss2.free();
 	});
 
 	it('union(DateSpan): merges span into spanset', () => {
-		const ss = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		const s = DateSpan.fromString('[2000-01-21, 2000-01-31)');
+		const ss = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		const s = DateSpan.in('[2000-01-21, 2000-01-31)');
 		const u = ss.union(s);
-		assert.equal(u.toString(), WKT_AB);
-		u.free();
+		assert.equal(u!.toString(), WKT_AB);
+		u!.free();
 		ss.free();
 		s.free();
 	});
@@ -390,9 +389,9 @@ describe('DateSpanSet - Comparisons', () => {
 	let ss2: DateSpanSet;
 
 	before(() => {
-		ss1 = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		ss1b = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
-		ss2 = DateSpanSet.fromString('{[2000-01-11, 2000-01-21)}');
+		ss1 = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		ss1b = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
+		ss2 = DateSpanSet.in('{[2000-01-11, 2000-01-21)}');
 	});
 
 	it('eq: same spanset = true', () => assert.equal(ss1.eq(ss1b), true));
@@ -409,15 +408,15 @@ describe('DateSpanSet - Comparisons', () => {
 
 describe('DateSpanSet - Conversions', () => {
 	it('toTsTzSpanSet returns a non-zero pointer', () => {
-		const ss = DateSpanSet.fromString(WKT_AB);
-		assert.ok(ss.toTsTzSpanSet() !== 0);
+		const ss = DateSpanSet.in(WKT_AB);
+		assert.ok(ss.toTstzspanset() !== null);
 		ss.free();
 	});
 });
 
 describe('DateSpanSet - shiftScale', () => {
 	it('shift by 10 days moves spanset forward', () => {
-		const ss = DateSpanSet.fromString('{[2000-01-01, 2000-01-11)}');
+		const ss = DateSpanSet.in('{[2000-01-01, 2000-01-11)}');
 		const shifted = ss.shiftScale(10, 0, true, false);
 		assert.equal(shifted.toString(), '{[2000-01-11, 2000-01-21)}');
 		ss.free();

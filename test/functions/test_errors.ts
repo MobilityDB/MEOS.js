@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
+import { FloatSet, IntSet, IntSpan, TsTzSpan } from '../../core/objects/objects.generated.js';
 import {
 	MeosException,
 	MeosInternalError,
@@ -48,10 +49,6 @@ import {
 	MEOS_ERR_GEOJSON_OUTPUT,
 	MEOS_ERROR,
 } from '../../core/functions/errors.js';
-import { IntSet } from '../../core/types/collections/number/IntSet.js';
-import { IntSpan } from '../../core/types/collections/number/IntSpan.js';
-import { FloatSet } from '../../core/types/collections/number/FloatSet.js';
-import { TsTzSpan } from '../../core/types/collections/time/TsTzSpan.js';
 
 before(async () => {
 	await initMeos();
@@ -120,7 +117,7 @@ describe('makeMeosException - dispatch', () => {
 describe('MEOS integration - text input errors', () => {
 	it('IntSet.fromString with invalid WKT throws MeosTextInputError', () => {
 		assert.throws(
-			() => IntSet.fromString('not-a-set'),
+			() => IntSet.in('not-a-set'),
 			(err: unknown) => {
 				assert.ok(
 					err instanceof MeosTextInputError,
@@ -133,15 +130,15 @@ describe('MEOS integration - text input errors', () => {
 	});
 
 	it('IntSpan.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => IntSpan.fromString('garbage'), MeosTextInputError);
+		assert.throws(() => IntSpan.in('garbage'), MeosTextInputError);
 	});
 
 	it('FloatSet.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => FloatSet.fromString('{not, a, float, set}'), MeosTextInputError);
+		assert.throws(() => FloatSet.in('{not, a, float, set}'), MeosTextInputError);
 	});
 
 	it('TsTzSpan.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => TsTzSpan.fromString('not-a-span'), MeosTextInputError);
+		assert.throws(() => TsTzSpan.in('not-a-span'), MeosTextInputError);
 	});
 });
 
@@ -169,7 +166,7 @@ describe('MEOS integration - thrown error is instanceof Error', () => {
 	it('MeosTextInputError is a proper Error subclass', () => {
 		let caught: unknown;
 		try {
-			IntSet.fromString('bad');
+			IntSet.in('bad');
 		} catch (e) {
 			caught = e;
 		}

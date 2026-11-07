@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos.js';
 import { STBox } from '../../../core/types/boxes/STBox.js';
-import { TsTzSpan } from '../../../core/types/collections/time/TsTzSpan.js';
 import { interval_make, meos_free } from '../../../core/functions/functions.generated.js';
+import { TsTzSpan } from '../../../core/objects/objects.generated.js';
 
 before(async () => {
 	await initMeos();
@@ -107,8 +107,8 @@ describe('STBox - Construction', () => {
 	});
 
 	it('fromTsTzSpan creates T-only box', () => {
-		const sp = TsTzSpan.fromString('[2020-01-01, 2020-12-31]');
-		const b = STBox.fromTsTzSpan(sp.inner);
+		const sp = TsTzSpan.in('[2020-01-01, 2020-12-31]');
+		const b = STBox.fromTsTzSpan(sp.ptr);
 		assert.equal(b.hasX(), false);
 		assert.equal(b.hasT(), true);
 		sp.free();
@@ -116,8 +116,8 @@ describe('STBox - Construction', () => {
 	});
 
 	it('make builds XT box from explicit bounds', () => {
-		const sp = TsTzSpan.fromString('[2020-01-01, 2020-06-01]');
-		const b = STBox.make(true, false, false, 0, 1, 2, 1, 2, 0, 0, sp.inner);
+		const sp = TsTzSpan.in('[2020-01-01, 2020-06-01]');
+		const b = STBox.make(true, false, false, 0, 1, 2, 1, 2, 0, 0, sp.ptr);
 		assert.equal(b.hasX(), true);
 		assert.equal(b.hasT(), true);
 		assert.equal(b.hasZ(), false);

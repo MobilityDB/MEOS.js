@@ -4,9 +4,13 @@
 
 export { initMeos, getModule } from './runtime/meos.js';
 export * from './functions/errors.js';
-export { Span } from './types/collections/base/Span.js';
-export { SpanSet } from './types/collections/base/SpanSet.js';
-export { MeosSet } from './types/collections/base/MeosSet.js';
+// The collections are the generated object layer's (codegen/ObjectGenerator.ts).
+export {
+	Set, Span, SpanSet,
+	IntSet, IntSpan, IntSpanSet, FloatSet, FloatSpan, FloatSpanSet,
+	BigIntSet, BigIntSpan, BigIntSpanSet, TextSet,
+	DateSet, DateSpan, DateSpanSet, TsTzSet, TsTzSpan, TsTzSpanSet,
+} from './objects/objects.generated.js';
 export { TBool } from './types/basic/tbool/TBool.js';
 export { TBoolInst } from './types/basic/tbool/TBoolInst.js';
 export { TBoolSeq } from './types/basic/tbool/TBoolSeq.js';
@@ -26,16 +30,6 @@ export { TTextSeqSet } from './types/basic/ttext/TTextSeqSet.js';
 export { TInterpolation, TemporalType } from './types/temporal/Temporal.js';
 export { createTBool, createTInt, createTFloat, createTText, createTGeomPoint, createTGeogPoint } from './types/temporal/TemporalFactory.js';
 export type { TBoolSubtype, TIntSubtype, TFloatSubtype, TTextSubtype, TGeomPointSubtype, TGeogPointSubtype } from './types/temporal/TemporalFactory.js';
-export { IntSpan } from './types/collections/number/IntSpan.js';
-export { IntSpanSet } from './types/collections/number/IntSpanSet.js';
-export { IntSet } from './types/collections/number/IntSet.js';
-export { FloatSpan } from './types/collections/number/FloatSpan.js';
-export { FloatSpanSet } from './types/collections/number/FloatSpanSet.js';
-export { FloatSet } from './types/collections/number/FloatSet.js';
-export { BigIntSpan } from './types/collections/number/BigIntSpan.js';
-export { BigIntSpanSet } from './types/collections/number/BigIntSpanSet.js';
-export { BigIntSet } from './types/collections/number/BigIntSet.js';
-export { TextSet } from './types/collections/text/TextSet.js';
 export { TBox } from './types/boxes/TBox.js';
 export { STBox } from './types/boxes/STBox.js';
 export { TGeomPoint } from './types/basic/tgeompoint/TGeomPoint.js';
@@ -46,9 +40,3 @@ export { TGeogPoint } from './types/basic/tgeogpoint/TGeogPoint.js';
 export { TGeogPointInst } from './types/basic/tgeogpoint/TGeogPointInst.js';
 export { TGeogPointSeq } from './types/basic/tgeogpoint/TGeogPointSeq.js';
 export { TGeogPointSeqSet } from './types/basic/tgeogpoint/TGeogPointSeqSet.js';
-export { DateSpan } from './types/collections/time/DateSpan.js';
-export { DateSpanSet } from './types/collections/time/DateSpanSet.js';
-export { DateSet } from './types/collections/time/DateSet.js';
-export { TsTzSpan } from './types/collections/time/TsTzSpan.js';
-export { TsTzSpanSet } from './types/collections/time/TsTzSpanSet.js';
-export { TsTzSet } from './types/collections/time/TsTzSet.js';

@@ -65,10 +65,9 @@ MEOS.js/
 │   │   └── objects.generated.ts     ← Generated object layer (`meos.js/objects`)
 │   ├── runtime/
 │   │   └── meos.ts                  ← WASM module loader
-│   ├── types/                       ← High-level typed wrappers
+│   ├── types/                       ← Hand-written temporal and box classes
 │   │   ├── basic/                   ← TBool, TInt, TFloat, TText...
 │   │   ├── boxes/                   ← TBox, STBox
-│   │   ├── collections/             ← Span, SpanSet, MeoSet...
 │   │   └── temporal/                ← Temporal base class + factory
 │   └── index.ts                     ← Public exports
 ├── GAP-LEDGER.md                    ← Generated: what the object layer defers, and why
@@ -160,6 +159,8 @@ console.log(seq.values(), seq.toString());
 ```
 
 The operators the model assigns a class (`classes.<Class>.operators`: comparisons, arithmetic, distances, set and position operators) become one method per name, which chooses the MEOS function by its arguments' types, since TypeScript has no overloading: `tfloat.add(1)` calls `add_tfloat_float`, `tfloat.nad(box)` calls `nad_tfloat_tbox`, and an argument the class's own overloads do not take goes to the inherited operator. An operator reflected onto its right operand keeps the `r` name the model gives it (`tfloat.rsub(10)` is `10 - tfloat`).
+
+The sets, spans and span sets the package root exports (`IntSet`, `FloatSpan`, `TsTzSpanSet`, the generic `Set`, `Span` and `SpanSet`, …) are these generated classes. Their methods are the model's canonical names (`IntSpan.in`, `IntSpan.make(1, 5)`, `asWKB`, `fromWKB`, `toSpanset`), an index such as `valueN(n)` counts from 1 as MEOS and SQL do, and a time duration or distance is the `Interval` value `{ time, day, month }` MEOS takes and answers, `time` in microseconds.
 
 A method the model assigns but no marshalling rule can carry is left out and listed in `GAP-LEDGER.md` with the contract it lacks. The generator never fills such a gap by hand.
 
