@@ -23,6 +23,9 @@ export interface MeosModule {
 
 	/** The WASM linear memory as bytes; the module replaces the view when the memory grows. */
 	HEAPU8: Uint8Array;
+
+	/** The NUL-terminated UTF-8 string at `ptr`, exported as EXPORTED_RUNTIME_METHODS lists it. */
+	UTF8ToString(ptr: number): string;
 }
 
 declare function createMeosModule(moduleArg?: object): Promise<MeosModule>;

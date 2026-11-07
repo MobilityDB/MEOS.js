@@ -8,36 +8,9 @@ row here, with the contract it is missing. Do not edit; run `npm run generate`.
 
 The model assigns a method to a function the catalog's own function list does not carry.
 
-## no emitted wrapper (24)
+## no emitted wrapper (0)
 
 The flat surface emits no generated wrapper for the function, so the layer has no signature to build on.
-
-| class | member | what is missing |
-|---|---|---|
-| Set | asHexWKB | set_as_hexwkb has no generated wrapper |
-| Span | adjacent | adjacent_span_span has no generated wrapper |
-| Span | asHexWKB | span_as_hexwkb has no generated wrapper |
-| Span | eq | span_eq has no generated wrapper |
-| Span | ne | span_ne has no generated wrapper |
-| SpanSet | asHexWKB | spanset_as_hexwkb has no generated wrapper |
-| Temporal | asHexWKB | temporal_as_hexwkb has no generated wrapper |
-| Temporal | asMFJSON | temporal_as_mfjson has no generated wrapper |
-| Temporal | duration | temporal_duration has no generated wrapper |
-| Temporal | instantN | temporal_instant_n has no generated wrapper |
-| Text | fromCstring | cstring_to_text has no generated wrapper |
-| TextSet | valueN | textset_value_n has no generated wrapper |
-| TsTzSet | endValue | tstzset_end_value has no generated wrapper |
-| TsTzSet | startValue | tstzset_start_value has no generated wrapper |
-| TsTzSet | valueN | tstzset_value_n has no generated wrapper |
-| TsTzSpan | lower | tstzspan_lower has no generated wrapper |
-| TsTzSpan | upper | tstzspan_upper has no generated wrapper |
-| TsTzSpanSet | duration | tstzspanset_duration has no generated wrapper |
-| TsTzSpanSet | endTimestamptz | tstzspanset_end_timestamptz has no generated wrapper |
-| TsTzSpanSet | lower | tstzspanset_lower has no generated wrapper |
-| TsTzSpanSet | startTimestamptz | tstzspanset_start_timestamptz has no generated wrapper |
-| TsTzSpanSet | timestamptzN | tstzspanset_timestamptz_n has no generated wrapper |
-| TsTzSpanSet | upper | tstzspanset_upper has no generated wrapper |
-| TText | valueN | ttext_value_n has no generated wrapper |
 
 ## return needs a class (5)
 
@@ -177,7 +150,7 @@ An ancestor already has a method of this name with other parameters, and TypeScr
 | TJsonb | insert | tjsonb_insert (Text[],Jsonb,boolean)=>Temporal \| null beside the inherited (Temporal,boolean)=>Temporal |
 | TQuadbinSeq | make | tquadbinseq_make (bigint[],number[],boolean,boolean)=>TQuadbinSeq beside the inherited (Quadbin,TimestampTz)=>TQuadbin |
 | TQuadbinSeqSet | make | tquadbinseqset_make (Temporal[])=>TQuadbinSeqSet beside the inherited (Quadbin,TimestampTz)=>TQuadbin |
-| TRGeometry | asTsequence | trgeometry_as_tsequence (string)=>Temporal beside the inherited (number)=>Temporal |
-| TRGeometry | asTsequenceset | trgeometry_as_tsequenceset (string)=>Temporal beside the inherited (number)=>Temporal |
+| TRGeometry | asTsequence | trgeometry_as_tsequence (string \| null)=>Temporal beside the inherited (number)=>Temporal |
+| TRGeometry | asTsequenceset | trgeometry_as_tsequenceset (string \| null)=>Temporal beside the inherited (number)=>Temporal |
 | TS2CellSeq | make | ts2cellseq_make (bigint[],number[],boolean,boolean)=>TS2CellSeq beside the inherited (S2CellId,TimestampTz)=>TS2Cell |
 | TS2CellSeqSet | make | ts2cellseqset_make (Temporal[])=>TS2CellSeqSet beside the inherited (S2CellId,TimestampTz)=>TS2Cell |
