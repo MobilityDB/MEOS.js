@@ -293,7 +293,7 @@ interface Emitted {
 	fn: string;
 	name: string;
 	isStatic: boolean;
-	params: { name: string; ts: string; optional?: boolean }[];
+	params: { name: string; ts: string; optional?: boolean; default?: string }[];
 	ret: string;
 	body: string[];
 	/** A helper the class's own dispatching method calls, never called from outside. */
@@ -530,7 +530,52 @@ class Generator {
 			body = [...setup, 'try {', ...body.map(l => `\t${l}`), '} finally {', ...teardown.map(l => `\t${l}`), '}'];
 		else
 			body = [...setup, ...body];
+		this.applySqlDefaults(f, decl);
 		return { fn: fname, name: oo, isStatic, params: decl, ret, body };
+	}
+
+	/**
+	 * The defaults the SQL signatures state for the trailing parameters
+	 * (`sqlSignatures[].argDefaults`): intspan_make's lower_inc and upper_inc
+	 * default to the `[)` bounds, floatspan_out's maxdd to 15. A parameter takes
+	 * one only where every signature states the same default for it, read in the
+	 * signature's own order where `sqlArgParams` gives one, and the literal is of
+	 * the parameter's own TypeScript kind: a SQL default of another type
+	 * (set_as_hexwkb's text endianness, where the C function takes a uint8_t
+	 * variant) says nothing about the C argument and is not carried. Only the
+	 * trailing run takes defaults, so no required parameter follows one. The
+	 * sibling generators (#method_for of MEOS.NET) carry none; this projects the
+	 * catalog's own.
+	 */
+	private applySqlDefaults(f: IdlFunction, decl: { name: string; ts: string; default?: string }[]): void {
+		const sigs = (f as IdlFunction & { sqlSignatures?: { args: string[]; argDefaults?: (string | null)[]; sqlArgParams?: string[] }[] }).sqlSignatures ?? [];
+		if (!sigs.length) return;
+		const cNames = f.params.map(p => p.name);
+		const defaultOf = (cName: string): string | undefined => {
+			let found: string | undefined;
+			for (const sig of sigs) {
+				const order = sig.sqlArgParams ?? cNames.slice(0, sig.args.length);
+				const at = order.indexOf(cName);
+				const lit = at < 0 ? null : sig.argDefaults?.[at] ?? null;
+				if (lit === null || (found !== undefined && found !== lit)) return undefined;
+				found = lit;
+			}
+			return found;
+		};
+		const byTs = (ts: string, lit: string): string | undefined => {
+			const v = lit.trim().toLowerCase();
+			if (ts === 'boolean' && (v === 'true' || v === 'false')) return v;
+			if (ts === 'number' && /^-?\d+(\.\d+)?$/.test(v)) return v;
+			return undefined;
+		};
+		const tsNameToC = new Map(f.params.map(p => [safe(p.name), p.name]));
+		for (let i = decl.length - 1; i >= 0; i--) {
+			const cName = tsNameToC.get(decl[i].name);
+			const lit = cName ? defaultOf(cName) : undefined;
+			const value = lit !== undefined ? byTs(decl[i].ts, lit) : undefined;
+			if (value === undefined) break;
+			decl[i].default = value;
+		}
 	}
 
 	/**
@@ -748,7 +793,7 @@ class Generator {
 			const overrides = !m.isStatic && this.inheritedSig(cls, m.name, false) !== undefined;
 			lines.push('', `\t/** ${m.doc ?? `MEOS: ${m.fn}`} */`);
 			const head = `${m.helper ? 'private ' : ''}${m.isStatic ? 'static ' : ''}${overrides ? 'override ' : ''}${m.name}`;
-			lines.push(`\t${head}(${m.params.map(p => `${p.name}${p.optional ? '?' : ''}: ${p.ts}`).join(', ')}): ${m.ret} {`);
+			lines.push(`\t${head}(${m.params.map(p => `${p.name}${p.optional ? '?' : ''}: ${p.ts}${p.default !== undefined ? ` = ${p.default}` : ''}`).join(', ')}): ${m.ret} {`);
 			for (const l of m.body) lines.push(`\t\t${l}`);
 			lines.push('\t}');
 		}
