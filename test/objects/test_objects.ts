@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
 import {
+	FloatSpan,
 	IntSet,
+	TBox,
 	IntSpan,
 	IntSpanSet,
 	Temporal,
@@ -175,5 +177,21 @@ describe('generated object layer: byte arrays, scalar arrays and out-parameters'
 	it('takes an array of scalars for a counted array argument', () => {
 		using s = IntSet.make([3, 1, 2]);
 		assert.equal(s.toString(), '{1, 2, 3}');
+	});
+});
+
+describe('generated object layer: constructors from base values', () => {
+	// `<base>_to_<type>` is `<Type>.from<Base>` in the model (MEOS-API #249).
+	it('builds a box from a number', () => {
+		using b = TBox.fromFloat(1.5);
+		assert.equal(b.toString(), 'TBOXFLOAT X([1.5, 1.5])');
+	});
+
+	it('builds the instantiation the SQL return type names', () => {
+		using s = IntSet.fromInt(3);
+		assert.ok(s instanceof IntSet);
+		assert.equal(s.toString(), '{3}');
+		using f = FloatSpan.fromFloat(2.5);
+		assert.equal(f.toString(), '[2.5, 2.5]');
 	});
 });

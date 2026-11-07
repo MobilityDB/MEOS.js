@@ -8,7 +8,7 @@ row here, with the contract it is missing. Do not edit; run `npm run generate`.
 
 The model assigns a method to a function the catalog's own function list does not carry.
 
-## no emitted wrapper (23)
+## no emitted wrapper (24)
 
 The flat surface emits no generated wrapper for the function, so the layer has no signature to build on.
 
@@ -24,6 +24,7 @@ The flat surface emits no generated wrapper for the function, so the layer has n
 | Temporal | asMFJSON | temporal_as_mfjson has no generated wrapper |
 | Temporal | duration | temporal_duration has no generated wrapper |
 | Temporal | instantN | temporal_instant_n has no generated wrapper |
+| Text | fromCstring | cstring_to_text has no generated wrapper |
 | TextSet | valueN | textset_value_n has no generated wrapper |
 | TsTzSet | endValue | tstzset_end_value has no generated wrapper |
 | TsTzSet | startValue | tstzset_start_value has no generated wrapper |
@@ -50,7 +51,7 @@ The function answers a type no class stands for and no scalar or array rule read
 | STBox | toGbox | return GBOX * needs wrapping |
 | Temporal | toTaggstate | return struct SkipList * needs wrapping |
 
-## argument needs a class (32)
+## argument needs a class (33)
 
 The function takes a type no class stands for and no marshalling rule reads.
 
@@ -59,6 +60,7 @@ The function takes a type no class stands for and no marshalling rule reads.
 | CbufferSet | make | argument values is an array of Cbuffer, which has no class |
 | Pcschema | fromDims | argument dims of type PCDimensionSpec * needs marshalling |
 | Pcschema | registerDims | argument dims of type PCDimensionSpec * needs marshalling |
+| STBox | fromGbox | argument box of type GBOX * needs marshalling |
 | Text | alwaysEq | always_eq_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGe | always_ge_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGt | always_gt_text_ttext takes its receiver as text *, which no handle holds |
