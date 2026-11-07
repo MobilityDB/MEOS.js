@@ -1,9 +1,16 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../../core/runtime/meos.js';
-import { timestamptz_in, interval_make, meos_free } from '../../../core/functions/functions.generated.js';
-import { TBox } from '../../../core/types/boxes/TBox.js';
-import { FloatSpan, IntSet, IntSpan, IntSpanSet, TsTzSpan } from '../../../core/objects/objects.generated.js';
+import { timestamptz_in } from '../../../core/functions/functions.generated.js';
+import {
+	BigIntSpan,
+	FloatSpan,
+	IntSet,
+	IntSpan,
+	IntSpanSet,
+	TBox,
+	TsTzSpan,
+} from '../../../core/objects/objects.generated.js';
 
 before(async () => {
 	await initMeos();
@@ -24,37 +31,37 @@ const WKT_XT = `TBOXFLOAT XT([1.5, 10.5],[${T0}, ${T1}])`;
 
 describe('TBox - Construction', () => {
 	it('fromString (X only) returns a non-zero pointer', () => {
-		const b = TBox.fromString(WKT_X);
-		assert.ok(b.inner !== 0);
+		const b = TBox.in(WKT_X);
+		assert.ok(b.ptr !== 0);
 		b.free();
 	});
 
 	it('fromString (T only) returns a non-zero pointer', () => {
-		const b = TBox.fromString(WKT_T);
-		assert.ok(b.inner !== 0);
+		const b = TBox.in(WKT_T);
+		assert.ok(b.ptr !== 0);
 		b.free();
 	});
 
 	it('fromString (XT) returns a non-zero pointer', () => {
-		const b = TBox.fromString(WKT_XT);
-		assert.ok(b.inner !== 0);
+		const b = TBox.in(WKT_XT);
+		assert.ok(b.ptr !== 0);
 		b.free();
 	});
 
 	it('toString round-trips WKT_X', () => {
-		const b = TBox.fromString(WKT_X);
+		const b = TBox.in(WKT_X);
 		assert.equal(b.toString(), WKT_X);
 		b.free();
 	});
 
 	it('toString round-trips WKT_XT', () => {
-		const b = TBox.fromString(WKT_XT);
+		const b = TBox.in(WKT_XT);
 		assert.equal(b.toString(), WKT_XT);
 		b.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const b1 = TBox.fromString(WKT_XT);
+		const b1 = TBox.in(WKT_XT);
 		const hex = b1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const b2 = TBox.fromHexWKB(hex);
@@ -64,11 +71,11 @@ describe('TBox - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const b1 = TBox.fromString(WKT_XT);
-		const wkb = b1.asBinary();
+		const b1 = TBox.in(WKT_XT);
+		const wkb = b1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), b1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
-		const b2 = TBox.fromBinary(wkb);
+		const b2 = TBox.fromWKB(wkb);
 		assert.equal(b2.toString(), b1.toString());
 		b1.free();
 		b2.free();
@@ -76,8 +83,8 @@ describe('TBox - Construction', () => {
 
 	it('fromInt creates X-only box at integer value', () => {
 		const b = TBox.fromInt(5);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		assert.equal(b.xmin(), 5);
 		assert.equal(b.xmax(), 5);
 		b.free();
@@ -85,17 +92,17 @@ describe('TBox - Construction', () => {
 
 	it('fromFloat creates X-only box at float value', () => {
 		const b = TBox.fromFloat(3.14);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		assert.ok(Math.abs(b.xmin() - 3.14) < 1e-9);
 		b.free();
 	});
 
 	it('fromSpan creates X-only box from IntSpan', () => {
 		const s = IntSpan.make(1, 10);
-		const b = TBox.fromSpan(s.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		const b = s.toTbox();
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		assert.equal(b.xmin(), 1);
 		assert.equal(b.xmax(), 9);
 		s.free();
@@ -104,8 +111,8 @@ describe('TBox - Construction', () => {
 
 	it('fromSpan creates X-only box from FloatSpan', () => {
 		const s = FloatSpan.make(1.5, 10.5);
-		const b = TBox.fromSpan(s.ptr);
-		assert.equal(b.hasX(), true);
+		const b = s.toTbox();
+		assert.equal(b.hasx(), true);
 		assert.ok(Math.abs(b.xmin() - 1.5) < 1e-9);
 		assert.ok(Math.abs(b.xmax() - 10.5) < 1e-9);
 		s.free();
@@ -115,9 +122,9 @@ describe('TBox - Construction', () => {
 	it('make with X and T spans produces XT box', () => {
 		const xs = FloatSpan.make(1.5, 10.5);
 		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
-		const b = TBox.make(xs.ptr, ts.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.make(xs, ts);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		xs.free();
 		ts.free();
 		b.free();
@@ -125,27 +132,27 @@ describe('TBox - Construction', () => {
 
 	it('make with only T span produces T-only box', () => {
 		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
-		const b = TBox.make(0, ts.ptr);
-		assert.equal(b.hasX(), false);
-		assert.equal(b.hasT(), true);
+		const b = ts.toTbox();
+		assert.equal(b.hasx(), false);
+		assert.equal(b.hast(), true);
 		ts.free();
 		b.free();
 	});
 
 	it('make with only X span produces X-only box', () => {
 		const xs = IntSpan.make(1, 10);
-		const b = TBox.make(xs.ptr, 0);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		const b = xs.toTbox();
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		xs.free();
 		b.free();
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const b = TBox.fromString(WKT_XT);
+		const b = TBox.in(WKT_XT);
 		const c = b.copy();
-		assert.ok(c.inner !== 0);
-		assert.notEqual(c.inner, b.inner);
+		assert.ok(c.ptr !== 0);
+		assert.notEqual(c.ptr, b.ptr);
 		assert.equal(c.toString(), b.toString());
 		b.free();
 		c.free();
@@ -159,17 +166,17 @@ describe('TBox - Construction', () => {
 describe('TBox - New constructors', () => {
 	it('fromTimestamp creates T-only box at a single timestamp', () => {
 		const t = timestamptz_in(T0, -1);
-		const b = TBox.fromTimestamp(t);
-		assert.equal(b.hasX(), false);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromTimestamptz(t);
+		assert.equal(b.hasx(), false);
+		assert.equal(b.hast(), true);
 		b.free();
 	});
 
 	it('fromIntTimestamp creates XT box with int X and single timestamp', () => {
 		const t = timestamptz_in(T0, -1);
-		const b = TBox.fromIntTimestamp(5, t);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromIntTimestamptz(5, t);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		assert.equal(b.xmin(), 5);
 		assert.equal(b.xmax(), 5);
 		b.free();
@@ -177,18 +184,18 @@ describe('TBox - New constructors', () => {
 
 	it('fromFloatTimestamp creates XT box with float X and single timestamp', () => {
 		const t = timestamptz_in(T0, -1);
-		const b = TBox.fromFloatTimestamp(3.14, t);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromFloatTimestamptz(3.14, t);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		assert.ok(Math.abs(b.xmin() - 3.14) < 1e-9);
 		b.free();
 	});
 
 	it('fromIntTsTzSpan creates XT box with int X and tstzspan T', () => {
 		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
-		const b = TBox.fromIntTsTzSpan(7, ts.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromIntTstzspan(7, ts);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		assert.equal(b.xmin(), 7);
 		ts.free();
 		b.free();
@@ -196,9 +203,9 @@ describe('TBox - New constructors', () => {
 
 	it('fromFloatTsTzSpan creates XT box with float X and tstzspan T', () => {
 		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
-		const b = TBox.fromFloatTsTzSpan(2.5, ts.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromFloatTstzspan(2.5, ts);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		assert.ok(Math.abs(b.xmin() - 2.5) < 1e-9);
 		ts.free();
 		b.free();
@@ -207,9 +214,9 @@ describe('TBox - New constructors', () => {
 	it('fromNumSpanTsTzSpan creates XT box from numspan and tstzspan', () => {
 		const xs = FloatSpan.make(1.0, 9.0);
 		const ts = TsTzSpan.in(`[${T0}, ${T1})`);
-		const b = TBox.fromNumSpanTsTzSpan(xs.ptr, ts.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromNumspanTstzspan(xs, ts);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		assert.ok(Math.abs(b.xmin() - 1.0) < 1e-9);
 		assert.ok(Math.abs(b.xmax() - 9.0) < 1e-9);
 		xs.free();
@@ -220,18 +227,18 @@ describe('TBox - New constructors', () => {
 	it('fromNumSpanTimestamp creates XT box from numspan and single timestamp', () => {
 		const xs = FloatSpan.make(1.0, 9.0);
 		const t = timestamptz_in(T0, -1);
-		const b = TBox.fromNumSpanTimestamp(xs.ptr, t);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.fromNumspanTimestamptz(xs, t);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		xs.free();
 		b.free();
 	});
 
 	it('fromSet creates X-only box from IntSet', () => {
 		const s = IntSet.in('{2, 5, 8}');
-		const b = TBox.fromSet(s.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		const b = s.toTbox();
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		assert.equal(b.xmin(), 2);
 		assert.equal(b.xmax(), 8);
 		s.free();
@@ -240,9 +247,9 @@ describe('TBox - New constructors', () => {
 
 	it('fromSpanSet creates X-only box from IntSpanSet', () => {
 		const ss = IntSpanSet.in('{[1, 5), [8, 12)}');
-		const b = TBox.fromSpanSet(ss.ptr);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		const b = ss.toTbox();
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		assert.equal(b.xmin(), 1);
 		assert.equal(b.xmax(), 11);
 		ss.free();
@@ -256,60 +263,60 @@ describe('TBox - New constructors', () => {
 
 describe('TBox - Accessors', () => {
 	it('hasX / hasT on X-only box', () => {
-		const b = TBox.fromString(WKT_X);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), false);
+		const b = TBox.in(WKT_X);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), false);
 		b.free();
 	});
 
 	it('hasX / hasT on T-only box', () => {
-		const b = TBox.fromString(WKT_T);
-		assert.equal(b.hasX(), false);
-		assert.equal(b.hasT(), true);
+		const b = TBox.in(WKT_T);
+		assert.equal(b.hasx(), false);
+		assert.equal(b.hast(), true);
 		b.free();
 	});
 
 	it('hasX / hasT on XT box', () => {
-		const b = TBox.fromString(WKT_XT);
-		assert.equal(b.hasX(), true);
-		assert.equal(b.hasT(), true);
+		const b = TBox.in(WKT_XT);
+		assert.equal(b.hasx(), true);
+		assert.equal(b.hast(), true);
 		b.free();
 	});
 
 	it('xmin / xmax return correct float bounds', () => {
-		const b = TBox.fromString(WKT_X);
+		const b = TBox.in(WKT_X);
 		assert.ok(Math.abs(b.xmin() - 1.5) < 1e-9);
 		assert.ok(Math.abs(b.xmax() - 10.5) < 1e-9);
 		b.free();
 	});
 
 	it('xminInc / xmaxInc are true for [] bounds', () => {
-		const b = TBox.fromString(WKT_X);
+		const b = TBox.in(WKT_X);
 		assert.equal(b.xminInc(), true);
 		assert.equal(b.xmaxInc(), true);
 		b.free();
 	});
 
 	it('tmin returns 0 for MEOS epoch (2000-01-01)', () => {
-		const b = TBox.fromString(WKT_T);
+		const b = TBox.in(WKT_T);
 		assert.equal(b.tmin(), 0);
 		b.free();
 	});
 
 	it('tmax > tmin for non-degenerate T box', () => {
-		const b = TBox.fromString(WKT_T);
+		const b = TBox.in(WKT_T);
 		assert.ok(b.tmax() > b.tmin());
 		b.free();
 	});
 
 	it('tminInc is true for [ lower bound', () => {
-		const b = TBox.fromString(WKT_T);
+		const b = TBox.in(WKT_T);
 		assert.equal(b.tminInc(), true);
 		b.free();
 	});
 
 	it('hash returns a number', () => {
-		const b = TBox.fromString(WKT_XT);
+		const b = TBox.in(WKT_XT);
 		assert.equal(typeof b.hash(), 'number');
 		b.free();
 	});
@@ -321,65 +328,65 @@ describe('TBox - Accessors', () => {
 
 describe('TBox - Topological predicates', () => {
 	it('isAdjacent: [1,5) adj [5,10] on X axis = true', () => {
-		const b1 = TBox.fromString('TBOX X([1, 5))');
-		const b2 = TBox.fromString('TBOX X([5, 10])');
-		assert.equal(b1.isAdjacent(b2), true);
+		const b1 = TBox.in('TBOX X([1, 5))');
+		const b2 = TBox.in('TBOX X([5, 10])');
+		assert.equal(b1.adjacent(b2), true);
 		b1.free();
 		b2.free();
 	});
 
 	it('isAdjacent: [1,5] adj [6,10] = false (gap)', () => {
-		const b1 = TBox.fromString('TBOX X([1, 5])');
-		const b2 = TBox.fromString('TBOX X([6, 10])');
-		assert.equal(b1.isAdjacent(b2), false);
+		const b1 = TBox.in('TBOX X([1, 5])');
+		const b2 = TBox.in('TBOX X([6, 10])');
+		assert.equal(b1.adjacent(b2), false);
 		b1.free();
 		b2.free();
 	});
 
 	it('isContainedIn: [2,8] is contained in [1,10]', () => {
-		const small = TBox.fromString('TBOX X([2, 8])');
-		const big = TBox.fromString('TBOX X([1, 10])');
-		assert.equal(small.isContainedIn(big), true);
+		const small = TBox.in('TBOX X([2, 8])');
+		const big = TBox.in('TBOX X([1, 10])');
+		assert.equal(small.contained(big), true);
 		small.free();
 		big.free();
 	});
 
 	it('contains: [1,10] contains [2,8]', () => {
-		const big = TBox.fromString('TBOX X([1, 10])');
-		const small = TBox.fromString('TBOX X([2, 8])');
+		const big = TBox.in('TBOX X([1, 10])');
+		const small = TBox.in('TBOX X([2, 8])');
 		assert.equal(big.contains(small), true);
 		big.free();
 		small.free();
 	});
 
 	it('overlaps: [1,6] and [4,10] overlap', () => {
-		const b1 = TBox.fromString('TBOX X([1, 6])');
-		const b2 = TBox.fromString('TBOX X([4, 10])');
+		const b1 = TBox.in('TBOX X([1, 6])');
+		const b2 = TBox.in('TBOX X([4, 10])');
 		assert.equal(b1.overlaps(b2), true);
 		b1.free();
 		b2.free();
 	});
 
 	it('overlaps: [1,4] and [6,10] do not overlap', () => {
-		const b1 = TBox.fromString('TBOX X([1, 4])');
-		const b2 = TBox.fromString('TBOX X([6, 10])');
+		const b1 = TBox.in('TBOX X([1, 4])');
+		const b2 = TBox.in('TBOX X([6, 10])');
 		assert.equal(b1.overlaps(b2), false);
 		b1.free();
 		b2.free();
 	});
 
 	it('isSame: identical boxes are same', () => {
-		const b1 = TBox.fromString(WKT_X);
-		const b2 = TBox.fromString(WKT_X);
-		assert.equal(b1.isSame(b2), true);
+		const b1 = TBox.in(WKT_X);
+		const b2 = TBox.in(WKT_X);
+		assert.equal(b1.same(b2), true);
 		b1.free();
 		b2.free();
 	});
 
 	it('isSame: different boxes are not same', () => {
-		const b1 = TBox.fromString('TBOX X([1, 5])');
-		const b2 = TBox.fromString('TBOX X([1, 6])');
-		assert.equal(b1.isSame(b2), false);
+		const b1 = TBox.in('TBOX X([1, 5])');
+		const b2 = TBox.in('TBOX X([1, 6])');
+		assert.equal(b1.same(b2), false);
 		b1.free();
 		b2.free();
 	});
@@ -395,28 +402,28 @@ describe('TBox - Position on X axis', () => {
 	let b2: TBox;
 
 	before(() => {
-		b1 = TBox.fromString('TBOX X([1, 4])');
-		b2 = TBox.fromString('TBOX X([6, 10])');
+		b1 = TBox.in('TBOX X([1, 4])');
+		b2 = TBox.in('TBOX X([6, 10])');
 	});
 
 	it('isLeft: [1,4] is left of [6,10]', () => {
-		assert.equal(b1.isLeft(b2), true);
+		assert.equal(b1.left(b2), true);
 	});
 
 	it('isLeft: [6,10] is not left of [1,4]', () => {
-		assert.equal(b2.isLeft(b1), false);
+		assert.equal(b2.left(b1), false);
 	});
 
 	it('isOverOrLeft: [1,4] overleft [6,10] = true', () => {
-		assert.equal(b1.isOverOrLeft(b2), true);
+		assert.equal(b1.overleft(b2), true);
 	});
 
 	it('isRight: [6,10] is right of [1,4]', () => {
-		assert.equal(b2.isRight(b1), true);
+		assert.equal(b2.right(b1), true);
 	});
 
 	it('isOverOrRight: [6,10] overright [1,4] = true', () => {
-		assert.equal(b2.isOverOrRight(b1), true);
+		assert.equal(b2.overright(b1), true);
 	});
 });
 
@@ -429,28 +436,28 @@ describe('TBox - Position on T axis', () => {
 	let b2: TBox; // T=[T2,T3]
 
 	before(() => {
-		b1 = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
-		b2 = TBox.fromString(`TBOX T([${T2}, ${T3}])`);
+		b1 = TBox.in(`TBOX T([${T0}, ${T1}])`);
+		b2 = TBox.in(`TBOX T([${T2}, ${T3}])`);
 	});
 
 	it('isBefore: [T0,T1] is before [T2,T3]', () => {
-		assert.equal(b1.isBefore(b2), true);
+		assert.equal(b1.before(b2), true);
 	});
 
 	it('isBefore: [T2,T3] is not before [T0,T1]', () => {
-		assert.equal(b2.isBefore(b1), false);
+		assert.equal(b2.before(b1), false);
 	});
 
 	it('isOverOrBefore: [T0,T1] overbefore [T2,T3] = true', () => {
-		assert.equal(b1.isOverOrBefore(b2), true);
+		assert.equal(b1.overbefore(b2), true);
 	});
 
 	it('isAfter: [T2,T3] is after [T0,T1]', () => {
-		assert.equal(b2.isAfter(b1), true);
+		assert.equal(b2.after(b1), true);
 	});
 
 	it('isOverOrAfter: [T2,T3] overafter [T0,T1] = true', () => {
-		assert.equal(b2.isOverOrAfter(b1), true);
+		assert.equal(b2.overafter(b1), true);
 	});
 });
 
@@ -460,8 +467,8 @@ describe('TBox - Position on T axis', () => {
 
 describe('TBox - Set operations', () => {
 	it('intersection of overlapping X boxes returns non-null', () => {
-		const b1 = TBox.fromString('TBOX X([1, 7])');
-		const b2 = TBox.fromString('TBOX X([4, 10])');
+		const b1 = TBox.in('TBOX X([1, 7])');
+		const b2 = TBox.in('TBOX X([4, 10])');
 		const r = b1.intersection(b2);
 		assert.ok(r !== null);
 		assert.ok(Math.abs(r!.xmin() - 4) < 1e-9);
@@ -472,8 +479,8 @@ describe('TBox - Set operations', () => {
 	});
 
 	it('intersection of disjoint X boxes returns null', () => {
-		const b1 = TBox.fromString('TBOX X([1, 4])');
-		const b2 = TBox.fromString('TBOX X([6, 10])');
+		const b1 = TBox.in('TBOX X([1, 4])');
+		const b2 = TBox.in('TBOX X([6, 10])');
 		const r = b1.intersection(b2);
 		assert.equal(r, null);
 		b1.free();
@@ -481,9 +488,9 @@ describe('TBox - Set operations', () => {
 	});
 
 	it('union of adjacent X boxes merges them', () => {
-		const b1 = TBox.fromString('TBOX X([1, 5])');
-		const b2 = TBox.fromString('TBOX X([5, 10])');
-		const u = b1.union(b2);
+		const b1 = TBox.in('TBOX X([1, 5])');
+		const b2 = TBox.in('TBOX X([5, 10])');
+		const u = b1.union(b2, false);
 		assert.ok(Math.abs(u.xmin() - 1) < 1e-9);
 		assert.ok(Math.abs(u.xmax() - 10) < 1e-9);
 		u.free();
@@ -492,9 +499,9 @@ describe('TBox - Set operations', () => {
 	});
 
 	it('union of overlapping XT boxes merges both dimensions', () => {
-		const b1 = TBox.fromString(`TBOX XT([1, 5],[${T0}, ${T1}])`);
-		const b2 = TBox.fromString(`TBOX XT([3, 8],[${T1}, ${T2}])`);
-		const u = b1.union(b2);
+		const b1 = TBox.in(`TBOX XT([1, 5],[${T0}, ${T1}])`);
+		const b2 = TBox.in(`TBOX XT([3, 8],[${T1}, ${T2}])`);
+		const u = b1.union(b2, false);
 		assert.ok(Math.abs(u.xmin() - 1) < 1e-9);
 		assert.ok(Math.abs(u.xmax() - 8) < 1e-9);
 		u.free();
@@ -509,26 +516,26 @@ describe('TBox - Set operations', () => {
 
 describe('TBox - Conversions', () => {
 	it('toIntSpan returns a non-zero pointer', () => {
-		const b = TBox.fromString('TBOX X([1, 10])');
-		assert.ok(b.toIntSpan() !== 0);
+		const b = TBox.in('TBOX X([1, 10])');
+		assert.ok(b.toIntspan().ptr);
 		b.free();
 	});
 
 	it('toFloatSpan returns a non-zero pointer', () => {
-		const b = TBox.fromString(WKT_X);
-		assert.ok(b.toFloatSpan() !== 0);
+		const b = TBox.in(WKT_X);
+		assert.ok(b.toFloatspan().ptr);
 		b.free();
 	});
 
 	it('toTsTzSpan returns a non-zero pointer', () => {
-		const b = TBox.fromString(WKT_T);
-		assert.ok(b.toTsTzSpan() !== 0);
+		const b = TBox.in(WKT_T);
+		assert.ok(b.toTstzspan().ptr);
 		b.free();
 	});
 
 	it('toTsTzSpan bounds match original T dimension', () => {
-		const b = TBox.fromString(WKT_T);
-		const span = new TsTzSpan(b.toTsTzSpan());
+		const b = TBox.in(WKT_T);
+		const span = new TsTzSpan(b.toTstzspan().ptr);
 		assert.equal(span.lower(), 0);
 		assert.ok(span.upper() > 0);
 		b.free();
@@ -545,9 +552,9 @@ describe('TBox - Comparisons', () => {
 	let b2: TBox;
 
 	before(() => {
-		b1 = TBox.fromString('TBOX X([1, 5])');
-		b1b = TBox.fromString('TBOX X([1, 5])');
-		b2 = TBox.fromString('TBOX X([6, 10])');
+		b1 = TBox.in('TBOX X([1, 5])');
+		b1b = TBox.in('TBOX X([1, 5])');
+		b2 = TBox.in('TBOX X([6, 10])');
 	});
 
 	it('eq: identical boxes = true', () => assert.equal(b1.eq(b1b), true));
@@ -568,26 +575,37 @@ describe('TBox - Comparisons', () => {
 describe('TBox - Math', () => {
 	it('expandInt grows integer X bounds symmetrically', () => {
 		const xs = IntSpan.make(4, 8);
-		const b = TBox.make(xs.ptr, 0);
+		const b = xs.toTbox();
 		const e = b.expandInt(2);
-		assert.equal(e.xmin(), 2);
-		assert.equal(e.xmax(), 9);
+		assert.equal(e!.xmin(), 2);
+		assert.equal(e!.xmax(), 9);
 		xs.free();
 		b.free();
-		e.free();
+		e!.free();
+	});
+
+	it('expandBigint grows bigint X bounds symmetrically', () => {
+		const xs = BigIntSpan.make(4, 8);
+		const b = xs.toTbox();
+		const e = b.expandBigint(2);
+		assert.equal(e!.xmin(), 2);
+		assert.equal(e!.xmax(), 9);
+		xs.free();
+		b.free();
+		e!.free();
 	});
 
 	it('expandFloat grows float X bounds symmetrically', () => {
-		const b = TBox.fromString('TBOX X([4.0, 8.0])');
+		const b = TBox.in('TBOX X([4.0, 8.0])');
 		const e = b.expandFloat(1.5);
-		assert.ok(Math.abs(e.xmin() - 2.5) < 1e-9);
-		assert.ok(Math.abs(e.xmax() - 9.5) < 1e-9);
+		assert.ok(Math.abs(e!.xmin() - 2.5) < 1e-9);
+		assert.ok(Math.abs(e!.xmax() - 9.5) < 1e-9);
 		b.free();
-		e.free();
+		e!.free();
 	});
 
 	it('round clamps float bounds to given decimal digits', () => {
-		const b = TBox.fromString('TBOX X([1.234567, 9.876543])');
+		const b = TBox.in('TBOX X([1.234567, 9.876543])');
 		const r = b.round(2);
 		assert.ok(Math.abs(r.xmin() - 1.23) < 1e-9);
 		assert.ok(Math.abs(r.xmax() - 9.88) < 1e-9);
@@ -597,7 +615,7 @@ describe('TBox - Math', () => {
 
 	it('shiftScaleInt shifts integer X bounds forward', () => {
 		const xs = IntSpan.make(1, 5);
-		const b = TBox.make(xs.ptr, 0);
+		const b = xs.toTbox();
 		const s = b.shiftScaleInt(3, 0, true, false);
 		assert.equal(s.xmin(), 4);
 		assert.equal(s.xmax(), 7);
@@ -606,8 +624,19 @@ describe('TBox - Math', () => {
 		s.free();
 	});
 
+	it('shiftScaleBigint shifts bigint X bounds forward', () => {
+		const xs = BigIntSpan.make(1, 5);
+		const b = xs.toTbox();
+		const s = b.shiftScaleBigint(3, 0, true, false);
+		assert.equal(s.xmin(), 4);
+		assert.equal(s.xmax(), 7);
+		xs.free();
+		b.free();
+		s.free();
+	});
+
 	it('shiftScaleFloat shifts float X bounds forward', () => {
-		const b = TBox.fromString('TBOX X([1.0, 5.0])');
+		const b = TBox.in('TBOX X([1.0, 5.0])');
 		const s = b.shiftScaleFloat(2.0, 0, true, false);
 		assert.ok(Math.abs(s.xmin() - 3.0) < 1e-9);
 		assert.ok(Math.abs(s.xmax() - 7.0) < 1e-9);
@@ -618,48 +647,43 @@ describe('TBox - Math', () => {
 
 describe('TBox - expandTime', () => {
 	it('expands the T dimension on each side', () => {
-		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
-		const interv = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const b = TBox.in(`TBOX T([${T0}, ${T1}])`);
+		const interv = { time: 0, day: 1, month: 0 }; // 1 day
 		const r = b.expandTime(interv);
-		assert.ok(r.tmin() < b.tmin());
-		assert.ok(r.tmax() > b.tmax());
+		assert.ok(r!.tmin() < b.tmin());
+		assert.ok(r!.tmax() > b.tmax());
 		b.free();
-		r.free();
-		meos_free(interv);
+		r!.free();
 	});
 });
 
 describe('TBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	it('shifts T dimension forward by 1 day', () => {
-		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
-		const shift = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
+		const b = TBox.in(`TBOX T([${T0}, ${T1}])`);
+		const shift = { time: 0, day: 1, month: 0 }; // 1 day
 		const r = b.shiftTime(shift);
 		assert.ok(r.tmin() > b.tmin());
 		b.free();
 		r.free();
-		meos_free(shift);
 	});
 
 	it('scales T dimension to 2 days', () => {
-		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
-		const dur = interval_make(0, 0, 0, 2, 0, 0, 0); // 2 days
+		const b = TBox.in(`TBOX T([${T0}, ${T1}])`);
+		const dur = { time: 0, day: 2, month: 0 }; // 2 days
 		const r = b.scaleTime(dur);
 		assert.ok(r.tmax() > b.tmax());
 		b.free();
 		r.free();
-		meos_free(dur);
 	});
 
 	it('shifts T by 1 day and scales it to 2 days', () => {
-		const b = TBox.fromString(`TBOX T([${T0}, ${T1}])`);
-		const shift = interval_make(0, 0, 0, 1, 0, 0, 0); // 1 day
-		const dur = interval_make(0, 0, 0, 2, 0, 0, 0);   // 2 days
+		const b = TBox.in(`TBOX T([${T0}, ${T1}])`);
+		const shift = { time: 0, day: 1, month: 0 }; // 1 day
+		const dur = { time: 0, day: 2, month: 0 };   // 2 days
 		const r = b.shiftScaleTime(shift, dur);
 		assert.ok(r.tmin() > b.tmin());
 		assert.ok(r.tmax() > b.tmax());
 		b.free();
 		r.free();
-		meos_free(shift);
-		meos_free(dur);
 	});
 });

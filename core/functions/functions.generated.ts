@@ -10012,6 +10012,18 @@ export function geoset_to_geo(s: Ptr): Ptr {
 	return _r;
 }
 
+export function geomset_to_geogset(s: Ptr): Ptr {
+	const _r = callPtr('geomset_to_geogset_w', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function geogset_to_geomset(s: Ptr): Ptr {
+	const _r = callPtr('geogset_to_geomset_w', [ptrArgType()], [ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
 export function geoset_end_value(s: Ptr): Ptr {
 	const _r = callPtr('geoset_end_value_w', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
@@ -10218,6 +10230,18 @@ export function stbox_to_gbox(box: Ptr): Ptr {
 
 export function stbox_to_geo(box: Ptr): Ptr {
 	const _r = callPtr('stbox_to_geo_w', [ptrArgType()], [ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function stbox_to_geom(box: Ptr): Ptr {
+	const _r = callPtr('stbox_to_geom_w', [ptrArgType()], [ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function stbox_to_geog(box: Ptr): Ptr {
+	const _r = callPtr('stbox_to_geog_w', [ptrArgType()], [ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }
@@ -12367,6 +12391,12 @@ export function cbuffer_to_geom(cb: Ptr): Ptr {
 	return _r;
 }
 
+export function cbuffer_to_geog(cb: Ptr): Ptr {
+	const _r = callPtr('cbuffer_to_geog_w', [ptrArgType()], [ptrArgVal(cb)]);
+	checkMeosError();
+	return _r;
+}
+
 export function cbuffer_to_stbox(cb: Ptr): Ptr {
 	const _r = callPtr('cbuffer_to_stbox_w', [ptrArgType()], [ptrArgVal(cb)]);
 	checkMeosError();
@@ -12793,6 +12823,12 @@ export function tcbuffer_to_tfloat(temp: Ptr): Ptr {
 
 export function tcbuffer_to_tgeompoint(temp: Ptr): Ptr {
 	const _r = callPtr('tcbuffer_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tcbuffer_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -15758,6 +15794,12 @@ export function npoint_to_geompoint(np: Ptr): Ptr {
 	return _r;
 }
 
+export function npoint_to_geog(np: Ptr): Ptr {
+	const _r = callPtr('npoint_to_geog_w', [ptrArgType()], [ptrArgVal(np)]);
+	checkMeosError();
+	return _r;
+}
+
 export function npoint_to_nsegment(np: Ptr): Ptr {
 	const _r = callPtr('npoint_to_nsegment_w', [ptrArgType()], [ptrArgVal(np)]);
 	checkMeosError();
@@ -15772,6 +15814,12 @@ export function npoint_to_stbox(np: Ptr): Ptr {
 
 export function nsegment_to_geom(ns: Ptr): Ptr {
 	const _r = callPtr('nsegment_to_geom_w', [ptrArgType()], [ptrArgVal(ns)]);
+	checkMeosError();
+	return _r;
+}
+
+export function nsegment_to_geog(ns: Ptr): Ptr {
+	const _r = callPtr('nsegment_to_geog_w', [ptrArgType()], [ptrArgVal(ns)]);
 	checkMeosError();
 	return _r;
 }
@@ -16134,6 +16182,12 @@ export function tgeompoint_to_tnpoint(temp: Ptr): Ptr {
 
 export function tnpoint_to_tgeompoint(temp: Ptr): Ptr {
 	const _r = callPtr('tnpoint_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tnpoint_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tnpoint_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -16860,6 +16914,12 @@ export function pcpatch_to_geom(pa: Ptr): Ptr {
 	return _r;
 }
 
+export function pcpatch_to_geog(pa: Ptr): Ptr {
+	const _r = callPtr('pcpatch_to_geog_w', [ptrArgType()], [ptrArgVal(pa)]);
+	checkMeosError();
+	return _r;
+}
+
 export function pcpatch_cmp(pa1: Ptr, pa2: Ptr): number {
 	const _r = call<number>('pcpatch_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pa1), ptrArgVal(pa2)]);
 	checkMeosError();
@@ -17506,8 +17566,20 @@ export function tpcpoint_to_tgeompoint(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tpcpoint_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcpatch_to_tgeometry(temp: Ptr): Ptr {
 	const _r = callPtr('tpcpatch_to_tgeometry_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_to_tgeography(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpatch_to_tgeography_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -18925,6 +18997,18 @@ export function tpose_to_tpoint(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tpose_to_tgeompoint(temp: Ptr): Ptr {
+	const _r = callPtr('tpose_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpose_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tpose_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpose_end_value(temp: Ptr): Ptr {
 	const _r = callPtr('tpose_end_value_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -19323,6 +19407,12 @@ export function posechain_to_point(pc: Ptr): Ptr {
 	return _r;
 }
 
+export function posechain_to_geog(pc: Ptr): Ptr {
+	const _r = callPtr('posechain_to_geog_w', [ptrArgType()], [ptrArgVal(pc)]);
+	checkMeosError();
+	return _r;
+}
+
 export function posechain_to_stbox(pc: Ptr): Ptr {
 	const _r = callPtr('posechain_to_stbox_w', [ptrArgType()], [ptrArgVal(pc)]);
 	checkMeosError();
@@ -19643,6 +19733,18 @@ export function tposechainseqset_from_base_tstzspanset(pc: Ptr, ss: Ptr, interp:
 
 export function tposechain_to_tpose(temp: Ptr): Ptr {
 	const _r = callPtr('tposechain_to_tpose_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_to_tgeompoint(temp: Ptr): Ptr {
+	const _r = callPtr('tposechain_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tposechain_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tposechain_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -20396,6 +20498,12 @@ export function tbigint_to_tquadbin(temp: Ptr): Ptr {
 
 export function tquadbin_to_tbigint(temp: Ptr): Ptr {
 	const _r = callPtr('tquadbin_to_tbigint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tquadbin_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('tquadbin_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -21340,8 +21448,20 @@ export function trgeometry_to_tgeompoint(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function trgeometry_to_tgeogpoint(temp: Ptr): Ptr {
+	const _r = callPtr('trgeometry_to_tgeogpoint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function trgeometry_to_tgeometry(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_to_tgeometry_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_to_tgeography(temp: Ptr): Ptr {
+	const _r = callPtr('trgeometry_to_tgeography_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -22595,6 +22715,12 @@ export function tbigint_to_ts2cell(temp: Ptr): Ptr {
 
 export function ts2cell_to_tbigint(temp: Ptr): Ptr {
 	const _r = callPtr('ts2cell_to_tbigint_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ts2cell_to_tgeompoint(temp: Ptr): Ptr {
+	const _r = callPtr('ts2cell_to_tgeompoint_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }

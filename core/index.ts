@@ -4,9 +4,9 @@
 
 export { initMeos, getModule } from './runtime/meos.js';
 export * from './functions/errors.js';
-// The collections are the generated object layer's (codegen/ObjectGenerator.ts).
+// The collections and the boxes are the generated object layer's (codegen/ObjectGenerator.ts).
 export {
-	Set, Span, SpanSet,
+	Set, Span, SpanSet, TBox, STBox,
 	IntSet, IntSpan, IntSpanSet, FloatSet, FloatSpan, FloatSpanSet,
 	BigIntSet, BigIntSpan, BigIntSpanSet, TextSet,
 	DateSet, DateSpan, DateSpanSet, TsTzSet, TsTzSpan, TsTzSpanSet,
@@ -30,8 +30,6 @@ export { TTextSeqSet } from './types/basic/ttext/TTextSeqSet.js';
 export { TInterpolation, TemporalType } from './types/temporal/Temporal.js';
 export { createTBool, createTInt, createTFloat, createTText, createTGeomPoint, createTGeogPoint } from './types/temporal/TemporalFactory.js';
 export type { TBoolSubtype, TIntSubtype, TFloatSubtype, TTextSubtype, TGeomPointSubtype, TGeogPointSubtype } from './types/temporal/TemporalFactory.js';
-export { TBox } from './types/boxes/TBox.js';
-export { STBox } from './types/boxes/STBox.js';
 export { TGeomPoint } from './types/basic/tgeompoint/TGeomPoint.js';
 export { TGeomPointInst } from './types/basic/tgeompoint/TGeomPointInst.js';
 export { TGeomPointSeq } from './types/basic/tgeompoint/TGeomPointSeq.js';
