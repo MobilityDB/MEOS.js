@@ -52,7 +52,8 @@ MEOS.js/
 │   │   ├── meos-idl.json            ← MEOS API description (derived, not committed)
 │   │   ├── bindings_c_header.c.template
 │   │   └── functions_ts_header.ts.template
-│   └── FunctionsGenerator.ts        ← Eemits the C glue + TS bindings
+│   ├── FunctionsGenerator.ts        ← Emits the C glue + TS bindings
+│   └── ObjectGenerator.ts           ← Emits the object layer from the catalog's objectModel
 ├── core/
 │   ├── c-src/
 │   │   └── bindings.c               ← Generated C glue
@@ -60,6 +61,8 @@ MEOS.js/
 │   │   ├── functions.generated.ts   ← Generated TS bindings
 │   │   ├── errors.ts                ← MEOS error code handling
 │   │   └── ptr_array.ts             ← Pointer-array marshalling helpers
+│   ├── objects/
+│   │   └── objects.generated.ts     ← Generated object layer (`meos.js/objects`)
 │   ├── runtime/
 │   │   └── meos.ts                  ← WASM module loader
 │   ├── types/                       ← High-level typed wrappers
@@ -68,6 +71,7 @@ MEOS.js/
 │   │   ├── collections/             ← Span, SpanSet, MeoSet...
 │   │   └── temporal/                ← Temporal base class + factory
 │   └── index.ts                     ← Public exports
+├── GAP-LEDGER.md                    ← Generated: what the object layer defers, and why
 ├── wasm/                            ← Build output (meos.js, meos.wasm)
 ├── test/                            ← Unit tests (node:test + tsx)
 ├── docs/                            ← TypeDoc + VitePress sources & HTML
@@ -76,7 +80,7 @@ MEOS.js/
 ```
 
 The two-layer architecture consists of:
-- **`codegen/`**: reads `codegen/res/meos-idl.json` and generates `core/c-src/bindings.c` and `core/functions/functions.generated.ts`.
+- **`codegen/`**: reads `codegen/res/meos-idl.json` and generates `core/c-src/bindings.c` and `core/functions/functions.generated.ts`, then `core/objects/objects.generated.ts` from the catalog's `objectModel`.
 - **`core/`**: implements the high-level typed wrappers on top of the generated bindings, plus the runtime that loads the WASM module.
 
 ## Installation
@@ -142,15 +146,30 @@ The `codegen/` directory contains the generator that produces `core/c-src/bindin
 
 **When to regenerate**: whenever the MEOS surface moves, or whenever `FunctionsGenerator.ts` / the templates change.
 
+### The object layer
+
+`codegen/ObjectGenerator.ts` projects the catalog's `objectModel`, the class hierarchy MEOS-API states for every binding, onto TypeScript, as the object generators of MEOS.NET and GoMEOS project it onto C# and Go. It writes one class per model class, with `extends` following the model's parent edges (`TFloatSeq` → `TFloat` → `TNumber` → `Temporal`). Each method is the model's canonical `ooName` and delegates to the flat wrapper `FunctionsGenerator.ts` emits for its function. A `wrap<Root>` factory reads a value's runtime type from its header, at the offset the catalog's struct layout gives, and returns the concrete class. The layer is published as `meos.js/objects`:
+
+```ts
+import { initMeos } from 'meos.js';
+import { TFloat } from 'meos.js/objects';
+
+await initMeos();
+using seq = TFloat.in('[1@2000-01-01, 3@2000-01-02]');   // a TFloatSeq
+console.log(seq.values(), seq.toString());
+```
+
+A method the model assigns but no marshalling rule can carry is left out and listed in `GAP-LEDGER.md` with the contract it lacks. The generator never fills such a gap by hand.
+
 ### Running the generator
 
 ```bash
 npm run generate
 ```
 
-This reads `codegen/res/meos-idl.json`, applies the templates in `codegen/res/`, and overwrites both generated files.
+This reads `codegen/res/meos-idl.json`, applies the templates in `codegen/res/`, and overwrites the generated files.
 
-> **Do not edit `bindings.c` or `functions.generated.ts` manually**: any change will be lost the next time the generator runs. Manual overrides live in the templates (`codegen/res/*_header.*.template`).
+> **Do not edit `bindings.c`, `functions.generated.ts`, `objects.generated.ts` or `GAP-LEDGER.md` manually**: any change will be lost the next time the generator runs. Manual overrides live in the templates (`codegen/res/*_header.*.template`).
 
 ### Deriving the catalog
 
