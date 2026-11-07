@@ -333,8 +333,8 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: intersection_set_set */
-	intersection(s2: Set): Set | null {
-		return wrapSetOrNull(F.intersection_set_set(this.ptr, s2.ptr)) as Set | null;
+	intersection(s2: Set): this | null {
+		return wrapSetOrNull(F.intersection_set_set(this.ptr, s2.ptr)) as this | null;
 	}
 
 	/** MEOS: set_le */
@@ -358,8 +358,8 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: minus_set_set */
-	minus(s2: Set): Set | null {
-		return wrapSetOrNull(F.minus_set_set(this.ptr, s2.ptr)) as Set | null;
+	minus(s2: Set): this | null {
+		return wrapSetOrNull(F.minus_set_set(this.ptr, s2.ptr)) as this | null;
 	}
 
 	/** MEOS: set_ne */
@@ -393,8 +393,8 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: set_round */
-	round(maxdd: number = 0): Set {
-		return wrapSet(F.set_round(this.ptr, maxdd)) as Set;
+	round(maxdd: number = 0): this {
+		return wrapSet(F.set_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: set_sortkey */
@@ -478,8 +478,8 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: union_set_set */
-	union(s2: Set): Set | null {
-		return wrapSetOrNull(F.union_set_set(this.ptr, s2.ptr)) as Set | null;
+	union(s2: Set): this | null {
+		return wrapSetOrNull(F.union_set_set(this.ptr, s2.ptr)) as this | null;
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -524,8 +524,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: intersection_set_bigint */
-	private _intersection_set_bigint(i: number): Set | null {
-		return wrapSetOrNull(F.intersection_set_bigint(this.ptr, i)) as Set | null;
+	private _intersection_set_bigint(i: number): this | null {
+		return wrapSetOrNull(F.intersection_set_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_set_bigint */
@@ -534,8 +534,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: minus_set_bigint */
-	private _minus_set_bigint(i: number): Set | null {
-		return wrapSetOrNull(F.minus_set_bigint(this.ptr, i)) as Set | null;
+	private _minus_set_bigint(i: number): this | null {
+		return wrapSetOrNull(F.minus_set_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_set_bigint */
@@ -554,8 +554,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: union_set_bigint */
-	private _union_set_bigint(i: number): Set | null {
-		return wrapSetOrNull(F.union_set_bigint(this.ptr, i)) as Set | null;
+	private _union_set_bigint(i: number): this | null {
+		return wrapSetOrNull(F.union_set_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: bigintset_out */
@@ -592,7 +592,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: intersection_set_bigint, chosen by the arguments' types */
-	override intersection(i: number | Set): Set | null {
+	override intersection(i: number | Set): this | null {
 		if (typeof i === 'number') return this._intersection_set_bigint(i as number);
 		return super.intersection(i as Set);
 	}
@@ -604,7 +604,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: minus_set_bigint, chosen by the arguments' types */
-	override minus(i: number | Set): Set | null {
+	override minus(i: number | Set): this | null {
 		if (typeof i === 'number') return this._minus_set_bigint(i as number);
 		return super.minus(i as Set);
 	}
@@ -643,8 +643,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: intersection_bigint_set */
-	rintersection(i: number): Set | null {
-		return wrapSetOrNull(F.intersection_bigint_set(i, this.ptr)) as Set | null;
+	rintersection(i: number): this | null {
+		return wrapSetOrNull(F.intersection_bigint_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_set */
@@ -653,8 +653,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: minus_bigint_set */
-	rminus(i: number): Set | null {
-		return wrapSetOrNull(F.minus_bigint_set(i, this.ptr)) as Set | null;
+	rminus(i: number): this | null {
+		return wrapSetOrNull(F.minus_bigint_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_bigint_set */
@@ -673,8 +673,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: union_bigint_set */
-	runion(i: number): Set | null {
-		return wrapSetOrNull(F.union_bigint_set(i, this.ptr)) as Set | null;
+	runion(i: number): this | null {
+		return wrapSetOrNull(F.union_bigint_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: same_rid_bigintset_tnpoint */
@@ -683,8 +683,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: bigintset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Set {
-		return wrapSet(F.bigintset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Set;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSet(F.bigintset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: bigintset_start_value */
@@ -693,7 +693,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: union_set_bigint, chosen by the arguments' types */
-	override union(i: number | Set): Set | null {
+	override union(i: number | Set): this | null {
 		if (typeof i === 'number') return this._union_set_bigint(i as number);
 		return super.union(i as Set);
 	}
@@ -786,8 +786,8 @@ export class Span extends Collection {
 	}
 
 	/** MEOS: intersection_span_span */
-	private _intersection_span_span(s2: Span): Span | null {
-		return wrapSpanOrNull(F.intersection_span_span(this.ptr, s2.ptr)) as Span | null;
+	private _intersection_span_span(s2: Span): this | null {
+		return wrapSpanOrNull(F.intersection_span_span(this.ptr, s2.ptr)) as this | null;
 	}
 
 	/** MEOS: intersection_span_spanset */
@@ -932,7 +932,7 @@ export class Span extends Collection {
 	}
 
 	/** MEOS: intersection_span_span, intersection_span_spanset, chosen by the arguments' types */
-	intersection(s2: Span | SpanSet): Span | null | SpanSet {
+	intersection(s2: Span | SpanSet): this | null | SpanSet {
 		if (s2 instanceof Span) return this._intersection_span_span(s2 as Span);
 		if (s2 instanceof SpanSet) return this._intersection_span_spanset(s2 as SpanSet);
 		throw new TypeError(`Span.intersection: no overload takes these arguments`);
@@ -1079,8 +1079,8 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_bigint */
-	private _intersection_span_bigint(i: number): Span | null {
-		return wrapSpanOrNull(F.intersection_span_bigint(this.ptr, i)) as Span | null;
+	private _intersection_span_bigint(i: number): this | null {
+		return wrapSpanOrNull(F.intersection_span_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_span_bigint */
@@ -1158,12 +1158,12 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_expand */
-	expand(value: number): Span | null {
-		return wrapSpanOrNull(F.bigintspan_expand(this.ptr, value)) as Span | null;
+	expand(value: number): this | null {
+		return wrapSpanOrNull(F.bigintspan_expand(this.ptr, value)) as this | null;
 	}
 
 	/** MEOS: intersection_span_bigint, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): Span | null | SpanSet {
+	override intersection(i: number | Span | SpanSet): this | null | SpanSet {
 		if (typeof i === 'number') return this._intersection_span_bigint(i as number);
 		return super.intersection(i as Span | SpanSet);
 	}
@@ -1224,8 +1224,8 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: intersection_bigint_span */
-	rintersection(i: number): Span | null {
-		return wrapSpanOrNull(F.intersection_bigint_span(i, this.ptr)) as Span | null;
+	rintersection(i: number): this | null {
+		return wrapSpanOrNull(F.intersection_bigint_span(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_span */
@@ -1259,8 +1259,8 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Span {
-		return wrapSpan(F.bigintspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Span;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpan(F.bigintspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: bigintspan_to_floatspan */
@@ -1351,13 +1351,13 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: intersection_spanset_span */
-	private _intersection_spanset_span(s: Span): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	private _intersection_spanset_span(s: Span): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_span(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: intersection_spanset_spanset */
-	private _intersection_spanset_spanset(ss2: SpanSet): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	private _intersection_spanset_spanset(ss2: SpanSet): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_spanset(this.ptr, ss2.ptr)) as this | null;
 	}
 
 	/** MEOS: left_spanset_span */
@@ -1371,13 +1371,13 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: minus_spanset_span */
-	private _minus_spanset_span(s: Span): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	private _minus_spanset_span(s: Span): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_span(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_spanset_spanset */
-	private _minus_spanset_spanset(ss2: SpanSet): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	private _minus_spanset_spanset(ss2: SpanSet): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_spanset(this.ptr, ss2.ptr)) as this | null;
 	}
 
 	/** MEOS: overlaps_spanset_span */
@@ -1421,13 +1421,13 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: union_spanset_span */
-	private _union_spanset_span(s: Span): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	private _union_spanset_span(s: Span): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_span(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: union_spanset_spanset */
-	private _union_spanset_spanset(ss2: SpanSet): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	private _union_spanset_spanset(ss2: SpanSet): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_spanset(this.ptr, ss2.ptr)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_span, adjacent_spanset_spanset, chosen by the arguments' types */
@@ -1502,7 +1502,7 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: intersection_spanset_span, intersection_spanset_spanset, chosen by the arguments' types */
-	intersection(s: Span | SpanSet): SpanSet | null {
+	intersection(s: Span | SpanSet): this | null {
 		if (s instanceof Span) return this._intersection_spanset_span(s as Span);
 		if (s instanceof SpanSet) return this._intersection_spanset_spanset(s as SpanSet);
 		throw new TypeError(`SpanSet.intersection: no overload takes these arguments`);
@@ -1536,7 +1536,7 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: minus_spanset_span, minus_spanset_spanset, chosen by the arguments' types */
-	minus(s: Span | SpanSet): SpanSet | null {
+	minus(s: Span | SpanSet): this | null {
 		if (s instanceof Span) return this._minus_spanset_span(s as Span);
 		if (s instanceof SpanSet) return this._minus_spanset_spanset(s as SpanSet);
 		throw new TypeError(`SpanSet.minus: no overload takes these arguments`);
@@ -1686,7 +1686,7 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: union_spanset_span, union_spanset_spanset, chosen by the arguments' types */
-	union(s: Span | SpanSet): SpanSet | null {
+	union(s: Span | SpanSet): this | null {
 		if (s instanceof Span) return this._union_spanset_span(s as Span);
 		if (s instanceof SpanSet) return this._union_spanset_spanset(s as SpanSet);
 		throw new TypeError(`SpanSet.union: no overload takes these arguments`);
@@ -1759,8 +1759,8 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_bigint */
-	private _intersection_spanset_bigint(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	private _intersection_spanset_bigint(i: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_spanset_bigint */
@@ -1769,8 +1769,8 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_bigint */
-	private _minus_spanset_bigint(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	private _minus_spanset_bigint(i: number): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_spanset_bigint */
@@ -1789,8 +1789,8 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_bigint */
-	private _union_spanset_bigint(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	private _union_spanset_bigint(i: number): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_bigint, chosen by the arguments' types */
@@ -1839,7 +1839,7 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_bigint, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): SpanSet | null {
+	override intersection(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._intersection_spanset_bigint(i as number);
 		return super.intersection(i as Span | SpanSet);
 	}
@@ -1856,7 +1856,7 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_bigint, chosen by the arguments' types */
-	override minus(i: number | Span | SpanSet): SpanSet | null {
+	override minus(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._minus_spanset_bigint(i as number);
 		return super.minus(i as Span | SpanSet);
 	}
@@ -1895,8 +1895,8 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_bigint_spanset */
-	rintersection(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	rintersection(i: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_spanset */
@@ -1905,8 +1905,8 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_bigint_spanset */
-	rminus(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	rminus(i: number): this | null {
+		return wrapSpanSetOrNull(F.minus_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_bigint_spanset */
@@ -1925,17 +1925,17 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_bigint_spanset */
-	runion(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	runion(i: number): this | null {
+		return wrapSpanSetOrNull(F.union_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: bigintspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): SpanSet {
-		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as SpanSet;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: union_spanset_bigint, chosen by the arguments' types */
-	override union(i: number | Span | SpanSet): SpanSet | null {
+	override union(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._union_spanset_bigint(i as number);
 		return super.union(i as Span | SpanSet);
 	}
@@ -2237,13 +2237,13 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_round */
-	round(maxdd: number = 0): Cbuffer {
-		return wrapCbuffer(F.cbuffer_round(this.ptr, maxdd)) as Cbuffer;
+	round(maxdd: number = 0): this {
+		return wrapCbuffer(F.cbuffer_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: cbuffer_set_srid */
-	setSRID(srid: number): Cbuffer {
-		return wrapCbuffer(F.cbuffer_set_srid(this.ptr, srid)) as Cbuffer;
+	setSRID(srid: number): this {
+		return wrapCbuffer(F.cbuffer_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: cbuffer_srid */
@@ -2312,13 +2312,13 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_transform */
-	transform(srid: number): Cbuffer {
-		return wrapCbuffer(F.cbuffer_transform(this.ptr, srid)) as Cbuffer;
+	transform(srid: number): this {
+		return wrapCbuffer(F.cbuffer_transform(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: cbuffer_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Cbuffer {
-		return wrapCbuffer(F.cbuffer_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Cbuffer;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
+		return wrapCbuffer(F.cbuffer_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 
 	/** MEOS: cbuffer_tstzspan_to_stbox */
@@ -2413,8 +2413,8 @@ export class SpatialSet extends Set {
 	}
 
 	/** MEOS: spatialset_set_srid */
-	setSRID(srid: number): Set {
-		return wrapSet(F.spatialset_set_srid(this.ptr, srid)) as Set;
+	setSRID(srid: number): this {
+		return wrapSet(F.spatialset_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: spatialset_srid */
@@ -2428,13 +2428,13 @@ export class SpatialSet extends Set {
 	}
 
 	/** MEOS: spatialset_transform */
-	transform(srid: number): Set | null {
-		return wrapSetOrNull(F.spatialset_transform(this.ptr, srid)) as Set | null;
+	transform(srid: number): this | null {
+		return wrapSetOrNull(F.spatialset_transform(this.ptr, srid)) as this | null;
 	}
 
 	/** MEOS: spatialset_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Set | null {
-		return wrapSetOrNull(F.spatialset_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Set | null;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this | null {
+		return wrapSetOrNull(F.spatialset_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this | null;
 	}
 }
 
@@ -2454,18 +2454,18 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_cbuffer */
-	private _intersection_set_cbuffer(cb: Cbuffer): Set | null {
-		return wrapSetOrNull(F.intersection_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	private _intersection_set_cbuffer(cb: Cbuffer): this | null {
+		return wrapSetOrNull(F.intersection_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_cbuffer */
-	private _minus_set_cbuffer(cb: Cbuffer): Set | null {
-		return wrapSetOrNull(F.minus_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	private _minus_set_cbuffer(cb: Cbuffer): this | null {
+		return wrapSetOrNull(F.minus_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_cbuffer */
-	private _union_set_cbuffer(cb: Cbuffer): Set | null {
-		return wrapSetOrNull(F.union_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	private _union_set_cbuffer(cb: Cbuffer): this | null {
+		return wrapSetOrNull(F.union_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_cbuffer, chosen by the arguments' types */
@@ -2485,13 +2485,13 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_cbuffer, chosen by the arguments' types */
-	override intersection(cb: Cbuffer | Set): Set | null {
+	override intersection(cb: Cbuffer | Set): this | null {
 		if (cb instanceof Cbuffer) return this._intersection_set_cbuffer(cb as Cbuffer);
 		return super.intersection(cb as Set);
 	}
 
 	/** MEOS: minus_set_cbuffer, chosen by the arguments' types */
-	override minus(cb: Cbuffer | Set): Set | null {
+	override minus(cb: Cbuffer | Set): this | null {
 		if (cb instanceof Cbuffer) return this._minus_set_cbuffer(cb as Cbuffer);
 		return super.minus(cb as Set);
 	}
@@ -2507,7 +2507,7 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_cbuffer, chosen by the arguments' types */
-	override union(cb: Cbuffer | Set): Set | null {
+	override union(cb: Cbuffer | Set): this | null {
 		if (cb instanceof Cbuffer) return this._union_set_cbuffer(cb as Cbuffer);
 		return super.union(cb as Set);
 	}
@@ -2589,18 +2589,18 @@ export class DateSet extends Set {
 	}
 
 	/** MEOS: intersection_set_date */
-	private _intersection_set_date(d: DateADT): Set | null {
-		return wrapSetOrNull(F.intersection_set_date(this.ptr, d)) as Set | null;
+	private _intersection_set_date(d: DateADT): this | null {
+		return wrapSetOrNull(F.intersection_set_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: minus_set_date */
-	private _minus_set_date(d: DateADT): Set | null {
-		return wrapSetOrNull(F.minus_set_date(this.ptr, d)) as Set | null;
+	private _minus_set_date(d: DateADT): this | null {
+		return wrapSetOrNull(F.minus_set_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: union_set_date */
-	private _union_set_date(d: DateADT): Set | null {
-		return wrapSetOrNull(F.union_set_date(this.ptr, d)) as Set | null;
+	private _union_set_date(d: DateADT): this | null {
+		return wrapSetOrNull(F.union_set_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: after_set_date */
@@ -2637,13 +2637,13 @@ export class DateSet extends Set {
 	}
 
 	/** MEOS: intersection_set_date, chosen by the arguments' types */
-	override intersection(d: DateADT | Set): Set | null {
+	override intersection(d: DateADT | Set): this | null {
 		if (typeof d === 'number') return this._intersection_set_date(d as DateADT);
 		return super.intersection(d as Set);
 	}
 
 	/** MEOS: minus_set_date, chosen by the arguments' types */
-	override minus(d: DateADT | Set): Set | null {
+	override minus(d: DateADT | Set): this | null {
 		if (typeof d === 'number') return this._minus_set_date(d as DateADT);
 		return super.minus(d as Set);
 	}
@@ -2679,13 +2679,13 @@ export class DateSet extends Set {
 	}
 
 	/** MEOS: intersection_date_set */
-	rintersection(d: DateADT): Set | null {
-		return wrapSetOrNull(F.intersection_date_set(d, this.ptr)) as Set | null;
+	rintersection(d: DateADT): this | null {
+		return wrapSetOrNull(F.intersection_date_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_date_set */
-	rminus(d: DateADT): Set | null {
-		return wrapSetOrNull(F.minus_date_set(d, this.ptr)) as Set | null;
+	rminus(d: DateADT): this | null {
+		return wrapSetOrNull(F.minus_date_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overafter_date_set */
@@ -2699,13 +2699,13 @@ export class DateSet extends Set {
 	}
 
 	/** MEOS: union_date_set */
-	runion(d: DateADT): Set | null {
-		return wrapSetOrNull(F.union_date_set(d, this.ptr)) as Set | null;
+	runion(d: DateADT): this | null {
+		return wrapSetOrNull(F.union_date_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: dateset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Set {
-		return wrapSet(F.dateset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Set;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSet(F.dateset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: dateset_start_value */
@@ -2719,7 +2719,7 @@ export class DateSet extends Set {
 	}
 
 	/** MEOS: union_set_date, chosen by the arguments' types */
-	override union(d: DateADT | Set): Set | null {
+	override union(d: DateADT | Set): this | null {
 		if (typeof d === 'number') return this._union_set_date(d as DateADT);
 		return super.union(d as Set);
 	}
@@ -2807,8 +2807,8 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_date */
-	private _intersection_span_date(d: DateADT): Span | null {
-		return wrapSpanOrNull(F.intersection_span_date(this.ptr, d)) as Span | null;
+	private _intersection_span_date(d: DateADT): this | null {
+		return wrapSpanOrNull(F.intersection_span_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: minus_span_date */
@@ -2883,7 +2883,7 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_date, chosen by the arguments' types */
-	override intersection(d: DateADT | Span | SpanSet): Span | null | SpanSet {
+	override intersection(d: DateADT | Span | SpanSet): this | null | SpanSet {
 		if (typeof d === 'number') return this._intersection_span_date(d as DateADT);
 		return super.intersection(d as Span | SpanSet);
 	}
@@ -2935,8 +2935,8 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: intersection_date_span */
-	rintersection(d: DateADT): Span | null {
-		return wrapSpanOrNull(F.intersection_date_span(d, this.ptr)) as Span | null;
+	rintersection(d: DateADT): this | null {
+		return wrapSpanOrNull(F.intersection_date_span(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_date_span */
@@ -2960,8 +2960,8 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: datespan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Span {
-		return wrapSpan(F.datespan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Span;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpan(F.datespan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: datespan_to_tstzspan */
@@ -3047,18 +3047,18 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_date */
-	private _intersection_spanset_date(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_date(this.ptr, d)) as SpanSet | null;
+	private _intersection_spanset_date(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: minus_spanset_date */
-	private _minus_spanset_date(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_date(this.ptr, d)) as SpanSet | null;
+	private _minus_spanset_date(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: union_spanset_date */
-	private _union_spanset_date(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_date(this.ptr, d)) as SpanSet | null;
+	private _union_spanset_date(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_date(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_date, chosen by the arguments' types */
@@ -3139,7 +3139,7 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_date, chosen by the arguments' types */
-	override intersection(d: DateADT | Span | SpanSet): SpanSet | null {
+	override intersection(d: DateADT | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._intersection_spanset_date(d as DateADT);
 		return super.intersection(d as Span | SpanSet);
 	}
@@ -3150,7 +3150,7 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_date, chosen by the arguments' types */
-	override minus(d: DateADT | Span | SpanSet): SpanSet | null {
+	override minus(d: DateADT | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._minus_spanset_date(d as DateADT);
 		return super.minus(d as Span | SpanSet);
 	}
@@ -3196,13 +3196,13 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_date_spanset */
-	rintersection(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_date_spanset(d, this.ptr)) as SpanSet | null;
+	rintersection(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.intersection_date_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_date_spanset */
-	rminus(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_date_spanset(d, this.ptr)) as SpanSet | null;
+	rminus(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.minus_date_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overafter_date_spanset */
@@ -3216,13 +3216,13 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_date_spanset */
-	runion(d: DateADT): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_date_spanset(d, this.ptr)) as SpanSet | null;
+	runion(d: DateADT): this | null {
+		return wrapSpanSetOrNull(F.union_date_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: datespanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): SpanSet {
-		return wrapSpanSet(F.datespanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as SpanSet;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpanSet(F.datespanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: datespanset_start_date */
@@ -3236,7 +3236,7 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_date, chosen by the arguments' types */
-	override union(d: DateADT | Span | SpanSet): SpanSet | null {
+	override union(d: DateADT | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._union_spanset_date(d as DateADT);
 		return super.union(d as Span | SpanSet);
 	}
@@ -3288,8 +3288,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: intersection_set_float */
-	private _intersection_set_float(d: number): Set | null {
-		return wrapSetOrNull(F.intersection_set_float(this.ptr, d)) as Set | null;
+	private _intersection_set_float(d: number): this | null {
+		return wrapSetOrNull(F.intersection_set_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: left_set_float */
@@ -3298,8 +3298,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: minus_set_float */
-	private _minus_set_float(d: number): Set | null {
-		return wrapSetOrNull(F.minus_set_float(this.ptr, d)) as Set | null;
+	private _minus_set_float(d: number): this | null {
+		return wrapSetOrNull(F.minus_set_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: overleft_set_float */
@@ -3318,8 +3318,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: union_set_float */
-	private _union_set_float(d: number): Set | null {
-		return wrapSetOrNull(F.union_set_float(this.ptr, d)) as Set | null;
+	private _union_set_float(d: number): this | null {
+		return wrapSetOrNull(F.union_set_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: floatset_out */
@@ -3328,8 +3328,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_ceil */
-	ceil(): Set {
-		return wrapSet(F.floatset_ceil(this.ptr)) as Set;
+	ceil(): this {
+		return wrapSet(F.floatset_ceil(this.ptr)) as this;
 	}
 
 	/** MEOS: contains_set_float, chosen by the arguments' types */
@@ -3339,8 +3339,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_degrees */
-	degrees(normalize: boolean = false): Set {
-		return wrapSet(F.floatset_degrees(this.ptr, normalize)) as Set;
+	degrees(normalize: boolean = false): this {
+		return wrapSet(F.floatset_degrees(this.ptr, normalize)) as this;
 	}
 
 	/** MEOS: distance_floatset_floatset, distance_set_float, chosen by the arguments' types */
@@ -3356,12 +3356,12 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_floor */
-	floor(): Set {
-		return wrapSet(F.floatset_floor(this.ptr)) as Set;
+	floor(): this {
+		return wrapSet(F.floatset_floor(this.ptr)) as this;
 	}
 
 	/** MEOS: intersection_set_float, chosen by the arguments' types */
-	override intersection(d: number | Set): Set | null {
+	override intersection(d: number | Set): this | null {
 		if (typeof d === 'number') return this._intersection_set_float(d as number);
 		return super.intersection(d as Set);
 	}
@@ -3373,7 +3373,7 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: minus_set_float, chosen by the arguments' types */
-	override minus(d: number | Set): Set | null {
+	override minus(d: number | Set): this | null {
 		if (typeof d === 'number') return this._minus_set_float(d as number);
 		return super.minus(d as Set);
 	}
@@ -3396,8 +3396,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_radians */
-	radians(): Set {
-		return wrapSet(F.floatset_radians(this.ptr)) as Set;
+	radians(): this {
+		return wrapSet(F.floatset_radians(this.ptr)) as this;
 	}
 
 	/** MEOS: contained_float_set */
@@ -3412,8 +3412,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: intersection_float_set */
-	rintersection(d: number): Set | null {
-		return wrapSetOrNull(F.intersection_float_set(d, this.ptr)) as Set | null;
+	rintersection(d: number): this | null {
+		return wrapSetOrNull(F.intersection_float_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_float_set */
@@ -3422,8 +3422,8 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: minus_float_set */
-	rminus(d: number): Set | null {
-		return wrapSetOrNull(F.minus_float_set(d, this.ptr)) as Set | null;
+	rminus(d: number): this | null {
+		return wrapSetOrNull(F.minus_float_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_float_set */
@@ -3442,13 +3442,13 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: union_float_set */
-	runion(d: number): Set | null {
-		return wrapSetOrNull(F.union_float_set(d, this.ptr)) as Set | null;
+	runion(d: number): this | null {
+		return wrapSetOrNull(F.union_float_set(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: floatset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Set {
-		return wrapSet(F.floatset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Set;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSet(F.floatset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: floatset_start_value */
@@ -3462,7 +3462,7 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: union_set_float, chosen by the arguments' types */
-	override union(d: number | Set): Set | null {
+	override union(d: number | Set): this | null {
 		if (typeof d === 'number') return this._union_set_float(d as number);
 		return super.union(d as Set);
 	}
@@ -3550,8 +3550,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_float */
-	private _intersection_span_float(d: number): Span | null {
-		return wrapSpanOrNull(F.intersection_span_float(this.ptr, d)) as Span | null;
+	private _intersection_span_float(d: number): this | null {
+		return wrapSpanOrNull(F.intersection_span_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: left_span_float */
@@ -3616,8 +3616,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_ceil */
-	ceil(): Span {
-		return wrapSpan(F.floatspan_ceil(this.ptr)) as Span;
+	ceil(): this {
+		return wrapSpan(F.floatspan_ceil(this.ptr)) as this;
 	}
 
 	/** MEOS: contains_span_float, chosen by the arguments' types */
@@ -3627,8 +3627,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_degrees */
-	degrees(normalize: boolean = false): Span {
-		return wrapSpan(F.floatspan_degrees(this.ptr, normalize)) as Span;
+	degrees(normalize: boolean = false): this {
+		return wrapSpan(F.floatspan_degrees(this.ptr, normalize)) as this;
 	}
 
 	/** MEOS: distance_floatspan_floatspan, distance_span_float, chosen by the arguments' types */
@@ -3639,17 +3639,17 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_expand */
-	expand(value: number): Span | null {
-		return wrapSpanOrNull(F.floatspan_expand(this.ptr, value)) as Span | null;
+	expand(value: number): this | null {
+		return wrapSpanOrNull(F.floatspan_expand(this.ptr, value)) as this | null;
 	}
 
 	/** MEOS: floatspan_floor */
-	floor(): Span {
-		return wrapSpan(F.floatspan_floor(this.ptr)) as Span;
+	floor(): this {
+		return wrapSpan(F.floatspan_floor(this.ptr)) as this;
 	}
 
 	/** MEOS: intersection_span_float, chosen by the arguments' types */
-	override intersection(d: number | Span | SpanSet): Span | null | SpanSet {
+	override intersection(d: number | Span | SpanSet): this | null | SpanSet {
 		if (typeof d === 'number') return this._intersection_span_float(d as number);
 		return super.intersection(d as Span | SpanSet);
 	}
@@ -3694,8 +3694,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_radians */
-	radians(): Span {
-		return wrapSpan(F.floatspan_radians(this.ptr)) as Span;
+	radians(): this {
+		return wrapSpan(F.floatspan_radians(this.ptr)) as this;
 	}
 
 	/** MEOS: adjacent_float_span */
@@ -3715,8 +3715,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: intersection_float_span */
-	rintersection(d: number): Span | null {
-		return wrapSpanOrNull(F.intersection_float_span(d, this.ptr)) as Span | null;
+	rintersection(d: number): this | null {
+		return wrapSpanOrNull(F.intersection_float_span(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_float_span */
@@ -3730,8 +3730,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_round */
-	round(maxdd: number = 0): Span {
-		return wrapSpan(F.floatspan_round(this.ptr, maxdd)) as Span;
+	round(maxdd: number = 0): this {
+		return wrapSpan(F.floatspan_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: overleft_float_span */
@@ -3755,8 +3755,8 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Span {
-		return wrapSpan(F.floatspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Span;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpan(F.floatspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: floatspan_to_bigintspan */
@@ -3847,8 +3847,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_float */
-	private _intersection_spanset_float(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_float(this.ptr, d)) as SpanSet | null;
+	private _intersection_spanset_float(d: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: left_spanset_float */
@@ -3857,8 +3857,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_float */
-	private _minus_spanset_float(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_float(this.ptr, d)) as SpanSet | null;
+	private _minus_spanset_float(d: number): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: overleft_spanset_float */
@@ -3877,8 +3877,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_float */
-	private _union_spanset_float(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_float(this.ptr, d)) as SpanSet | null;
+	private _union_spanset_float(d: number): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_float, chosen by the arguments' types */
@@ -3913,8 +3913,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_ceil */
-	ceil(): SpanSet {
-		return wrapSpanSet(F.floatspanset_ceil(this.ptr)) as SpanSet;
+	ceil(): this {
+		return wrapSpanSet(F.floatspanset_ceil(this.ptr)) as this;
 	}
 
 	/** MEOS: contains_spanset_float, chosen by the arguments' types */
@@ -3924,8 +3924,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_degrees */
-	degrees(normalize: boolean = false): SpanSet {
-		return wrapSpanSet(F.floatspanset_degrees(this.ptr, normalize)) as SpanSet;
+	degrees(normalize: boolean = false): this {
+		return wrapSpanSet(F.floatspanset_degrees(this.ptr, normalize)) as this;
 	}
 
 	/** MEOS: distance_floatspanset_floatspan, distance_floatspanset_floatspanset, distance_spanset_float, chosen by the arguments' types */
@@ -3937,12 +3937,12 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_floor */
-	floor(): SpanSet {
-		return wrapSpanSet(F.floatspanset_floor(this.ptr)) as SpanSet;
+	floor(): this {
+		return wrapSpanSet(F.floatspanset_floor(this.ptr)) as this;
 	}
 
 	/** MEOS: intersection_spanset_float, chosen by the arguments' types */
-	override intersection(d: number | Span | SpanSet): SpanSet | null {
+	override intersection(d: number | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._intersection_spanset_float(d as number);
 		return super.intersection(d as Span | SpanSet);
 	}
@@ -3959,7 +3959,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_float, chosen by the arguments' types */
-	override minus(d: number | Span | SpanSet): SpanSet | null {
+	override minus(d: number | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._minus_spanset_float(d as number);
 		return super.minus(d as Span | SpanSet);
 	}
@@ -3982,8 +3982,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_radians */
-	radians(): SpanSet {
-		return wrapSpanSet(F.floatspanset_radians(this.ptr)) as SpanSet;
+	radians(): this {
+		return wrapSpanSet(F.floatspanset_radians(this.ptr)) as this;
 	}
 
 	/** MEOS: adjacent_float_spanset */
@@ -4003,8 +4003,8 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_float_spanset */
-	rintersection(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_float_spanset(d, this.ptr)) as SpanSet | null;
+	rintersection(d: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_float_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_float_spanset */
@@ -4013,13 +4013,13 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_float_spanset */
-	rminus(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_float_spanset(d, this.ptr)) as SpanSet | null;
+	rminus(d: number): this | null {
+		return wrapSpanSetOrNull(F.minus_float_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: floatspanset_round */
-	round(maxdd: number = 0): SpanSet {
-		return wrapSpanSet(F.floatspanset_round(this.ptr, maxdd)) as SpanSet;
+	round(maxdd: number = 0): this {
+		return wrapSpanSet(F.floatspanset_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: overleft_float_spanset */
@@ -4038,13 +4038,13 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_float_spanset */
-	runion(d: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_float_spanset(d, this.ptr)) as SpanSet | null;
+	runion(d: number): this | null {
+		return wrapSpanSetOrNull(F.union_float_spanset(d, this.ptr)) as this | null;
 	}
 
 	/** MEOS: floatspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): SpanSet {
-		return wrapSpanSet(F.floatspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as SpanSet;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpanSet(F.floatspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: floatspanset_to_intspanset */
@@ -4053,7 +4053,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_float, chosen by the arguments' types */
-	override union(d: number | Span | SpanSet): SpanSet | null {
+	override union(d: number | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._union_spanset_float(d as number);
 		return super.union(d as Span | SpanSet);
 	}
@@ -4100,8 +4100,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_affine */
-	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Geo {
-		return wrapGeo(F.geo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as Geo;
+	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): this {
+		return wrapGeo(F.geo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as this;
 	}
 
 	/** MEOS: aintersects_geo_tgeo */
@@ -4150,8 +4150,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_centroid */
-	centroid(spheroid: boolean): Geo | null {
-		return wrapGeoOrNull(F.geo_centroid(this.ptr, spheroid)) as Geo | null;
+	centroid(spheroid: boolean): this | null {
+		return wrapGeoOrNull(F.geo_centroid(this.ptr, spheroid)) as this | null;
 	}
 
 	/** MEOS: contained_geo_set */
@@ -4200,8 +4200,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_geo_n */
-	geoN(n: number): Geo | null {
-		return wrapGeoOrNull(F.geo_geo_n(this.ptr, n)) as Geo | null;
+	geoN(n: number): this | null {
+		return wrapGeoOrNull(F.geo_geo_n(this.ptr, n)) as this | null;
 	}
 
 	/** MEOS: intersection_geo_set */
@@ -4280,38 +4280,38 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_reverse */
-	reverse(): Geo | null {
-		return wrapGeoOrNull(F.geo_reverse(this.ptr)) as Geo | null;
+	reverse(): this | null {
+		return wrapGeoOrNull(F.geo_reverse(this.ptr)) as this | null;
 	}
 
 	/** MEOS: geo_rotate */
-	rotate(angle: number, x0: number, y0: number): Geo {
-		return wrapGeo(F.geo_rotate(this.ptr, angle, x0, y0)) as Geo;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapGeo(F.geo_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: geo_rotate_geo */
-	rotateGeo(angle: number, origin: Geo): Geo {
-		return wrapGeo(F.geo_rotate_geo(this.ptr, angle, origin.ptr)) as Geo;
+	rotateGeo(angle: number, origin: Geo): this {
+		return wrapGeo(F.geo_rotate_geo(this.ptr, angle, origin.ptr)) as this;
 	}
 
 	/** MEOS: geo_rotate_x */
-	rotateX(angle: number): Geo {
-		return wrapGeo(F.geo_rotate_x(this.ptr, angle)) as Geo;
+	rotateX(angle: number): this {
+		return wrapGeo(F.geo_rotate_x(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: geo_rotate_y */
-	rotateY(angle: number): Geo {
-		return wrapGeo(F.geo_rotate_y(this.ptr, angle)) as Geo;
+	rotateY(angle: number): this {
+		return wrapGeo(F.geo_rotate_y(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: geo_rotate_z */
-	rotateZ(angle: number): Geo {
-		return wrapGeo(F.geo_rotate_z(this.ptr, angle)) as Geo;
+	rotateZ(angle: number): this {
+		return wrapGeo(F.geo_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: geo_round */
-	round(maxdd: number = 0): Geo {
-		return wrapGeo(F.geo_round(this.ptr, maxdd)) as Geo;
+	round(maxdd: number = 0): this {
+		return wrapGeo(F.geo_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: geo_same */
@@ -4320,23 +4320,23 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_scale */
-	scale(xfactor: number, yfactor: number, zfactor: number): Geo {
-		return wrapGeo(F.geo_scale(this.ptr, xfactor, yfactor, zfactor)) as Geo;
+	scale(xfactor: number, yfactor: number, zfactor: number): this {
+		return wrapGeo(F.geo_scale(this.ptr, xfactor, yfactor, zfactor)) as this;
 	}
 
 	/** MEOS: geo_scale_geo */
-	scaleGeo(scale: Geo): Geo | null {
-		return wrapGeoOrNull(F.geo_scale_geo(this.ptr, scale.ptr)) as Geo | null;
+	scaleGeo(scale: Geo): this | null {
+		return wrapGeoOrNull(F.geo_scale_geo(this.ptr, scale.ptr)) as this | null;
 	}
 
 	/** MEOS: geo_scale_geo_origin */
-	scaleGeoOrigin(scale: Geo, sorigin: Geo): Geo | null {
-		return wrapGeoOrNull(F.geo_scale_geo_origin(this.ptr, scale.ptr, sorigin.ptr)) as Geo | null;
+	scaleGeoOrigin(scale: Geo, sorigin: Geo): this | null {
+		return wrapGeoOrNull(F.geo_scale_geo_origin(this.ptr, scale.ptr, sorigin.ptr)) as this | null;
 	}
 
 	/** MEOS: geo_segmentize */
-	segmentize(max_seg_length: number): Geo | null {
-		return wrapGeoOrNull(F.geo_segmentize(this.ptr, max_seg_length)) as Geo | null;
+	segmentize(max_seg_length: number): this | null {
+		return wrapGeoOrNull(F.geo_segmentize(this.ptr, max_seg_length)) as this | null;
 	}
 
 	/** MEOS: geo_set_srid */
@@ -4345,8 +4345,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_shortestline */
-	shortestline(gs2: Geo, spheroid: boolean): Geo | null {
-		return wrapGeoOrNull(F.geo_shortestline(this.ptr, gs2.ptr, spheroid)) as Geo | null;
+	shortestline(gs2: Geo, spheroid: boolean): this | null {
+		return wrapGeoOrNull(F.geo_shortestline(this.ptr, gs2.ptr, spheroid)) as this | null;
 	}
 
 	/** MEOS: geo_split_each_n_stboxes */
@@ -4485,23 +4485,23 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_transform */
-	transform(srid_to: number): Geo {
-		return wrapGeo(F.geo_transform(this.ptr, srid_to)) as Geo;
+	transform(srid_to: number): this {
+		return wrapGeo(F.geo_transform(this.ptr, srid_to)) as this;
 	}
 
 	/** MEOS: geo_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Geo {
-		return wrapGeo(F.geo_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Geo;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
+		return wrapGeo(F.geo_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 
 	/** MEOS: geo_translate */
-	translate(deltax: number, deltay: number, deltaz: number): Geo {
-		return wrapGeo(F.geo_translate(this.ptr, deltax, deltay, deltaz)) as Geo;
+	translate(deltax: number, deltay: number, deltaz: number): this {
+		return wrapGeo(F.geo_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
 	/** MEOS: geo_transscale */
-	transscale(deltax: number, deltay: number, xfactor: number, yfactor: number): Geo {
-		return wrapGeo(F.geo_transscale(this.ptr, deltax, deltay, xfactor, yfactor)) as Geo;
+	transscale(deltax: number, deltay: number, xfactor: number, yfactor: number): this {
+		return wrapGeo(F.geo_transscale(this.ptr, deltax, deltay, xfactor, yfactor)) as this;
 	}
 
 	/** MEOS: geo_tstzspan_to_stbox */
@@ -4669,18 +4669,18 @@ export class GeoSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_geo */
-	private _intersection_set_geo(gs: Geo): Set | null {
-		return wrapSetOrNull(F.intersection_set_geo(this.ptr, gs.ptr)) as Set | null;
+	private _intersection_set_geo(gs: Geo): this | null {
+		return wrapSetOrNull(F.intersection_set_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_geo */
-	private _minus_set_geo(gs: Geo): Set | null {
-		return wrapSetOrNull(F.minus_set_geo(this.ptr, gs.ptr)) as Set | null;
+	private _minus_set_geo(gs: Geo): this | null {
+		return wrapSetOrNull(F.minus_set_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_geo */
-	private _union_set_geo(gs: Geo): Set | null {
-		return wrapSetOrNull(F.union_set_geo(this.ptr, gs.ptr)) as Set | null;
+	private _union_set_geo(gs: Geo): this | null {
+		return wrapSetOrNull(F.union_set_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_geo, chosen by the arguments' types */
@@ -4702,13 +4702,13 @@ export class GeoSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_geo, chosen by the arguments' types */
-	override intersection(gs: Geo | Set): Set | null {
+	override intersection(gs: Geo | Set): this | null {
 		if (gs instanceof Geo) return this._intersection_set_geo(gs as Geo);
 		return super.intersection(gs as Set);
 	}
 
 	/** MEOS: minus_set_geo, chosen by the arguments' types */
-	override minus(gs: Geo | Set): Set | null {
+	override minus(gs: Geo | Set): this | null {
 		if (gs instanceof Geo) return this._minus_set_geo(gs as Geo);
 		return super.minus(gs as Set);
 	}
@@ -4724,7 +4724,7 @@ export class GeoSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_geo, chosen by the arguments' types */
-	override union(gs: Geo | Set): Set | null {
+	override union(gs: Geo | Set): this | null {
 		if (gs instanceof Geo) return this._union_set_geo(gs as Geo);
 		return super.union(gs as Set);
 	}
@@ -4816,11 +4816,6 @@ export class Geography extends Geo {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
-	/** MEOS: geog_centroid */
-	override centroid(use_spheroid: boolean): Geo {
-		return wrapGeo(F.geog_centroid(this.ptr, use_spheroid)) as Geo;
-	}
-
 	/** MEOS: geog_disjoint */
 	disjoint(gs2: Geo, use_spheroid: boolean): boolean {
 		return F.geog_disjoint(this.ptr, gs2.ptr, use_spheroid);
@@ -4849,11 +4844,6 @@ export class Geography extends Geo {
 	/** MEOS: geog_perimeter */
 	override perimeter(use_spheroid: boolean): number {
 		return F.geog_perimeter(this.ptr, use_spheroid);
-	}
-
-	/** MEOS: geog_shortestline */
-	override shortestline(gs2: Geo, use_spheroid: boolean): Geo {
-		return wrapGeo(F.geog_shortestline(this.ptr, gs2.ptr, use_spheroid)) as Geo;
 	}
 
 	/** MEOS: geog_to_geom */
@@ -5209,18 +5199,13 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_boundary */
-	boundary(): Geo | null {
-		return wrapGeoOrNull(F.geom_boundary(this.ptr)) as Geo | null;
+	boundary(): this | null {
+		return wrapGeoOrNull(F.geom_boundary(this.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_buffer */
-	buffer(size: number, params: string): Geo | null {
-		return wrapGeoOrNull(F.geom_buffer(this.ptr, size, params)) as Geo | null;
-	}
-
-	/** MEOS: geom_centroid */
-	override centroid(): Geo {
-		return wrapGeo(F.geom_centroid(this.ptr)) as Geo;
+	buffer(size: number, params: string): this | null {
+		return wrapGeoOrNull(F.geom_buffer(this.ptr, size, params)) as this | null;
 	}
 
 	/** MEOS: geom_contains */
@@ -5229,8 +5214,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_convex_hull */
-	convexHull(): Geo | null {
-		return wrapGeoOrNull(F.geom_convex_hull(this.ptr)) as Geo | null;
+	convexHull(): this | null {
+		return wrapGeoOrNull(F.geom_convex_hull(this.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_covers */
@@ -5239,8 +5224,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_difference2d */
-	difference2d(gs2: Geo): Geo | null {
-		return wrapGeoOrNull(F.geom_difference2d(this.ptr, gs2.ptr)) as Geo | null;
+	difference2d(gs2: Geo): this | null {
+		return wrapGeoOrNull(F.geom_difference2d(this.ptr, gs2.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_disjoint */
@@ -5338,8 +5323,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_intersection2d */
-	intersection2d(gs2: Geo): Geo | null {
-		return wrapGeoOrNull(F.geom_intersection2d(this.ptr, gs2.ptr)) as Geo | null;
+	intersection2d(gs2: Geo): this | null {
+		return wrapGeoOrNull(F.geom_intersection2d(this.ptr, gs2.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_intersection2d_coll */
@@ -5388,8 +5373,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_oriented_envelope */
-	orientedEnvelope(): Geo | null {
-		return wrapGeoOrNull(F.geom_oriented_envelope(this.ptr)) as Geo | null;
+	orientedEnvelope(): this | null {
+		return wrapGeoOrNull(F.geom_oriented_envelope(this.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_perimeter */
@@ -5407,11 +5392,6 @@ export class Geometry extends Geo {
 		return F.geom_relate_pattern(this.ptr, gs2.ptr, patt);
 	}
 
-	/** MEOS: geom_shortestline */
-	override shortestline(gs2: Geo): Geo {
-		return wrapGeo(F.geom_shortestline(this.ptr, gs2.ptr)) as Geo;
-	}
-
 	/** MEOS: geom_shortestline2d */
 	shortestline2d(gs2: Geo): Geo {
 		return wrapGeo(F.geom_shortestline2d(this.ptr, gs2.ptr)) as Geo;
@@ -5423,8 +5403,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_symdifference2d */
-	symdifference2d(gs2: Geo): Geo | null {
-		return wrapGeoOrNull(F.geom_symdifference2d(this.ptr, gs2.ptr)) as Geo | null;
+	symdifference2d(gs2: Geo): this | null {
+		return wrapGeoOrNull(F.geom_symdifference2d(this.ptr, gs2.ptr)) as this | null;
 	}
 
 	/** MEOS: tcontains_geo_tgeo, tcontains_geo_tcbuffer, chosen by the arguments' types */
@@ -5510,8 +5490,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_union2d */
-	union2d(gs2: Geo): Geo | null {
-		return wrapGeoOrNull(F.geom_union2d(this.ptr, gs2.ptr)) as Geo | null;
+	union2d(gs2: Geo): this | null {
+		return wrapGeoOrNull(F.geom_union2d(this.ptr, gs2.ptr)) as this | null;
 	}
 
 	/** MEOS: geom_array_union */
@@ -5571,18 +5551,18 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_h3index */
-	private _intersection_set_h3index(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.intersection_set_h3index(this.ptr, cell)) as Set | null;
+	private _intersection_set_h3index(cell: H3Index): this | null {
+		return wrapSetOrNull(F.intersection_set_h3index(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: minus_set_h3index */
-	private _minus_set_h3index(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.minus_set_h3index(this.ptr, cell)) as Set | null;
+	private _minus_set_h3index(cell: H3Index): this | null {
+		return wrapSetOrNull(F.minus_set_h3index(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: union_set_h3index */
-	private _union_set_h3index(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.union_set_h3index(this.ptr, cell)) as Set | null;
+	private _union_set_h3index(cell: H3Index): this | null {
+		return wrapSetOrNull(F.union_set_h3index(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: contains_set_h3index, chosen by the arguments' types */
@@ -5592,8 +5572,8 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: h3indexset_cover_cells */
-	coverCells(resolution: number): Set | null {
-		return wrapSetOrNull(F.h3indexset_cover_cells(this.ptr, resolution)) as Set | null;
+	coverCells(resolution: number): this | null {
+		return wrapSetOrNull(F.h3indexset_cover_cells(this.ptr, resolution)) as this | null;
 	}
 
 	/** MEOS: h3indexset_end_value */
@@ -5607,18 +5587,18 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: h3indexset_grid_disk */
-	gridDisk(k: number): Set | null {
-		return wrapSetOrNull(F.h3indexset_grid_disk(this.ptr, k)) as Set | null;
+	gridDisk(k: number): this | null {
+		return wrapSetOrNull(F.h3indexset_grid_disk(this.ptr, k)) as this | null;
 	}
 
 	/** MEOS: intersection_set_h3index, chosen by the arguments' types */
-	override intersection(cell: H3Index | Set): Set | null {
+	override intersection(cell: H3Index | Set): this | null {
 		if (typeof cell === 'bigint') return this._intersection_set_h3index(cell as H3Index);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_h3index, chosen by the arguments' types */
-	override minus(cell: H3Index | Set): Set | null {
+	override minus(cell: H3Index | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_h3index(cell as H3Index);
 		return super.minus(cell as Set);
 	}
@@ -5634,18 +5614,18 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_h3index_set */
-	rintersection(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.intersection_h3index_set(cell, this.ptr)) as Set | null;
+	rintersection(cell: H3Index): this | null {
+		return wrapSetOrNull(F.intersection_h3index_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_h3index_set */
-	rminus(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.minus_h3index_set(cell, this.ptr)) as Set | null;
+	rminus(cell: H3Index): this | null {
+		return wrapSetOrNull(F.minus_h3index_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_h3index_set */
-	runion(cell: H3Index): Set | null {
-		return wrapSetOrNull(F.union_h3index_set(cell, this.ptr)) as Set | null;
+	runion(cell: H3Index): this | null {
+		return wrapSetOrNull(F.union_h3index_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: h3indexset_start_value */
@@ -5654,7 +5634,7 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_h3index, chosen by the arguments' types */
-	override union(cell: H3Index | Set): Set | null {
+	override union(cell: H3Index | Set): this | null {
 		if (typeof cell === 'bigint') return this._union_set_h3index(cell as H3Index);
 		return super.union(cell as Set);
 	}
@@ -5752,8 +5732,8 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: intersection_set_int */
-	private _intersection_set_int(i: number): Set | null {
-		return wrapSetOrNull(F.intersection_set_int(this.ptr, i)) as Set | null;
+	private _intersection_set_int(i: number): this | null {
+		return wrapSetOrNull(F.intersection_set_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_set_int */
@@ -5762,8 +5742,8 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: minus_set_int */
-	private _minus_set_int(i: number): Set | null {
-		return wrapSetOrNull(F.minus_set_int(this.ptr, i)) as Set | null;
+	private _minus_set_int(i: number): this | null {
+		return wrapSetOrNull(F.minus_set_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_set_int */
@@ -5782,8 +5762,8 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: union_set_int */
-	private _union_set_int(i: number): Set | null {
-		return wrapSetOrNull(F.union_set_int(this.ptr, i)) as Set | null;
+	private _union_set_int(i: number): this | null {
+		return wrapSetOrNull(F.union_set_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: intset_out */
@@ -5810,7 +5790,7 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: intersection_set_int, chosen by the arguments' types */
-	override intersection(i: number | Set): Set | null {
+	override intersection(i: number | Set): this | null {
 		if (typeof i === 'number') return this._intersection_set_int(i as number);
 		return super.intersection(i as Set);
 	}
@@ -5822,7 +5802,7 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: minus_set_int, chosen by the arguments' types */
-	override minus(i: number | Set): Set | null {
+	override minus(i: number | Set): this | null {
 		if (typeof i === 'number') return this._minus_set_int(i as number);
 		return super.minus(i as Set);
 	}
@@ -5856,8 +5836,8 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: intersection_int_set */
-	rintersection(i: number): Set | null {
-		return wrapSetOrNull(F.intersection_int_set(i, this.ptr)) as Set | null;
+	rintersection(i: number): this | null {
+		return wrapSetOrNull(F.intersection_int_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_int_set */
@@ -5866,8 +5846,8 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: minus_int_set */
-	rminus(i: number): Set | null {
-		return wrapSetOrNull(F.minus_int_set(i, this.ptr)) as Set | null;
+	rminus(i: number): this | null {
+		return wrapSetOrNull(F.minus_int_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_int_set */
@@ -5886,13 +5866,13 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: union_int_set */
-	runion(i: number): Set | null {
-		return wrapSetOrNull(F.union_int_set(i, this.ptr)) as Set | null;
+	runion(i: number): this | null {
+		return wrapSetOrNull(F.union_int_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: intset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Set {
-		return wrapSet(F.intset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Set;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSet(F.intset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: intset_start_value */
@@ -5906,7 +5886,7 @@ export class IntSet extends Set {
 	}
 
 	/** MEOS: union_set_int, chosen by the arguments' types */
-	override union(i: number | Set): Set | null {
+	override union(i: number | Set): this | null {
 		if (typeof i === 'number') return this._union_set_int(i as number);
 		return super.union(i as Set);
 	}
@@ -5994,8 +5974,8 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_int */
-	private _intersection_span_int(i: number): Span | null {
-		return wrapSpanOrNull(F.intersection_span_int(this.ptr, i)) as Span | null;
+	private _intersection_span_int(i: number): this | null {
+		return wrapSpanOrNull(F.intersection_span_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_span_int */
@@ -6073,12 +6053,12 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intspan_expand */
-	expand(value: number): Span | null {
-		return wrapSpanOrNull(F.intspan_expand(this.ptr, value)) as Span | null;
+	expand(value: number): this | null {
+		return wrapSpanOrNull(F.intspan_expand(this.ptr, value)) as this | null;
 	}
 
 	/** MEOS: intersection_span_int, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): Span | null | SpanSet {
+	override intersection(i: number | Span | SpanSet): this | null | SpanSet {
 		if (typeof i === 'number') return this._intersection_span_int(i as number);
 		return super.intersection(i as Span | SpanSet);
 	}
@@ -6139,8 +6119,8 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intersection_int_span */
-	rintersection(i: number): Span | null {
-		return wrapSpanOrNull(F.intersection_int_span(i, this.ptr)) as Span | null;
+	rintersection(i: number): this | null {
+		return wrapSpanOrNull(F.intersection_int_span(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_int_span */
@@ -6174,8 +6154,8 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): Span {
-		return wrapSpan(F.intspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as Span;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpan(F.intspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: intspan_to_bigintspan */
@@ -6266,8 +6246,8 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_int */
-	private _intersection_spanset_int(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_int(this.ptr, i)) as SpanSet | null;
+	private _intersection_spanset_int(i: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_spanset_int */
@@ -6276,8 +6256,8 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_int */
-	private _minus_spanset_int(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_int(this.ptr, i)) as SpanSet | null;
+	private _minus_spanset_int(i: number): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_spanset_int */
@@ -6296,8 +6276,8 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_int */
-	private _union_spanset_int(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_int(this.ptr, i)) as SpanSet | null;
+	private _union_spanset_int(i: number): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_int, chosen by the arguments' types */
@@ -6346,7 +6326,7 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_int, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): SpanSet | null {
+	override intersection(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._intersection_spanset_int(i as number);
 		return super.intersection(i as Span | SpanSet);
 	}
@@ -6363,7 +6343,7 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_int, chosen by the arguments' types */
-	override minus(i: number | Span | SpanSet): SpanSet | null {
+	override minus(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._minus_spanset_int(i as number);
 		return super.minus(i as Span | SpanSet);
 	}
@@ -6402,8 +6382,8 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_int_spanset */
-	rintersection(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_int_spanset(i, this.ptr)) as SpanSet | null;
+	rintersection(i: number): this | null {
+		return wrapSpanSetOrNull(F.intersection_int_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_int_spanset */
@@ -6412,8 +6392,8 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_int_spanset */
-	rminus(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_int_spanset(i, this.ptr)) as SpanSet | null;
+	rminus(i: number): this | null {
+		return wrapSpanSetOrNull(F.minus_int_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_int_spanset */
@@ -6432,13 +6412,13 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_int_spanset */
-	runion(i: number): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_int_spanset(i, this.ptr)) as SpanSet | null;
+	runion(i: number): this | null {
+		return wrapSpanSetOrNull(F.union_int_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: intspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): SpanSet {
-		return wrapSpanSet(F.intspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as SpanSet;
+	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+		return wrapSpanSet(F.intspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: intspanset_to_floatspanset */
@@ -6447,7 +6427,7 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_int, chosen by the arguments' types */
-	override union(i: number | Span | SpanSet): SpanSet | null {
+	override union(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._union_spanset_int(i as number);
 		return super.union(i as Span | SpanSet);
 	}
@@ -6540,8 +6520,8 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_array_element */
-	arrayElement(element: number): Jsonb | null {
-		return wrapJsonbOrNull(F.jsonb_array_element(this.ptr, element)) as Jsonb | null;
+	arrayElement(element: number): this | null {
+		return wrapJsonbOrNull(F.jsonb_array_element(this.ptr, element)) as this | null;
 	}
 
 	/** MEOS: jsonb_array_elements */
@@ -6605,8 +6585,8 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_concat */
-	concat(jb2: Jsonb): Jsonb {
-		return wrapJsonb(F.jsonb_concat(this.ptr, jb2.ptr)) as Jsonb;
+	concat(jb2: Jsonb): this {
+		return wrapJsonb(F.jsonb_concat(this.ptr, jb2.ptr)) as this;
 	}
 
 	/** MEOS: jsonb_contained */
@@ -6625,30 +6605,30 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_delete */
-	delete(key: string): Jsonb {
-		return wrapJsonb(F.jsonb_delete(this.ptr, key)) as Jsonb;
+	delete(key: string): this {
+		return wrapJsonb(F.jsonb_delete(this.ptr, key)) as this;
 	}
 
 	/** MEOS: jsonb_delete_array */
-	deleteArray(keys_elems: Text[]): Jsonb {
+	deleteArray(keys_elems: Text[]): this {
 		const _keys_elems = _ptrArray(keys_elems.map(x => x.ptr));
 		try {
-			return wrapJsonb(F.jsonb_delete_array(this.ptr, _keys_elems, keys_elems.length)) as Jsonb;
+			return wrapJsonb(F.jsonb_delete_array(this.ptr, _keys_elems, keys_elems.length)) as this;
 		} finally {
 			_free(_keys_elems);
 		}
 	}
 
 	/** MEOS: jsonb_delete_index */
-	deleteIndex(idx: number): Jsonb {
-		return wrapJsonb(F.jsonb_delete_index(this.ptr, idx)) as Jsonb;
+	deleteIndex(idx: number): this {
+		return wrapJsonb(F.jsonb_delete_index(this.ptr, idx)) as this;
 	}
 
 	/** MEOS: jsonb_delete_path */
-	deletePath(path_elems: Text[]): Jsonb {
+	deletePath(path_elems: Text[]): this {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapJsonb(F.jsonb_delete_path(this.ptr, _path_elems, path_elems.length)) as Jsonb;
+			return wrapJsonb(F.jsonb_delete_path(this.ptr, _path_elems, path_elems.length)) as this;
 		} finally {
 			_free(_path_elems);
 		}
@@ -6685,10 +6665,10 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_extract_path */
-	extractPath(path_elems: Text[]): Jsonb | null {
+	extractPath(path_elems: Text[]): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapJsonbOrNull(F.jsonb_extract_path(this.ptr, _path_elems, path_elems.length)) as Jsonb | null;
+			return wrapJsonbOrNull(F.jsonb_extract_path(this.ptr, _path_elems, path_elems.length)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -6725,10 +6705,10 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_insert */
-	insert(path_elems: Text[], newjb: Jsonb, after: boolean): Jsonb {
+	insert(path_elems: Text[], newjb: Jsonb, after: boolean): this {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapJsonb(F.jsonb_insert(this.ptr, _path_elems, path_elems.length, newjb.ptr, after)) as Jsonb;
+			return wrapJsonb(F.jsonb_insert(this.ptr, _path_elems, path_elems.length, newjb.ptr, after)) as this;
 		} finally {
 			_free(_path_elems);
 		}
@@ -6765,8 +6745,8 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_object_field */
-	objectField(key: string): Jsonb | null {
-		return wrapJsonbOrNull(F.jsonb_object_field(this.ptr, key)) as Jsonb | null;
+	objectField(key: string): this | null {
+		return wrapJsonbOrNull(F.jsonb_object_field(this.ptr, key)) as this | null;
 	}
 
 	/** MEOS: jsonb_object_field_text */
@@ -6830,13 +6810,13 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_path_query_array */
-	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Jsonb | null {
-		return wrapJsonbOrNull(F.jsonb_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Jsonb | null;
+	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapJsonbOrNull(F.jsonb_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: jsonb_path_query_first */
-	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Jsonb | null {
-		return wrapJsonbOrNull(F.jsonb_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Jsonb | null;
+	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapJsonbOrNull(F.jsonb_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: jsonb_pretty */
@@ -6845,28 +6825,28 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_set */
-	set(path_elems: Text[], newjb: Jsonb, create: boolean): Jsonb {
+	set(path_elems: Text[], newjb: Jsonb, create: boolean): this {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapJsonb(F.jsonb_set(this.ptr, _path_elems, path_elems.length, newjb.ptr, create)) as Jsonb;
+			return wrapJsonb(F.jsonb_set(this.ptr, _path_elems, path_elems.length, newjb.ptr, create)) as this;
 		} finally {
 			_free(_path_elems);
 		}
 	}
 
 	/** MEOS: jsonb_set_lax */
-	setLax(path_elems: Text[], newjb: Jsonb, create: boolean, handle_null: string): Jsonb | null {
+	setLax(path_elems: Text[], newjb: Jsonb, create: boolean, handle_null: string): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapJsonbOrNull(F.jsonb_set_lax(this.ptr, _path_elems, path_elems.length, newjb.ptr, create, handle_null)) as Jsonb | null;
+			return wrapJsonbOrNull(F.jsonb_set_lax(this.ptr, _path_elems, path_elems.length, newjb.ptr, create, handle_null)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
 	}
 
 	/** MEOS: jsonb_strip_nulls */
-	stripNulls(strip_in_arrays: boolean = false): Jsonb {
-		return wrapJsonb(F.jsonb_strip_nulls(this.ptr, strip_in_arrays)) as Jsonb;
+	stripNulls(strip_in_arrays: boolean = false): this {
+		return wrapJsonb(F.jsonb_strip_nulls(this.ptr, strip_in_arrays)) as this;
 	}
 
 	/** MEOS: teq_jsonb_tjsonb */
@@ -6978,23 +6958,23 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: intersection_set_jsonb */
-	private _intersection_set_jsonb(jb: Jsonb): Set | null {
-		return wrapSetOrNull(F.intersection_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	private _intersection_set_jsonb(jb: Jsonb): this | null {
+		return wrapSetOrNull(F.intersection_set_jsonb(this.ptr, jb.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_jsonb */
-	private _minus_set_jsonb(jb: Jsonb): Set | null {
-		return wrapSetOrNull(F.minus_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	private _minus_set_jsonb(jb: Jsonb): this | null {
+		return wrapSetOrNull(F.minus_set_jsonb(this.ptr, jb.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_jsonb */
-	private _union_set_jsonb(jb: Jsonb): Set | null {
-		return wrapSetOrNull(F.union_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	private _union_set_jsonb(jb: Jsonb): this | null {
+		return wrapSetOrNull(F.union_set_jsonb(this.ptr, jb.ptr)) as this | null;
 	}
 
 	/** MEOS: jsonbset_array_element */
-	arrayElement(idx: number, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_array_element(this.ptr, idx, null_handle)) as Set | null;
+	arrayElement(idx: number, null_handle: number): this | null {
+		return wrapSetOrNull(F.jsonbset_array_element(this.ptr, idx, null_handle)) as this | null;
 	}
 
 	/** MEOS: jsonbset_array_element_text */
@@ -7013,8 +6993,8 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: concat_jsonbset_jsonb */
-	concat(jb: Jsonb, invert: boolean): Set {
-		return wrapSet(F.concat_jsonbset_jsonb(this.ptr, jb.ptr, invert)) as Set;
+	concat(jb: Jsonb, invert: boolean): this {
+		return wrapSet(F.concat_jsonbset_jsonb(this.ptr, jb.ptr, invert)) as this;
 	}
 
 	/** MEOS: contains_set_jsonb, chosen by the arguments' types */
@@ -7024,30 +7004,30 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_delete */
-	delete(key: string): Set | null {
-		return wrapSetOrNull(F.jsonbset_delete(this.ptr, key)) as Set | null;
+	delete(key: string): this | null {
+		return wrapSetOrNull(F.jsonbset_delete(this.ptr, key)) as this | null;
 	}
 
 	/** MEOS: jsonbset_delete_array */
-	deleteArray(keys: Text[]): Set | null {
+	deleteArray(keys: Text[]): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_delete_array(this.ptr, _keys, keys.length)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_delete_array(this.ptr, _keys, keys.length)) as this | null;
 		} finally {
 			_free(_keys);
 		}
 	}
 
 	/** MEOS: jsonbset_delete_index */
-	deleteIndex(idx: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_delete_index(this.ptr, idx)) as Set | null;
+	deleteIndex(idx: number): this | null {
+		return wrapSetOrNull(F.jsonbset_delete_index(this.ptr, idx)) as this | null;
 	}
 
 	/** MEOS: jsonbset_delete_path */
-	deletePath(path_elems: Text[]): Set | null {
+	deletePath(path_elems: Text[]): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_delete_path(this.ptr, _path_elems, path_elems.length)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_delete_path(this.ptr, _path_elems, path_elems.length)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -7079,10 +7059,10 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_extract_path */
-	extractPath(path_elems: Text[], null_handle: number): Set | null {
+	extractPath(path_elems: Text[], null_handle: number): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -7099,30 +7079,30 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_insert */
-	insert(path_elems: Text[], newjb: Jsonb, after: boolean): Set | null {
+	insert(path_elems: Text[], newjb: Jsonb, after: boolean): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_insert(this.ptr, _path_elems, path_elems.length, newjb.ptr, after)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_insert(this.ptr, _path_elems, path_elems.length, newjb.ptr, after)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
 	}
 
 	/** MEOS: intersection_set_jsonb, chosen by the arguments' types */
-	override intersection(jb: Jsonb | Set): Set | null {
+	override intersection(jb: Jsonb | Set): this | null {
 		if (jb instanceof Jsonb) return this._intersection_set_jsonb(jb as Jsonb);
 		return super.intersection(jb as Set);
 	}
 
 	/** MEOS: minus_set_jsonb, chosen by the arguments' types */
-	override minus(jb: Jsonb | Set): Set | null {
+	override minus(jb: Jsonb | Set): this | null {
 		if (jb instanceof Jsonb) return this._minus_set_jsonb(jb as Jsonb);
 		return super.minus(jb as Set);
 	}
 
 	/** MEOS: jsonbset_object_field */
-	objectField(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_object_field(this.ptr, key, null_handle)) as Set | null;
+	objectField(key: string, null_handle: number): this | null {
+		return wrapSetOrNull(F.jsonbset_object_field(this.ptr, key, null_handle)) as this | null;
 	}
 
 	/** MEOS: jsonbset_object_field_text */
@@ -7176,13 +7156,13 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_path_query_array */
-	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Set | null {
-		return wrapSetOrNull(F.jsonbset_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Set | null;
+	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapSetOrNull(F.jsonbset_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: jsonbset_path_query_first */
-	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Set | null {
-		return wrapSetOrNull(F.jsonbset_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Set | null;
+	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapSetOrNull(F.jsonbset_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: jsonbset_pretty */
@@ -7191,20 +7171,20 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_set */
-	set(keys: Text[], newjb: Jsonb, create: boolean): Set | null {
+	set(keys: Text[], newjb: Jsonb, create: boolean): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_set(this.ptr, _keys, keys.length, newjb.ptr, create)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_set(this.ptr, _keys, keys.length, newjb.ptr, create)) as this | null;
 		} finally {
 			_free(_keys);
 		}
 	}
 
 	/** MEOS: jsonbset_set_lax */
-	setLax(keys: Text[], newjb: Jsonb, create: boolean, null_handle: string): Set | null {
+	setLax(keys: Text[], newjb: Jsonb, create: boolean, null_handle: string): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_set_lax(this.ptr, _keys, keys.length, newjb.ptr, create, null_handle)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_set_lax(this.ptr, _keys, keys.length, newjb.ptr, create, null_handle)) as this | null;
 		} finally {
 			_free(_keys);
 		}
@@ -7216,8 +7196,8 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_strip_nulls */
-	stripNulls(strip_in_arrays: boolean = false): Set {
-		return wrapSet(F.jsonbset_strip_nulls(this.ptr, strip_in_arrays)) as Set;
+	stripNulls(strip_in_arrays: boolean = false): this {
+		return wrapSet(F.jsonbset_strip_nulls(this.ptr, strip_in_arrays)) as this;
 	}
 
 	/** MEOS: jsonbset_to_alphanumset */
@@ -7251,7 +7231,7 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: union_set_jsonb, chosen by the arguments' types */
-	override union(jb: Jsonb | Set): Set | null {
+	override union(jb: Jsonb | Set): this | null {
 		if (jb instanceof Jsonb) return this._union_set_jsonb(jb as Jsonb);
 		return super.union(jb as Set);
 	}
@@ -7489,8 +7469,8 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_round */
-	round(maxdd: number = 0): Npoint {
-		return wrapNpoint(F.npoint_round(this.ptr, maxdd)) as Npoint;
+	round(maxdd: number = 0): this {
+		return wrapNpoint(F.npoint_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: npoint_route */
@@ -7610,18 +7590,18 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_npoint */
-	private _intersection_set_npoint(np: Npoint): Set | null {
-		return wrapSetOrNull(F.intersection_set_npoint(this.ptr, np.ptr)) as Set | null;
+	private _intersection_set_npoint(np: Npoint): this | null {
+		return wrapSetOrNull(F.intersection_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_npoint */
-	private _minus_set_npoint(np: Npoint): Set | null {
-		return wrapSetOrNull(F.minus_set_npoint(this.ptr, np.ptr)) as Set | null;
+	private _minus_set_npoint(np: Npoint): this | null {
+		return wrapSetOrNull(F.minus_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_npoint */
-	private _union_set_npoint(np: Npoint): Set | null {
-		return wrapSetOrNull(F.union_set_npoint(this.ptr, np.ptr)) as Set | null;
+	private _union_set_npoint(np: Npoint): this | null {
+		return wrapSetOrNull(F.union_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_npoint, chosen by the arguments' types */
@@ -7641,13 +7621,13 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_npoint, chosen by the arguments' types */
-	override intersection(np: Npoint | Set): Set | null {
+	override intersection(np: Npoint | Set): this | null {
 		if (np instanceof Npoint) return this._intersection_set_npoint(np as Npoint);
 		return super.intersection(np as Set);
 	}
 
 	/** MEOS: minus_set_npoint, chosen by the arguments' types */
-	override minus(np: Npoint | Set): Set | null {
+	override minus(np: Npoint | Set): this | null {
 		if (np instanceof Npoint) return this._minus_set_npoint(np as Npoint);
 		return super.minus(np as Set);
 	}
@@ -7668,7 +7648,7 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_npoint, chosen by the arguments' types */
-	override union(np: Npoint | Set): Set | null {
+	override union(np: Npoint | Set): this | null {
 		if (np instanceof Npoint) return this._union_set_npoint(np as Npoint);
 		return super.union(np as Set);
 	}
@@ -7825,8 +7805,8 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_round */
-	round(maxdd: number = 0): Nsegment {
-		return wrapNsegment(F.nsegment_round(this.ptr, maxdd)) as Nsegment;
+	round(maxdd: number = 0): this {
+		return wrapNsegment(F.nsegment_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: nsegment_route */
@@ -8133,18 +8113,18 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pcpatch */
-	private _intersection_set_pcpatch(pa: Pcpatch): Set | null {
-		return wrapSetOrNull(F.intersection_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	private _intersection_set_pcpatch(pa: Pcpatch): this | null {
+		return wrapSetOrNull(F.intersection_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_pcpatch */
-	private _minus_set_pcpatch(pa: Pcpatch): Set | null {
-		return wrapSetOrNull(F.minus_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	private _minus_set_pcpatch(pa: Pcpatch): this | null {
+		return wrapSetOrNull(F.minus_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_pcpatch */
-	private _union_set_pcpatch(pa: Pcpatch): Set | null {
-		return wrapSetOrNull(F.union_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	private _union_set_pcpatch(pa: Pcpatch): this | null {
+		return wrapSetOrNull(F.union_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_pcpatch, chosen by the arguments' types */
@@ -8159,13 +8139,13 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pcpatch, chosen by the arguments' types */
-	override intersection(pa: Pcpatch | Set): Set | null {
+	override intersection(pa: Pcpatch | Set): this | null {
 		if (pa instanceof Pcpatch) return this._intersection_set_pcpatch(pa as Pcpatch);
 		return super.intersection(pa as Set);
 	}
 
 	/** MEOS: minus_set_pcpatch, chosen by the arguments' types */
-	override minus(pa: Pcpatch | Set): Set | null {
+	override minus(pa: Pcpatch | Set): this | null {
 		if (pa instanceof Pcpatch) return this._minus_set_pcpatch(pa as Pcpatch);
 		return super.minus(pa as Set);
 	}
@@ -8181,7 +8161,7 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_pcpatch, chosen by the arguments' types */
-	override union(pa: Pcpatch | Set): Set | null {
+	override union(pa: Pcpatch | Set): this | null {
 		if (pa instanceof Pcpatch) return this._union_set_pcpatch(pa as Pcpatch);
 		return super.union(pa as Set);
 	}
@@ -8479,18 +8459,18 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pcpoint */
-	private _intersection_set_pcpoint(pt: Pcpoint): Set | null {
-		return wrapSetOrNull(F.intersection_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	private _intersection_set_pcpoint(pt: Pcpoint): this | null {
+		return wrapSetOrNull(F.intersection_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_pcpoint */
-	private _minus_set_pcpoint(pt: Pcpoint): Set | null {
-		return wrapSetOrNull(F.minus_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	private _minus_set_pcpoint(pt: Pcpoint): this | null {
+		return wrapSetOrNull(F.minus_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_pcpoint */
-	private _union_set_pcpoint(pt: Pcpoint): Set | null {
-		return wrapSetOrNull(F.union_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	private _union_set_pcpoint(pt: Pcpoint): this | null {
+		return wrapSetOrNull(F.union_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_pcpoint, chosen by the arguments' types */
@@ -8505,13 +8485,13 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pcpoint, chosen by the arguments' types */
-	override intersection(pt: Pcpoint | Set): Set | null {
+	override intersection(pt: Pcpoint | Set): this | null {
 		if (pt instanceof Pcpoint) return this._intersection_set_pcpoint(pt as Pcpoint);
 		return super.intersection(pt as Set);
 	}
 
 	/** MEOS: minus_set_pcpoint, chosen by the arguments' types */
-	override minus(pt: Pcpoint | Set): Set | null {
+	override minus(pt: Pcpoint | Set): this | null {
 		if (pt instanceof Pcpoint) return this._minus_set_pcpoint(pt as Pcpoint);
 		return super.minus(pt as Set);
 	}
@@ -8527,7 +8507,7 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_pcpoint, chosen by the arguments' types */
-	override union(pt: Pcpoint | Set): Set | null {
+	override union(pt: Pcpoint | Set): this | null {
 		if (pt instanceof Pcpoint) return this._union_set_pcpoint(pt as Pcpoint);
 		return super.union(pt as Set);
 	}
@@ -8725,8 +8705,8 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_compose */
-	compose(frame: Pose): Pose | null {
-		return wrapPoseOrNull(F.pose_compose(this.ptr, frame.ptr)) as Pose | null;
+	compose(frame: Pose): this | null {
+		return wrapPoseOrNull(F.pose_compose(this.ptr, frame.ptr)) as this | null;
 	}
 
 	/** MEOS: pose_compose_tpose */
@@ -8793,8 +8773,8 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_inverse */
-	inverse(): Pose | null {
-		return wrapPoseOrNull(F.pose_inverse(this.ptr)) as Pose | null;
+	inverse(): this | null {
+		return wrapPoseOrNull(F.pose_inverse(this.ptr)) as this | null;
 	}
 
 	/** MEOS: pose_le */
@@ -8823,8 +8803,8 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_normalize */
-	normalize(): Pose {
-		return wrapPose(F.pose_normalize(this.ptr)) as Pose;
+	normalize(): this {
+		return wrapPose(F.pose_normalize(this.ptr)) as this;
 	}
 
 	/** MEOS: pose_out */
@@ -8863,13 +8843,13 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_round */
-	round(maxdd: number = 0): Pose {
-		return wrapPose(F.pose_round(this.ptr, maxdd)) as Pose;
+	round(maxdd: number = 0): this {
+		return wrapPose(F.pose_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: pose_set_srid */
-	setSRID(srid: number): Pose {
-		return wrapPose(F.pose_set_srid(this.ptr, srid)) as Pose;
+	setSRID(srid: number): this {
+		return wrapPose(F.pose_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: pose_srid */
@@ -8918,13 +8898,13 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_transform */
-	transform(srid: number): Pose {
-		return wrapPose(F.pose_transform(this.ptr, srid)) as Pose;
+	transform(srid: number): this {
+		return wrapPose(F.pose_transform(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: pose_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Pose {
-		return wrapPose(F.pose_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Pose;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
+		return wrapPose(F.pose_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 
 	/** MEOS: pose_tstzspan_to_stbox */
@@ -9069,8 +9049,8 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_append */
-	append(pose: Pose): PoseChain {
-		return wrapPoseChain(F.posechain_append(this.ptr, pose.ptr)) as PoseChain;
+	append(pose: Pose): this {
+		return wrapPoseChain(F.posechain_append(this.ptr, pose.ptr)) as this;
 	}
 
 	/** MEOS: posechain_as_ewkb */
@@ -9237,13 +9217,13 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_round */
-	round(maxdd: number = 0): PoseChain {
-		return wrapPoseChain(F.posechain_round(this.ptr, maxdd)) as PoseChain;
+	round(maxdd: number = 0): this {
+		return wrapPoseChain(F.posechain_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: posechain_set_srid */
-	setSRID(srid: number): PoseChain {
-		return wrapPoseChain(F.posechain_set_srid(this.ptr, srid)) as PoseChain;
+	setSRID(srid: number): this {
+		return wrapPoseChain(F.posechain_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: posechain_srid */
@@ -9292,13 +9272,13 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_transform */
-	transform(srid_to: number): PoseChain | null {
-		return wrapPoseChainOrNull(F.posechain_transform(this.ptr, srid_to)) as PoseChain | null;
+	transform(srid_to: number): this | null {
+		return wrapPoseChainOrNull(F.posechain_transform(this.ptr, srid_to)) as this | null;
 	}
 
 	/** MEOS: posechain_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): PoseChain | null {
-		return wrapPoseChainOrNull(F.posechain_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as PoseChain | null;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this | null {
+		return wrapPoseChainOrNull(F.posechain_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this | null;
 	}
 
 	/** MEOS: posechain_tstzspan_to_stbox */
@@ -9378,18 +9358,18 @@ export class PoseChainSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_posechain */
-	private _intersection_set_posechain(pc: PoseChain): Set | null {
-		return wrapSetOrNull(F.intersection_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	private _intersection_set_posechain(pc: PoseChain): this | null {
+		return wrapSetOrNull(F.intersection_set_posechain(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_posechain */
-	private _minus_set_posechain(pc: PoseChain): Set | null {
-		return wrapSetOrNull(F.minus_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	private _minus_set_posechain(pc: PoseChain): this | null {
+		return wrapSetOrNull(F.minus_set_posechain(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_posechain */
-	private _union_set_posechain(pc: PoseChain): Set | null {
-		return wrapSetOrNull(F.union_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	private _union_set_posechain(pc: PoseChain): this | null {
+		return wrapSetOrNull(F.union_set_posechain(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_posechain, chosen by the arguments' types */
@@ -9409,13 +9389,13 @@ export class PoseChainSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_posechain, chosen by the arguments' types */
-	override intersection(pc: PoseChain | Set): Set | null {
+	override intersection(pc: PoseChain | Set): this | null {
 		if (pc instanceof PoseChain) return this._intersection_set_posechain(pc as PoseChain);
 		return super.intersection(pc as Set);
 	}
 
 	/** MEOS: minus_set_posechain, chosen by the arguments' types */
-	override minus(pc: PoseChain | Set): Set | null {
+	override minus(pc: PoseChain | Set): this | null {
 		if (pc instanceof PoseChain) return this._minus_set_posechain(pc as PoseChain);
 		return super.minus(pc as Set);
 	}
@@ -9431,7 +9411,7 @@ export class PoseChainSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_posechain, chosen by the arguments' types */
-	override union(pc: PoseChain | Set): Set | null {
+	override union(pc: PoseChain | Set): this | null {
 		if (pc instanceof PoseChain) return this._union_set_posechain(pc as PoseChain);
 		return super.union(pc as Set);
 	}
@@ -9513,18 +9493,18 @@ export class PoseSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pose */
-	private _intersection_set_pose(pose: Pose): Set | null {
-		return wrapSetOrNull(F.intersection_set_pose(this.ptr, pose.ptr)) as Set | null;
+	private _intersection_set_pose(pose: Pose): this | null {
+		return wrapSetOrNull(F.intersection_set_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_pose */
-	private _minus_set_pose(pose: Pose): Set | null {
-		return wrapSetOrNull(F.minus_set_pose(this.ptr, pose.ptr)) as Set | null;
+	private _minus_set_pose(pose: Pose): this | null {
+		return wrapSetOrNull(F.minus_set_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_pose */
-	private _union_set_pose(pose: Pose): Set | null {
-		return wrapSetOrNull(F.union_set_pose(this.ptr, pose.ptr)) as Set | null;
+	private _union_set_pose(pose: Pose): this | null {
+		return wrapSetOrNull(F.union_set_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_pose, chosen by the arguments' types */
@@ -9544,13 +9524,13 @@ export class PoseSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_pose, chosen by the arguments' types */
-	override intersection(pose: Pose | Set): Set | null {
+	override intersection(pose: Pose | Set): this | null {
 		if (pose instanceof Pose) return this._intersection_set_pose(pose as Pose);
 		return super.intersection(pose as Set);
 	}
 
 	/** MEOS: minus_set_pose, chosen by the arguments' types */
-	override minus(pose: Pose | Set): Set | null {
+	override minus(pose: Pose | Set): this | null {
 		if (pose instanceof Pose) return this._minus_set_pose(pose as Pose);
 		return super.minus(pose as Set);
 	}
@@ -9566,7 +9546,7 @@ export class PoseSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_pose, chosen by the arguments' types */
-	override union(pose: Pose | Set): Set | null {
+	override union(pose: Pose | Set): this | null {
 		if (pose instanceof Pose) return this._union_set_pose(pose as Pose);
 		return super.union(pose as Set);
 	}
@@ -9648,23 +9628,23 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_quadbin */
-	private _intersection_set_quadbin(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.intersection_set_quadbin(this.ptr, cell)) as Set | null;
+	private _intersection_set_quadbin(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.intersection_set_quadbin(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: minus_set_quadbin */
-	private _minus_set_quadbin(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.minus_set_quadbin(this.ptr, cell)) as Set | null;
+	private _minus_set_quadbin(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.minus_set_quadbin(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: union_set_quadbin */
-	private _union_set_quadbin(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.union_set_quadbin(this.ptr, cell)) as Set | null;
+	private _union_set_quadbin(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.union_set_quadbin(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: quadbinset_compact_cells */
-	compactCells(): Set | null {
-		return wrapSetOrNull(F.quadbinset_compact_cells(this.ptr)) as Set | null;
+	compactCells(): this | null {
+		return wrapSetOrNull(F.quadbinset_compact_cells(this.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_quadbin, chosen by the arguments' types */
@@ -9674,8 +9654,8 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: quadbinset_cover_cells */
-	coverCells(resolution: number): Set | null {
-		return wrapSetOrNull(F.quadbinset_cover_cells(this.ptr, resolution)) as Set | null;
+	coverCells(resolution: number): this | null {
+		return wrapSetOrNull(F.quadbinset_cover_cells(this.ptr, resolution)) as this | null;
 	}
 
 	/** MEOS: quadbinset_end_value */
@@ -9689,18 +9669,18 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: quadbinset_grid_disk */
-	gridDisk(k: number): Set | null {
-		return wrapSetOrNull(F.quadbinset_grid_disk(this.ptr, k)) as Set | null;
+	gridDisk(k: number): this | null {
+		return wrapSetOrNull(F.quadbinset_grid_disk(this.ptr, k)) as this | null;
 	}
 
 	/** MEOS: intersection_set_quadbin, chosen by the arguments' types */
-	override intersection(cell: Quadbin | Set): Set | null {
+	override intersection(cell: Quadbin | Set): this | null {
 		if (typeof cell === 'bigint') return this._intersection_set_quadbin(cell as Quadbin);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_quadbin, chosen by the arguments' types */
-	override minus(cell: Quadbin | Set): Set | null {
+	override minus(cell: Quadbin | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_quadbin(cell as Quadbin);
 		return super.minus(cell as Set);
 	}
@@ -9716,18 +9696,18 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_quadbin_set */
-	rintersection(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.intersection_quadbin_set(cell, this.ptr)) as Set | null;
+	rintersection(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.intersection_quadbin_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_quadbin_set */
-	rminus(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.minus_quadbin_set(cell, this.ptr)) as Set | null;
+	rminus(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.minus_quadbin_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_quadbin_set */
-	runion(cell: Quadbin): Set | null {
-		return wrapSetOrNull(F.union_quadbin_set(cell, this.ptr)) as Set | null;
+	runion(cell: Quadbin): this | null {
+		return wrapSetOrNull(F.union_quadbin_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: quadbinset_start_value */
@@ -9736,12 +9716,12 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: quadbinset_uncompact_cells */
-	uncompactCells(resolution: number): Set | null {
-		return wrapSetOrNull(F.quadbinset_uncompact_cells(this.ptr, resolution)) as Set | null;
+	uncompactCells(resolution: number): this | null {
+		return wrapSetOrNull(F.quadbinset_uncompact_cells(this.ptr, resolution)) as this | null;
 	}
 
 	/** MEOS: union_set_quadbin, chosen by the arguments' types */
-	override union(cell: Quadbin | Set): Set | null {
+	override union(cell: Quadbin | Set): this | null {
 		if (typeof cell === 'bigint') return this._union_set_quadbin(cell as Quadbin);
 		return super.union(cell as Set);
 	}
@@ -10521,23 +10501,23 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_s2cell */
-	private _intersection_set_s2cell(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.intersection_set_s2cell(this.ptr, cell)) as Set | null;
+	private _intersection_set_s2cell(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.intersection_set_s2cell(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: minus_set_s2cell */
-	private _minus_set_s2cell(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.minus_set_s2cell(this.ptr, cell)) as Set | null;
+	private _minus_set_s2cell(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.minus_set_s2cell(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: union_set_s2cell */
-	private _union_set_s2cell(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.union_set_s2cell(this.ptr, cell)) as Set | null;
+	private _union_set_s2cell(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.union_set_s2cell(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: s2cellset_compact_cells */
-	compactCells(): Set | null {
-		return wrapSetOrNull(F.s2cellset_compact_cells(this.ptr)) as Set | null;
+	compactCells(): this | null {
+		return wrapSetOrNull(F.s2cellset_compact_cells(this.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_s2cell, chosen by the arguments' types */
@@ -10547,8 +10527,8 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: s2cellset_cover_cells */
-	coverCells(resolution: number): Set | null {
-		return wrapSetOrNull(F.s2cellset_cover_cells(this.ptr, resolution)) as Set | null;
+	coverCells(resolution: number): this | null {
+		return wrapSetOrNull(F.s2cellset_cover_cells(this.ptr, resolution)) as this | null;
 	}
 
 	/** MEOS: s2cellset_end_value */
@@ -10562,13 +10542,13 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_s2cell, chosen by the arguments' types */
-	override intersection(cell: S2CellId | Set): Set | null {
+	override intersection(cell: S2CellId | Set): this | null {
 		if (typeof cell === 'bigint') return this._intersection_set_s2cell(cell as S2CellId);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_s2cell, chosen by the arguments' types */
-	override minus(cell: S2CellId | Set): Set | null {
+	override minus(cell: S2CellId | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_s2cell(cell as S2CellId);
 		return super.minus(cell as Set);
 	}
@@ -10584,18 +10564,18 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_s2cell_set */
-	rintersection(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.intersection_s2cell_set(cell, this.ptr)) as Set | null;
+	rintersection(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.intersection_s2cell_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_s2cell_set */
-	rminus(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.minus_s2cell_set(cell, this.ptr)) as Set | null;
+	rminus(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.minus_s2cell_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_s2cell_set */
-	runion(cell: S2CellId): Set | null {
-		return wrapSetOrNull(F.union_s2cell_set(cell, this.ptr)) as Set | null;
+	runion(cell: S2CellId): this | null {
+		return wrapSetOrNull(F.union_s2cell_set(cell, this.ptr)) as this | null;
 	}
 
 	/** MEOS: s2cellset_start_value */
@@ -10604,12 +10584,12 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: s2cellset_uncompact_cells */
-	uncompactCells(resolution: number): Set | null {
-		return wrapSetOrNull(F.s2cellset_uncompact_cells(this.ptr, resolution)) as Set | null;
+	uncompactCells(resolution: number): this | null {
+		return wrapSetOrNull(F.s2cellset_uncompact_cells(this.ptr, resolution)) as this | null;
 	}
 
 	/** MEOS: union_set_s2cell, chosen by the arguments' types */
-	override union(cell: S2CellId | Set): Set | null {
+	override union(cell: S2CellId | Set): this | null {
 		if (typeof cell === 'bigint') return this._union_set_s2cell(cell as S2CellId);
 		return super.union(cell as Set);
 	}
@@ -10910,7 +10890,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: nad_stbox_trgeometry */
-	private _nad_stbox_trgeometry(temp: Temporal): number {
+	private _nad_stbox_trgeometry(temp: TRGeometry): number {
 		return F.nad_stbox_trgeometry(this.ptr, temp.ptr);
 	}
 
@@ -11126,15 +11106,15 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_expand_space */
-	expandSpace(d: number): STBox | null {
-		return wrapSTBoxOrNull(F.stbox_expand_space(this.ptr, d)) as STBox | null;
+	expandSpace(d: number): this | null {
+		return wrapSTBoxOrNull(F.stbox_expand_space(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: stbox_expand_time */
-	expandTime(interv: Interval): STBox | null {
+	expandTime(interv: Interval): this | null {
 		const _interv = _putInterval(interv);
 		try {
-			return wrapSTBoxOrNull(F.stbox_expand_time(this.ptr, _interv)) as STBox | null;
+			return wrapSTBoxOrNull(F.stbox_expand_time(this.ptr, _interv)) as this | null;
 		} finally {
 			_free(_interv);
 		}
@@ -11153,8 +11133,8 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_get_space */
-	getSpace(): STBox {
-		return wrapSTBox(F.stbox_get_space(this.ptr)) as STBox;
+	getSpace(): this {
+		return wrapSTBox(F.stbox_get_space(this.ptr)) as this;
 	}
 
 	/** MEOS: stbox_gt */
@@ -11188,8 +11168,8 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: intersection_stbox_stbox */
-	intersection(box2: STBox): STBox | null {
-		return wrapSTBoxOrNull(F.intersection_stbox_stbox(this.ptr, box2.ptr)) as STBox | null;
+	intersection(box2: STBox): this | null {
+		return wrapSTBoxOrNull(F.intersection_stbox_stbox(this.ptr, box2.ptr)) as this | null;
 	}
 
 	/** MEOS: stbox_isgeodetic */
@@ -11215,10 +11195,10 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: nad_stbox_geo, nad_stbox_stbox, nad_stbox_trgeometry, chosen by the arguments' types */
-	nad(gs: Geo | STBox | Temporal, spheroid?: boolean): number {
+	nad(gs: Geo | STBox | TRGeometry, spheroid?: boolean): number {
+		if (gs instanceof TRGeometry && spheroid === undefined) return this._nad_stbox_trgeometry(gs as TRGeometry);
 		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nad_stbox_geo(gs as Geo, spheroid as boolean);
 		if (gs instanceof STBox && typeof spheroid === 'boolean') return this._nad_stbox_stbox(gs as STBox, spheroid as boolean);
-		if (gs instanceof Temporal && spheroid === undefined) return this._nad_stbox_trgeometry(gs as Temporal);
 		throw new TypeError(`STBox.nad: no overload takes these arguments`);
 	}
 
@@ -11328,8 +11308,8 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_round */
-	round(maxdd: number = 0): STBox {
-		return wrapSTBox(F.stbox_round(this.ptr, maxdd)) as STBox;
+	round(maxdd: number = 0): this {
+		return wrapSTBox(F.stbox_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: same_stbox_stbox, same_stbox_tspatial, chosen by the arguments' types */
@@ -11340,26 +11320,26 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_scale_time */
-	scaleTime(duration: Interval): STBox {
+	scaleTime(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSTBox(F.stbox_scale_time(this.ptr, _duration)) as STBox;
+			return wrapSTBox(F.stbox_scale_time(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: stbox_set_srid */
-	setSRID(srid: number): STBox {
-		return wrapSTBox(F.stbox_set_srid(this.ptr, srid)) as STBox;
+	setSRID(srid: number): this {
+		return wrapSTBox(F.stbox_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: stbox_shift_scale_time */
-	shiftScaleTime(shift: Interval, duration: Interval): STBox {
+	shiftScaleTime(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSTBox(F.stbox_shift_scale_time(this.ptr, _shift, _duration)) as STBox;
+			return wrapSTBox(F.stbox_shift_scale_time(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -11367,10 +11347,10 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_shift_time */
-	shiftTime(shift: Interval): STBox {
+	shiftTime(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapSTBox(F.stbox_shift_time(this.ptr, _shift)) as STBox;
+			return wrapSTBox(F.stbox_shift_time(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
@@ -11491,18 +11471,18 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_transform */
-	transform(srid: number): STBox | null {
-		return wrapSTBoxOrNull(F.stbox_transform(this.ptr, srid)) as STBox | null;
+	transform(srid: number): this | null {
+		return wrapSTBoxOrNull(F.stbox_transform(this.ptr, srid)) as this | null;
 	}
 
 	/** MEOS: stbox_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): STBox {
-		return wrapSTBox(F.stbox_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as STBox;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
+		return wrapSTBox(F.stbox_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 
 	/** MEOS: union_stbox_stbox */
-	union(box2: STBox, strict: boolean): STBox {
-		return wrapSTBox(F.union_stbox_stbox(this.ptr, box2.ptr, strict)) as STBox;
+	union(box2: STBox, strict: boolean): this {
+		return wrapSTBox(F.union_stbox_stbox(this.ptr, box2.ptr, strict)) as this;
 	}
 
 	/** MEOS: stbox_volume */
@@ -11682,8 +11662,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_after_timestamptz */
-	afterTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	afterTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_after_timestamptz(this.ptr, t, strict)) as this | null;
 	}
 
 	/** MEOS: always_eq_temporal_temporal */
@@ -11717,18 +11697,18 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_append_tinstant */
-	appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): Temporal {
+	appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): this {
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.temporal_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as Temporal;
+			return wrapTemporal(F.temporal_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as this;
 		} finally {
 			_free(_maxt);
 		}
 	}
 
 	/** MEOS: temporal_append_tsequence */
-	appendTsequence(seq: Temporal, expand: boolean): Temporal {
-		return wrapTemporal(F.temporal_append_tsequence(this.ptr, seq.ptr, expand)) as Temporal;
+	appendTsequence(seq: Temporal, expand: boolean): this {
+		return wrapTemporal(F.temporal_append_tsequence(this.ptr, seq.ptr, expand)) as this;
 	}
 
 	/** MEOS: temporal_as_hexwkb */
@@ -11742,18 +11722,18 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_as_tinstant */
-	asTinstant(): Temporal {
-		return wrapTemporal(F.temporal_as_tinstant(this.ptr)) as Temporal;
+	asTinstant(): this {
+		return wrapTemporal(F.temporal_as_tinstant(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_as_tsequence */
-	asTsequence(interp: number): Temporal {
-		return wrapTemporal(F.temporal_as_tsequence(this.ptr, interp)) as Temporal;
+	asTsequence(interp: number): this {
+		return wrapTemporal(F.temporal_as_tsequence(this.ptr, interp)) as this;
 	}
 
 	/** MEOS: temporal_as_tsequenceset */
-	asTsequenceset(interp: number): Temporal {
-		return wrapTemporal(F.temporal_as_tsequenceset(this.ptr, interp)) as Temporal;
+	asTsequenceset(interp: number): this {
+		return wrapTemporal(F.temporal_as_tsequenceset(this.ptr, interp)) as this;
 	}
 
 	/** MEOS: temporal_as_wkb */
@@ -11762,38 +11742,38 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_at_max */
-	atMax(): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_max(this.ptr)) as Temporal | null;
+	atMax(): this | null {
+		return wrapTemporalOrNull(F.temporal_at_max(this.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_at_min */
-	atMin(): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_min(this.ptr)) as Temporal | null;
+	atMin(): this | null {
+		return wrapTemporalOrNull(F.temporal_at_min(this.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_at_timestamptz */
-	atTimestamptz(t: TimestampTz): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_timestamptz(this.ptr, t)) as Temporal | null;
+	atTimestamptz(t: TimestampTz): this | null {
+		return wrapTemporalOrNull(F.temporal_at_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: temporal_at_tstzset */
-	atTstzset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_tstzset(this.ptr, s.ptr)) as Temporal | null;
+	atTstzset(s: Set): this | null {
+		return wrapTemporalOrNull(F.temporal_at_tstzset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_at_tstzspan */
-	atTstzspan(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_tstzspan(this.ptr, s.ptr)) as Temporal | null;
+	atTstzspan(s: Span): this | null {
+		return wrapTemporalOrNull(F.temporal_at_tstzspan(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_at_tstzspanset */
-	atTstzspanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_tstzspanset(this.ptr, ss.ptr)) as Temporal | null;
+	atTstzspanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.temporal_at_tstzspanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_at_values */
-	atValues(set: Set): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_at_values(this.ptr, set.ptr)) as Temporal | null;
+	atValues(set: Set): this | null {
+		return wrapTemporalOrNull(F.temporal_at_values(this.ptr, set.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_average_hausdorff_distance */
@@ -11812,8 +11792,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_before_timestamptz */
-	beforeTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_before_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	beforeTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_before_timestamptz(this.ptr, t, strict)) as this | null;
 	}
 
 	/** MEOS: temporal_cmp */
@@ -11837,28 +11817,28 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_delete_timestamptz */
-	deleteTimestamptz(t: TimestampTz, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_delete_timestamptz(this.ptr, t, connect)) as Temporal | null;
+	deleteTimestamptz(t: TimestampTz, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_delete_timestamptz(this.ptr, t, connect)) as this | null;
 	}
 
 	/** MEOS: temporal_delete_tstzset */
-	deleteTstzset(s: Set, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_delete_tstzset(this.ptr, s.ptr, connect)) as Temporal | null;
+	deleteTstzset(s: Set, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_delete_tstzset(this.ptr, s.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: temporal_delete_tstzspan */
-	deleteTstzspan(s: Span, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_delete_tstzspan(this.ptr, s.ptr, connect)) as Temporal | null;
+	deleteTstzspan(s: Span, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_delete_tstzspan(this.ptr, s.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: temporal_delete_tstzspanset */
-	deleteTstzspanset(ss: SpanSet, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_delete_tstzspanset(this.ptr, ss.ptr, connect)) as Temporal | null;
+	deleteTstzspanset(ss: SpanSet, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.temporal_delete_tstzspanset(this.ptr, ss.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: temporal_derivative */
-	derivative(): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_derivative(this.ptr)) as Temporal | null;
+	derivative(): this | null {
+		return wrapTemporalOrNull(F.temporal_derivative(this.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_duration */
@@ -11892,13 +11872,13 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_end_instant */
-	endInstant(): Temporal {
-		return wrapTemporal(F.temporal_end_instant(this.ptr)) as Temporal;
+	endInstant(): this {
+		return wrapTemporal(F.temporal_end_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_end_sequence */
-	endSequence(): Temporal {
-		return wrapTemporal(F.temporal_end_sequence(this.ptr)) as Temporal;
+	endSequence(): this {
+		return wrapTemporal(F.temporal_end_sequence(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_end_timestamptz */
@@ -11942,8 +11922,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_ext_kalman_filter */
-	extKalmanFilter(gate: number, q: number, variance: number, to_drop: boolean = true): Temporal {
-		return wrapTemporal(F.temporal_ext_kalman_filter(this.ptr, gate, q, variance, to_drop)) as Temporal;
+	extKalmanFilter(gate: number, q: number, variance: number, to_drop: boolean = true): this {
+		return wrapTemporal(F.temporal_ext_kalman_filter(this.ptr, gate, q, variance, to_drop)) as this;
 	}
 
 	/** MEOS: temporal_frechet_distance */
@@ -11997,13 +11977,13 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_insert */
-	insert(temp2: Temporal, connect: boolean = true): Temporal {
-		return wrapTemporal(F.temporal_insert(this.ptr, temp2.ptr, connect)) as Temporal;
+	insert(temp2: Temporal, connect: boolean = true): this {
+		return wrapTemporal(F.temporal_insert(this.ptr, temp2.ptr, connect)) as this;
 	}
 
 	/** MEOS: temporal_instant_n */
-	instantN(n: number): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_instant_n(this.ptr, n)) as Temporal | null;
+	instantN(n: number): this | null {
+		return wrapTemporalOrNull(F.temporal_instant_n(this.ptr, n)) as this | null;
 	}
 
 	/** MEOS: temporal_instants */
@@ -12052,8 +12032,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_max_instant */
-	maxInstant(): Temporal {
-		return wrapTemporal(F.temporal_max_instant(this.ptr)) as Temporal;
+	maxInstant(): this {
+		return wrapTemporal(F.temporal_max_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_mem_size */
@@ -12062,48 +12042,48 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_merge */
-	merge(temp2: Temporal): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_merge(this.ptr, temp2.ptr)) as Temporal | null;
+	merge(temp2: Temporal): this | null {
+		return wrapTemporalOrNull(F.temporal_merge(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_min_instant */
-	minInstant(): Temporal {
-		return wrapTemporal(F.temporal_min_instant(this.ptr)) as Temporal;
+	minInstant(): this {
+		return wrapTemporal(F.temporal_min_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_minus_max */
-	minusMax(): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_max(this.ptr)) as Temporal | null;
+	minusMax(): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_max(this.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_min */
-	minusMin(): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_min(this.ptr)) as Temporal | null;
+	minusMin(): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_min(this.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_timestamptz */
-	minusTimestamptz(t: TimestampTz): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_timestamptz(this.ptr, t)) as Temporal | null;
+	minusTimestamptz(t: TimestampTz): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_tstzset */
-	minusTstzset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_tstzset(this.ptr, s.ptr)) as Temporal | null;
+	minusTstzset(s: Set): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_tstzset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_tstzspan */
-	minusTstzspan(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_tstzspan(this.ptr, s.ptr)) as Temporal | null;
+	minusTstzspan(s: Span): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_tstzspan(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_tstzspanset */
-	minusTstzspanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_tstzspanset(this.ptr, ss.ptr)) as Temporal | null;
+	minusTstzspanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_tstzspanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_minus_values */
-	minusValues(set: Set): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_minus_values(this.ptr, set.ptr)) as Temporal | null;
+	minusValues(set: Set): this | null {
+		return wrapTemporalOrNull(F.temporal_minus_values(this.ptr, set.ptr)) as this | null;
 	}
 
 	/** MEOS: temporal_ne */
@@ -12142,8 +12122,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_round */
-	round(maxdd: number = 0): Temporal {
-		return wrapTemporal(F.temporal_round(this.ptr, maxdd)) as Temporal;
+	round(maxdd: number = 0): this {
+		return wrapTemporal(F.temporal_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: same_temporal_tstzspan */
@@ -12152,10 +12132,10 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_scale_time */
-	scaleTime(duration: Interval): Temporal {
+	scaleTime(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTemporal(F.temporal_scale_time(this.ptr, _duration)) as Temporal;
+			return wrapTemporal(F.temporal_scale_time(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
@@ -12192,8 +12172,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_sequence_n */
-	sequenceN(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.temporal_sequence_n(this.ptr, i)) as Temporal | null;
+	sequenceN(i: number): this | null {
+		return wrapTemporalOrNull(F.temporal_sequence_n(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: temporal_sequences */
@@ -12217,16 +12197,16 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_set_interp */
-	setInterp(interp: number): Temporal {
-		return wrapTemporal(F.temporal_set_interp(this.ptr, interp)) as Temporal;
+	setInterp(interp: number): this {
+		return wrapTemporal(F.temporal_set_interp(this.ptr, interp)) as this;
 	}
 
 	/** MEOS: temporal_shift_scale_time */
-	shiftScaleTime(shift: Interval, duration: Interval): Temporal {
+	shiftScaleTime(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTemporal(F.temporal_shift_scale_time(this.ptr, _shift, _duration)) as Temporal;
+			return wrapTemporal(F.temporal_shift_scale_time(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -12234,35 +12214,35 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_shift_time */
-	shiftTime(shift: Interval): Temporal {
+	shiftTime(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapTemporal(F.temporal_shift_time(this.ptr, _shift)) as Temporal;
+			return wrapTemporal(F.temporal_shift_time(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
 	}
 
 	/** MEOS: temporal_simplify_dp */
-	simplifyDp(dist: number, synchronized: boolean = true): Temporal {
-		return wrapTemporal(F.temporal_simplify_dp(this.ptr, dist, synchronized)) as Temporal;
+	simplifyDp(dist: number, synchronized: boolean = true): this {
+		return wrapTemporal(F.temporal_simplify_dp(this.ptr, dist, synchronized)) as this;
 	}
 
 	/** MEOS: temporal_simplify_max_dist */
-	simplifyMaxDist(dist: number, synchronized: boolean = true): Temporal {
-		return wrapTemporal(F.temporal_simplify_max_dist(this.ptr, dist, synchronized)) as Temporal;
+	simplifyMaxDist(dist: number, synchronized: boolean = true): this {
+		return wrapTemporal(F.temporal_simplify_max_dist(this.ptr, dist, synchronized)) as this;
 	}
 
 	/** MEOS: temporal_simplify_min_dist */
-	simplifyMinDist(dist: number): Temporal {
-		return wrapTemporal(F.temporal_simplify_min_dist(this.ptr, dist)) as Temporal;
+	simplifyMinDist(dist: number): this {
+		return wrapTemporal(F.temporal_simplify_min_dist(this.ptr, dist)) as this;
 	}
 
 	/** MEOS: temporal_simplify_min_tdelta */
-	simplifyMinTdelta(mint: Interval): Temporal {
+	simplifyMinTdelta(mint: Interval): this {
 		const _mint = _putInterval(mint);
 		try {
-			return wrapTemporal(F.temporal_simplify_min_tdelta(this.ptr, _mint)) as Temporal;
+			return wrapTemporal(F.temporal_simplify_min_tdelta(this.ptr, _mint)) as this;
 		} finally {
 			_free(_mint);
 		}
@@ -12334,13 +12314,13 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_start_instant */
-	startInstant(): Temporal {
-		return wrapTemporal(F.temporal_start_instant(this.ptr)) as Temporal;
+	startInstant(): this {
+		return wrapTemporal(F.temporal_start_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_start_sequence */
-	startSequence(): Temporal {
-		return wrapTemporal(F.temporal_start_sequence(this.ptr)) as Temporal;
+	startSequence(): this {
+		return wrapTemporal(F.temporal_start_sequence(this.ptr)) as this;
 	}
 
 	/** MEOS: temporal_start_timestamptz */
@@ -12349,10 +12329,10 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_stops */
-	stops(maxdist: number, minduration: Interval): Temporal | null {
+	stops(maxdist: number, minduration: Interval): this | null {
 		const _minduration = _putInterval(minduration);
 		try {
-			return wrapTemporalOrNull(F.temporal_stops(this.ptr, maxdist, _minduration)) as Temporal | null;
+			return wrapTemporalOrNull(F.temporal_stops(this.ptr, maxdist, _minduration)) as this | null;
 		} finally {
 			_free(_minduration);
 		}
@@ -12461,18 +12441,18 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_tsample */
-	tsample(duration: Interval, torigin: TimestampTz, interp: number): Temporal | null {
+	tsample(duration: Interval, torigin: TimestampTz, interp: number): this | null {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTemporalOrNull(F.temporal_tsample(this.ptr, _duration, torigin, interp)) as Temporal | null;
+			return wrapTemporalOrNull(F.temporal_tsample(this.ptr, _duration, torigin, interp)) as this | null;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: temporal_update */
-	update(temp2: Temporal, connect: boolean = true): Temporal {
-		return wrapTemporal(F.temporal_update(this.ptr, temp2.ptr, connect)) as Temporal;
+	update(temp2: Temporal, connect: boolean = true): this {
+		return wrapTemporal(F.temporal_update(this.ptr, temp2.ptr, connect)) as this;
 	}
 
 	/** MEOS: temporal_upper_inc */
@@ -12797,13 +12777,13 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: tnumber_abs */
-	abs(): Temporal {
-		return wrapTemporal(F.tnumber_abs(this.ptr)) as Temporal;
+	abs(): this {
+		return wrapTemporal(F.tnumber_abs(this.ptr)) as this;
 	}
 
 	/** MEOS: add_tnumber_tnumber */
-	add(tnumber2: TNumber): Temporal | null {
-		return wrapTemporalOrNull(F.add_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	add(tnumber2: TNumber): this | null {
+		return wrapTemporalOrNull(F.add_tnumber_tnumber(this.ptr, tnumber2.ptr)) as this | null;
 	}
 
 	/** MEOS: adjacent_tnumber_numspan, adjacent_tnumber_tbox, adjacent_tnumber_tnumber, chosen by the arguments' types */
@@ -12827,18 +12807,18 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: tnumber_at_span */
-	atSpan(span: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_at_span(this.ptr, span.ptr)) as Temporal | null;
+	atSpan(span: Span): this | null {
+		return wrapTemporalOrNull(F.tnumber_at_span(this.ptr, span.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_at_spanset */
-	atSpanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_at_spanset(this.ptr, ss.ptr)) as Temporal | null;
+	atSpanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.tnumber_at_spanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_at_tbox */
-	atTbox(box: TBox): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_at_tbox(this.ptr, box.ptr)) as Temporal | null;
+	atTbox(box: TBox): this | null {
+		return wrapTemporalOrNull(F.tnumber_at_tbox(this.ptr, box.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_avg_value */
@@ -12870,13 +12850,13 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: tnumber_delta_value */
-	deltaValue(): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_delta_value(this.ptr)) as Temporal | null;
+	deltaValue(): this | null {
+		return wrapTemporalOrNull(F.tnumber_delta_value(this.ptr)) as this | null;
 	}
 
 	/** MEOS: div_tnumber_tnumber */
-	div(tnumber2: TNumber): Temporal | null {
-		return wrapTemporalOrNull(F.div_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	div(tnumber2: TNumber): this | null {
+		return wrapTemporalOrNull(F.div_tnumber_tnumber(this.ptr, tnumber2.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_integral */
@@ -12893,23 +12873,23 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: tnumber_minus_span */
-	minusSpan(span: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_minus_span(this.ptr, span.ptr)) as Temporal | null;
+	minusSpan(span: Span): this | null {
+		return wrapTemporalOrNull(F.tnumber_minus_span(this.ptr, span.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_minus_spanset */
-	minusSpanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_minus_spanset(this.ptr, ss.ptr)) as Temporal | null;
+	minusSpanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.tnumber_minus_spanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_minus_tbox */
-	minusTbox(box: TBox): Temporal | null {
-		return wrapTemporalOrNull(F.tnumber_minus_tbox(this.ptr, box.ptr)) as Temporal | null;
+	minusTbox(box: TBox): this | null {
+		return wrapTemporalOrNull(F.tnumber_minus_tbox(this.ptr, box.ptr)) as this | null;
 	}
 
 	/** MEOS: mul_tnumber_tnumber */
-	mul(tnumber2: TNumber): Temporal | null {
-		return wrapTemporalOrNull(F.mul_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	mul(tnumber2: TNumber): this | null {
+		return wrapTemporalOrNull(F.mul_tnumber_tnumber(this.ptr, tnumber2.ptr)) as this | null;
 	}
 
 	/** MEOS: overafter_tnumber_tbox, overafter_tnumber_tnumber, chosen by the arguments' types */
@@ -13007,8 +12987,8 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: sub_tnumber_tnumber */
-	sub(tnumber2: TNumber): Temporal | null {
-		return wrapTemporalOrNull(F.sub_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	sub(tnumber2: TNumber): this | null {
+		return wrapTemporalOrNull(F.sub_tnumber_tnumber(this.ptr, tnumber2.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_tboxes */
@@ -13032,8 +13012,8 @@ export class TNumber extends Temporal {
 	}
 
 	/** MEOS: tdistance_tnumber_tnumber */
-	tdistance(temp2: TNumber): Temporal | null {
-		return wrapTemporalOrNull(F.tdistance_tnumber_tnumber(this.ptr, temp2.ptr)) as Temporal | null;
+	tdistance(temp2: TNumber): this | null {
+		return wrapTemporalOrNull(F.tdistance_tnumber_tnumber(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: tnumber_to_span */
@@ -13073,8 +13053,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: add_tbigint_bigint */
-	private _add_tbigint_bigint(i: number): Temporal {
-		return wrapTemporal(F.add_tbigint_bigint(this.ptr, i)) as Temporal;
+	private _add_tbigint_bigint(i: number): this {
+		return wrapTemporal(F.add_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: always_eq_tbigint_bigint */
@@ -13108,8 +13088,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: div_tbigint_bigint */
-	private _div_tbigint_bigint(i: number): Temporal {
-		return wrapTemporal(F.div_tbigint_bigint(this.ptr, i)) as Temporal;
+	private _div_tbigint_bigint(i: number): this {
+		return wrapTemporal(F.div_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: ever_eq_tbigint_bigint */
@@ -13143,8 +13123,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: mul_tbigint_bigint */
-	private _mul_tbigint_bigint(i: number): Temporal {
-		return wrapTemporal(F.mul_tbigint_bigint(this.ptr, i)) as Temporal;
+	private _mul_tbigint_bigint(i: number): this {
+		return wrapTemporal(F.mul_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: nad_tbigint_bigint */
@@ -13168,8 +13148,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: sub_tbigint_bigint */
-	private _sub_tbigint_bigint(i: number): Temporal {
-		return wrapTemporal(F.sub_tbigint_bigint(this.ptr, i)) as Temporal;
+	private _sub_tbigint_bigint(i: number): this {
+		return wrapTemporal(F.sub_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: teq_tbigint_bigint */
@@ -13203,7 +13183,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: add_tbigint_bigint, chosen by the arguments' types */
-	override add(i: number | TNumber): Temporal | null {
+	override add(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._add_tbigint_bigint(i as number);
 		return super.add(i as TNumber);
 	}
@@ -13250,12 +13230,12 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_at_value */
-	atValue(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.tbigint_at_value(this.ptr, i)) as Temporal | null;
+	atValue(i: number): this | null {
+		return wrapTemporalOrNull(F.tbigint_at_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: div_tbigint_bigint, chosen by the arguments' types */
-	override div(i: number | TNumber): Temporal | null {
+	override div(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._div_tbigint_bigint(i as number);
 		return super.div(i as TNumber);
 	}
@@ -13307,8 +13287,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_minus_value */
-	minusValue(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.tbigint_minus_value(this.ptr, i)) as Temporal | null;
+	minusValue(i: number): this | null {
+		return wrapTemporalOrNull(F.tbigint_minus_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: tbigint_min_value */
@@ -13317,7 +13297,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: mul_tbigint_bigint, chosen by the arguments' types */
-	override mul(i: number | TNumber): Temporal | null {
+	override mul(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._mul_tbigint_bigint(i as number);
 		return super.mul(i as TNumber);
 	}
@@ -13337,8 +13317,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: add_bigint_tbigint */
-	radd(i: number): Temporal {
-		return wrapTemporal(F.add_bigint_tbigint(i, this.ptr)) as Temporal;
+	radd(i: number): this {
+		return wrapTemporal(F.add_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: always_eq_bigint_tbigint */
@@ -13372,8 +13352,8 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: div_bigint_tbigint */
-	rdiv(i: number): Temporal {
-		return wrapTemporal(F.div_bigint_tbigint(i, this.ptr)) as Temporal;
+	rdiv(i: number): this {
+		return wrapTemporal(F.div_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: ever_eq_bigint_tbigint */
@@ -13407,13 +13387,13 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: mul_bigint_tbigint */
-	rmul(i: number): Temporal {
-		return wrapTemporal(F.mul_bigint_tbigint(i, this.ptr)) as Temporal;
+	rmul(i: number): this {
+		return wrapTemporal(F.mul_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: sub_bigint_tbigint */
-	rsub(i: number): Temporal {
-		return wrapTemporal(F.sub_bigint_tbigint(i, this.ptr)) as Temporal;
+	rsub(i: number): this {
+		return wrapTemporal(F.sub_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: teq_bigint_tbigint */
@@ -13447,18 +13427,18 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_scale_value */
-	scaleValue(width: number): Temporal {
-		return wrapTemporal(F.tbigint_scale_value(this.ptr, width)) as Temporal;
+	scaleValue(width: number): this {
+		return wrapTemporal(F.tbigint_scale_value(this.ptr, width)) as this;
 	}
 
 	/** MEOS: tbigint_shift_scale_value */
-	shiftScaleValue(shift: number, width: number): Temporal {
-		return wrapTemporal(F.tbigint_shift_scale_value(this.ptr, shift, width)) as Temporal;
+	shiftScaleValue(shift: number, width: number): this {
+		return wrapTemporal(F.tbigint_shift_scale_value(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: tbigint_shift_value */
-	shiftValue(shift: number): Temporal {
-		return wrapTemporal(F.tbigint_shift_value(this.ptr, shift)) as Temporal;
+	shiftValue(shift: number): this {
+		return wrapTemporal(F.tbigint_shift_value(this.ptr, shift)) as this;
 	}
 
 	/** MEOS: tbigint_start_value */
@@ -13467,7 +13447,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: sub_tbigint_bigint, chosen by the arguments' types */
-	override sub(i: number | TNumber): Temporal | null {
+	override sub(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._sub_tbigint_bigint(i as number);
 		return super.sub(i as TNumber);
 	}
@@ -13748,13 +13728,13 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tand_tbool_bool */
-	private _tand_tbool_bool(b: boolean): Temporal {
-		return wrapTemporal(F.tand_tbool_bool(this.ptr, b)) as Temporal;
+	private _tand_tbool_bool(b: boolean): this {
+		return wrapTemporal(F.tand_tbool_bool(this.ptr, b)) as this;
 	}
 
 	/** MEOS: tand_tbool_tbool */
-	private _tand_tbool_tbool(temp2: TBool): Temporal | null {
-		return wrapTemporalOrNull(F.tand_tbool_tbool(this.ptr, temp2.ptr)) as Temporal | null;
+	private _tand_tbool_tbool(temp2: TBool): this | null {
+		return wrapTemporalOrNull(F.tand_tbool_tbool(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: teq_tbool_bool */
@@ -13768,13 +13748,13 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tor_tbool_bool */
-	private _tor_tbool_bool(b: boolean): Temporal {
-		return wrapTemporal(F.tor_tbool_bool(this.ptr, b)) as Temporal;
+	private _tor_tbool_bool(b: boolean): this {
+		return wrapTemporal(F.tor_tbool_bool(this.ptr, b)) as this;
 	}
 
 	/** MEOS: tor_tbool_tbool */
-	private _tor_tbool_tbool(temp2: TBool): Temporal | null {
-		return wrapTemporalOrNull(F.tor_tbool_tbool(this.ptr, temp2.ptr)) as Temporal | null;
+	private _tor_tbool_tbool(temp2: TBool): this | null {
+		return wrapTemporalOrNull(F.tor_tbool_tbool(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: always_eq_tbool_bool, chosen by the arguments' types */
@@ -13795,8 +13775,8 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tbool_at_value */
-	atValue(b: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.tbool_at_value(this.ptr, b)) as Temporal | null;
+	atValue(b: boolean): this | null {
+		return wrapTemporalOrNull(F.tbool_at_value(this.ptr, b)) as this | null;
 	}
 
 	/** MEOS: tbool_end_value */
@@ -13817,8 +13797,8 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tbool_minus_value */
-	minusValue(b: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.tbool_minus_value(this.ptr, b)) as Temporal | null;
+	minusValue(b: boolean): this | null {
+		return wrapTemporalOrNull(F.tbool_minus_value(this.ptr, b)) as this | null;
 	}
 
 	/** MEOS: tbool_out */
@@ -13847,8 +13827,8 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tand_bool_tbool */
-	rtand(b: boolean): Temporal {
-		return wrapTemporal(F.tand_bool_tbool(b, this.ptr)) as Temporal;
+	rtand(b: boolean): this {
+		return wrapTemporal(F.tand_bool_tbool(b, this.ptr)) as this;
 	}
 
 	/** MEOS: teq_bool_tbool */
@@ -13862,8 +13842,8 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tor_bool_tbool */
-	rtor(b: boolean): Temporal {
-		return wrapTemporal(F.tor_bool_tbool(b, this.ptr)) as Temporal;
+	rtor(b: boolean): this {
+		return wrapTemporal(F.tor_bool_tbool(b, this.ptr)) as this;
 	}
 
 	/** MEOS: tbool_start_value */
@@ -13872,7 +13852,7 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tand_tbool_bool, tand_tbool_tbool, chosen by the arguments' types */
-	tand(b: boolean | TBool): Temporal | null {
+	tand(b: boolean | TBool): this | null {
 		if (b instanceof TBool) return this._tand_tbool_tbool(b as TBool);
 		if (typeof b === 'boolean') return this._tand_tbool_bool(b as boolean);
 		throw new TypeError(`TBool.tand: no overload takes these arguments`);
@@ -13891,12 +13871,12 @@ export class TBool extends TAlpha {
 	}
 
 	/** MEOS: tnot_tbool */
-	tnot(): Temporal {
-		return wrapTemporal(F.tnot_tbool(this.ptr)) as Temporal;
+	tnot(): this {
+		return wrapTemporal(F.tnot_tbool(this.ptr)) as this;
 	}
 
 	/** MEOS: tor_tbool_bool, tor_tbool_tbool, chosen by the arguments' types */
-	tor(b: boolean | TBool): Temporal | null {
+	tor(b: boolean | TBool): this | null {
 		if (b instanceof TBool) return this._tor_tbool_tbool(b as TBool);
 		if (typeof b === 'boolean') return this._tor_tbool_bool(b as boolean);
 		throw new TypeError(`TBool.tor: no overload takes these arguments`);
@@ -14316,10 +14296,10 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_expand_time */
-	expandTime(interv: Interval): TBox | null {
+	expandTime(interv: Interval): this | null {
 		const _interv = _putInterval(interv);
 		try {
-			return wrapTBoxOrNull(F.tbox_expand_time(this.ptr, _interv)) as TBox | null;
+			return wrapTBoxOrNull(F.tbox_expand_time(this.ptr, _interv)) as this | null;
 		} finally {
 			_free(_interv);
 		}
@@ -14356,8 +14336,8 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: intersection_tbox_tbox */
-	intersection(box2: TBox): TBox | null {
-		return wrapTBoxOrNull(F.intersection_tbox_tbox(this.ptr, box2.ptr)) as TBox | null;
+	intersection(box2: TBox): this | null {
+		return wrapTBoxOrNull(F.intersection_tbox_tbox(this.ptr, box2.ptr)) as this | null;
 	}
 
 	/** MEOS: tbox_le */
@@ -14438,8 +14418,8 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_round */
-	round(maxdd: number = 0): TBox {
-		return wrapTBox(F.tbox_round(this.ptr, maxdd)) as TBox;
+	round(maxdd: number = 0): this {
+		return wrapTBox(F.tbox_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: same_tbox_tbox, same_tbox_numspan, same_tbox_tstzspan, same_tbox_tnumber, chosen by the arguments' types */
@@ -14452,21 +14432,21 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_scale_time */
-	scaleTime(duration: Interval): TBox {
+	scaleTime(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTBox(F.tbox_scale_time(this.ptr, _duration)) as TBox;
+			return wrapTBox(F.tbox_scale_time(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: tbox_shift_scale_time */
-	shiftScaleTime(shift: Interval, duration: Interval): TBox {
+	shiftScaleTime(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTBox(F.tbox_shift_scale_time(this.ptr, _shift, _duration)) as TBox;
+			return wrapTBox(F.tbox_shift_scale_time(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -14474,10 +14454,10 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_shift_time */
-	shiftTime(shift: Interval): TBox {
+	shiftTime(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapTBox(F.tbox_shift_time(this.ptr, _shift)) as TBox;
+			return wrapTBox(F.tbox_shift_time(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
@@ -14551,8 +14531,8 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: union_tbox_tbox */
-	union(box2: TBox, strict: boolean): TBox {
-		return wrapTBox(F.union_tbox_tbox(this.ptr, box2.ptr, strict)) as TBox;
+	union(box2: TBox, strict: boolean): this {
+		return wrapTBox(F.union_tbox_tbox(this.ptr, box2.ptr, strict)) as this;
 	}
 
 	/** MEOS: tbox_xmax */
@@ -15074,8 +15054,8 @@ export class TSpatial extends Temporal {
 	}
 
 	/** MEOS: tspatial_set_srid */
-	setSRID(srid: number): Temporal {
-		return wrapTemporal(F.tspatial_set_srid(this.ptr, srid)) as Temporal;
+	setSRID(srid: number): this {
+		return wrapTemporal(F.tspatial_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: tspatial_srid */
@@ -15089,13 +15069,13 @@ export class TSpatial extends Temporal {
 	}
 
 	/** MEOS: tspatial_transform */
-	transform(srid: number): Temporal {
-		return wrapTemporal(F.tspatial_transform(this.ptr, srid)) as Temporal;
+	transform(srid: number): this {
+		return wrapTemporal(F.tspatial_transform(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: tspatial_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Temporal {
-		return wrapTemporal(F.tspatial_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Temporal;
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
+		return wrapTemporal(F.tspatial_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 }
 
@@ -15350,18 +15330,18 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: nai_tcbuffer_cbuffer */
-	private _nai_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	private _nai_tcbuffer_cbuffer(cb: Cbuffer): this | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tcbuffer_geo */
-	private _nai_tcbuffer_geo(gs: Geometry): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	private _nai_tcbuffer_geo(gs: Geometry): this | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tcbuffer_tcbuffer */
-	private _nai_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_tcbuffer_tcbuffer(temp2: TCbuffer): this | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_tcbuffer_cbuffer */
@@ -15549,13 +15529,13 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_at_cbuffer */
-	atCbuffer(cb: Cbuffer): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_at_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	atCbuffer(cb: Cbuffer): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_at_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: tcbuffer_at_geom */
-	atGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	atGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_at_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: atouches_tcbuffer_geo, atouches_tcbuffer_cbuffer, atouches_tcbuffer_tcbuffer, chosen by the arguments' types */
@@ -15567,8 +15547,8 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_at_stbox */
-	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tcbuffer_convex_hull */
@@ -15644,8 +15624,8 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_expand */
-	expand(dist: number): Temporal {
-		return wrapTemporal(F.tcbuffer_expand(this.ptr, dist)) as Temporal;
+	expand(dist: number): this {
+		return wrapTemporal(F.tcbuffer_expand(this.ptr, dist)) as this;
 	}
 
 	/** MEOS: tcbuffer_make */
@@ -15654,23 +15634,23 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: mindistance_tcbuffer_tcbuffer */
-	mindistance(temp2: Temporal, threshold: number): number {
+	mindistance(temp2: TCbuffer, threshold: number): number {
 		return F.mindistance_tcbuffer_tcbuffer(this.ptr, temp2.ptr, threshold);
 	}
 
 	/** MEOS: tcbuffer_minus_cbuffer */
-	minusCbuffer(cb: Cbuffer): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_minus_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	minusCbuffer(cb: Cbuffer): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_minus_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: tcbuffer_minus_geom */
-	minusGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_minus_geom(this.ptr, gs.ptr)) as Temporal | null;
+	minusGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_minus_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tcbuffer_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tcbuffer_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tcbuffer_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: nad_tcbuffer_cbuffer, nad_tcbuffer_geo, nad_tcbuffer_stbox, nad_tcbuffer_tcbuffer, chosen by the arguments' types */
@@ -15683,7 +15663,7 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: nai_tcbuffer_cbuffer, nai_tcbuffer_geo, nai_tcbuffer_tcbuffer, chosen by the arguments' types */
-	nai(cb: Cbuffer | Geometry | TCbuffer): Temporal | null {
+	nai(cb: Cbuffer | Geometry | TCbuffer): this | null {
 		if (cb instanceof Geometry) return this._nai_tcbuffer_geo(cb as Geometry);
 		if (cb instanceof TCbuffer) return this._nai_tcbuffer_tcbuffer(cb as TCbuffer);
 		if (cb instanceof Cbuffer) return this._nai_tcbuffer_cbuffer(cb as Cbuffer);
@@ -15701,13 +15681,13 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_rotate */
-	rotate(angle: number, x0: number, y0: number): Temporal {
-		return wrapTemporal(F.tcbuffer_rotate(this.ptr, angle, x0, y0)) as Temporal;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapTemporal(F.tcbuffer_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: tcbuffer_rotate_z */
-	rotateZ(angle: number): Temporal {
-		return wrapTemporal(F.tcbuffer_rotate_z(this.ptr, angle)) as Temporal;
+	rotateZ(angle: number): this {
+		return wrapTemporal(F.tcbuffer_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: shortestline_tcbuffer_cbuffer, shortestline_tcbuffer_geo, shortestline_tcbuffer_tcbuffer, chosen by the arguments' types */
@@ -15794,8 +15774,8 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_translate */
-	translate(deltax: number, deltay: number): Temporal {
-		return wrapTemporal(F.tcbuffer_translate(this.ptr, deltax, deltay)) as Temporal;
+	translate(deltax: number, deltay: number): this {
+		return wrapTemporal(F.tcbuffer_translate(this.ptr, deltax, deltay)) as this;
 	}
 
 	/** MEOS: tcbuffer_traversed_area */
@@ -15931,8 +15911,8 @@ export class TCellIndex extends TSpatial {
 	}
 
 	/** MEOS: tcellindex_cell_to_parent */
-	cellToParent(resolution: number): Temporal {
-		return wrapTemporal(F.tcellindex_cell_to_parent(this.ptr, resolution)) as Temporal;
+	cellToParent(resolution: number): this {
+		return wrapTemporal(F.tcellindex_cell_to_parent(this.ptr, resolution)) as this;
 	}
 
 	/** MEOS: tcellindex_cell_to_point */
@@ -15962,8 +15942,8 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: add_tfloat_float */
-	private _add_tfloat_float(d: number): Temporal {
-		return wrapTemporal(F.add_tfloat_float(this.ptr, d)) as Temporal;
+	private _add_tfloat_float(d: number): this {
+		return wrapTemporal(F.add_tfloat_float(this.ptr, d)) as this;
 	}
 
 	/** MEOS: always_eq_tfloat_float */
@@ -15997,8 +15977,8 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: div_tfloat_float */
-	private _div_tfloat_float(d: number): Temporal {
-		return wrapTemporal(F.div_tfloat_float(this.ptr, d)) as Temporal;
+	private _div_tfloat_float(d: number): this {
+		return wrapTemporal(F.div_tfloat_float(this.ptr, d)) as this;
 	}
 
 	/** MEOS: ever_eq_tfloat_float */
@@ -16032,8 +16012,8 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: mul_tfloat_float */
-	private _mul_tfloat_float(d: number): Temporal {
-		return wrapTemporal(F.mul_tfloat_float(this.ptr, d)) as Temporal;
+	private _mul_tfloat_float(d: number): this {
+		return wrapTemporal(F.mul_tfloat_float(this.ptr, d)) as this;
 	}
 
 	/** MEOS: nad_tfloat_float */
@@ -16057,13 +16037,13 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: sub_tfloat_float */
-	private _sub_tfloat_float(d: number): Temporal {
-		return wrapTemporal(F.sub_tfloat_float(this.ptr, d)) as Temporal;
+	private _sub_tfloat_float(d: number): this {
+		return wrapTemporal(F.sub_tfloat_float(this.ptr, d)) as this;
 	}
 
 	/** MEOS: tdistance_tfloat_float */
-	private _tdistance_tfloat_float(d: number): Temporal | null {
-		return wrapTemporalOrNull(F.tdistance_tfloat_float(this.ptr, d)) as Temporal | null;
+	private _tdistance_tfloat_float(d: number): this | null {
+		return wrapTemporalOrNull(F.tdistance_tfloat_float(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: teq_tfloat_float */
@@ -16097,7 +16077,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: add_tfloat_float, chosen by the arguments' types */
-	override add(d: number | TNumber): Temporal | null {
+	override add(d: number | TNumber): this | null {
 		if (typeof d === 'number') return this._add_tfloat_float(d as number);
 		return super.add(d as TNumber);
 	}
@@ -16144,27 +16124,27 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_at_value */
-	atValue(d: number): Temporal | null {
-		return wrapTemporalOrNull(F.tfloat_at_value(this.ptr, d)) as Temporal | null;
+	atValue(d: number): this | null {
+		return wrapTemporalOrNull(F.tfloat_at_value(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: tfloat_ceil */
-	ceil(): Temporal {
-		return wrapTemporal(F.tfloat_ceil(this.ptr)) as Temporal;
+	ceil(): this {
+		return wrapTemporal(F.tfloat_ceil(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_cos */
-	cos(): Temporal {
-		return wrapTemporal(F.tfloat_cos(this.ptr)) as Temporal;
+	cos(): this {
+		return wrapTemporal(F.tfloat_cos(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_degrees */
-	degrees(normalize: boolean = false): Temporal {
-		return wrapTemporal(F.tfloat_degrees(this.ptr, normalize)) as Temporal;
+	degrees(normalize: boolean = false): this {
+		return wrapTemporal(F.tfloat_degrees(this.ptr, normalize)) as this;
 	}
 
 	/** MEOS: div_tfloat_float, chosen by the arguments' types */
-	override div(d: number | TNumber): Temporal | null {
+	override div(d: number | TNumber): this | null {
 		if (typeof d === 'number') return this._div_tfloat_float(d as number);
 		return super.div(d as TNumber);
 	}
@@ -16211,23 +16191,23 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_exp */
-	exp(): Temporal {
-		return wrapTemporal(F.tfloat_exp(this.ptr)) as Temporal;
+	exp(): this {
+		return wrapTemporal(F.tfloat_exp(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_floor */
-	floor(): Temporal {
-		return wrapTemporal(F.tfloat_floor(this.ptr)) as Temporal;
+	floor(): this {
+		return wrapTemporal(F.tfloat_floor(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_ln */
-	ln(): Temporal {
-		return wrapTemporal(F.tfloat_ln(this.ptr)) as Temporal;
+	ln(): this {
+		return wrapTemporal(F.tfloat_ln(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_log10 */
-	log10(): Temporal {
-		return wrapTemporal(F.tfloat_log10(this.ptr)) as Temporal;
+	log10(): this {
+		return wrapTemporal(F.tfloat_log10(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_max_value */
@@ -16236,8 +16216,8 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_minus_value */
-	minusValue(d: number): Temporal | null {
-		return wrapTemporalOrNull(F.tfloat_minus_value(this.ptr, d)) as Temporal | null;
+	minusValue(d: number): this | null {
+		return wrapTemporalOrNull(F.tfloat_minus_value(this.ptr, d)) as this | null;
 	}
 
 	/** MEOS: tfloat_min_value */
@@ -16246,7 +16226,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: mul_tfloat_float, chosen by the arguments' types */
-	override mul(d: number | TNumber): Temporal | null {
+	override mul(d: number | TNumber): this | null {
 		if (typeof d === 'number') return this._mul_tfloat_float(d as number);
 		return super.mul(d as TNumber);
 	}
@@ -16266,13 +16246,13 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: add_float_tfloat */
-	radd(d: number): Temporal {
-		return wrapTemporal(F.add_float_tfloat(d, this.ptr)) as Temporal;
+	radd(d: number): this {
+		return wrapTemporal(F.add_float_tfloat(d, this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_radians */
-	radians(): Temporal {
-		return wrapTemporal(F.tfloat_radians(this.ptr)) as Temporal;
+	radians(): this {
+		return wrapTemporal(F.tfloat_radians(this.ptr)) as this;
 	}
 
 	/** MEOS: always_eq_float_tfloat */
@@ -16306,8 +16286,8 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: div_float_tfloat */
-	rdiv(d: number): Temporal {
-		return wrapTemporal(F.div_float_tfloat(d, this.ptr)) as Temporal;
+	rdiv(d: number): this {
+		return wrapTemporal(F.div_float_tfloat(d, this.ptr)) as this;
 	}
 
 	/** MEOS: ever_eq_float_tfloat */
@@ -16341,13 +16321,13 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: mul_float_tfloat */
-	rmul(d: number): Temporal {
-		return wrapTemporal(F.mul_float_tfloat(d, this.ptr)) as Temporal;
+	rmul(d: number): this {
+		return wrapTemporal(F.mul_float_tfloat(d, this.ptr)) as this;
 	}
 
 	/** MEOS: sub_float_tfloat */
-	rsub(d: number): Temporal {
-		return wrapTemporal(F.sub_float_tfloat(d, this.ptr)) as Temporal;
+	rsub(d: number): this {
+		return wrapTemporal(F.sub_float_tfloat(d, this.ptr)) as this;
 	}
 
 	/** MEOS: teq_float_tfloat */
@@ -16381,23 +16361,23 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_scale_value */
-	scaleValue(width: number): Temporal {
-		return wrapTemporal(F.tfloat_scale_value(this.ptr, width)) as Temporal;
+	scaleValue(width: number): this {
+		return wrapTemporal(F.tfloat_scale_value(this.ptr, width)) as this;
 	}
 
 	/** MEOS: tfloat_shift_scale_value */
-	shiftScaleValue(shift: number, width: number): Temporal {
-		return wrapTemporal(F.tfloat_shift_scale_value(this.ptr, shift, width)) as Temporal;
+	shiftScaleValue(shift: number, width: number): this {
+		return wrapTemporal(F.tfloat_shift_scale_value(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: tfloat_shift_value */
-	shiftValue(shift: number): Temporal {
-		return wrapTemporal(F.tfloat_shift_value(this.ptr, shift)) as Temporal;
+	shiftValue(shift: number): this {
+		return wrapTemporal(F.tfloat_shift_value(this.ptr, shift)) as this;
 	}
 
 	/** MEOS: tfloat_sin */
-	sin(): Temporal {
-		return wrapTemporal(F.tfloat_sin(this.ptr)) as Temporal;
+	sin(): this {
+		return wrapTemporal(F.tfloat_sin(this.ptr)) as this;
 	}
 
 	/** MEOS: tfloat_start_value */
@@ -16406,18 +16386,18 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: sub_tfloat_float, chosen by the arguments' types */
-	override sub(d: number | TNumber): Temporal | null {
+	override sub(d: number | TNumber): this | null {
 		if (typeof d === 'number') return this._sub_tfloat_float(d as number);
 		return super.sub(d as TNumber);
 	}
 
 	/** MEOS: tfloat_tan */
-	tan(): Temporal {
-		return wrapTemporal(F.tfloat_tan(this.ptr)) as Temporal;
+	tan(): this {
+		return wrapTemporal(F.tfloat_tan(this.ptr)) as this;
 	}
 
 	/** MEOS: tdistance_tfloat_float, chosen by the arguments' types */
-	override tdistance(d: number | TNumber): Temporal | null {
+	override tdistance(d: number | TNumber): this | null {
 		if (typeof d === 'number') return this._tdistance_tfloat_float(d as number);
 		return super.tdistance(d as TNumber);
 	}
@@ -16773,13 +16753,13 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: nai_tgeo_geo */
-	private _nai_tgeo_geo(gs: Geo, spheroid: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tgeo_geo(this.ptr, gs.ptr, spheroid)) as Temporal | null;
+	private _nai_tgeo_geo(gs: Geo, spheroid: boolean): this | null {
+		return wrapTemporalOrNull(F.nai_tgeo_geo(this.ptr, gs.ptr, spheroid)) as this | null;
 	}
 
 	/** MEOS: nai_tgeo_tgeo */
-	private _nai_tgeo_tgeo(temp2: TGeo, spheroid: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tgeo_tgeo(this.ptr, temp2.ptr, spheroid)) as Temporal | null;
+	private _nai_tgeo_tgeo(temp2: TGeo, spheroid: boolean): this | null {
+		return wrapTemporalOrNull(F.nai_tgeo_tgeo(this.ptr, temp2.ptr, spheroid)) as this | null;
 	}
 
 	/** MEOS: shortestline_tgeo_geo */
@@ -16857,8 +16837,8 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_affine */
-	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Temporal {
-		return wrapTemporal(F.tgeo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as Temporal;
+	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): this {
+		return wrapTemporal(F.tgeo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as this;
 	}
 
 	/** MEOS: aintersects_tgeo_geo, aintersects_tgeo_tgeo, chosen by the arguments' types */
@@ -16883,18 +16863,18 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_at_geom */
-	atGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	atGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_at_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tgeo_at_stbox */
-	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tgeo_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tgeo_at_value */
-	atValue(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_at_value(this.ptr, gs.ptr)) as Temporal | null;
+	atValue(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_at_value(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tgeo_centroid */
@@ -16948,28 +16928,28 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_force2d */
-	force2d(): Temporal {
-		return wrapTemporal(F.tgeo_force2d(this.ptr)) as Temporal;
+	force2d(): this {
+		return wrapTemporal(F.tgeo_force2d(this.ptr)) as this;
 	}
 
 	/** MEOS: tgeo_force3d */
-	force3d(zvalue: number = 0.0): Temporal {
-		return wrapTemporal(F.tgeo_force3d(this.ptr, zvalue)) as Temporal;
+	force3d(zvalue: number = 0.0): this {
+		return wrapTemporal(F.tgeo_force3d(this.ptr, zvalue)) as this;
 	}
 
 	/** MEOS: tgeo_minus_geom */
-	minusGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_minus_geom(this.ptr, gs.ptr)) as Temporal | null;
+	minusGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_minus_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tgeo_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tgeo_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tgeo_minus_value */
-	minusValue(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_minus_value(this.ptr, gs.ptr)) as Temporal | null;
+	minusValue(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_minus_value(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nad_tgeo_geo, nad_tgeo_stbox, nad_tgeo_tgeo, chosen by the arguments' types */
@@ -16981,50 +16961,50 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: nai_tgeo_geo, nai_tgeo_tgeo, chosen by the arguments' types */
-	nai(gs: Geo | TGeo, spheroid: boolean): Temporal | null {
+	nai(gs: Geo | TGeo, spheroid: boolean): this | null {
 		if (gs instanceof TGeo && typeof spheroid === 'boolean') return this._nai_tgeo_tgeo(gs as TGeo, spheroid as boolean);
 		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nai_tgeo_geo(gs as Geo, spheroid as boolean);
 		throw new TypeError(`TGeo.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tgeo_rotate */
-	rotate(angle: number, x0: number, y0: number): Temporal {
-		return wrapTemporal(F.tgeo_rotate(this.ptr, angle, x0, y0)) as Temporal;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapTemporal(F.tgeo_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: tgeo_rotate_geo */
-	rotateGeo(angle: number, origin: Geo): Temporal {
-		return wrapTemporal(F.tgeo_rotate_geo(this.ptr, angle, origin.ptr)) as Temporal;
+	rotateGeo(angle: number, origin: Geo): this {
+		return wrapTemporal(F.tgeo_rotate_geo(this.ptr, angle, origin.ptr)) as this;
 	}
 
 	/** MEOS: tgeo_rotate_x */
-	rotateX(angle: number): Temporal {
-		return wrapTemporal(F.tgeo_rotate_x(this.ptr, angle)) as Temporal;
+	rotateX(angle: number): this {
+		return wrapTemporal(F.tgeo_rotate_x(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tgeo_rotate_y */
-	rotateY(angle: number): Temporal {
-		return wrapTemporal(F.tgeo_rotate_y(this.ptr, angle)) as Temporal;
+	rotateY(angle: number): this {
+		return wrapTemporal(F.tgeo_rotate_y(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tgeo_rotate_z */
-	rotateZ(angle: number): Temporal {
-		return wrapTemporal(F.tgeo_rotate_z(this.ptr, angle)) as Temporal;
+	rotateZ(angle: number): this {
+		return wrapTemporal(F.tgeo_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tgeo_scale */
-	scale(xfactor: number, yfactor: number, zfactor: number): Temporal {
-		return wrapTemporal(F.tgeo_scale(this.ptr, xfactor, yfactor, zfactor)) as Temporal;
+	scale(xfactor: number, yfactor: number, zfactor: number): this {
+		return wrapTemporal(F.tgeo_scale(this.ptr, xfactor, yfactor, zfactor)) as this;
 	}
 
 	/** MEOS: tgeo_scale_geo */
-	scaleGeo(scale: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_scale_geo(this.ptr, scale.ptr)) as Temporal | null;
+	scaleGeo(scale: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_scale_geo(this.ptr, scale.ptr)) as this | null;
 	}
 
 	/** MEOS: tgeo_scale_geo_origin */
-	scaleGeoOrigin(scale: Geo, sorigin: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tgeo_scale_geo_origin(this.ptr, scale.ptr, sorigin.ptr)) as Temporal | null;
+	scaleGeoOrigin(scale: Geo, sorigin: Geo): this | null {
+		return wrapTemporalOrNull(F.tgeo_scale_geo_origin(this.ptr, scale.ptr, sorigin.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, chosen by the arguments' types */
@@ -17204,13 +17184,13 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_translate */
-	translate(deltax: number, deltay: number, deltaz: number): Temporal {
-		return wrapTemporal(F.tgeo_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
+	translate(deltax: number, deltay: number, deltaz: number): this {
+		return wrapTemporal(F.tgeo_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
 	/** MEOS: tgeo_transscale */
-	transscale(deltax: number, deltay: number, xfactor: number, yfactor: number): Temporal {
-		return wrapTemporal(F.tgeo_transscale(this.ptr, deltax, deltay, xfactor, yfactor)) as Temporal;
+	transscale(deltax: number, deltay: number, xfactor: number, yfactor: number): this {
+		return wrapTemporal(F.tgeo_transscale(this.ptr, deltax, deltay, xfactor, yfactor)) as this;
 	}
 
 	/** MEOS: tgeo_traversed_area */
@@ -17275,18 +17255,8 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: tpoint_at_elevation */
-	atElevation(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tpoint_at_elevation(this.ptr, s.ptr)) as Temporal | null;
-	}
-
-	/** MEOS: tpoint_at_geom */
-	override atGeom(gs: Geo): Temporal {
-		return wrapTemporal(F.tpoint_at_geom(this.ptr, gs.ptr)) as Temporal;
-	}
-
-	/** MEOS: tpoint_at_value */
-	override atValue(gs: Geo): Temporal {
-		return wrapTemporal(F.tpoint_at_value(this.ptr, gs.ptr)) as Temporal;
+	atElevation(s: Span): this | null {
+		return wrapTemporalOrNull(F.tpoint_at_elevation(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tpoint_azimuth */
@@ -17355,18 +17325,8 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: tpoint_minus_elevation */
-	minusElevation(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tpoint_minus_elevation(this.ptr, s.ptr)) as Temporal | null;
-	}
-
-	/** MEOS: tpoint_minus_geom */
-	override minusGeom(gs: Geo): Temporal {
-		return wrapTemporal(F.tpoint_minus_geom(this.ptr, gs.ptr)) as Temporal;
-	}
-
-	/** MEOS: tpoint_minus_value */
-	override minusValue(gs: Geo): Temporal {
-		return wrapTemporal(F.tpoint_minus_value(this.ptr, gs.ptr)) as Temporal;
+	minusElevation(s: Span): this | null {
+		return wrapTemporalOrNull(F.tpoint_minus_elevation(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tpoint_speed */
@@ -17955,7 +17915,7 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: teq_th3index_th3index */
-	private _teq_th3index_th3index(temp2: Temporal): Temporal {
+	private _teq_th3index_th3index(temp2: TH3Index): Temporal {
 		return wrapTemporal(F.teq_th3index_th3index(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -17965,7 +17925,7 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: tne_th3index_th3index */
-	private _tne_th3index_th3index(temp2: Temporal): Temporal {
+	private _tne_th3index_th3index(temp2: TH3Index): Temporal {
 		return wrapTemporal(F.tne_th3index_th3index(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -17989,23 +17949,23 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: th3index_at_value */
-	atValue(cell: H3Index): Temporal | null {
-		return wrapTemporalOrNull(F.th3index_at_value(this.ptr, cell)) as Temporal | null;
+	atValue(cell: H3Index): this | null {
+		return wrapTemporalOrNull(F.th3index_at_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: th3index_cells_to_directed_edge */
-	cellsToDirectedEdge(dest: Temporal): Temporal {
-		return wrapTemporal(F.th3index_cells_to_directed_edge(this.ptr, dest.ptr)) as Temporal;
+	cellsToDirectedEdge(dest: Temporal): this {
+		return wrapTemporal(F.th3index_cells_to_directed_edge(this.ptr, dest.ptr)) as this;
 	}
 
 	/** MEOS: th3index_cell_to_center_child */
-	cellToCenterChild(resolution: number): Temporal {
-		return wrapTemporal(F.th3index_cell_to_center_child(this.ptr, resolution)) as Temporal;
+	cellToCenterChild(resolution: number): this {
+		return wrapTemporal(F.th3index_cell_to_center_child(this.ptr, resolution)) as this;
 	}
 
 	/** MEOS: th3index_cell_to_center_child_next */
-	cellToCenterChildNext(): Temporal {
-		return wrapTemporal(F.th3index_cell_to_center_child_next(this.ptr)) as Temporal;
+	cellToCenterChildNext(): this {
+		return wrapTemporal(F.th3index_cell_to_center_child_next(this.ptr)) as this;
 	}
 
 	/** MEOS: th3index_cell_to_child_pos */
@@ -18019,13 +17979,13 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: th3index_cell_to_parent_next */
-	cellToParentNext(): Temporal {
-		return wrapTemporal(F.th3index_cell_to_parent_next(this.ptr)) as Temporal;
+	cellToParentNext(): this {
+		return wrapTemporal(F.th3index_cell_to_parent_next(this.ptr)) as this;
 	}
 
 	/** MEOS: th3index_cell_to_vertex */
-	cellToVertex(vertex_num: number): Temporal {
-		return wrapTemporal(F.th3index_cell_to_vertex(this.ptr, vertex_num)) as Temporal;
+	cellToVertex(vertex_num: number): this {
+		return wrapTemporal(F.th3index_cell_to_vertex(this.ptr, vertex_num)) as this;
 	}
 
 	/** MEOS: th3index_child_pos_to_cell */
@@ -18069,13 +18029,13 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: th3index_get_directed_edge_destination */
-	getDirectedEdgeDestination(): Temporal {
-		return wrapTemporal(F.th3index_get_directed_edge_destination(this.ptr)) as Temporal;
+	getDirectedEdgeDestination(): this {
+		return wrapTemporal(F.th3index_get_directed_edge_destination(this.ptr)) as this;
 	}
 
 	/** MEOS: th3index_get_directed_edge_origin */
-	getDirectedEdgeOrigin(): Temporal {
-		return wrapTemporal(F.th3index_get_directed_edge_origin(this.ptr)) as Temporal;
+	getDirectedEdgeOrigin(): this {
+		return wrapTemporal(F.th3index_get_directed_edge_origin(this.ptr)) as this;
 	}
 
 	/** MEOS: th3index_grid_distance */
@@ -18104,13 +18064,13 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: th3index_local_ij_to_cell */
-	localIjToCell(coord: Temporal): Temporal {
-		return wrapTemporal(F.th3index_local_ij_to_cell(this.ptr, coord.ptr)) as Temporal;
+	localIjToCell(coord: Temporal): this {
+		return wrapTemporal(F.th3index_local_ij_to_cell(this.ptr, coord.ptr)) as this;
 	}
 
 	/** MEOS: th3index_minus_value */
-	minusValue(cell: H3Index): Temporal | null {
-		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell)) as Temporal | null;
+	minusValue(cell: H3Index): this | null {
+		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: th3index_out */
@@ -18154,15 +18114,15 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: teq_th3index_h3index, teq_th3index_th3index, chosen by the arguments' types */
-	override teq(cell: H3Index | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._teq_th3index_th3index(cell as Temporal);
+	override teq(cell: H3Index | TH3Index | Temporal): Temporal | null {
+		if (cell instanceof TH3Index) return this._teq_th3index_th3index(cell as TH3Index);
 		if (typeof cell === 'bigint') return this._teq_th3index_h3index(cell as H3Index);
 		return super.teq(cell as Temporal);
 	}
 
 	/** MEOS: tne_th3index_h3index, tne_th3index_th3index, chosen by the arguments' types */
-	override tne(cell: H3Index | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._tne_th3index_th3index(cell as Temporal);
+	override tne(cell: H3Index | TH3Index | Temporal): Temporal | null {
+		if (cell instanceof TH3Index) return this._tne_th3index_th3index(cell as TH3Index);
 		if (typeof cell === 'bigint') return this._tne_th3index_h3index(cell as H3Index);
 		return super.tne(cell as Temporal);
 	}
@@ -18323,8 +18283,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: add_tint_int */
-	private _add_tint_int(i: number): Temporal {
-		return wrapTemporal(F.add_tint_int(this.ptr, i)) as Temporal;
+	private _add_tint_int(i: number): this {
+		return wrapTemporal(F.add_tint_int(this.ptr, i)) as this;
 	}
 
 	/** MEOS: always_eq_tint_int */
@@ -18358,8 +18318,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: div_tint_int */
-	private _div_tint_int(i: number): Temporal {
-		return wrapTemporal(F.div_tint_int(this.ptr, i)) as Temporal;
+	private _div_tint_int(i: number): this {
+		return wrapTemporal(F.div_tint_int(this.ptr, i)) as this;
 	}
 
 	/** MEOS: ever_eq_tint_int */
@@ -18393,8 +18353,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: mul_tint_int */
-	private _mul_tint_int(i: number): Temporal {
-		return wrapTemporal(F.mul_tint_int(this.ptr, i)) as Temporal;
+	private _mul_tint_int(i: number): this {
+		return wrapTemporal(F.mul_tint_int(this.ptr, i)) as this;
 	}
 
 	/** MEOS: nad_tint_int */
@@ -18418,13 +18378,13 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: sub_tint_int */
-	private _sub_tint_int(i: number): Temporal {
-		return wrapTemporal(F.sub_tint_int(this.ptr, i)) as Temporal;
+	private _sub_tint_int(i: number): this {
+		return wrapTemporal(F.sub_tint_int(this.ptr, i)) as this;
 	}
 
 	/** MEOS: tdistance_tint_int */
-	private _tdistance_tint_int(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.tdistance_tint_int(this.ptr, i)) as Temporal | null;
+	private _tdistance_tint_int(i: number): this | null {
+		return wrapTemporalOrNull(F.tdistance_tint_int(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: teq_tint_int */
@@ -18458,7 +18418,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: add_tint_int, chosen by the arguments' types */
-	override add(i: number | TNumber): Temporal | null {
+	override add(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._add_tint_int(i as number);
 		return super.add(i as TNumber);
 	}
@@ -18505,12 +18465,12 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_at_value */
-	atValue(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.tint_at_value(this.ptr, i)) as Temporal | null;
+	atValue(i: number): this | null {
+		return wrapTemporalOrNull(F.tint_at_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: div_tint_int, chosen by the arguments' types */
-	override div(i: number | TNumber): Temporal | null {
+	override div(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._div_tint_int(i as number);
 		return super.div(i as TNumber);
 	}
@@ -18562,8 +18522,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_minus_value */
-	minusValue(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.tint_minus_value(this.ptr, i)) as Temporal | null;
+	minusValue(i: number): this | null {
+		return wrapTemporalOrNull(F.tint_minus_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: tint_min_value */
@@ -18572,7 +18532,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: mul_tint_int, chosen by the arguments' types */
-	override mul(i: number | TNumber): Temporal | null {
+	override mul(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._mul_tint_int(i as number);
 		return super.mul(i as TNumber);
 	}
@@ -18592,8 +18552,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: add_int_tint */
-	radd(i: number): Temporal {
-		return wrapTemporal(F.add_int_tint(i, this.ptr)) as Temporal;
+	radd(i: number): this {
+		return wrapTemporal(F.add_int_tint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: always_eq_int_tint */
@@ -18627,8 +18587,8 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: div_int_tint */
-	rdiv(i: number): Temporal {
-		return wrapTemporal(F.div_int_tint(i, this.ptr)) as Temporal;
+	rdiv(i: number): this {
+		return wrapTemporal(F.div_int_tint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: ever_eq_int_tint */
@@ -18662,13 +18622,13 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: mul_int_tint */
-	rmul(i: number): Temporal {
-		return wrapTemporal(F.mul_int_tint(i, this.ptr)) as Temporal;
+	rmul(i: number): this {
+		return wrapTemporal(F.mul_int_tint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: sub_int_tint */
-	rsub(i: number): Temporal {
-		return wrapTemporal(F.sub_int_tint(i, this.ptr)) as Temporal;
+	rsub(i: number): this {
+		return wrapTemporal(F.sub_int_tint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: teq_int_tint */
@@ -18702,18 +18662,18 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_scale_value */
-	scaleValue(width: number): Temporal {
-		return wrapTemporal(F.tint_scale_value(this.ptr, width)) as Temporal;
+	scaleValue(width: number): this {
+		return wrapTemporal(F.tint_scale_value(this.ptr, width)) as this;
 	}
 
 	/** MEOS: tint_shift_scale_value */
-	shiftScaleValue(shift: number, width: number): Temporal {
-		return wrapTemporal(F.tint_shift_scale_value(this.ptr, shift, width)) as Temporal;
+	shiftScaleValue(shift: number, width: number): this {
+		return wrapTemporal(F.tint_shift_scale_value(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: tint_shift_value */
-	shiftValue(shift: number): Temporal {
-		return wrapTemporal(F.tint_shift_value(this.ptr, shift)) as Temporal;
+	shiftValue(shift: number): this {
+		return wrapTemporal(F.tint_shift_value(this.ptr, shift)) as this;
 	}
 
 	/** MEOS: tint_start_value */
@@ -18722,13 +18682,13 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: sub_tint_int, chosen by the arguments' types */
-	override sub(i: number | TNumber): Temporal | null {
+	override sub(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._sub_tint_int(i as number);
 		return super.sub(i as TNumber);
 	}
 
 	/** MEOS: tdistance_tint_int, chosen by the arguments' types */
-	override tdistance(i: number | TNumber): Temporal | null {
+	override tdistance(i: number | TNumber): this | null {
 		if (typeof i === 'number') return this._tdistance_tint_int(i as number);
 		return super.tdistance(i as TNumber);
 	}
@@ -18994,13 +18954,13 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: concat_tjsonb_jsonb */
-	private _concat_tjsonb_jsonb(jb: Jsonb, invert: boolean): Temporal {
-		return wrapTemporal(F.concat_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as Temporal;
+	private _concat_tjsonb_jsonb(jb: Jsonb, invert: boolean): this {
+		return wrapTemporal(F.concat_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as this;
 	}
 
 	/** MEOS: concat_tjsonb_tjsonb */
-	private _concat_tjsonb_tjsonb(temp2: TJsonb): Temporal | null {
-		return wrapTemporalOrNull(F.concat_tjsonb_tjsonb(this.ptr, temp2.ptr)) as Temporal | null;
+	private _concat_tjsonb_tjsonb(temp2: TJsonb): this | null {
+		return wrapTemporalOrNull(F.concat_tjsonb_tjsonb(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: ever_eq_tjsonb_jsonb */
@@ -19048,8 +19008,8 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_array_element */
-	arrayElement(idx: number, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_array_element(this.ptr, idx, null_handle)) as Temporal | null;
+	arrayElement(idx: number, null_handle: number): this | null {
+		return wrapTemporalOrNull(F.tjsonb_array_element(this.ptr, idx, null_handle)) as this | null;
 	}
 
 	/** MEOS: tjsonb_array_element_text */
@@ -19068,42 +19028,42 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_at_value */
-	atValue(jsb: Jsonb): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_at_value(this.ptr, jsb.ptr)) as Temporal | null;
+	atValue(jsb: Jsonb): this | null {
+		return wrapTemporalOrNull(F.tjsonb_at_value(this.ptr, jsb.ptr)) as this | null;
 	}
 
 	/** MEOS: concat_tjsonb_jsonb, concat_tjsonb_tjsonb, chosen by the arguments' types */
-	concat(jb: Jsonb | TJsonb, invert?: boolean): Temporal | null {
+	concat(jb: Jsonb | TJsonb, invert?: boolean): this | null {
 		if (jb instanceof TJsonb && invert === undefined) return this._concat_tjsonb_tjsonb(jb as TJsonb);
 		if (jb instanceof Jsonb && typeof invert === 'boolean') return this._concat_tjsonb_jsonb(jb as Jsonb, invert as boolean);
 		throw new TypeError(`TJsonb.concat: no overload takes these arguments`);
 	}
 
 	/** MEOS: tjsonb_delete */
-	delete(key: string): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_delete(this.ptr, key)) as Temporal | null;
+	delete(key: string): this | null {
+		return wrapTemporalOrNull(F.tjsonb_delete(this.ptr, key)) as this | null;
 	}
 
 	/** MEOS: tjsonb_delete_array */
-	deleteArray(keys: Text[]): Temporal | null {
+	deleteArray(keys: Text[]): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_delete_array(this.ptr, _keys, keys.length)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_delete_array(this.ptr, _keys, keys.length)) as this | null;
 		} finally {
 			_free(_keys);
 		}
 	}
 
 	/** MEOS: tjsonb_delete_index */
-	deleteIndex(idx: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_delete_index(this.ptr, idx)) as Temporal | null;
+	deleteIndex(idx: number): this | null {
+		return wrapTemporalOrNull(F.tjsonb_delete_index(this.ptr, idx)) as this | null;
 	}
 
 	/** MEOS: tjsonb_delete_path */
-	deletePath(path_elems: Text[]): Temporal | null {
+	deletePath(path_elems: Text[]): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_delete_path(this.ptr, _path_elems, path_elems.length)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_delete_path(this.ptr, _path_elems, path_elems.length)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -19164,10 +19124,10 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_extract_path */
-	extractPath(path_elems: Text[], null_handle: number): Temporal | null {
+	extractPath(path_elems: Text[], null_handle: number): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -19184,13 +19144,13 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_minus_value */
-	minusValue(jsb: Jsonb): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_minus_value(this.ptr, jsb.ptr)) as Temporal | null;
+	minusValue(jsb: Jsonb): this | null {
+		return wrapTemporalOrNull(F.tjsonb_minus_value(this.ptr, jsb.ptr)) as this | null;
 	}
 
 	/** MEOS: tjsonb_object_field */
-	objectField(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_object_field(this.ptr, key, null_handle)) as Temporal | null;
+	objectField(key: string, null_handle: number): this | null {
+		return wrapTemporalOrNull(F.tjsonb_object_field(this.ptr, key, null_handle)) as this | null;
 	}
 
 	/** MEOS: tjsonb_object_field_text */
@@ -19214,13 +19174,13 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_path_query_array */
-	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Temporal | null;
+	pathQueryArray(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapTemporalOrNull(F.tjsonb_path_query_array(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: tjsonb_path_query_first */
-	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Temporal | null;
+	pathQueryFirst(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): this | null {
+		return wrapTemporalOrNull(F.tjsonb_path_query_first(this.ptr, jp.ptr, vars.ptr, silent, tz)) as this | null;
 	}
 
 	/** MEOS: tjsonb_pretty */
@@ -19229,20 +19189,20 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_set */
-	set(keys: Text[], newjb: Jsonb, create: boolean): Temporal | null {
+	set(keys: Text[], newjb: Jsonb, create: boolean): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_set(this.ptr, _keys, keys.length, newjb.ptr, create)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_set(this.ptr, _keys, keys.length, newjb.ptr, create)) as this | null;
 		} finally {
 			_free(_keys);
 		}
 	}
 
 	/** MEOS: tjsonb_set_lax */
-	setLax(keys: Text[], newjb: Jsonb, create: boolean, null_handle: string): Temporal | null {
+	setLax(keys: Text[], newjb: Jsonb, create: boolean, null_handle: string): this | null {
 		const _keys = _ptrArray(keys.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_set_lax(this.ptr, _keys, keys.length, newjb.ptr, create, null_handle)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_set_lax(this.ptr, _keys, keys.length, newjb.ptr, create, null_handle)) as this | null;
 		} finally {
 			_free(_keys);
 		}
@@ -19254,8 +19214,8 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_strip_nulls */
-	stripNulls(strip_in_arrays: boolean = false): Temporal {
-		return wrapTemporal(F.tjsonb_strip_nulls(this.ptr, strip_in_arrays)) as Temporal;
+	stripNulls(strip_in_arrays: boolean = false): this {
+		return wrapTemporal(F.tjsonb_strip_nulls(this.ptr, strip_in_arrays)) as this;
 	}
 
 	/** MEOS: teq_tjsonb_jsonb, chosen by the arguments' types */
@@ -19510,18 +19470,18 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nai_tnpoint_geo */
-	private _nai_tnpoint_geo(gs: Geometry): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tnpoint_geo(this.ptr, gs.ptr)) as Temporal | null;
+	private _nai_tnpoint_geo(gs: Geometry): this | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tnpoint_npoint */
-	private _nai_tnpoint_npoint(np: Npoint): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
+	private _nai_tnpoint_npoint(np: Npoint): this | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tnpoint_tnpoint */
-	private _nai_tnpoint_tnpoint(temp2: TNpoint): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_tnpoint_tnpoint(temp2: TNpoint): this | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_tnpoint(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: overlaps_rid_tnpoint_bigintset */
@@ -19609,23 +19569,23 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_at_geom */
-	atGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	atGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tnpoint_at_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_at_npoint */
-	atNpoint(np: Npoint): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_at_npoint(this.ptr, np.ptr)) as Temporal | null;
+	atNpoint(np: Npoint): this | null {
+		return wrapTemporalOrNull(F.tnpoint_at_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_at_npointset */
-	atNpointset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_at_npointset(this.ptr, s.ptr)) as Temporal | null;
+	atNpointset(s: Set): this | null {
+		return wrapTemporalOrNull(F.tnpoint_at_npointset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_at_stbox */
-	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tnpoint_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: contained_rid_tnpoint_bigintset, contained_rid_tnpoint_tnpoint, chosen by the arguments' types */
@@ -19674,23 +19634,23 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_minus_geom */
-	minusGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_minus_geom(this.ptr, gs.ptr)) as Temporal | null;
+	minusGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tnpoint_minus_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_minus_npoint */
-	minusNpoint(np: Npoint): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_minus_npoint(this.ptr, np.ptr)) as Temporal | null;
+	minusNpoint(np: Npoint): this | null {
+		return wrapTemporalOrNull(F.tnpoint_minus_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_minus_npointset */
-	minusNpointset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_minus_npointset(this.ptr, s.ptr)) as Temporal | null;
+	minusNpointset(s: Set): this | null {
+		return wrapTemporalOrNull(F.tnpoint_minus_npointset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tnpoint_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tnpoint_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tnpoint_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: nad_tnpoint_geo, nad_tnpoint_npoint, nad_tnpoint_stbox, nad_tnpoint_tnpoint, chosen by the arguments' types */
@@ -19703,7 +19663,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nai_tnpoint_geo, nai_tnpoint_npoint, nai_tnpoint_tnpoint, chosen by the arguments' types */
-	nai(gs: Geometry | Npoint | TNpoint): Temporal | null {
+	nai(gs: Geometry | Npoint | TNpoint): this | null {
 		if (gs instanceof Geometry) return this._nai_tnpoint_geo(gs as Geometry);
 		if (gs instanceof TNpoint) return this._nai_tnpoint_tnpoint(gs as TNpoint);
 		if (gs instanceof Npoint) return this._nai_tnpoint_npoint(gs as Npoint);
@@ -20282,8 +20242,8 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: intersection_tpcbox_tpcbox */
-	intersection(box2: TPCBox): TPCBox | null {
-		return wrapTPCBoxOrNull(F.intersection_tpcbox_tpcbox(this.ptr, box2.ptr)) as TPCBox | null;
+	intersection(box2: TPCBox): this | null {
+		return wrapTPCBoxOrNull(F.intersection_tpcbox_tpcbox(this.ptr, box2.ptr)) as this | null;
 	}
 
 	/** MEOS: tpcbox_le */
@@ -20394,8 +20354,8 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: tpcbox_round */
-	round(maxdd: number = 0): TPCBox | null {
-		return wrapTPCBoxOrNull(F.tpcbox_round(this.ptr, maxdd)) as TPCBox | null;
+	round(maxdd: number = 0): this | null {
+		return wrapTPCBoxOrNull(F.tpcbox_round(this.ptr, maxdd)) as this | null;
 	}
 
 	/** MEOS: same_tpcbox_tpcbox, same_tpcbox_tpointcloud, chosen by the arguments' types */
@@ -20406,8 +20366,8 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: tpcbox_set_srid */
-	setSRID(srid: number): TPCBox | null {
-		return wrapTPCBoxOrNull(F.tpcbox_set_srid(this.ptr, srid)) as TPCBox | null;
+	setSRID(srid: number): this | null {
+		return wrapTPCBoxOrNull(F.tpcbox_set_srid(this.ptr, srid)) as this | null;
 	}
 
 	/** MEOS: tpcbox_sortkey */
@@ -20446,8 +20406,8 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: union_tpcbox_tpcbox */
-	union(box2: TPCBox, strict: boolean): TPCBox | null {
-		return wrapTPCBoxOrNull(F.union_tpcbox_tpcbox(this.ptr, box2.ptr, strict)) as TPCBox | null;
+	union(box2: TPCBox, strict: boolean): this | null {
+		return wrapTPCBoxOrNull(F.union_tpcbox_tpcbox(this.ptr, box2.ptr, strict)) as this | null;
 	}
 
 	/** MEOS: tpcbox_xmax */
@@ -20601,8 +20561,8 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_at_value */
-	atValue(pa: Pcpatch): Temporal | null {
-		return wrapTemporalOrNull(F.tpcpatch_at_value(this.ptr, pa.ptr)) as Temporal | null;
+	atValue(pa: Pcpatch): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_at_value(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: tpcpatch_end_npoints */
@@ -20630,8 +20590,8 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_minus_value */
-	minusValue(pa: Pcpatch): Temporal | null {
-		return wrapTemporalOrNull(F.tpcpatch_minus_value(this.ptr, pa.ptr)) as Temporal | null;
+	minusValue(pa: Pcpatch): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_minus_value(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: tpcpatch_npoints */
@@ -20865,8 +20825,8 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_at_value */
-	atValue(pt: Pcpoint): Temporal | null {
-		return wrapTemporalOrNull(F.tpcpoint_at_value(this.ptr, pt.ptr)) as Temporal | null;
+	atValue(pt: Pcpoint): this | null {
+		return wrapTemporalOrNull(F.tpcpoint_at_value(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: eintersects_tpcpoint_geo */
@@ -20894,8 +20854,8 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_minus_value */
-	minusValue(pt: Pcpoint): Temporal | null {
-		return wrapTemporalOrNull(F.tpcpoint_minus_value(this.ptr, pt.ptr)) as Temporal | null;
+	minusValue(pt: Pcpoint): this | null {
+		return wrapTemporalOrNull(F.tpcpoint_minus_value(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: nad_tpcpoint_geo */
@@ -21110,18 +21070,18 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: nai_tpose_geo */
-	private _nai_tpose_geo(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tpose_geo(this.ptr, gs.ptr)) as Temporal | null;
+	private _nai_tpose_geo(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.nai_tpose_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tpose_pose */
-	private _nai_tpose_pose(pose: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tpose_pose(this.ptr, pose.ptr)) as Temporal | null;
+	private _nai_tpose_pose(pose: Pose): this | null {
+		return wrapTemporalOrNull(F.nai_tpose_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tpose_tpose */
-	private _nai_tpose_tpose(temp2: TPose): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tpose_tpose(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_tpose_tpose(temp2: TPose): this | null {
+		return wrapTemporalOrNull(F.nai_tpose_tpose(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_tpose_geo */
@@ -21209,33 +21169,33 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_at_elevation */
-	atElevation(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_at_elevation(this.ptr, s.ptr)) as Temporal | null;
+	atElevation(s: Span): this | null {
+		return wrapTemporalOrNull(F.tpose_at_elevation(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_at_geom */
-	atGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	atGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tpose_at_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_at_pose */
-	atPose(pose: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_at_pose(this.ptr, pose.ptr)) as Temporal | null;
+	atPose(pose: Pose): this | null {
+		return wrapTemporalOrNull(F.tpose_at_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_at_stbox */
-	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpose_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tpose_compose_pose */
-	composePose(frame: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_compose_pose(this.ptr, frame.ptr)) as Temporal | null;
+	composePose(frame: Pose): this | null {
+		return wrapTemporalOrNull(F.tpose_compose_pose(this.ptr, frame.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_compose_tpose */
-	composeTpose(frame: Temporal): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_compose_tpose(this.ptr, frame.ptr)) as Temporal | null;
+	composeTpose(frame: Temporal): this | null {
+		return wrapTemporalOrNull(F.tpose_compose_tpose(this.ptr, frame.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_end_value */
@@ -21258,13 +21218,13 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_force2d */
-	force2d(): Temporal {
-		return wrapTemporal(F.tpose_force2d(this.ptr)) as Temporal;
+	force2d(): this {
+		return wrapTemporal(F.tpose_force2d(this.ptr)) as this;
 	}
 
 	/** MEOS: tpose_inverse */
-	inverse(): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_inverse(this.ptr)) as Temporal | null;
+	inverse(): this | null {
+		return wrapTemporalOrNull(F.tpose_inverse(this.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_make */
@@ -21273,23 +21233,23 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_minus_elevation */
-	minusElevation(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_minus_elevation(this.ptr, s.ptr)) as Temporal | null;
+	minusElevation(s: Span): this | null {
+		return wrapTemporalOrNull(F.tpose_minus_elevation(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_minus_geom */
-	minusGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_minus_geom(this.ptr, gs.ptr)) as Temporal | null;
+	minusGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.tpose_minus_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_minus_pose */
-	minusPose(pose: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_minus_pose(this.ptr, pose.ptr)) as Temporal | null;
+	minusPose(pose: Pose): this | null {
+		return wrapTemporalOrNull(F.tpose_minus_pose(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: tpose_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpose_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: nad_tpose_geo, nad_tpose_pose, nad_tpose_stbox, nad_tpose_tpose, chosen by the arguments' types */
@@ -21302,7 +21262,7 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: nai_tpose_geo, nai_tpose_pose, nai_tpose_tpose, chosen by the arguments' types */
-	nai(gs: Geo | Pose | TPose): Temporal | null {
+	nai(gs: Geo | Pose | TPose): this | null {
 		if (gs instanceof TPose) return this._nai_tpose_tpose(gs as TPose);
 		if (gs instanceof Geo) return this._nai_tpose_geo(gs as Geo);
 		if (gs instanceof Pose) return this._nai_tpose_pose(gs as Pose);
@@ -21325,23 +21285,23 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_rotate */
-	rotate(angle: number, x0: number, y0: number): Temporal {
-		return wrapTemporal(F.tpose_rotate(this.ptr, angle, x0, y0)) as Temporal;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapTemporal(F.tpose_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: tpose_rotate_x */
-	rotateX(angle: number): Temporal {
-		return wrapTemporal(F.tpose_rotate_x(this.ptr, angle)) as Temporal;
+	rotateX(angle: number): this {
+		return wrapTemporal(F.tpose_rotate_x(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tpose_rotate_y */
-	rotateY(angle: number): Temporal {
-		return wrapTemporal(F.tpose_rotate_y(this.ptr, angle)) as Temporal;
+	rotateY(angle: number): this {
+		return wrapTemporal(F.tpose_rotate_y(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tpose_rotate_z */
-	rotateZ(angle: number): Temporal {
-		return wrapTemporal(F.tpose_rotate_z(this.ptr, angle)) as Temporal;
+	rotateZ(angle: number): this {
+		return wrapTemporal(F.tpose_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: shortestline_tpose_geo, shortestline_tpose_pose, shortestline_tpose_tpose, chosen by the arguments' types */
@@ -21393,8 +21353,8 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_translate */
-	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
-		return wrapTemporal(F.tpose_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): this {
+		return wrapTemporal(F.tpose_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
 	/** MEOS: tpose_value */
@@ -21549,18 +21509,18 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: nai_tposechain_geo */
-	private _nai_tposechain_geo(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tposechain_geo(this.ptr, gs.ptr)) as Temporal | null;
+	private _nai_tposechain_geo(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.nai_tposechain_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tposechain_posechain */
-	private _nai_tposechain_posechain(pc: PoseChain): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tposechain_posechain(this.ptr, pc.ptr)) as Temporal | null;
+	private _nai_tposechain_posechain(pc: PoseChain): this | null {
+		return wrapTemporalOrNull(F.nai_tposechain_posechain(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tposechain_tposechain */
-	private _nai_tposechain_tposechain(temp2: TPoseChain): Temporal | null {
-		return wrapTemporalOrNull(F.nai_tposechain_tposechain(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_tposechain_tposechain(temp2: TPoseChain): this | null {
+		return wrapTemporalOrNull(F.nai_tposechain_tposechain(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_tposechain_geo */
@@ -21623,8 +21583,8 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_at_value */
-	atValue(pc: PoseChain): Temporal | null {
-		return wrapTemporalOrNull(F.tposechain_at_value(this.ptr, pc.ptr)) as Temporal | null;
+	atValue(pc: PoseChain): this | null {
+		return wrapTemporalOrNull(F.tposechain_at_value(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: tposechain_end_value */
@@ -21647,8 +21607,8 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_minus_value */
-	minusValue(pc: PoseChain): Temporal | null {
-		return wrapTemporalOrNull(F.tposechain_minus_value(this.ptr, pc.ptr)) as Temporal | null;
+	minusValue(pc: PoseChain): this | null {
+		return wrapTemporalOrNull(F.tposechain_minus_value(this.ptr, pc.ptr)) as this | null;
 	}
 
 	/** MEOS: nad_tposechain_geo, nad_tposechain_posechain, nad_tposechain_stbox, nad_tposechain_tposechain, chosen by the arguments' types */
@@ -21661,7 +21621,7 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: nai_tposechain_geo, nai_tposechain_posechain, nai_tposechain_tposechain, chosen by the arguments' types */
-	nai(gs: Geo | PoseChain | TPoseChain): Temporal | null {
+	nai(gs: Geo | PoseChain | TPoseChain): this | null {
 		if (gs instanceof TPoseChain) return this._nai_tposechain_tposechain(gs as TPoseChain);
 		if (gs instanceof Geo) return this._nai_tposechain_geo(gs as Geo);
 		if (gs instanceof PoseChain) return this._nai_tposechain_posechain(gs as PoseChain);
@@ -21674,23 +21634,23 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_rotate */
-	rotate(angle: number, x0: number, y0: number): Temporal {
-		return wrapTemporal(F.tposechain_rotate(this.ptr, angle, x0, y0)) as Temporal;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapTemporal(F.tposechain_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: tposechain_rotate_x */
-	rotateX(angle: number): Temporal {
-		return wrapTemporal(F.tposechain_rotate_x(this.ptr, angle)) as Temporal;
+	rotateX(angle: number): this {
+		return wrapTemporal(F.tposechain_rotate_x(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tposechain_rotate_y */
-	rotateY(angle: number): Temporal {
-		return wrapTemporal(F.tposechain_rotate_y(this.ptr, angle)) as Temporal;
+	rotateY(angle: number): this {
+		return wrapTemporal(F.tposechain_rotate_y(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: tposechain_rotate_z */
-	rotateZ(angle: number): Temporal {
-		return wrapTemporal(F.tposechain_rotate_z(this.ptr, angle)) as Temporal;
+	rotateZ(angle: number): this {
+		return wrapTemporal(F.tposechain_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: shortestline_tposechain_geo, shortestline_tposechain_posechain, shortestline_tposechain_tposechain, chosen by the arguments' types */
@@ -21732,8 +21692,8 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_translate */
-	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
-		return wrapTemporal(F.tposechain_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): this {
+		return wrapTemporal(F.tposechain_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
 	/** MEOS: tposechain_value */
@@ -21949,7 +21909,7 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: teq_tquadbin_tquadbin */
-	private _teq_tquadbin_tquadbin(temp2: Temporal): Temporal {
+	private _teq_tquadbin_tquadbin(temp2: TQuadbin): Temporal {
 		return wrapTemporal(F.teq_tquadbin_tquadbin(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -21959,7 +21919,7 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: tne_tquadbin_tquadbin */
-	private _tne_tquadbin_tquadbin(temp2: Temporal): Temporal {
+	private _tne_tquadbin_tquadbin(temp2: TQuadbin): Temporal {
 		return wrapTemporal(F.tne_tquadbin_tquadbin(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -21978,8 +21938,8 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: tquadbin_at_value */
-	atValue(cell: Quadbin): Temporal | null {
-		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell)) as Temporal | null;
+	atValue(cell: Quadbin): this | null {
+		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: tquadbin_cell_to_quadkey */
@@ -22013,8 +21973,8 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: tquadbin_minus_value */
-	minusValue(cell: Quadbin): Temporal | null {
-		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell)) as Temporal | null;
+	minusValue(cell: Quadbin): this | null {
+		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: tquadbin_out */
@@ -22058,15 +22018,15 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: teq_tquadbin_quadbin, teq_tquadbin_tquadbin, chosen by the arguments' types */
-	override teq(cell: Quadbin | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._teq_tquadbin_tquadbin(cell as Temporal);
+	override teq(cell: Quadbin | TQuadbin | Temporal): Temporal | null {
+		if (cell instanceof TQuadbin) return this._teq_tquadbin_tquadbin(cell as TQuadbin);
 		if (typeof cell === 'bigint') return this._teq_tquadbin_quadbin(cell as Quadbin);
 		return super.teq(cell as Temporal);
 	}
 
 	/** MEOS: tne_tquadbin_quadbin, tne_tquadbin_tquadbin, chosen by the arguments' types */
-	override tne(cell: Quadbin | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._tne_tquadbin_tquadbin(cell as Temporal);
+	override tne(cell: Quadbin | TQuadbin | Temporal): Temporal | null {
+		if (cell instanceof TQuadbin) return this._tne_tquadbin_tquadbin(cell as TQuadbin);
 		if (typeof cell === 'bigint') return this._tne_tquadbin_quadbin(cell as Quadbin);
 		return super.tne(cell as Temporal);
 	}
@@ -22321,18 +22281,18 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: nai_trgeometry_geo */
-	private _nai_trgeometry_geo(gs: Geometry): Temporal | null {
-		return wrapTemporalOrNull(F.nai_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	private _nai_trgeometry_geo(gs: Geometry): this | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_geo(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_trgeometry_tpoint */
-	private _nai_trgeometry_tpoint(temp2: TGeomPoint): Temporal | null {
-		return wrapTemporalOrNull(F.nai_trgeometry_tpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_trgeometry_tpoint(temp2: TGeomPoint): this | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_tpoint(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_trgeometry_trgeometry */
-	private _nai_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
-		return wrapTemporalOrNull(F.nai_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
+	private _nai_trgeometry_trgeometry(temp2: TRGeometry): this | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_trgeometry(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_trgeometry_geo */
@@ -22405,8 +22365,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_after_timestamptz */
-	override afterTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	override afterTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_after_timestamptz(this.ptr, t, strict)) as this | null;
 	}
 
 	/** MEOS: aintersects_trgeometry_geo, aintersects_trgeometry_trgeometry, chosen by the arguments' types */
@@ -22436,18 +22396,18 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_append_tinstant */
-	override appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): Temporal {
+	override appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): this {
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.trgeometry_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as Temporal;
+			return wrapTemporal(F.trgeometry_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as this;
 		} finally {
 			_free(_maxt);
 		}
 	}
 
 	/** MEOS: trgeometry_append_tsequence */
-	override appendTsequence(seq: Temporal, expand: boolean): Temporal {
-		return wrapTemporal(F.trgeometry_append_tsequence(this.ptr, seq.ptr, expand)) as Temporal;
+	override appendTsequence(seq: Temporal, expand: boolean): this {
+		return wrapTemporal(F.trgeometry_append_tsequence(this.ptr, seq.ptr, expand)) as this;
 	}
 
 	/** MEOS: trgeometry_as_ewkt */
@@ -22461,13 +22421,13 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_as_tinstant */
-	override asTinstant(): Temporal {
-		return wrapTemporal(F.trgeometry_as_tinstant(this.ptr)) as Temporal;
+	override asTinstant(): this {
+		return wrapTemporal(F.trgeometry_as_tinstant(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_at_geom */
-	atGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	atGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: atouches_trgeometry_geo */
@@ -22476,43 +22436,43 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_at_stbox */
-	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_timestamptz */
-	override atTimestamptz(t: TimestampTz): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_timestamptz(this.ptr, t)) as Temporal | null;
+	override atTimestamptz(t: TimestampTz): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_tstzset */
-	override atTstzset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzset(this.ptr, s.ptr)) as Temporal | null;
+	override atTstzset(s: Set): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_tstzset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_tstzspan */
-	override atTstzspan(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzspan(this.ptr, s.ptr)) as Temporal | null;
+	override atTstzspan(s: Span): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_tstzspan(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_tstzspanset */
-	override atTstzspanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzspanset(this.ptr, ss.ptr)) as Temporal | null;
+	override atTstzspanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_tstzspanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_value */
-	atValue(pose: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_value(this.ptr, pose.ptr)) as Temporal | null;
+	atValue(pose: Pose): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_value(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_at_values */
-	override atValues(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_at_values(this.ptr, s.ptr)) as Temporal | null;
+	override atValues(s: Set): this | null {
+		return wrapTemporalOrNull(F.trgeometry_at_values(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_before_timestamptz */
-	override beforeTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_before_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	override beforeTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_before_timestamptz(this.ptr, t, strict)) as this | null;
 	}
 
 	/** MEOS: trgeometry_body_point_trajectory */
@@ -22536,23 +22496,23 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_delete_timestamptz */
-	override deleteTimestamptz(t: TimestampTz, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_timestamptz(this.ptr, t, connect)) as Temporal | null;
+	override deleteTimestamptz(t: TimestampTz, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_delete_timestamptz(this.ptr, t, connect)) as this | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzset */
-	override deleteTstzset(s: Set, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzset(this.ptr, s.ptr, connect)) as Temporal | null;
+	override deleteTstzset(s: Set, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_delete_tstzset(this.ptr, s.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzspan */
-	override deleteTstzspan(s: Span, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzspan(this.ptr, s.ptr, connect)) as Temporal | null;
+	override deleteTstzspan(s: Span, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_delete_tstzspan(this.ptr, s.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzspanset */
-	override deleteTstzspanset(ss: SpanSet, connect: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzspanset(this.ptr, ss.ptr, connect)) as Temporal | null;
+	override deleteTstzspanset(ss: SpanSet, connect: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_delete_tstzspanset(this.ptr, ss.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: ecovers_trgeometry_geo */
@@ -22582,13 +22542,13 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_end_instant */
-	override endInstant(): Temporal {
-		return wrapTemporal(F.trgeometry_end_instant(this.ptr)) as Temporal;
+	override endInstant(): this {
+		return wrapTemporal(F.trgeometry_end_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_end_sequence */
-	override endSequence(): Temporal {
-		return wrapTemporal(F.trgeometry_end_sequence(this.ptr)) as Temporal;
+	override endSequence(): this {
+		return wrapTemporal(F.trgeometry_end_sequence(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_end_value */
@@ -22616,8 +22576,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_force2d */
-	force2d(): Temporal {
-		return wrapTemporal(F.trgeometry_force2d(this.ptr)) as Temporal;
+	force2d(): this {
+		return wrapTemporal(F.trgeometry_force2d(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_geom */
@@ -22626,8 +22586,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_instant_n */
-	override instantN(n: number): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_instant_n(this.ptr, n)) as Temporal | null;
+	override instantN(n: number): this | null {
+		return wrapTemporalOrNull(F.trgeometry_instant_n(this.ptr, n)) as this | null;
 	}
 
 	/** MEOS: trgeometry_instants */
@@ -22656,48 +22616,48 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_merge */
-	override merge(temp2: Temporal): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_merge(this.ptr, temp2.ptr)) as Temporal | null;
+	override merge(temp2: Temporal): this | null {
+		return wrapTemporalOrNull(F.trgeometry_merge(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_geom */
-	minusGeom(gs: Geo): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_geom(this.ptr, gs.ptr)) as Temporal | null;
+	minusGeom(gs: Geo): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_geom(this.ptr, gs.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_timestamptz */
-	override minusTimestamptz(t: TimestampTz): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_timestamptz(this.ptr, t)) as Temporal | null;
+	override minusTimestamptz(t: TimestampTz): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_tstzset */
-	override minusTstzset(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzset(this.ptr, s.ptr)) as Temporal | null;
+	override minusTstzset(s: Set): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_tstzset(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_tstzspan */
-	override minusTstzspan(s: Span): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzspan(this.ptr, s.ptr)) as Temporal | null;
+	override minusTstzspan(s: Span): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_tstzspan(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_tstzspanset */
-	override minusTstzspanset(ss: SpanSet): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzspanset(this.ptr, ss.ptr)) as Temporal | null;
+	override minusTstzspanset(ss: SpanSet): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_tstzspanset(this.ptr, ss.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_value */
-	minusValue(pose: Pose): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_value(this.ptr, pose.ptr)) as Temporal | null;
+	minusValue(pose: Pose): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_value(this.ptr, pose.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_values */
-	override minusValues(s: Set): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_values(this.ptr, s.ptr)) as Temporal | null;
+	override minusValues(s: Set): this | null {
+		return wrapTemporalOrNull(F.trgeometry_minus_values(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: nad_trgeometry_geo, nad_trgeometry_stbox, nad_trgeometry_tpoint, nad_trgeometry_trgeometry, chosen by the arguments' types */
@@ -22710,7 +22670,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: nai_trgeometry_geo, nai_trgeometry_tpoint, nai_trgeometry_trgeometry, chosen by the arguments' types */
-	nai(gs: Geometry | TGeomPoint | TRGeometry): Temporal | null {
+	nai(gs: Geometry | TGeomPoint | TRGeometry): this | null {
 		if (gs instanceof TGeomPoint) return this._nai_trgeometry_tpoint(gs as TGeomPoint);
 		if (gs instanceof Geometry) return this._nai_trgeometry_geo(gs as Geometry);
 		if (gs instanceof TRGeometry) return this._nai_trgeometry_trgeometry(gs as TRGeometry);
@@ -22738,28 +22698,28 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_rotate */
-	rotate(angle: number, x0: number, y0: number): Temporal {
-		return wrapTemporal(F.trgeometry_rotate(this.ptr, angle, x0, y0)) as Temporal;
+	rotate(angle: number, x0: number, y0: number): this {
+		return wrapTemporal(F.trgeometry_rotate(this.ptr, angle, x0, y0)) as this;
 	}
 
 	/** MEOS: trgeometry_rotate_x */
-	rotateX(angle: number): Temporal {
-		return wrapTemporal(F.trgeometry_rotate_x(this.ptr, angle)) as Temporal;
+	rotateX(angle: number): this {
+		return wrapTemporal(F.trgeometry_rotate_x(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: trgeometry_rotate_y */
-	rotateY(angle: number): Temporal {
-		return wrapTemporal(F.trgeometry_rotate_y(this.ptr, angle)) as Temporal;
+	rotateY(angle: number): this {
+		return wrapTemporal(F.trgeometry_rotate_y(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: trgeometry_rotate_z */
-	rotateZ(angle: number): Temporal {
-		return wrapTemporal(F.trgeometry_rotate_z(this.ptr, angle)) as Temporal;
+	rotateZ(angle: number): this {
+		return wrapTemporal(F.trgeometry_rotate_z(this.ptr, angle)) as this;
 	}
 
 	/** MEOS: trgeometry_round */
-	override round(maxdd: number = 0): Temporal {
-		return wrapTemporal(F.trgeometry_round(this.ptr, maxdd)) as Temporal;
+	override round(maxdd: number = 0): this {
+		return wrapTemporal(F.trgeometry_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: trgeometry_segments */
@@ -22783,8 +22743,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_sequence_n */
-	override sequenceN(i: number): Temporal | null {
-		return wrapTemporalOrNull(F.trgeometry_sequence_n(this.ptr, i)) as Temporal | null;
+	override sequenceN(i: number): this | null {
+		return wrapTemporalOrNull(F.trgeometry_sequence_n(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: trgeometry_sequences */
@@ -22808,8 +22768,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_set_interp */
-	override setInterp(interp: number): Temporal {
-		return wrapTemporal(F.trgeometry_set_interp(this.ptr, interp)) as Temporal;
+	override setInterp(interp: number): this {
+		return wrapTemporal(F.trgeometry_set_interp(this.ptr, interp)) as this;
 	}
 
 	/** MEOS: shortestline_trgeometry_geo, shortestline_trgeometry_tpoint, shortestline_trgeometry_trgeometry, chosen by the arguments' types */
@@ -22908,13 +22868,13 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_start_instant */
-	override startInstant(): Temporal {
-		return wrapTemporal(F.trgeometry_start_instant(this.ptr)) as Temporal;
+	override startInstant(): this {
+		return wrapTemporal(F.trgeometry_start_instant(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_start_sequence */
-	override startSequence(): Temporal {
-		return wrapTemporal(F.trgeometry_start_sequence(this.ptr)) as Temporal;
+	override startSequence(): this {
+		return wrapTemporal(F.trgeometry_start_sequence(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_start_value */
@@ -23007,8 +22967,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_translate */
-	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
-		return wrapTemporal(F.trgeometry_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): this {
+		return wrapTemporal(F.trgeometry_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
 	/** MEOS: trgeometry_traversed_area */
@@ -23218,7 +23178,7 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: teq_ts2cell_ts2cell */
-	private _teq_ts2cell_ts2cell(temp2: Temporal): Temporal {
+	private _teq_ts2cell_ts2cell(temp2: TS2Cell): Temporal {
 		return wrapTemporal(F.teq_ts2cell_ts2cell(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -23228,7 +23188,7 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: tne_ts2cell_ts2cell */
-	private _tne_ts2cell_ts2cell(temp2: Temporal): Temporal {
+	private _tne_ts2cell_ts2cell(temp2: TS2Cell): Temporal {
 		return wrapTemporal(F.tne_ts2cell_ts2cell(this.ptr, temp2.ptr)) as Temporal;
 	}
 
@@ -23247,8 +23207,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_at_value */
-	atValue(cell: S2CellId): Temporal | null {
-		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell)) as Temporal | null;
+	atValue(cell: S2CellId): this | null {
+		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: ts2cell_cell_to_token */
@@ -23282,8 +23242,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_minus_value */
-	minusValue(cell: S2CellId): Temporal | null {
-		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell)) as Temporal | null;
+	minusValue(cell: S2CellId): this | null {
+		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell)) as this | null;
 	}
 
 	/** MEOS: ts2cell_out */
@@ -23327,15 +23287,15 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: teq_ts2cell_s2cell, teq_ts2cell_ts2cell, chosen by the arguments' types */
-	override teq(cell: S2CellId | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._teq_ts2cell_ts2cell(cell as Temporal);
+	override teq(cell: S2CellId | TS2Cell | Temporal): Temporal | null {
+		if (cell instanceof TS2Cell) return this._teq_ts2cell_ts2cell(cell as TS2Cell);
 		if (typeof cell === 'bigint') return this._teq_ts2cell_s2cell(cell as S2CellId);
 		return super.teq(cell as Temporal);
 	}
 
 	/** MEOS: tne_ts2cell_s2cell, tne_ts2cell_ts2cell, chosen by the arguments' types */
-	override tne(cell: S2CellId | Temporal): Temporal | null {
-		if (cell instanceof Temporal) return this._tne_ts2cell_ts2cell(cell as Temporal);
+	override tne(cell: S2CellId | TS2Cell | Temporal): Temporal | null {
+		if (cell instanceof TS2Cell) return this._tne_ts2cell_ts2cell(cell as TS2Cell);
 		if (typeof cell === 'bigint') return this._tne_ts2cell_s2cell(cell as S2CellId);
 		return super.tne(cell as Temporal);
 	}
@@ -23579,13 +23539,13 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: textcat_ttext_text */
-	private _textcat_ttext_text(txt: string): Temporal {
-		return wrapTemporal(F.textcat_ttext_text(this.ptr, txt)) as Temporal;
+	private _textcat_ttext_text(txt: string): this {
+		return wrapTemporal(F.textcat_ttext_text(this.ptr, txt)) as this;
 	}
 
 	/** MEOS: textcat_ttext_ttext */
-	private _textcat_ttext_ttext(temp2: TText): Temporal | null {
-		return wrapTemporalOrNull(F.textcat_ttext_ttext(this.ptr, temp2.ptr)) as Temporal | null;
+	private _textcat_ttext_ttext(temp2: TText): this | null {
+		return wrapTemporalOrNull(F.textcat_ttext_ttext(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: tge_ttext_text */
@@ -23655,8 +23615,8 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: ttext_at_value */
-	atValue(txt: string): Temporal | null {
-		return wrapTemporalOrNull(F.ttext_at_value(this.ptr, txt)) as Temporal | null;
+	atValue(txt: string): this | null {
+		return wrapTemporalOrNull(F.ttext_at_value(this.ptr, txt)) as this | null;
 	}
 
 	/** MEOS: ttext_end_value */
@@ -23701,13 +23661,13 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: ttext_initcap */
-	initcap(): Temporal {
-		return wrapTemporal(F.ttext_initcap(this.ptr)) as Temporal;
+	initcap(): this {
+		return wrapTemporal(F.ttext_initcap(this.ptr)) as this;
 	}
 
 	/** MEOS: ttext_lower */
-	lower(): Temporal {
-		return wrapTemporal(F.ttext_lower(this.ptr)) as Temporal;
+	lower(): this {
+		return wrapTemporal(F.ttext_lower(this.ptr)) as this;
 	}
 
 	/** MEOS: ttext_max_value */
@@ -23716,8 +23676,8 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: ttext_minus_value */
-	minusValue(txt: string): Temporal | null {
-		return wrapTemporalOrNull(F.ttext_minus_value(this.ptr, txt)) as Temporal | null;
+	minusValue(txt: string): this | null {
+		return wrapTemporalOrNull(F.ttext_minus_value(this.ptr, txt)) as this | null;
 	}
 
 	/** MEOS: ttext_min_value */
@@ -23742,7 +23702,7 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: textcat_ttext_text, textcat_ttext_ttext, chosen by the arguments' types */
-	textcat(txt: string | TText): Temporal | null {
+	textcat(txt: string | TText): this | null {
 		if (txt instanceof TText) return this._textcat_ttext_ttext(txt as TText);
 		if (typeof txt === 'string') return this._textcat_ttext_text(txt as string);
 		throw new TypeError(`TText.textcat: no overload takes these arguments`);
@@ -23784,8 +23744,8 @@ export class TText extends TAlpha {
 	}
 
 	/** MEOS: ttext_upper */
-	upper(): Temporal {
-		return wrapTemporal(F.ttext_upper(this.ptr)) as Temporal;
+	upper(): this {
+		return wrapTemporal(F.ttext_upper(this.ptr)) as this;
 	}
 
 	/** MEOS: ttext_value */
@@ -23949,8 +23909,8 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: intersection_set_text */
-	private _intersection_set_text(txt: string): Set | null {
-		return wrapSetOrNull(F.intersection_set_text(this.ptr, txt)) as Set | null;
+	private _intersection_set_text(txt: string): this | null {
+		return wrapSetOrNull(F.intersection_set_text(this.ptr, txt)) as this | null;
 	}
 
 	/** MEOS: left_set_text */
@@ -23959,8 +23919,8 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: minus_set_text */
-	private _minus_set_text(txt: string): Set | null {
-		return wrapSetOrNull(F.minus_set_text(this.ptr, txt)) as Set | null;
+	private _minus_set_text(txt: string): this | null {
+		return wrapSetOrNull(F.minus_set_text(this.ptr, txt)) as this | null;
 	}
 
 	/** MEOS: overleft_set_text */
@@ -23979,8 +23939,8 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: union_set_text */
-	private _union_set_text(txt: string): Set | null {
-		return wrapSetOrNull(F.union_set_text(this.ptr, txt)) as Set | null;
+	private _union_set_text(txt: string): this | null {
+		return wrapSetOrNull(F.union_set_text(this.ptr, txt)) as this | null;
 	}
 
 	/** MEOS: textset_out */
@@ -24000,12 +23960,12 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: textset_initcap */
-	initcap(): Set {
-		return wrapSet(F.textset_initcap(this.ptr)) as Set;
+	initcap(): this {
+		return wrapSet(F.textset_initcap(this.ptr)) as this;
 	}
 
 	/** MEOS: intersection_set_text, chosen by the arguments' types */
-	override intersection(txt: string | Set): Set | null {
+	override intersection(txt: string | Set): this | null {
 		if (typeof txt === 'string') return this._intersection_set_text(txt as string);
 		return super.intersection(txt as Set);
 	}
@@ -24017,12 +23977,12 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: textset_lower */
-	lower(): Set {
-		return wrapSet(F.textset_lower(this.ptr)) as Set;
+	lower(): this {
+		return wrapSet(F.textset_lower(this.ptr)) as this;
 	}
 
 	/** MEOS: minus_set_text, chosen by the arguments' types */
-	override minus(txt: string | Set): Set | null {
+	override minus(txt: string | Set): this | null {
 		if (typeof txt === 'string') return this._minus_set_text(txt as string);
 		return super.minus(txt as Set);
 	}
@@ -24056,8 +24016,8 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: textcat_textset_text */
-	textcat(txt: string): Set {
-		return wrapSet(F.textcat_textset_text(this.ptr, txt)) as Set;
+	textcat(txt: string): this {
+		return wrapSet(F.textcat_textset_text(this.ptr, txt)) as this;
 	}
 
 	/** MEOS: textset_to_jsonbset */
@@ -24066,14 +24026,14 @@ export class TextSet extends Set {
 	}
 
 	/** MEOS: union_set_text, chosen by the arguments' types */
-	override union(txt: string | Set): Set | null {
+	override union(txt: string | Set): this | null {
 		if (typeof txt === 'string') return this._union_set_text(txt as string);
 		return super.union(txt as Set);
 	}
 
 	/** MEOS: textset_upper */
-	upper(): Set {
-		return wrapSet(F.textset_upper(this.ptr)) as Set;
+	upper(): this {
+		return wrapSet(F.textset_upper(this.ptr)) as this;
 	}
 
 	/** MEOS: textset_value_n */
@@ -24148,18 +24108,18 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: intersection_set_timestamptz */
-	private _intersection_set_timestamptz(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.intersection_set_timestamptz(this.ptr, t)) as Set | null;
+	private _intersection_set_timestamptz(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.intersection_set_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: minus_set_timestamptz */
-	private _minus_set_timestamptz(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.minus_set_timestamptz(this.ptr, t)) as Set | null;
+	private _minus_set_timestamptz(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.minus_set_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: union_set_timestamptz */
-	private _union_set_timestamptz(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.union_set_timestamptz(this.ptr, t)) as Set | null;
+	private _union_set_timestamptz(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.union_set_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: after_set_timestamptz */
@@ -24196,13 +24156,13 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: intersection_set_timestamptz, chosen by the arguments' types */
-	override intersection(t: TimestampTz | Set): Set | null {
+	override intersection(t: TimestampTz | Set): this | null {
 		if (typeof t === 'number') return this._intersection_set_timestamptz(t as TimestampTz);
 		return super.intersection(t as Set);
 	}
 
 	/** MEOS: minus_set_timestamptz, chosen by the arguments' types */
-	override minus(t: TimestampTz | Set): Set | null {
+	override minus(t: TimestampTz | Set): this | null {
 		if (typeof t === 'number') return this._minus_set_timestamptz(t as TimestampTz);
 		return super.minus(t as Set);
 	}
@@ -24238,13 +24198,13 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: intersection_timestamptz_set */
-	rintersection(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.intersection_timestamptz_set(t, this.ptr)) as Set | null;
+	rintersection(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.intersection_timestamptz_set(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_timestamptz_set */
-	rminus(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.minus_timestamptz_set(t, this.ptr)) as Set | null;
+	rminus(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.minus_timestamptz_set(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overafter_timestamptz_set */
@@ -24258,36 +24218,36 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: union_timestamptz_set */
-	runion(t: TimestampTz): Set | null {
-		return wrapSetOrNull(F.union_timestamptz_set(t, this.ptr)) as Set | null;
+	runion(t: TimestampTz): this | null {
+		return wrapSetOrNull(F.union_timestamptz_set(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: tstzset_scale */
-	scale(duration: Interval): Set {
+	scale(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSet(F.tstzset_scale(this.ptr, _duration)) as Set;
+			return wrapSet(F.tstzset_scale(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: tstzset_shift */
-	shift(shift: Interval): Set {
+	shift(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapSet(F.tstzset_shift(this.ptr, _shift)) as Set;
+			return wrapSet(F.tstzset_shift(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
 	}
 
 	/** MEOS: tstzset_shift_scale */
-	shiftScale(shift: Interval, duration: Interval): Set {
+	shiftScale(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSet(F.tstzset_shift_scale(this.ptr, _shift, _duration)) as Set;
+			return wrapSet(F.tstzset_shift_scale(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -24310,17 +24270,17 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: tstzset_tprecision */
-	tprecision(duration: Interval, torigin: TimestampTz): Set {
+	tprecision(duration: Interval, torigin: TimestampTz): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSet(F.tstzset_tprecision(this.ptr, _duration, torigin)) as Set;
+			return wrapSet(F.tstzset_tprecision(this.ptr, _duration, torigin)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: union_set_timestamptz, chosen by the arguments' types */
-	override union(t: TimestampTz | Set): Set | null {
+	override union(t: TimestampTz | Set): this | null {
 		if (typeof t === 'number') return this._union_set_timestamptz(t as TimestampTz);
 		return super.union(t as Set);
 	}
@@ -24468,8 +24428,8 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: intersection_span_timestamptz */
-	private _intersection_span_timestamptz(t: TimestampTz): Span | null {
-		return wrapSpanOrNull(F.intersection_span_timestamptz(this.ptr, t)) as Span | null;
+	private _intersection_span_timestamptz(t: TimestampTz): this | null {
+		return wrapSpanOrNull(F.intersection_span_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: minus_span_timestamptz */
@@ -24611,17 +24571,17 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: tstzspan_expand */
-	expand(interv: Interval): Span | null {
+	expand(interv: Interval): this | null {
 		const _interv = _putInterval(interv);
 		try {
-			return wrapSpanOrNull(F.tstzspan_expand(this.ptr, _interv)) as Span | null;
+			return wrapSpanOrNull(F.tstzspan_expand(this.ptr, _interv)) as this | null;
 		} finally {
 			_free(_interv);
 		}
 	}
 
 	/** MEOS: intersection_span_timestamptz, chosen by the arguments' types */
-	override intersection(t: TimestampTz | Span | SpanSet): Span | null | SpanSet {
+	override intersection(t: TimestampTz | Span | SpanSet): this | null | SpanSet {
 		if (typeof t === 'number') return this._intersection_span_timestamptz(t as TimestampTz);
 		return super.intersection(t as Span | SpanSet);
 	}
@@ -24691,8 +24651,8 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: intersection_timestamptz_span */
-	rintersection(t: TimestampTz): Span | null {
-		return wrapSpanOrNull(F.intersection_timestamptz_span(t, this.ptr)) as Span | null;
+	rintersection(t: TimestampTz): this | null {
+		return wrapSpanOrNull(F.intersection_timestamptz_span(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_timestamptz_span */
@@ -24723,31 +24683,31 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: tstzspan_scale */
-	scale(duration: Interval): Span {
+	scale(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpan(F.tstzspan_scale(this.ptr, _duration)) as Span;
+			return wrapSpan(F.tstzspan_scale(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: tstzspan_shift */
-	shift(shift: Interval): Span {
+	shift(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapSpan(F.tstzspan_shift(this.ptr, _shift)) as Span;
+			return wrapSpan(F.tstzspan_shift(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
 	}
 
 	/** MEOS: tstzspan_shift_scale */
-	shiftScale(shift: Interval, duration: Interval): Span {
+	shiftScale(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpan(F.tstzspan_shift_scale(this.ptr, _shift, _duration)) as Span;
+			return wrapSpan(F.tstzspan_shift_scale(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -24765,10 +24725,10 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: tstzspan_tprecision */
-	tprecision(duration: Interval, torigin: TimestampTz): Span {
+	tprecision(duration: Interval, torigin: TimestampTz): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpan(F.tstzspan_tprecision(this.ptr, _duration, torigin)) as Span;
+			return wrapSpan(F.tstzspan_tprecision(this.ptr, _duration, torigin)) as this;
 		} finally {
 			_free(_duration);
 		}
@@ -24852,18 +24812,18 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_timestamptz */
-	private _intersection_spanset_timestamptz(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	private _intersection_spanset_timestamptz(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: minus_spanset_timestamptz */
-	private _minus_spanset_timestamptz(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	private _minus_spanset_timestamptz(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.minus_spanset_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: union_spanset_timestamptz */
-	private _union_spanset_timestamptz(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	private _union_spanset_timestamptz(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.union_spanset_timestamptz(this.ptr, t)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_timestamptz, chosen by the arguments' types */
@@ -24934,7 +24894,7 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_timestamptz, chosen by the arguments' types */
-	override intersection(t: TimestampTz | Span | SpanSet): SpanSet | null {
+	override intersection(t: TimestampTz | Span | SpanSet): this | null {
 		if (typeof t === 'number') return this._intersection_spanset_timestamptz(t as TimestampTz);
 		return super.intersection(t as Span | SpanSet);
 	}
@@ -24945,7 +24905,7 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: minus_spanset_timestamptz, chosen by the arguments' types */
-	override minus(t: TimestampTz | Span | SpanSet): SpanSet | null {
+	override minus(t: TimestampTz | Span | SpanSet): this | null {
 		if (typeof t === 'number') return this._minus_spanset_timestamptz(t as TimestampTz);
 		return super.minus(t as Span | SpanSet);
 	}
@@ -24991,13 +24951,13 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_timestamptz_spanset */
-	rintersection(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.intersection_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
+	rintersection(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.intersection_timestamptz_spanset(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_timestamptz_spanset */
-	rminus(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.minus_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
+	rminus(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.minus_timestamptz_spanset(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overafter_timestamptz_spanset */
@@ -25011,36 +24971,36 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_timestamptz_spanset */
-	runion(t: TimestampTz): SpanSet | null {
-		return wrapSpanSetOrNull(F.union_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
+	runion(t: TimestampTz): this | null {
+		return wrapSpanSetOrNull(F.union_timestamptz_spanset(t, this.ptr)) as this | null;
 	}
 
 	/** MEOS: tstzspanset_scale */
-	scale(duration: Interval): SpanSet {
+	scale(duration: Interval): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpanSet(F.tstzspanset_scale(this.ptr, _duration)) as SpanSet;
+			return wrapSpanSet(F.tstzspanset_scale(this.ptr, _duration)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: tstzspanset_shift */
-	shift(shift: Interval): SpanSet {
+	shift(shift: Interval): this {
 		const _shift = _putInterval(shift);
 		try {
-			return wrapSpanSet(F.tstzspanset_shift(this.ptr, _shift)) as SpanSet;
+			return wrapSpanSet(F.tstzspanset_shift(this.ptr, _shift)) as this;
 		} finally {
 			_free(_shift);
 		}
 	}
 
 	/** MEOS: tstzspanset_shift_scale */
-	shiftScale(shift: Interval, duration: Interval): SpanSet {
+	shiftScale(shift: Interval, duration: Interval): this {
 		const _shift = _putInterval(shift);
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpanSet(F.tstzspanset_shift_scale(this.ptr, _shift, _duration)) as SpanSet;
+			return wrapSpanSet(F.tstzspanset_shift_scale(this.ptr, _shift, _duration)) as this;
 		} finally {
 			_free(_shift);
 			_free(_duration);
@@ -25073,17 +25033,17 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: tstzspanset_tprecision */
-	tprecision(duration: Interval, torigin: TimestampTz): SpanSet {
+	tprecision(duration: Interval, torigin: TimestampTz): this {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapSpanSet(F.tstzspanset_tprecision(this.ptr, _duration, torigin)) as SpanSet;
+			return wrapSpanSet(F.tstzspanset_tprecision(this.ptr, _duration, torigin)) as this;
 		} finally {
 			_free(_duration);
 		}
 	}
 
 	/** MEOS: union_spanset_timestamptz, chosen by the arguments' types */
-	override union(t: TimestampTz | Span | SpanSet): SpanSet | null {
+	override union(t: TimestampTz | Span | SpanSet): this | null {
 		if (typeof t === 'number') return this._union_spanset_timestamptz(t as TimestampTz);
 		return super.union(t as Span | SpanSet);
 	}

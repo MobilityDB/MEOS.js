@@ -243,3 +243,18 @@ describe('generated object layer: SQL defaults', () => {
 		assert.equal(closed.toString(), '[1, 6)');
 	});
 });
+
+describe('generated object layer: members answering their receiver type', () => {
+	it('types the answer as the class the member is called on', () => {
+		// span_expand answers a Span * in C; every SQL signature answers its
+		// receiver's own type, so IntSpan.expand answers an IntSpan, whose own
+		// members the result reaches without a cast.
+		using s = IntSpan.make(1, 5);
+		using e = s.expand(1);
+		assert.ok(e instanceof IntSpan);
+		assert.equal(e!.lower(), 0);
+		assert.equal(e!.upper(), 6);
+		using moved = s.shiftScale(10, 0, true, false);
+		assert.equal(moved.lower(), 11);
+	});
+});

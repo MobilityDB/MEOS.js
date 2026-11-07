@@ -64,6 +64,8 @@ interface MethodEntry {
 	other?: string;
 	/** On an operator: the class the other operand's SQL types instantiate. */
 	otherClass?: string;
+	/** Every SQL signature answers the receiver's own type (`answersReceiver`). */
+	answersReceiver?: boolean;
 }
 interface LatticeNode {
 	kind: string;
@@ -522,6 +524,16 @@ class Generator {
 				wrap = wrap.replace(` as ${ts}`, ` as ${narrowed}`);
 				ts = narrowed;
 			}
+			// A member the model states answers its receiver's own type
+			// (`answersReceiver`, every SQL signature answering the receiver's SQL
+			// type) answers the class it is called on, where the C return names the
+			// template: IntSpan.expand answers an IntSpan, not a Span.
+			else if (!isStatic && entry.answersReceiver
+				&& (answered === cls || this.m.ancestors(cls).includes(answered))) {
+				const narrowed = ts.endsWith(' | null') ? 'this | null' : 'this';
+				wrap = wrap.replace(` as ${ts}`, ` as ${narrowed}`);
+				ts = narrowed;
+			}
 			ret = ts;
 			body = [wrap === '$' ? (ret === 'void' ? `${call};` : `return ${call};`) : `return ${wrap.replace('$', call)};`];
 		}
@@ -750,6 +762,10 @@ class Generator {
 		const types = (key: string) => key.slice(1, key.indexOf(')=>')).split(',').filter(Boolean);
 		const inherited = types(prior);
 		const own = types(this.sigKey(m));
+		// An ancestor answering `this` takes an override that answers it too: a
+		// concrete class is not assignable to the type `this` stands for.
+		const priorRet = prior.slice(prior.indexOf(')=>') + 3);
+		if (/^this( \| null)?$/.test(priorRet) && !/^this( \| null)?$/.test(m.ret)) return false;
 		return own.length <= inherited.length && own.every((t, i) => t === inherited[i]);
 	}
 
