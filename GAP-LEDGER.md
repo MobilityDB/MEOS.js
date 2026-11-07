@@ -8,13 +8,14 @@ row here, with the contract it is missing. Do not edit; run `npm run generate`.
 
 The model assigns a method to a function the catalog's own function list does not carry.
 
-## no emitted wrapper (22)
+## no emitted wrapper (23)
 
 The flat surface emits no generated wrapper for the function, so the layer has no signature to build on.
 
 | class | member | what is missing |
 |---|---|---|
 | Set | asHexWKB | set_as_hexwkb has no generated wrapper |
+| Span | adjacent | adjacent_span_span has no generated wrapper |
 | Span | asHexWKB | span_as_hexwkb has no generated wrapper |
 | Span | eq | span_eq has no generated wrapper |
 | Span | ne | span_ne has no generated wrapper |
@@ -49,7 +50,7 @@ The function answers a type no class stands for and no scalar or array rule read
 | STBox | toGbox | return GBOX * needs wrapping |
 | Temporal | toTaggstate | return struct SkipList * needs wrapping |
 
-## argument needs a class (40)
+## argument needs a class (69)
 
 The function takes a type no class stands for and no marshalling rule reads.
 
@@ -90,6 +91,35 @@ The function takes a type no class stands for and no marshalling rule reads.
 | STBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
 | TBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
 | Temporal | fromWKB | argument wkb is an array of uint8_t, which has no class |
+| Text | alwaysEq | always_eq_text_ttext takes its receiver as text *, which no handle holds |
+| Text | alwaysGe | always_ge_text_ttext takes its receiver as text *, which no handle holds |
+| Text | alwaysGt | always_gt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | alwaysLe | always_le_text_ttext takes its receiver as text *, which no handle holds |
+| Text | alwaysLt | always_lt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | alwaysNe | always_ne_text_ttext takes its receiver as text *, which no handle holds |
+| Text | contained | contained_text_set takes its receiver as text *, which no handle holds |
+| Text | everEq | ever_eq_text_ttext takes its receiver as text *, which no handle holds |
+| Text | everGe | ever_ge_text_ttext takes its receiver as text *, which no handle holds |
+| Text | everGt | ever_gt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | everLe | ever_le_text_ttext takes its receiver as text *, which no handle holds |
+| Text | everLt | ever_lt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | everNe | ever_ne_text_ttext takes its receiver as text *, which no handle holds |
+| Text | intersection | intersection_text_set takes its receiver as text *, which no handle holds |
+| Text | left | left_text_set takes its receiver as text *, which no handle holds |
+| Text | minus | minus_text_set takes its receiver as text *, which no handle holds |
+| Text | overleft | overleft_text_set takes its receiver as text *, which no handle holds |
+| Text | overright | overright_text_set takes its receiver as text *, which no handle holds |
+| Text | right | right_text_set takes its receiver as text *, which no handle holds |
+| Text | teq | teq_text_ttext takes its receiver as text *, which no handle holds |
+| Text | textcat | textcat_text_text takes its receiver as text *, which no handle holds |
+| Text | textcat | textcat_text_textset takes its receiver as text *, which no handle holds |
+| Text | textcat | textcat_text_ttext takes its receiver as text *, which no handle holds |
+| Text | tge | tge_text_ttext takes its receiver as text *, which no handle holds |
+| Text | tgt | tgt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | tle | tle_text_ttext takes its receiver as text *, which no handle holds |
+| Text | tlt | tlt_text_ttext takes its receiver as text *, which no handle holds |
+| Text | tne | tne_text_ttext takes its receiver as text *, which no handle holds |
+| Text | union | union_text_set takes its receiver as text *, which no handle holds |
 | TH3IndexSeq | make | argument values is an array of uint64_t, which has no class |
 | TPCBox | fromWKB | argument wkb is an array of uint8_t, which has no class |
 | TQuadbinSeq | make | argument values is an array of uint64_t, which has no class |
@@ -165,13 +195,27 @@ The function answers a value through a pointer no reader in this generator reads
 | TText | unnest | out-parameter values of type text *** |
 | TText | valueAtTimestamptz | out-parameter value of type text ** |
 
-## name taken by an ancestor (6)
+## overloads no argument test tells apart (0)
+
+Two operators of one name take arguments no runtime test distinguishes (an int and a float are both a number), so the call cannot choose between them.
+
+## name taken by a method (1)
+
+A method of the class or an ancestor already has the name the operator would take.
+
+| class | member | what is missing |
+|---|---|---|
+| Jsonb | contained | contained_jsonb_set: a method of Jsonb or an ancestor is named contained |
+
+## name taken by an ancestor (8)
 
 An ancestor already has a method of this name with other parameters, and TypeScript has no overloading by argument type.
 
 | class | member | what is missing |
 |---|---|---|
 | TH3IndexSeqSet | make | th3indexseqset_make (Temporal[])=>TH3IndexSeqSet beside the inherited (H3Index,TimestampTz)=>TH3Index |
+| TJsonb | contains | contains_tjsonb_jsonb answers Temporal, which the inherited contains (boolean) does not |
+| TJsonb | contains | contains_tjsonb_tjsonb answers Temporal, which the inherited contains (boolean) does not |
 | TJsonb | insert | tjsonb_insert (Text[],Jsonb,boolean)=>Temporal \| null beside the inherited (Temporal,boolean)=>Temporal |
 | TQuadbinSeqSet | make | tquadbinseqset_make (Temporal[])=>TQuadbinSeqSet beside the inherited (Quadbin,TimestampTz)=>TQuadbin |
 | TRGeometry | asTsequence | trgeometry_as_tsequence (string)=>Temporal beside the inherited (number)=>Temporal |

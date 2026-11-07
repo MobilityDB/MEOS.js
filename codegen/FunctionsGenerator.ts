@@ -1026,6 +1026,11 @@ export function emittedSignatures(idl: Idl): Map<string, WrapperSignature> {
 	return out;
 }
 
+/** The TypeScript type each type of its own aliases (bigint over 64 bits, else number). */
+export function ownTypeAliases(): Map<string, string> {
+	return new Map(types.ownTypes);
+}
+
 /** The types of their own the last emittedSignatures() run named, sorted. */
 export function ownTypeNames(): string[] {
 	return [...types.ownTypes.keys()].sort();

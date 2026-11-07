@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
 import {
+	IntSet,
 	IntSpan,
 	IntSpanSet,
 	Temporal,
@@ -102,5 +103,52 @@ describe('generated object layer: values and buffers', () => {
 		assert.equal(s.toString(), '[1, 5)');
 		assert.equal(s.lower(), 1);
 		assert.equal(s.upper(), 5);
+	});
+});
+
+describe('generated object layer: operators', () => {
+	// The operators the catalog assigns each class (`classes.<C>.operators`),
+	// one method per name that chooses the overload by its arguments.
+	it('chooses the overload a scalar argument fits', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using plus = t.add(1);
+		assert.equal(plus!.toString(), `[2@${T0}, 4@${T2}]`);
+		assert.equal(t.nad(5), 2);
+	});
+
+	it('passes an argument no overload of the class takes to the inherited operator', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using u = TFloat.in(`[10@${T0}, 10@${T2}]`);
+		using sum = t.add(u);
+		assert.equal(sum!.toString(), `[11@${T0}, 13@${T2}]`);
+	});
+
+	it('names a reflected operator apart from its mirror', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using diff = t.rsub(10);
+		assert.equal(diff.toString(), `[9@${T0}, 7@${T2}]`);
+	});
+
+	it('answers the ever comparison MEOS answers', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		assert.equal(t.everEq(3), 1);
+		assert.equal(t.everEq(5), 0);
+	});
+
+	it('is a member of the instantiation its SQL signatures name', () => {
+		using s = IntSet.in('{1, 2, 3}');
+		using sub = IntSet.in('{1, 2}');
+		assert.equal(s.contains(2), true);
+		assert.equal(s.contains(sub), true);
+		using a = IntSpan.make(1, 5, true, false);
+		using b = IntSpan.make(7, 9, true, false);
+		assert.equal(a.contains(3), true);
+		using u = a.union(b);
+		assert.equal(u!.toString(), '{[1, 5), [7, 9)}');
+	});
+
+	it('refuses an argument no overload takes', () => {
+		using t = TFloat.in(`1@${T0}`);
+		assert.throws(() => (t as unknown as { nad(x: unknown): number }).nad('x'), TypeError);
 	});
 });

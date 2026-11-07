@@ -39,6 +39,7 @@ import {
 	IDL_PATH,
 	emittedSignatures,
 	ownTypeNames,
+	ownTypeAliases,
 	type Idl,
 	type IdlFunction,
 	type WrapperParam,
@@ -57,6 +58,12 @@ interface MethodEntry {
 	scope: string;
 	ooName: string;
 	ooExclude?: boolean;
+	/** On an operator: the operand the method is called on. */
+	receiver?: 'left' | 'right';
+	/** On an operator: the type token of the other operand. */
+	other?: string;
+	/** On an operator: the class the other operand's SQL types instantiate. */
+	otherClass?: string;
 }
 interface LatticeNode {
 	kind: string;
@@ -73,7 +80,7 @@ interface ObjectModel {
 	lattice: Record<string, LatticeNode>;
 	axes: { subtype: { values: { name: string; value: number; class: string | null }[] } };
 	companions: Record<string, { nodes?: Record<string, CompanionNode> } | string>;
-	classes: Record<string, { cType?: string; methods: MethodEntry[] }>;
+	classes: Record<string, { cType?: string; methods: MethodEntry[]; operators?: MethodEntry[] }>;
 }
 interface Shape {
 	outParams?: string[];
@@ -267,6 +274,10 @@ const DEFERRAL_KINDS: Record<string, string> = {
 		'The function takes a type no class stands for and no marshalling rule reads.',
 	'out-parameter needs a reader':
 		'The function answers a value through a pointer no reader in this generator reads.',
+	'overloads no argument test tells apart':
+		'Two operators of one name take arguments no runtime test distinguishes (an int and a float are both a number), so the call cannot choose between them.',
+	'name taken by a method':
+		'A method of the class or an ancestor already has the name the operator would take.',
 	'name taken by an ancestor':
 		'An ancestor already has a method of this name with other parameters, and TypeScript has no overloading by argument type.',
 };
@@ -281,9 +292,13 @@ interface Emitted {
 	fn: string;
 	name: string;
 	isStatic: boolean;
-	params: { name: string; ts: string }[];
+	params: { name: string; ts: string; optional?: boolean }[];
 	ret: string;
 	body: string[];
+	/** A helper the class's own dispatching method calls, never called from outside. */
+	helper?: boolean;
+	/** The comment above the method; the MEOS function by default. */
+	doc?: string;
 }
 
 /** The TypeScript twin of #Generator in MEOS.NET's tools/objectgen.py. */
@@ -322,11 +337,19 @@ class Generator {
 		let isStatic = true;
 		const args = new Map<string, string>();
 		// The receiver is a pointer the wrapper takes as one: the flat surface
-		// passes a `text *` as a JavaScript string, which no handle holds.
-		if (params.length && recv && params[0].ts === 'Ptr' && clean(params[0].canonical) === `${recv} *`) {
+		// passes a `text *` as a JavaScript string, which no handle holds. An
+		// operator the model reflects onto its right operand (`receiver: right`,
+		// rsub) is called on its SECOND parameter.
+		const at = entry.receiver === 'right' ? 1 : 0;
+		const otherName = entry.role === 'operator' ? sig.params[1 - at]?.name : undefined;
+		const r = params[at];
+		if (r && recv && r.ts === 'Ptr' && clean(r.canonical) === `${recv} *`) {
 			isStatic = false;
-			args.set(params[0].name, 'this.ptr');
-			params = params.slice(1);
+			args.set(r.name, 'this.ptr');
+			params = params.filter((_p, i) => i !== at);
+		} else if (entry.role === 'operator') {
+			return this.defer(cls, oo, 'argument needs a class',
+				`${fname} takes its receiver as ${r ? clean(r.canonical) : 'nothing'}, which no handle holds`);
 		}
 
 		const setup: string[] = [];
@@ -394,7 +417,15 @@ class Generator {
 			if (!mapped)
 				return this.defer(cls, oo, 'argument needs a class',
 					`argument ${p.name} of type ${clean(p.canonical)} needs marshalling`);
-			decl.push({ name: p.tsName, ts: mapped.ts });
+			// The other operand of an operator, typed as the class its SQL
+			// signatures instantiate it to (`otherClass`, a class below the one the
+			// C type names), so the method states what it takes and a dispatcher
+			// can tell its overloads apart.
+			let ts = mapped.ts;
+			if (p.name === otherName && entry.otherClass && entry.otherClass !== ts
+				&& this.m.ancestors(entry.otherClass).includes(ts))
+				ts = entry.otherClass;
+			decl.push({ name: p.tsName, ts });
 			args.set(p.name, mapped.arg);
 			if (mapped.setup) setup.push(mapped.setup);
 			if (mapped.teardown) teardown.push(mapped.teardown);
@@ -657,6 +688,7 @@ class Generator {
 		for (const m of own) if (m.isStatic) this.staticFunctions.set(m.fn, { cls, m });
 
 		own.push(...this.portableMethods(cls, own, functions));
+		own.push(...this.operatorMethods(cls, own));
 		own.sort((a, b) => (Number(a.isStatic) - Number(b.isStatic)) || a.name.localeCompare(b.name));
 		const ownSigs = new Map<string, string>();
 		const ownStatics = new Map<string, string>();
@@ -672,9 +704,9 @@ class Generator {
 		lines.push(...this.toStringMethod(cls, functions));
 		for (const m of own) {
 			const overrides = !m.isStatic && this.inheritedSig(cls, m.name, false) !== undefined;
-			lines.push('', `\t/** MEOS: ${m.fn} */`);
-			const head = `${m.isStatic ? 'static ' : ''}${overrides ? 'override ' : ''}${m.name}`;
-			lines.push(`\t${head}(${m.params.map(p => `${p.name}: ${p.ts}`).join(', ')}): ${m.ret} {`);
+			lines.push('', `\t/** ${m.doc ?? `MEOS: ${m.fn}`} */`);
+			const head = `${m.helper ? 'private ' : ''}${m.isStatic ? 'static ' : ''}${overrides ? 'override ' : ''}${m.name}`;
+			lines.push(`\t${head}(${m.params.map(p => `${p.name}${p.optional ? '?' : ''}: ${p.ts}`).join(', ')}): ${m.ret} {`);
 			for (const l of m.body) lines.push(`\t\t${l}`);
 			lines.push('\t}');
 		}
@@ -689,6 +721,176 @@ class Generator {
 		const subtype = this.m.subtypeOf.get(cls);
 		if (subtype) return `A ${this.m.parent.get(cls)} of subtype ${subtype}.`;
 		return `The ${cls} class of the MEOS object model.`;
+	}
+
+	/** class -> operator name -> what its dispatching method takes and answers. */
+	private readonly operatorSigs = new Map<string, Map<string, { params: string[][]; rets: string[] }>>();
+
+	/**
+	 * The operators the model assigns the class (`classes.<C>.operators`, the
+	 * receiver-typed rule #_classify_operator of MEOS-API's parser/object_model.py
+	 * states), one method per `ooName`. A name with one overload is an ordinary
+	 * method. A name with several is one method that tests its arguments and calls
+	 * the overload they fit, each overload a private helper built as #method builds
+	 * any method: TypeScript has no overloading by argument type, so the choice
+	 * MEOS.NET's C# compiler makes (#emit_class there emits each overload) is made
+	 * at run time here. An ancestor's operator of the same name stays reachable:
+	 * an argument no overload of the class takes is passed to it.
+	 *
+	 * Overloads no runtime test can tell apart (an int and a float are both a
+	 * number) are deferred together; picking one would call the wrong function for
+	 * the other's values.
+	 */
+	private operatorMethods(cls: string, own: Emitted[]): Emitted[] {
+		const groups = new Map<string, MethodEntry[]>();
+		for (const e of this.m.om.classes[cls]?.operators ?? []) {
+			if (e.ooExclude) continue;
+			groups.set(e.ooName, [...(groups.get(e.ooName) ?? []), { ...e, role: 'operator' }]);
+		}
+		const taken = new Set(own.map(m => m.name));
+		const out: Emitted[] = [];
+		const sigs = new Map<string, { params: string[][]; rets: string[] }>();
+		for (const [name, entries] of [...groups].sort(([a], [b]) => a.localeCompare(b))) {
+			const byMethod = this.inheritedSig(cls, name, false) !== undefined
+				&& !this.inheritedOperator(cls, name);
+			if (taken.has(name) || byMethod || this.inheritedSig(cls, name, true) !== undefined) {
+				for (const e of entries)
+					this.defer(cls, name, 'name taken by a method', `${e.function}: a method of ${cls} or an ancestor is named ${name}`);
+				continue;
+			}
+			const overloads = entries.map(e => this.method(cls, e)).filter((m): m is Emitted => !!m);
+			const kept = this.distinguishable(cls, name, overloads);
+			if (!kept.length) continue;
+			const inherited = this.inheritedOperator(cls, name);
+			if (kept.length === 1 && !inherited) {
+				const m = kept[0];
+				out.push({ ...m, name });
+				sigs.set(name, { params: m.params.map(p => [p.ts]), rets: this.members(m.ret) });
+				continue;
+			}
+			const dispatcher = this.dispatcher(cls, name, kept, inherited);
+			if (!dispatcher) continue;
+			out.push(...kept.map(m => ({ ...m, name: this.helperName(m.fn), helper: true })));
+			out.push(dispatcher.method);
+			sigs.set(name, dispatcher.sig);
+		}
+		this.operatorSigs.set(cls, sigs);
+		return out;
+	}
+
+	private helperName(fn: string): string {
+		return `_${fn}`;
+	}
+
+	/** The members of a union type, as the emitted signatures spell them. */
+	private members(ts: string): string[] {
+		return ts.split(' | ').map(t => t.trim());
+	}
+
+	/** The nearest ancestor's dispatching method of this name, if any. */
+	private inheritedOperator(cls: string, name: string) {
+		for (const a of this.m.ancestors(cls)) {
+			const s = this.operatorSigs.get(a)?.get(name);
+			if (s) return s;
+		}
+		return undefined;
+	}
+
+	/**
+	 * The test an argument of a parameter type passes, and the key two types share
+	 * when no test tells them apart. A class is told by `instanceof`, a value
+	 * struct (#value_struct) by being a plain object, and a scalar by `typeof`.
+	 */
+	private argumentTest(ts: string, v: string): { key: string; test: string } {
+		if (this.m.parent.has(ts) || ts === 'MeosObject') return { key: `class:${ts}`, test: `${v} instanceof ${ts}` };
+		if (ts.endsWith('[]')) return { key: 'array', test: `Array.isArray(${v})` };
+		if (ts === 'Uint8Array') return { key: 'bytes', test: `${v} instanceof Uint8Array` };
+		if (this.valueStructs().has(ts))
+			return { key: 'struct', test: `typeof ${v} === 'object' && ${v} !== null && !(${v} instanceof MeosObject) && !Array.isArray(${v})` };
+		const alias = ownTypeAliases().get(ts);
+		const prim = alias ?? (['string', 'boolean', 'bigint'].includes(ts) ? ts : 'number');
+		return { key: prim, test: `typeof ${v} === '${prim}'` };
+	}
+
+	private testKey(m: Emitted): string {
+		return m.params.map(p => this.argumentTest(p.ts, 'x').key).join(',');
+	}
+
+	/** The overloads that some argument test tells apart; the rest are deferred. */
+	private distinguishable(cls: string, name: string, overloads: Emitted[]): Emitted[] {
+		const byKey = new Map<string, Emitted[]>();
+		for (const m of overloads) byKey.set(this.testKey(m), [...(byKey.get(this.testKey(m)) ?? []), m]);
+		const kept: Emitted[] = [];
+		for (const [key, ms] of byKey) {
+			if (ms.length === 1) {
+				kept.push(ms[0]);
+				continue;
+			}
+			for (const m of ms)
+				this.defer(cls, name, 'overloads no argument test tells apart',
+					`${m.fn} takes (${key}), as ${ms.filter(o => o !== m).map(o => o.fn).join(', ')} does`);
+		}
+		return kept;
+	}
+
+	private depth(ts: string): number {
+		return this.m.parent.has(ts) ? this.m.depth(ts) : -1;
+	}
+
+	/**
+	 * The method that chooses among the overloads by its arguments. Its parameters
+	 * are the overloads' positions, each the union of the types taken there and
+	 * optional where an overload takes fewer; it answers the union of their
+	 * answers. The deeper class is tested first, so a TFloat argument reaches the
+	 * overload taking a TFloat before the one taking any Temporal.
+	 */
+	private dispatcher(cls: string, name: string, overloads: Emitted[],
+		inherited?: { params: string[][]; rets: string[] }) {
+		const arity = Math.max(...overloads.map(m => m.params.length), inherited?.params.length ?? 0);
+		const longest = overloads.reduce((a, b) => (b.params.length > a.params.length ? b : a));
+		const names = Array.from({ length: arity }, (_v, i) => longest.params[i]?.name ?? `arg${i}`);
+		const types: string[][] = names.map((_n, i) => {
+			const at = new Set<string>();
+			for (const m of overloads) if (m.params[i]) at.add(m.params[i].ts);
+			for (const t of inherited?.params[i] ?? []) at.add(t);
+			return [...at];
+		});
+		const rets = [...new Set([...overloads.flatMap(m => this.members(m.ret)), ...(inherited?.rets ?? [])])];
+		// What an override answers must be what its ancestor answers.
+		if (inherited && !rets.every(r => inherited.rets.some(p => this.assignable(r, p)))) {
+			for (const m of overloads)
+				this.defer(cls, name, 'name taken by an ancestor',
+					`${m.fn} answers ${m.ret}, which the inherited ${name} (${inherited.rets.join(' | ')}) does not`);
+			return undefined;
+		}
+		const optional = names.map((_n, i) => overloads.some(m => m.params.length <= i)
+			|| (inherited !== undefined && inherited.params.length <= i));
+		const ordered = [...overloads].sort((a, b) =>
+			b.params.reduce((s, p) => s + this.depth(p.ts), 0) - a.params.reduce((s, p) => s + this.depth(p.ts), 0)
+			|| b.params.length - a.params.length);
+		const body: string[] = [];
+		for (const m of ordered) {
+			const conds = names.map((n, i) => (m.params[i] ? this.argumentTest(m.params[i].ts, n).test : `${n} === undefined`));
+			const args = m.params.map((p, i) => `${names[i]} as ${p.ts}`).join(', ');
+			body.push(`if (${conds.join(' && ') || 'true'}) return this.${this.helperName(m.fn)}(${args});`);
+		}
+		body.push(inherited
+			? `return super.${name}(${names.map((n, i) => `${n} as ${inherited.params[i]?.join(' | ') ?? 'never'}`).join(', ')});`
+			: `throw new TypeError(\`${cls}.${name}: no overload takes these arguments\`);`);
+		return {
+			method: {
+				fn: overloads.map(m => m.fn).join(', '), name, isStatic: false,
+				params: names.map((n, i) => ({ name: n, ts: types[i].join(' | '), optional: optional[i] })),
+				ret: rets.join(' | '), body,
+				doc: `MEOS: ${overloads.map(m => m.fn).join(', ')}, chosen by the arguments' types`,
+			} as Emitted,
+			sig: { params: types, rets },
+		};
+	}
+
+	/** Whether a value of type `a` is one of type `b`, by the class chain. */
+	private assignable(a: string, b: string): boolean {
+		return a === b || (this.m.parent.has(a) && this.m.ancestors(a).includes(b));
 	}
 
 	/**

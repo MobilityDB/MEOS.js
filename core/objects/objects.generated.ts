@@ -246,6 +246,16 @@ export class Set extends Collection {
 		return F.set_cmp(this.ptr, s2.ptr);
 	}
 
+	/** MEOS: contained_set_set */
+	contained(s2: Set): boolean {
+		return F.contained_set_set(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: contains_set_set */
+	contains(s2: Set): boolean {
+		return F.contains_set_set(this.ptr, s2.ptr);
+	}
+
 	/** MEOS: set_copy */
 	copy(): Set {
 		return wrapSet(F.set_copy(this.ptr)) as Set;
@@ -276,9 +286,19 @@ export class Set extends Collection {
 		return F.set_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_set_set */
+	intersection(s2: Set): Set | null {
+		return wrapSetOrNull(F.intersection_set_set(this.ptr, s2.ptr)) as Set | null;
+	}
+
 	/** MEOS: set_le */
 	le(s2: Set): boolean {
 		return F.set_le(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: left_set_set */
+	left(s2: Set): boolean {
+		return F.left_set_set(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: set_lt */
@@ -291,6 +311,11 @@ export class Set extends Collection {
 		return F.set_mem_size(this.ptr);
 	}
 
+	/** MEOS: minus_set_set */
+	minus(s2: Set): Set | null {
+		return wrapSetOrNull(F.minus_set_set(this.ptr, s2.ptr)) as Set | null;
+	}
+
 	/** MEOS: set_ne */
 	ne(s2: Set): boolean {
 		return F.set_ne(this.ptr, s2.ptr);
@@ -299,6 +324,26 @@ export class Set extends Collection {
 	/** MEOS: set_num_values */
 	numValues(): number {
 		return F.set_num_values(this.ptr);
+	}
+
+	/** MEOS: overlaps_set_set */
+	overlaps(s2: Set): boolean {
+		return F.overlaps_set_set(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: overleft_set_set */
+	overleft(s2: Set): boolean {
+		return F.overleft_set_set(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: overright_set_set */
+	overright(s2: Set): boolean {
+		return F.overright_set_set(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: right_set_set */
+	right(s2: Set): boolean {
+		return F.right_set_set(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: set_round */
@@ -386,6 +431,11 @@ export class Set extends Collection {
 		return wrapTBox(F.set_to_tbox(this.ptr)) as TBox;
 	}
 
+	/** MEOS: union_set_set */
+	union(s2: Set): Set | null {
+		return wrapSetOrNull(F.union_set_set(this.ptr, s2.ptr)) as Set | null;
+	}
+
 	/** MEOS: set_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Set {
 		return wrapSet(F.set_from_hexwkb(hexwkb)) as Set;
@@ -402,9 +452,82 @@ export class BigIntSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_bigint */
+	private _contains_set_bigint(i: number): boolean {
+		return F.contains_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: distance_bigintset_bigintset */
+	private _distance_bigintset_bigintset(s2: BigIntSet): number {
+		return F.distance_bigintset_bigintset(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_set_bigint */
+	private _distance_set_bigint(i: number): number {
+		return F.distance_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: intersection_set_bigint */
+	private _intersection_set_bigint(i: number): Set | null {
+		return wrapSetOrNull(F.intersection_set_bigint(this.ptr, i)) as Set | null;
+	}
+
+	/** MEOS: left_set_bigint */
+	private _left_set_bigint(i: number): boolean {
+		return F.left_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: minus_set_bigint */
+	private _minus_set_bigint(i: number): Set | null {
+		return wrapSetOrNull(F.minus_set_bigint(this.ptr, i)) as Set | null;
+	}
+
+	/** MEOS: overleft_set_bigint */
+	private _overleft_set_bigint(i: number): boolean {
+		return F.overleft_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: overright_set_bigint */
+	private _overright_set_bigint(i: number): boolean {
+		return F.overright_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: right_set_bigint */
+	private _right_set_bigint(i: number): boolean {
+		return F.right_set_bigint(this.ptr, i);
+	}
+
+	/** MEOS: union_set_bigint */
+	private _union_set_bigint(i: number): Set | null {
+		return wrapSetOrNull(F.union_set_bigint(this.ptr, i)) as Set | null;
+	}
+
 	/** MEOS: bigintset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: contained_rid_bigintset_tnpoint */
+	containedRid(temp: TNpoint): boolean {
+		return F.contained_rid_bigintset_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contains_set_bigint, chosen by the arguments' types */
+	override contains(i: number | Set): boolean {
+		if (typeof i === 'number') return this._contains_set_bigint(i as number);
+		return super.contains(i as Set);
+	}
+
+	/** MEOS: contains_rid_bigintset_tnpoint */
+	containsRid(temp: TNpoint): boolean {
+		return F.contains_rid_bigintset_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: distance_bigintset_bigintset, distance_set_bigint, chosen by the arguments' types */
+	distance(s2: BigIntSet | number): number {
+		if (s2 instanceof BigIntSet) return this._distance_bigintset_bigintset(s2 as BigIntSet);
+		if (typeof s2 === 'number') return this._distance_set_bigint(s2 as number);
+		throw new TypeError(`BigIntSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: bigintset_end_value */
@@ -412,9 +535,95 @@ export class BigIntSet extends Set {
 		return F.bigintset_end_value(this.ptr);
 	}
 
+	/** MEOS: intersection_set_bigint, chosen by the arguments' types */
+	override intersection(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._intersection_set_bigint(i as number);
+		return super.intersection(i as Set);
+	}
+
+	/** MEOS: left_set_bigint, chosen by the arguments' types */
+	override left(i: number | Set): boolean {
+		if (typeof i === 'number') return this._left_set_bigint(i as number);
+		return super.left(i as Set);
+	}
+
+	/** MEOS: minus_set_bigint, chosen by the arguments' types */
+	override minus(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._minus_set_bigint(i as number);
+		return super.minus(i as Set);
+	}
+
 	/** MEOS: bigintset_out */
 	out(): string {
 		return F.bigintset_out(this.ptr);
+	}
+
+	/** MEOS: overlaps_rid_bigintset_tnpoint */
+	overlapsRid(temp: TNpoint): boolean {
+		return F.overlaps_rid_bigintset_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overleft_set_bigint, chosen by the arguments' types */
+	override overleft(i: number | Set): boolean {
+		if (typeof i === 'number') return this._overleft_set_bigint(i as number);
+		return super.overleft(i as Set);
+	}
+
+	/** MEOS: overright_set_bigint, chosen by the arguments' types */
+	override overright(i: number | Set): boolean {
+		if (typeof i === 'number') return this._overright_set_bigint(i as number);
+		return super.overright(i as Set);
+	}
+
+	/** MEOS: contained_bigint_set */
+	rcontained(i: number): boolean {
+		return F.contained_bigint_set(i, this.ptr);
+	}
+
+	/** MEOS: right_set_bigint, chosen by the arguments' types */
+	override right(i: number | Set): boolean {
+		if (typeof i === 'number') return this._right_set_bigint(i as number);
+		return super.right(i as Set);
+	}
+
+	/** MEOS: intersection_bigint_set */
+	rintersection(i: number): Set | null {
+		return wrapSetOrNull(F.intersection_bigint_set(i, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: left_bigint_set */
+	rleft(i: number): boolean {
+		return F.left_bigint_set(i, this.ptr);
+	}
+
+	/** MEOS: minus_bigint_set */
+	rminus(i: number): Set | null {
+		return wrapSetOrNull(F.minus_bigint_set(i, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: overleft_bigint_set */
+	roverleft(i: number): boolean {
+		return F.overleft_bigint_set(i, this.ptr);
+	}
+
+	/** MEOS: overright_bigint_set */
+	roverright(i: number): boolean {
+		return F.overright_bigint_set(i, this.ptr);
+	}
+
+	/** MEOS: right_bigint_set */
+	rright(i: number): boolean {
+		return F.right_bigint_set(i, this.ptr);
+	}
+
+	/** MEOS: union_bigint_set */
+	runion(i: number): Set | null {
+		return wrapSetOrNull(F.union_bigint_set(i, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: same_rid_bigintset_tnpoint */
+	sameRid(temp: TNpoint): boolean {
+		return F.same_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: bigintset_shift_scale */
@@ -425,6 +634,12 @@ export class BigIntSet extends Set {
 	/** MEOS: bigintset_start_value */
 	startValue(): number {
 		return F.bigintset_start_value(this.ptr);
+	}
+
+	/** MEOS: union_set_bigint, chosen by the arguments' types */
+	override union(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._union_set_bigint(i as number);
+		return super.union(i as Set);
 	}
 
 	/** MEOS: bigintset_value_n */
@@ -468,6 +683,111 @@ export class BigIntSet extends Set {
  */
 export class Span extends Collection {
 
+	/** MEOS: contained_span_span */
+	private _contained_span_span(s2: Span): boolean {
+		return F.contained_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: contained_span_spanset */
+	private _contained_span_spanset(ss: SpanSet): boolean {
+		return F.contained_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: contains_span_span */
+	private _contains_span_span(s2: Span): boolean {
+		return F.contains_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: contains_span_spanset */
+	private _contains_span_spanset(ss: SpanSet): boolean {
+		return F.contains_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: intersection_span_span */
+	private _intersection_span_span(s2: Span): Span | null {
+		return wrapSpanOrNull(F.intersection_span_span(this.ptr, s2.ptr)) as Span | null;
+	}
+
+	/** MEOS: intersection_span_spanset */
+	private _intersection_span_spanset(ss: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_span_spanset(this.ptr, ss.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: left_span_span */
+	private _left_span_span(s2: Span): boolean {
+		return F.left_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: left_span_spanset */
+	private _left_span_spanset(ss: SpanSet): boolean {
+		return F.left_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: minus_span_span */
+	private _minus_span_span(s2: Span): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_span(this.ptr, s2.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_span_spanset */
+	private _minus_span_spanset(ss: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_spanset(this.ptr, ss.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overlaps_span_span */
+	private _overlaps_span_span(s2: Span): boolean {
+		return F.overlaps_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: overlaps_span_spanset */
+	private _overlaps_span_spanset(ss: SpanSet): boolean {
+		return F.overlaps_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: overleft_span_span */
+	private _overleft_span_span(s2: Span): boolean {
+		return F.overleft_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: overleft_span_spanset */
+	private _overleft_span_spanset(ss: SpanSet): boolean {
+		return F.overleft_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: overright_span_span */
+	private _overright_span_span(s2: Span): boolean {
+		return F.overright_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: overright_span_spanset */
+	private _overright_span_spanset(ss: SpanSet): boolean {
+		return F.overright_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: right_span_span */
+	private _right_span_span(s2: Span): boolean {
+		return F.right_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: right_span_spanset */
+	private _right_span_spanset(ss: SpanSet): boolean {
+		return F.right_span_spanset(this.ptr, ss.ptr);
+	}
+
+	/** MEOS: union_span_span */
+	private _union_span_span(s2: Span): SpanSet {
+		return wrapSpanSet(F.union_span_span(this.ptr, s2.ptr)) as SpanSet;
+	}
+
+	/** MEOS: union_span_spanset */
+	private _union_span_spanset(ss: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_span_spanset(this.ptr, ss.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_span_spanset */
+	adjacent(ss: SpanSet): boolean {
+		return F.adjacent_span_spanset(this.ptr, ss.ptr);
+	}
+
 	/** MEOS: span_as_wkb */
 	asWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.span_as_wkb(this.ptr, variant, _sizeOut));
@@ -476,6 +796,20 @@ export class Span extends Collection {
 	/** MEOS: span_cmp */
 	cmp(s2: Span): number {
 		return F.span_cmp(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: contained_span_span, contained_span_spanset, chosen by the arguments' types */
+	contained(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._contained_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._contained_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.contained: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_span_span, contains_span_spanset, chosen by the arguments' types */
+	contains(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._contains_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._contains_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.contains: no overload takes these arguments`);
 	}
 
 	/** MEOS: span_copy */
@@ -503,9 +837,23 @@ export class Span extends Collection {
 		return F.span_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_span_span, intersection_span_spanset, chosen by the arguments' types */
+	intersection(s2: Span | SpanSet): Span | null | SpanSet {
+		if (s2 instanceof Span) return this._intersection_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._intersection_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.intersection: no overload takes these arguments`);
+	}
+
 	/** MEOS: span_le */
 	le(s2: Span): boolean {
 		return F.span_le(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: left_span_span, left_span_spanset, chosen by the arguments' types */
+	left(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._left_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._left_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.left: no overload takes these arguments`);
 	}
 
 	/** MEOS: span_lower_inc */
@@ -516,6 +864,46 @@ export class Span extends Collection {
 	/** MEOS: span_lt */
 	lt(s2: Span): boolean {
 		return F.span_lt(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: minus_span_span, minus_span_spanset, chosen by the arguments' types */
+	minus(s2: Span | SpanSet): SpanSet | null {
+		if (s2 instanceof Span) return this._minus_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._minus_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.minus: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_span_span, overlaps_span_spanset, chosen by the arguments' types */
+	overlaps(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._overlaps_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._overlaps_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.overlaps: no overload takes these arguments`);
+	}
+
+	/** MEOS: overleft_span_span, overleft_span_spanset, chosen by the arguments' types */
+	overleft(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._overleft_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._overleft_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_span_span, overright_span_spanset, chosen by the arguments' types */
+	overright(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._overright_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._overright_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.overright: no overload takes these arguments`);
+	}
+
+	/** MEOS: right_span_span, right_span_spanset, chosen by the arguments' types */
+	right(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._right_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._right_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.right: no overload takes these arguments`);
+	}
+
+	/** MEOS: same_span_span */
+	same(s2: Span): boolean {
+		return F.same_span_span(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: span_sortkey */
@@ -531,6 +919,13 @@ export class Span extends Collection {
 	/** MEOS: span_to_tbox */
 	toTbox(): TBox {
 		return wrapTBox(F.span_to_tbox(this.ptr)) as TBox;
+	}
+
+	/** MEOS: union_span_span, union_span_spanset, chosen by the arguments' types */
+	union(s2: Span | SpanSet): SpanSet | null {
+		if (s2 instanceof Span) return this._union_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._union_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.union: no overload takes these arguments`);
 	}
 
 	/** MEOS: span_upper_inc */
@@ -552,6 +947,67 @@ export class BigIntSpan extends Span {
 	/** The text MEOS writes this value as (MEOS: bigintspan_out). */
 	override toString(): string {
 		return this.out();
+	}
+
+	/** MEOS: adjacent_span_bigint */
+	private _adjacent_span_bigint(i: number): boolean {
+		return F.adjacent_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: contains_span_bigint */
+	private _contains_span_bigint(i: number): boolean {
+		return F.contains_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: distance_bigintspan_bigintspan */
+	private _distance_bigintspan_bigintspan(s2: BigIntSpan): number {
+		return F.distance_bigintspan_bigintspan(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_span_bigint */
+	private _distance_span_bigint(i: number): number {
+		return F.distance_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: intersection_span_bigint */
+	private _intersection_span_bigint(i: number): Span | null {
+		return wrapSpanOrNull(F.intersection_span_bigint(this.ptr, i)) as Span | null;
+	}
+
+	/** MEOS: left_span_bigint */
+	private _left_span_bigint(i: number): boolean {
+		return F.left_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: minus_span_bigint */
+	private _minus_span_bigint(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_bigint(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_span_bigint */
+	private _overleft_span_bigint(i: number): boolean {
+		return F.overleft_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: overright_span_bigint */
+	private _overright_span_bigint(i: number): boolean {
+		return F.overright_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: right_span_bigint */
+	private _right_span_bigint(i: number): boolean {
+		return F.right_span_bigint(this.ptr, i);
+	}
+
+	/** MEOS: union_span_bigint */
+	private _union_span_bigint(i: number): SpanSet {
+		return wrapSpanSet(F.union_span_bigint(this.ptr, i)) as SpanSet;
+	}
+
+	/** MEOS: adjacent_span_bigint, chosen by the arguments' types */
+	override adjacent(i: number | SpanSet): boolean {
+		if (typeof i === 'number') return this._adjacent_span_bigint(i as number);
+		return super.adjacent(i as SpanSet);
 	}
 
 	/** MEOS: bigintspan_out */
@@ -579,9 +1035,34 @@ export class BigIntSpan extends Span {
 		}
 	}
 
+	/** MEOS: contains_span_bigint, chosen by the arguments' types */
+	override contains(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._contains_span_bigint(i as number);
+		return super.contains(i as Span | SpanSet);
+	}
+
+	/** MEOS: distance_bigintspan_bigintspan, distance_span_bigint, chosen by the arguments' types */
+	distance(s2: BigIntSpan | number): number {
+		if (s2 instanceof BigIntSpan) return this._distance_bigintspan_bigintspan(s2 as BigIntSpan);
+		if (typeof s2 === 'number') return this._distance_span_bigint(s2 as number);
+		throw new TypeError(`BigIntSpan.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: bigintspan_expand */
 	expand(value: number): Span | null {
 		return wrapSpanOrNull(F.bigintspan_expand(this.ptr, value)) as Span | null;
+	}
+
+	/** MEOS: intersection_span_bigint, chosen by the arguments' types */
+	override intersection(i: number | Span | SpanSet): Span | null | SpanSet {
+		if (typeof i === 'number') return this._intersection_span_bigint(i as number);
+		return super.intersection(i as Span | SpanSet);
+	}
+
+	/** MEOS: left_span_bigint, chosen by the arguments' types */
+	override left(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._left_span_bigint(i as number);
+		return super.left(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_lower */
@@ -589,9 +1070,83 @@ export class BigIntSpan extends Span {
 		return F.bigintspan_lower(this.ptr);
 	}
 
+	/** MEOS: minus_span_bigint, chosen by the arguments' types */
+	override minus(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._minus_span_bigint(i as number);
+		return super.minus(i as Span | SpanSet);
+	}
+
+	/** MEOS: nad_bigintspan_tbox */
+	nad(box: TBox): number {
+		return F.nad_bigintspan_tbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: bigintspan_out */
 	out(): string {
 		return F.bigintspan_out(this.ptr);
+	}
+
+	/** MEOS: overleft_span_bigint, chosen by the arguments' types */
+	override overleft(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overleft_span_bigint(i as number);
+		return super.overleft(i as Span | SpanSet);
+	}
+
+	/** MEOS: overright_span_bigint, chosen by the arguments' types */
+	override overright(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overright_span_bigint(i as number);
+		return super.overright(i as Span | SpanSet);
+	}
+
+	/** MEOS: adjacent_bigint_span */
+	radjacent(i: number): boolean {
+		return F.adjacent_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: contained_bigint_span */
+	rcontained(i: number): boolean {
+		return F.contained_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: right_span_bigint, chosen by the arguments' types */
+	override right(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._right_span_bigint(i as number);
+		return super.right(i as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_bigint_span */
+	rintersection(i: number): Span | null {
+		return wrapSpanOrNull(F.intersection_bigint_span(i, this.ptr)) as Span | null;
+	}
+
+	/** MEOS: left_bigint_span */
+	rleft(i: number): boolean {
+		return F.left_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: minus_bigint_span */
+	rminus(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_bigint_span(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_bigint_span */
+	roverleft(i: number): boolean {
+		return F.overleft_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: overright_bigint_span */
+	roverright(i: number): boolean {
+		return F.overright_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: right_bigint_span */
+	rright(i: number): boolean {
+		return F.right_bigint_span(i, this.ptr);
+	}
+
+	/** MEOS: union_bigint_span */
+	runion(i: number): SpanSet {
+		return wrapSpanSet(F.union_bigint_span(i, this.ptr)) as SpanSet;
 	}
 
 	/** MEOS: bigintspan_shift_scale */
@@ -607,6 +1162,12 @@ export class BigIntSpan extends Span {
 	/** MEOS: bigintspan_to_intspan */
 	toIntspan(): Span {
 		return wrapSpan(F.bigintspan_to_intspan(this.ptr)) as Span;
+	}
+
+	/** MEOS: union_span_bigint, chosen by the arguments' types */
+	override union(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._union_span_bigint(i as number);
+		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_upper */
@@ -645,6 +1206,123 @@ export class BigIntSpan extends Span {
  */
 export class SpanSet extends Collection {
 
+	/** MEOS: adjacent_spanset_span */
+	private _adjacent_spanset_span(s: Span): boolean {
+		return F.adjacent_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: adjacent_spanset_spanset */
+	private _adjacent_spanset_spanset(ss2: SpanSet): boolean {
+		return F.adjacent_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: contained_spanset_span */
+	private _contained_spanset_span(s: Span): boolean {
+		return F.contained_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_spanset_spanset */
+	private _contained_spanset_spanset(ss2: SpanSet): boolean {
+		return F.contained_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: contains_spanset_span */
+	private _contains_spanset_span(s: Span): boolean {
+		return F.contains_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_spanset_spanset */
+	private _contains_spanset_spanset(ss2: SpanSet): boolean {
+		return F.contains_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: intersection_spanset_span */
+	private _intersection_spanset_span(s: Span): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: intersection_spanset_spanset */
+	private _intersection_spanset_spanset(ss2: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: left_spanset_span */
+	private _left_spanset_span(s: Span): boolean {
+		return F.left_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: left_spanset_spanset */
+	private _left_spanset_spanset(ss2: SpanSet): boolean {
+		return F.left_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: minus_spanset_span */
+	private _minus_spanset_span(s: Span): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_spanset_spanset */
+	private _minus_spanset_spanset(ss2: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overlaps_spanset_span */
+	private _overlaps_spanset_span(s: Span): boolean {
+		return F.overlaps_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_spanset_spanset */
+	private _overlaps_spanset_spanset(ss2: SpanSet): boolean {
+		return F.overlaps_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: overleft_spanset_span */
+	private _overleft_spanset_span(s: Span): boolean {
+		return F.overleft_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overleft_spanset_spanset */
+	private _overleft_spanset_spanset(ss2: SpanSet): boolean {
+		return F.overleft_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: overright_spanset_span */
+	private _overright_spanset_span(s: Span): boolean {
+		return F.overright_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overright_spanset_spanset */
+	private _overright_spanset_spanset(ss2: SpanSet): boolean {
+		return F.overright_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: right_spanset_span */
+	private _right_spanset_span(s: Span): boolean {
+		return F.right_spanset_span(this.ptr, s.ptr);
+	}
+
+	/** MEOS: right_spanset_spanset */
+	private _right_spanset_spanset(ss2: SpanSet): boolean {
+		return F.right_spanset_spanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: union_spanset_span */
+	private _union_spanset_span(s: Span): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_span(this.ptr, s.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: union_spanset_spanset */
+	private _union_spanset_spanset(ss2: SpanSet): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_spanset(this.ptr, ss2.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_span, adjacent_spanset_spanset, chosen by the arguments' types */
+	adjacent(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._adjacent_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._adjacent_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.adjacent: no overload takes these arguments`);
+	}
+
 	/** MEOS: spanset_as_wkb */
 	asWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.spanset_as_wkb(this.ptr, variant, _sizeOut));
@@ -653,6 +1331,20 @@ export class SpanSet extends Collection {
 	/** MEOS: spanset_cmp */
 	cmp(ss2: SpanSet): number {
 		return F.spanset_cmp(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: contained_spanset_span, contained_spanset_spanset, chosen by the arguments' types */
+	contained(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._contained_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._contained_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.contained: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_spanset_span, contains_spanset_spanset, chosen by the arguments' types */
+	contains(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._contains_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._contains_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.contains: no overload takes these arguments`);
 	}
 
 	/** MEOS: spanset_copy */
@@ -690,9 +1382,23 @@ export class SpanSet extends Collection {
 		return F.spanset_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_spanset_span, intersection_spanset_spanset, chosen by the arguments' types */
+	intersection(s: Span | SpanSet): SpanSet | null {
+		if (s instanceof Span) return this._intersection_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._intersection_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.intersection: no overload takes these arguments`);
+	}
+
 	/** MEOS: spanset_le */
 	le(ss2: SpanSet): boolean {
 		return F.spanset_le(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: left_spanset_span, left_spanset_spanset, chosen by the arguments' types */
+	left(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._left_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._left_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.left: no overload takes these arguments`);
 	}
 
 	/** MEOS: spanset_lower_inc */
@@ -710,6 +1416,13 @@ export class SpanSet extends Collection {
 		return F.spanset_mem_size(this.ptr);
 	}
 
+	/** MEOS: minus_spanset_span, minus_spanset_spanset, chosen by the arguments' types */
+	minus(s: Span | SpanSet): SpanSet | null {
+		if (s instanceof Span) return this._minus_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._minus_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.minus: no overload takes these arguments`);
+	}
+
 	/** MEOS: spanset_ne */
 	ne(ss2: SpanSet): boolean {
 		return F.spanset_ne(this.ptr, ss2.ptr);
@@ -718,6 +1431,34 @@ export class SpanSet extends Collection {
 	/** MEOS: spanset_num_spans */
 	numSpans(): number {
 		return F.spanset_num_spans(this.ptr);
+	}
+
+	/** MEOS: overlaps_spanset_span, overlaps_spanset_spanset, chosen by the arguments' types */
+	overlaps(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._overlaps_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._overlaps_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.overlaps: no overload takes these arguments`);
+	}
+
+	/** MEOS: overleft_spanset_span, overleft_spanset_spanset, chosen by the arguments' types */
+	overleft(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._overleft_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._overleft_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_spanset_span, overright_spanset_spanset, chosen by the arguments' types */
+	overright(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._overright_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._overright_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.overright: no overload takes these arguments`);
+	}
+
+	/** MEOS: right_spanset_span, right_spanset_spanset, chosen by the arguments' types */
+	right(s: Span | SpanSet): boolean {
+		if (s instanceof Span) return this._right_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._right_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.right: no overload takes these arguments`);
 	}
 
 	/** MEOS: spanset_sortkey */
@@ -825,6 +1566,13 @@ export class SpanSet extends Collection {
 		return wrapTBox(F.spanset_to_tbox(this.ptr)) as TBox;
 	}
 
+	/** MEOS: union_spanset_span, union_spanset_spanset, chosen by the arguments' types */
+	union(s: Span | SpanSet): SpanSet | null {
+		if (s instanceof Span) return this._union_spanset_span(s as Span);
+		if (s instanceof SpanSet) return this._union_spanset_spanset(s as SpanSet);
+		throw new TypeError(`SpanSet.union: no overload takes these arguments`);
+	}
+
 	/** MEOS: spanset_upper_inc */
 	upperInc(): boolean {
 		return F.spanset_upper_inc(this.ptr);
@@ -856,6 +1604,72 @@ export class BigIntSpanSet extends SpanSet {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_spanset_bigint */
+	private _adjacent_spanset_bigint(i: number): boolean {
+		return F.adjacent_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: contains_spanset_bigint */
+	private _contains_spanset_bigint(i: number): boolean {
+		return F.contains_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: distance_bigintspanset_bigintspan */
+	private _distance_bigintspanset_bigintspan(s: BigIntSpan): number {
+		return F.distance_bigintspanset_bigintspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: distance_bigintspanset_bigintspanset */
+	private _distance_bigintspanset_bigintspanset(ss2: BigIntSpanSet): number {
+		return F.distance_bigintspanset_bigintspanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: distance_spanset_bigint */
+	private _distance_spanset_bigint(i: number): number {
+		return F.distance_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: intersection_spanset_bigint */
+	private _intersection_spanset_bigint(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: left_spanset_bigint */
+	private _left_spanset_bigint(i: number): boolean {
+		return F.left_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: minus_spanset_bigint */
+	private _minus_spanset_bigint(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_spanset_bigint */
+	private _overleft_spanset_bigint(i: number): boolean {
+		return F.overleft_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: overright_spanset_bigint */
+	private _overright_spanset_bigint(i: number): boolean {
+		return F.overright_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: right_spanset_bigint */
+	private _right_spanset_bigint(i: number): boolean {
+		return F.right_spanset_bigint(this.ptr, i);
+	}
+
+	/** MEOS: union_spanset_bigint */
+	private _union_spanset_bigint(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_bigint(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_bigint, chosen by the arguments' types */
+	override adjacent(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._adjacent_spanset_bigint(i as number);
+		return super.adjacent(i as Span | SpanSet);
+	}
+
 	/** MEOS: bigintspanset_out */
 	asText(): string {
 		return this.out();
@@ -881,9 +1695,41 @@ export class BigIntSpanSet extends SpanSet {
 		}
 	}
 
+	/** MEOS: contains_spanset_bigint, chosen by the arguments' types */
+	override contains(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._contains_spanset_bigint(i as number);
+		return super.contains(i as Span | SpanSet);
+	}
+
+	/** MEOS: distance_bigintspanset_bigintspan, distance_bigintspanset_bigintspanset, distance_spanset_bigint, chosen by the arguments' types */
+	distance(s: BigIntSpan | BigIntSpanSet | number): number {
+		if (s instanceof BigIntSpan) return this._distance_bigintspanset_bigintspan(s as BigIntSpan);
+		if (s instanceof BigIntSpanSet) return this._distance_bigintspanset_bigintspanset(s as BigIntSpanSet);
+		if (typeof s === 'number') return this._distance_spanset_bigint(s as number);
+		throw new TypeError(`BigIntSpanSet.distance: no overload takes these arguments`);
+	}
+
+	/** MEOS: intersection_spanset_bigint, chosen by the arguments' types */
+	override intersection(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._intersection_spanset_bigint(i as number);
+		return super.intersection(i as Span | SpanSet);
+	}
+
+	/** MEOS: left_spanset_bigint, chosen by the arguments' types */
+	override left(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._left_spanset_bigint(i as number);
+		return super.left(i as Span | SpanSet);
+	}
+
 	/** MEOS: bigintspanset_lower */
 	lower(): number {
 		return F.bigintspanset_lower(this.ptr);
+	}
+
+	/** MEOS: minus_spanset_bigint, chosen by the arguments' types */
+	override minus(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._minus_spanset_bigint(i as number);
+		return super.minus(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspanset_out */
@@ -891,9 +1737,78 @@ export class BigIntSpanSet extends SpanSet {
 		return F.bigintspanset_out(this.ptr);
 	}
 
+	/** MEOS: overleft_spanset_bigint, chosen by the arguments' types */
+	override overleft(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overleft_spanset_bigint(i as number);
+		return super.overleft(i as Span | SpanSet);
+	}
+
+	/** MEOS: overright_spanset_bigint, chosen by the arguments' types */
+	override overright(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overright_spanset_bigint(i as number);
+		return super.overright(i as Span | SpanSet);
+	}
+
+	/** MEOS: adjacent_bigint_spanset */
+	radjacent(i: number): boolean {
+		return F.adjacent_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: contained_bigint_spanset */
+	rcontained(i: number): boolean {
+		return F.contained_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: right_spanset_bigint, chosen by the arguments' types */
+	override right(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._right_spanset_bigint(i as number);
+		return super.right(i as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_bigint_spanset */
+	rintersection(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: left_bigint_spanset */
+	rleft(i: number): boolean {
+		return F.left_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: minus_bigint_spanset */
+	rminus(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_bigint_spanset */
+	roverleft(i: number): boolean {
+		return F.overleft_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: overright_bigint_spanset */
+	roverright(i: number): boolean {
+		return F.overright_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: right_bigint_spanset */
+	rright(i: number): boolean {
+		return F.right_bigint_spanset(i, this.ptr);
+	}
+
+	/** MEOS: union_bigint_spanset */
+	runion(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_bigint_spanset(i, this.ptr)) as SpanSet | null;
+	}
+
 	/** MEOS: bigintspanset_shift_scale */
 	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): SpanSet {
 		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as SpanSet;
+	}
+
+	/** MEOS: union_spanset_bigint, chosen by the arguments' types */
+	override union(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._union_spanset_bigint(i as number);
+		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspanset_upper */
@@ -939,6 +1854,56 @@ export class Cbuffer extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: distance_cbuffer_cbuffer */
+	private _distance_cbuffer_cbuffer(cb2: Cbuffer): number {
+		return F.distance_cbuffer_cbuffer(this.ptr, cb2.ptr);
+	}
+
+	/** MEOS: distance_cbuffer_geo */
+	private _distance_cbuffer_geo(gs: Geometry): number {
+		return F.distance_cbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: distance_cbuffer_stbox */
+	private _distance_cbuffer_stbox(box: STBox): number {
+		return F.distance_cbuffer_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: acontains_cbuffer_tcbuffer */
+	acontains(temp: TCbuffer): number {
+		return F.acontains_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acovers_cbuffer_tcbuffer */
+	acovers(temp: TCbuffer): number {
+		return F.acovers_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adisjoint_cbuffer_tcbuffer */
+	adisjoint(temp: TCbuffer): number {
+		return F.adisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adwithin_cbuffer_tcbuffer */
+	adwithin(temp: TCbuffer, dist: number): number {
+		return F.adwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist);
+	}
+
+	/** MEOS: aintersects_cbuffer_tcbuffer */
+	aintersects(temp: TCbuffer): number {
+		return F.aintersects_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_eq_cbuffer_tcbuffer */
+	alwaysEq(temp: TCbuffer): number {
+		return F.always_eq_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_cbuffer_tcbuffer */
+	alwaysNe(temp: TCbuffer): number {
+		return F.always_ne_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: cbuffer_as_ewkb */
 	asEWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.cbuffer_as_ewkb(this.ptr, variant, _sizeOut));
@@ -969,9 +1934,24 @@ export class Cbuffer extends Value {
 		return readWkb(_sizeOut => F.cbuffer_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: atouches_cbuffer_tcbuffer */
+	atouches(temp: TCbuffer): number {
+		return F.atouches_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: cbuffer_cmp */
 	cmp(cb2: Cbuffer): number {
 		return F.cbuffer_cmp(this.ptr, cb2.ptr);
+	}
+
+	/** MEOS: contained_cbuffer_set */
+	contained(s: CbufferSet): boolean {
+		return F.contained_cbuffer_set(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_cbuffer_cbuffer */
+	contains(cb2: Cbuffer): number {
+		return F.contains_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_copy */
@@ -979,9 +1959,72 @@ export class Cbuffer extends Value {
 		return wrapCbuffer(F.cbuffer_copy(this.ptr)) as Cbuffer;
 	}
 
+	/** MEOS: covers_cbuffer_cbuffer */
+	covers(cb2: Cbuffer): number {
+		return F.covers_cbuffer_cbuffer(this.ptr, cb2.ptr);
+	}
+
+	/** MEOS: disjoint_cbuffer_cbuffer */
+	disjoint(cb2: Cbuffer): number {
+		return F.disjoint_cbuffer_cbuffer(this.ptr, cb2.ptr);
+	}
+
+	/** MEOS: distance_cbuffer_cbuffer, distance_cbuffer_geo, distance_cbuffer_stbox, chosen by the arguments' types */
+	distance(cb2: Cbuffer | Geometry | STBox): number {
+		if (cb2 instanceof Geometry) return this._distance_cbuffer_geo(cb2 as Geometry);
+		if (cb2 instanceof Cbuffer) return this._distance_cbuffer_cbuffer(cb2 as Cbuffer);
+		if (cb2 instanceof STBox) return this._distance_cbuffer_stbox(cb2 as STBox);
+		throw new TypeError(`Cbuffer.distance: no overload takes these arguments`);
+	}
+
+	/** MEOS: dwithin_cbuffer_cbuffer */
+	dwithin(cb2: Cbuffer, dist: number): number {
+		return F.dwithin_cbuffer_cbuffer(this.ptr, cb2.ptr, dist);
+	}
+
+	/** MEOS: econtains_cbuffer_tcbuffer */
+	econtains(temp: TCbuffer): number {
+		return F.econtains_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ecovers_cbuffer_tcbuffer */
+	ecovers(temp: TCbuffer): number {
+		return F.ecovers_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: edisjoint_cbuffer_tcbuffer */
+	edisjoint(temp: TCbuffer): number {
+		return F.edisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: edwithin_cbuffer_tcbuffer */
+	edwithin(temp: TCbuffer, dist: number): number {
+		return F.edwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist);
+	}
+
+	/** MEOS: eintersects_cbuffer_tcbuffer */
+	eintersects(temp: TCbuffer): number {
+		return F.eintersects_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: cbuffer_eq */
 	eq(cb2: Cbuffer): boolean {
 		return F.cbuffer_eq(this.ptr, cb2.ptr);
+	}
+
+	/** MEOS: etouches_cbuffer_tcbuffer */
+	etouches(temp: TCbuffer): number {
+		return F.etouches_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_eq_cbuffer_tcbuffer */
+	everEq(temp: TCbuffer): number {
+		return F.ever_eq_cbuffer_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_cbuffer_tcbuffer */
+	everNe(temp: TCbuffer): number {
+		return F.ever_ne_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: cbuffer_ge */
@@ -1004,6 +2047,16 @@ export class Cbuffer extends Value {
 		return F.cbuffer_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_cbuffer_set */
+	intersection(s: CbufferSet): Set | null {
+		return wrapSetOrNull(F.intersection_cbuffer_set(this.ptr, s.ptr)) as Set | null;
+	}
+
+	/** MEOS: intersects_cbuffer_cbuffer */
+	intersects(cb2: Cbuffer): number {
+		return F.intersects_cbuffer_cbuffer(this.ptr, cb2.ptr);
+	}
+
 	/** MEOS: cbuffer_le */
 	le(cb2: Cbuffer): boolean {
 		return F.cbuffer_le(this.ptr, cb2.ptr);
@@ -1017,6 +2070,16 @@ export class Cbuffer extends Value {
 	/** MEOS: cbuffer_mem_size */
 	memSize(): number {
 		return F.cbuffer_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_cbuffer_set */
+	minus(s: CbufferSet): Set | null {
+		return wrapSetOrNull(F.minus_cbuffer_set(this.ptr, s.ptr)) as Set | null;
+	}
+
+	/** MEOS: nad_cbuffer_stbox */
+	nad(box: STBox): number {
+		return F.nad_cbuffer_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: cbuffer_ne */
@@ -1054,9 +2117,44 @@ export class Cbuffer extends Value {
 		return F.cbuffer_srid(this.ptr);
 	}
 
+	/** MEOS: tcontains_cbuffer_tcbuffer */
+	tcontains(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_cbuffer_tcbuffer */
+	tcovers(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_cbuffer_tcbuffer */
+	tdisjoint(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_cbuffer_tcbuffer */
+	tdwithin(temp: TCbuffer, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: teq_cbuffer_tcbuffer */
+	teq(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.teq_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: cbuffer_timestamptz_to_stbox */
 	timestamptzToStbox(t: TimestampTz): STBox {
 		return wrapSTBox(F.cbuffer_timestamptz_to_stbox(this.ptr, t)) as STBox;
+	}
+
+	/** MEOS: tintersects_cbuffer_tcbuffer */
+	tintersects(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_cbuffer_tcbuffer */
+	tne(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tne_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: cbuffer_to_geom */
@@ -1074,6 +2172,11 @@ export class Cbuffer extends Value {
 		return wrapSTBox(F.cbuffer_to_stbox(this.ptr)) as STBox;
 	}
 
+	/** MEOS: touches_cbuffer_cbuffer */
+	touches(cb2: Cbuffer): number {
+		return F.touches_cbuffer_cbuffer(this.ptr, cb2.ptr);
+	}
+
 	/** MEOS: cbuffer_transform */
 	transform(srid: number): Cbuffer {
 		return wrapCbuffer(F.cbuffer_transform(this.ptr, srid)) as Cbuffer;
@@ -1087,6 +2190,16 @@ export class Cbuffer extends Value {
 	/** MEOS: cbuffer_tstzspan_to_stbox */
 	tstzspanToStbox(s: Span): STBox {
 		return wrapSTBox(F.cbuffer_tstzspan_to_stbox(this.ptr, s.ptr)) as STBox;
+	}
+
+	/** MEOS: ttouches_cbuffer_tcbuffer */
+	ttouches(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: union_cbuffer_set */
+	union(s: CbufferSet): Set | null {
+		return wrapSetOrNull(F.union_cbuffer_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: cbuffer_in */
@@ -1186,9 +2299,52 @@ export class CbufferSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_cbuffer */
+	private _contains_set_cbuffer(cb: Cbuffer): boolean {
+		return F.contains_set_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: intersection_set_cbuffer */
+	private _intersection_set_cbuffer(cb: Cbuffer): Set | null {
+		return wrapSetOrNull(F.intersection_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_cbuffer */
+	private _minus_set_cbuffer(cb: Cbuffer): Set | null {
+		return wrapSetOrNull(F.minus_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_cbuffer */
+	private _union_set_cbuffer(cb: Cbuffer): Set | null {
+		return wrapSetOrNull(F.union_set_cbuffer(this.ptr, cb.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_cbuffer, chosen by the arguments' types */
+	override contains(cb: Cbuffer | Set): boolean {
+		if (cb instanceof Cbuffer) return this._contains_set_cbuffer(cb as Cbuffer);
+		return super.contains(cb as Set);
+	}
+
+	/** MEOS: distance_cbufferset_cbufferset */
+	distance(s2: CbufferSet): number {
+		return F.distance_cbufferset_cbufferset(this.ptr, s2.ptr);
+	}
+
 	/** MEOS: cbufferset_end_value */
 	endValue(): Cbuffer {
 		return wrapCbuffer(F.cbufferset_end_value(this.ptr)) as Cbuffer;
+	}
+
+	/** MEOS: intersection_set_cbuffer, chosen by the arguments' types */
+	override intersection(cb: Cbuffer | Set): Set | null {
+		if (cb instanceof Cbuffer) return this._intersection_set_cbuffer(cb as Cbuffer);
+		return super.intersection(cb as Set);
+	}
+
+	/** MEOS: minus_set_cbuffer, chosen by the arguments' types */
+	override minus(cb: Cbuffer | Set): Set | null {
+		if (cb instanceof Cbuffer) return this._minus_set_cbuffer(cb as Cbuffer);
+		return super.minus(cb as Set);
 	}
 
 	/** MEOS: cbufferset_out */
@@ -1199,6 +2355,12 @@ export class CbufferSet extends SpatialSet {
 	/** MEOS: cbufferset_start_value */
 	startValue(): Cbuffer {
 		return wrapCbuffer(F.cbufferset_start_value(this.ptr)) as Cbuffer;
+	}
+
+	/** MEOS: union_set_cbuffer, chosen by the arguments' types */
+	override union(cb: Cbuffer | Set): Set | null {
+		if (cb instanceof Cbuffer) return this._union_set_cbuffer(cb as Cbuffer);
+		return super.union(cb as Set);
 	}
 
 	/** MEOS: cbufferset_value_n */
@@ -1257,9 +2419,62 @@ export class DateSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_date */
+	private _contains_set_date(d: DateADT): boolean {
+		return F.contains_set_date(this.ptr, d);
+	}
+
+	/** MEOS: distance_dateset_dateset */
+	private _distance_dateset_dateset(s2: DateSet): number {
+		return F.distance_dateset_dateset(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_set_date */
+	private _distance_set_date(d: DateADT): number {
+		return F.distance_set_date(this.ptr, d);
+	}
+
+	/** MEOS: intersection_set_date */
+	private _intersection_set_date(d: DateADT): Set | null {
+		return wrapSetOrNull(F.intersection_set_date(this.ptr, d)) as Set | null;
+	}
+
+	/** MEOS: minus_set_date */
+	private _minus_set_date(d: DateADT): Set | null {
+		return wrapSetOrNull(F.minus_set_date(this.ptr, d)) as Set | null;
+	}
+
+	/** MEOS: union_set_date */
+	private _union_set_date(d: DateADT): Set | null {
+		return wrapSetOrNull(F.union_set_date(this.ptr, d)) as Set | null;
+	}
+
+	/** MEOS: after_set_date */
+	after(d: DateADT): boolean {
+		return F.after_set_date(this.ptr, d);
+	}
+
 	/** MEOS: dateset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: before_set_date */
+	before(d: DateADT): boolean {
+		return F.before_set_date(this.ptr, d);
+	}
+
+	/** MEOS: contains_set_date, chosen by the arguments' types */
+	override contains(d: DateADT | Set): boolean {
+		if (typeof d === 'number') return this._contains_set_date(d as DateADT);
+		return super.contains(d as Set);
+	}
+
+	/** MEOS: distance_dateset_dateset, distance_set_date, chosen by the arguments' types */
+	distance(s2: DateSet | DateADT): number {
+		if (s2 instanceof DateSet) return this._distance_dateset_dateset(s2 as DateSet);
+		if (typeof s2 === 'number') return this._distance_set_date(s2 as DateADT);
+		throw new TypeError(`DateSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: dateset_end_value */
@@ -1267,9 +2482,71 @@ export class DateSet extends Set {
 		return F.dateset_end_value(this.ptr);
 	}
 
+	/** MEOS: intersection_set_date, chosen by the arguments' types */
+	override intersection(d: DateADT | Set): Set | null {
+		if (typeof d === 'number') return this._intersection_set_date(d as DateADT);
+		return super.intersection(d as Set);
+	}
+
+	/** MEOS: minus_set_date, chosen by the arguments' types */
+	override minus(d: DateADT | Set): Set | null {
+		if (typeof d === 'number') return this._minus_set_date(d as DateADT);
+		return super.minus(d as Set);
+	}
+
 	/** MEOS: dateset_out */
 	out(): string {
 		return F.dateset_out(this.ptr);
+	}
+
+	/** MEOS: overafter_set_date */
+	overafter(d: DateADT): boolean {
+		return F.overafter_set_date(this.ptr, d);
+	}
+
+	/** MEOS: overbefore_set_date */
+	overbefore(d: DateADT): boolean {
+		return F.overbefore_set_date(this.ptr, d);
+	}
+
+	/** MEOS: after_date_set */
+	rafter(d: DateADT): boolean {
+		return F.after_date_set(d, this.ptr);
+	}
+
+	/** MEOS: before_date_set */
+	rbefore(d: DateADT): boolean {
+		return F.before_date_set(d, this.ptr);
+	}
+
+	/** MEOS: contained_date_set */
+	rcontained(d: DateADT): boolean {
+		return F.contained_date_set(d, this.ptr);
+	}
+
+	/** MEOS: intersection_date_set */
+	rintersection(d: DateADT): Set | null {
+		return wrapSetOrNull(F.intersection_date_set(d, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_date_set */
+	rminus(d: DateADT): Set | null {
+		return wrapSetOrNull(F.minus_date_set(d, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: overafter_date_set */
+	roverafter(d: DateADT): boolean {
+		return F.overafter_date_set(d, this.ptr);
+	}
+
+	/** MEOS: overbefore_date_set */
+	roverbefore(d: DateADT): boolean {
+		return F.overbefore_date_set(d, this.ptr);
+	}
+
+	/** MEOS: union_date_set */
+	runion(d: DateADT): Set | null {
+		return wrapSetOrNull(F.union_date_set(d, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: dateset_shift_scale */
@@ -1285,6 +2562,12 @@ export class DateSet extends Set {
 	/** MEOS: dateset_to_tstzset */
 	toTstzset(): Set {
 		return wrapSet(F.dateset_to_tstzset(this.ptr)) as Set;
+	}
+
+	/** MEOS: union_set_date, chosen by the arguments' types */
+	override union(d: DateADT | Set): Set | null {
+		if (typeof d === 'number') return this._union_set_date(d as DateADT);
+		return super.union(d as Set);
 	}
 
 	/** MEOS: dateset_value_n */
@@ -1333,9 +2616,60 @@ export class DateSpan extends Span {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_span_date */
+	private _adjacent_span_date(d: DateADT): boolean {
+		return F.adjacent_span_date(this.ptr, d);
+	}
+
+	/** MEOS: contains_span_date */
+	private _contains_span_date(d: DateADT): boolean {
+		return F.contains_span_date(this.ptr, d);
+	}
+
+	/** MEOS: distance_datespan_datespan */
+	private _distance_datespan_datespan(s2: DateSpan): number {
+		return F.distance_datespan_datespan(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_span_date */
+	private _distance_span_date(d: DateADT): number {
+		return F.distance_span_date(this.ptr, d);
+	}
+
+	/** MEOS: intersection_span_date */
+	private _intersection_span_date(d: DateADT): Span | null {
+		return wrapSpanOrNull(F.intersection_span_date(this.ptr, d)) as Span | null;
+	}
+
+	/** MEOS: minus_span_date */
+	private _minus_span_date(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_date(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: union_span_date */
+	private _union_span_date(d: DateADT): SpanSet {
+		return wrapSpanSet(F.union_span_date(this.ptr, d)) as SpanSet;
+	}
+
+	/** MEOS: adjacent_span_date, chosen by the arguments' types */
+	override adjacent(d: DateADT | SpanSet): boolean {
+		if (typeof d === 'number') return this._adjacent_span_date(d as DateADT);
+		return super.adjacent(d as SpanSet);
+	}
+
+	/** MEOS: after_span_date */
+	after(d: DateADT): boolean {
+		return F.after_span_date(this.ptr, d);
+	}
+
 	/** MEOS: datespan_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: before_span_date */
+	before(d: DateADT): boolean {
+		return F.before_span_date(this.ptr, d);
 	}
 
 	/** MEOS: datespan_bins */
@@ -1360,9 +2694,28 @@ export class DateSpan extends Span {
 		}
 	}
 
+	/** MEOS: contains_span_date, chosen by the arguments' types */
+	override contains(d: DateADT | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._contains_span_date(d as DateADT);
+		return super.contains(d as Span | SpanSet);
+	}
+
+	/** MEOS: distance_datespan_datespan, distance_span_date, chosen by the arguments' types */
+	distance(s2: DateSpan | DateADT): number {
+		if (s2 instanceof DateSpan) return this._distance_datespan_datespan(s2 as DateSpan);
+		if (typeof s2 === 'number') return this._distance_span_date(s2 as DateADT);
+		throw new TypeError(`DateSpan.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: datespan_duration */
 	duration(): Interval {
 		return _takeInterval(F.datespan_duration(this.ptr))!;
+	}
+
+	/** MEOS: intersection_span_date, chosen by the arguments' types */
+	override intersection(d: DateADT | Span | SpanSet): Span | null | SpanSet {
+		if (typeof d === 'number') return this._intersection_span_date(d as DateADT);
+		return super.intersection(d as Span | SpanSet);
 	}
 
 	/** MEOS: datespan_lower */
@@ -1370,9 +2723,70 @@ export class DateSpan extends Span {
 		return F.datespan_lower(this.ptr);
 	}
 
+	/** MEOS: minus_span_date, chosen by the arguments' types */
+	override minus(d: DateADT | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._minus_span_date(d as DateADT);
+		return super.minus(d as Span | SpanSet);
+	}
+
 	/** MEOS: datespan_out */
 	out(): string {
 		return F.datespan_out(this.ptr);
+	}
+
+	/** MEOS: overafter_span_date */
+	overafter(d: DateADT): boolean {
+		return F.overafter_span_date(this.ptr, d);
+	}
+
+	/** MEOS: overbefore_span_date */
+	overbefore(d: DateADT): boolean {
+		return F.overbefore_span_date(this.ptr, d);
+	}
+
+	/** MEOS: adjacent_date_span */
+	radjacent(d: DateADT): boolean {
+		return F.adjacent_date_span(d, this.ptr);
+	}
+
+	/** MEOS: after_date_span */
+	rafter(d: DateADT): boolean {
+		return F.after_date_span(d, this.ptr);
+	}
+
+	/** MEOS: before_date_span */
+	rbefore(d: DateADT): boolean {
+		return F.before_date_span(d, this.ptr);
+	}
+
+	/** MEOS: contained_date_span */
+	rcontained(d: DateADT): boolean {
+		return F.contained_date_span(d, this.ptr);
+	}
+
+	/** MEOS: intersection_date_span */
+	rintersection(d: DateADT): Span | null {
+		return wrapSpanOrNull(F.intersection_date_span(d, this.ptr)) as Span | null;
+	}
+
+	/** MEOS: minus_date_span */
+	rminus(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_date_span(d, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overafter_date_span */
+	roverafter(d: DateADT): boolean {
+		return F.overafter_date_span(d, this.ptr);
+	}
+
+	/** MEOS: overbefore_date_span */
+	roverbefore(d: DateADT): boolean {
+		return F.overbefore_date_span(d, this.ptr);
+	}
+
+	/** MEOS: union_date_span */
+	runion(d: DateADT): SpanSet {
+		return wrapSpanSet(F.union_date_span(d, this.ptr)) as SpanSet;
 	}
 
 	/** MEOS: datespan_shift_scale */
@@ -1383,6 +2797,12 @@ export class DateSpan extends Span {
 	/** MEOS: datespan_to_tstzspan */
 	toTstzspan(): Span {
 		return wrapSpan(F.datespan_to_tstzspan(this.ptr)) as Span;
+	}
+
+	/** MEOS: union_span_date, chosen by the arguments' types */
+	override union(d: DateADT | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._union_span_date(d as DateADT);
+		return super.union(d as Span | SpanSet);
 	}
 
 	/** MEOS: datespan_upper */
@@ -1426,9 +2846,65 @@ export class DateSpanSet extends SpanSet {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_spanset_date */
+	private _adjacent_spanset_date(d: DateADT): boolean {
+		return F.adjacent_spanset_date(this.ptr, d);
+	}
+
+	/** MEOS: contains_spanset_date */
+	private _contains_spanset_date(d: DateADT): boolean {
+		return F.contains_spanset_date(this.ptr, d);
+	}
+
+	/** MEOS: distance_datespanset_datespan */
+	private _distance_datespanset_datespan(s: DateSpan): number {
+		return F.distance_datespanset_datespan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: distance_datespanset_datespanset */
+	private _distance_datespanset_datespanset(ss2: DateSpanSet): number {
+		return F.distance_datespanset_datespanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: distance_spanset_date */
+	private _distance_spanset_date(d: DateADT): number {
+		return F.distance_spanset_date(this.ptr, d);
+	}
+
+	/** MEOS: intersection_spanset_date */
+	private _intersection_spanset_date(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_date(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_spanset_date */
+	private _minus_spanset_date(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_date(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: union_spanset_date */
+	private _union_spanset_date(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_date(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_date, chosen by the arguments' types */
+	override adjacent(d: DateADT | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._adjacent_spanset_date(d as DateADT);
+		return super.adjacent(d as Span | SpanSet);
+	}
+
+	/** MEOS: after_spanset_date */
+	after(d: DateADT): boolean {
+		return F.after_spanset_date(this.ptr, d);
+	}
+
 	/** MEOS: datespanset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: before_spanset_date */
+	before(d: DateADT): boolean {
+		return F.before_spanset_date(this.ptr, d);
 	}
 
 	/** MEOS: datespanset_bins */
@@ -1453,6 +2929,12 @@ export class DateSpanSet extends SpanSet {
 		}
 	}
 
+	/** MEOS: contains_spanset_date, chosen by the arguments' types */
+	override contains(d: DateADT | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._contains_spanset_date(d as DateADT);
+		return super.contains(d as Span | SpanSet);
+	}
+
 	/** MEOS: datespanset_date_n */
 	dateN(n: number): DateADT {
 		return F.datespanset_date_n(this.ptr, n);
@@ -1461,6 +2943,14 @@ export class DateSpanSet extends SpanSet {
 	/** MEOS: datespanset_dates */
 	dates(): Set {
 		return wrapSet(F.datespanset_dates(this.ptr)) as Set;
+	}
+
+	/** MEOS: distance_datespanset_datespan, distance_datespanset_datespanset, distance_spanset_date, chosen by the arguments' types */
+	distance(s: DateSpan | DateSpanSet | DateADT): number {
+		if (s instanceof DateSpan) return this._distance_datespanset_datespan(s as DateSpan);
+		if (s instanceof DateSpanSet) return this._distance_datespanset_datespanset(s as DateSpanSet);
+		if (typeof s === 'number') return this._distance_spanset_date(s as DateADT);
+		throw new TypeError(`DateSpanSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: datespanset_duration */
@@ -1473,9 +2963,21 @@ export class DateSpanSet extends SpanSet {
 		return F.datespanset_end_date(this.ptr);
 	}
 
+	/** MEOS: intersection_spanset_date, chosen by the arguments' types */
+	override intersection(d: DateADT | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._intersection_spanset_date(d as DateADT);
+		return super.intersection(d as Span | SpanSet);
+	}
+
 	/** MEOS: datespanset_lower */
 	lower(): DateADT {
 		return F.datespanset_lower(this.ptr);
+	}
+
+	/** MEOS: minus_spanset_date, chosen by the arguments' types */
+	override minus(d: DateADT | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._minus_spanset_date(d as DateADT);
+		return super.minus(d as Span | SpanSet);
 	}
 
 	/** MEOS: datespanset_num_dates */
@@ -1486,6 +2988,61 @@ export class DateSpanSet extends SpanSet {
 	/** MEOS: datespanset_out */
 	out(): string {
 		return F.datespanset_out(this.ptr);
+	}
+
+	/** MEOS: overafter_spanset_date */
+	overafter(d: DateADT): boolean {
+		return F.overafter_spanset_date(this.ptr, d);
+	}
+
+	/** MEOS: overbefore_spanset_date */
+	overbefore(d: DateADT): boolean {
+		return F.overbefore_spanset_date(this.ptr, d);
+	}
+
+	/** MEOS: adjacent_date_spanset */
+	radjacent(d: DateADT): boolean {
+		return F.adjacent_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: after_date_spanset */
+	rafter(d: DateADT): boolean {
+		return F.after_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: before_date_spanset */
+	rbefore(d: DateADT): boolean {
+		return F.before_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: contained_date_spanset */
+	rcontained(d: DateADT): boolean {
+		return F.contained_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: intersection_date_spanset */
+	rintersection(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_date_spanset(d, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_date_spanset */
+	rminus(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_date_spanset(d, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overafter_date_spanset */
+	roverafter(d: DateADT): boolean {
+		return F.overafter_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: overbefore_date_spanset */
+	roverbefore(d: DateADT): boolean {
+		return F.overbefore_date_spanset(d, this.ptr);
+	}
+
+	/** MEOS: union_date_spanset */
+	runion(d: DateADT): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_date_spanset(d, this.ptr)) as SpanSet | null;
 	}
 
 	/** MEOS: datespanset_shift_scale */
@@ -1501,6 +3058,12 @@ export class DateSpanSet extends SpanSet {
 	/** MEOS: datespanset_to_tstzspanset */
 	toTstzspanset(): SpanSet {
 		return wrapSpanSet(F.datespanset_to_tstzspanset(this.ptr)) as SpanSet;
+	}
+
+	/** MEOS: union_spanset_date, chosen by the arguments' types */
+	override union(d: DateADT | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._union_spanset_date(d as DateADT);
+		return super.union(d as Span | SpanSet);
 	}
 
 	/** MEOS: datespanset_upper */
@@ -1529,6 +3092,56 @@ export class FloatSet extends Set {
 		return this.out(15);
 	}
 
+	/** MEOS: contains_set_float */
+	private _contains_set_float(d: number): boolean {
+		return F.contains_set_float(this.ptr, d);
+	}
+
+	/** MEOS: distance_floatset_floatset */
+	private _distance_floatset_floatset(s2: FloatSet): number {
+		return F.distance_floatset_floatset(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_set_float */
+	private _distance_set_float(d: number): number {
+		return F.distance_set_float(this.ptr, d);
+	}
+
+	/** MEOS: intersection_set_float */
+	private _intersection_set_float(d: number): Set | null {
+		return wrapSetOrNull(F.intersection_set_float(this.ptr, d)) as Set | null;
+	}
+
+	/** MEOS: left_set_float */
+	private _left_set_float(d: number): boolean {
+		return F.left_set_float(this.ptr, d);
+	}
+
+	/** MEOS: minus_set_float */
+	private _minus_set_float(d: number): Set | null {
+		return wrapSetOrNull(F.minus_set_float(this.ptr, d)) as Set | null;
+	}
+
+	/** MEOS: overleft_set_float */
+	private _overleft_set_float(d: number): boolean {
+		return F.overleft_set_float(this.ptr, d);
+	}
+
+	/** MEOS: overright_set_float */
+	private _overright_set_float(d: number): boolean {
+		return F.overright_set_float(this.ptr, d);
+	}
+
+	/** MEOS: right_set_float */
+	private _right_set_float(d: number): boolean {
+		return F.right_set_float(this.ptr, d);
+	}
+
+	/** MEOS: union_set_float */
+	private _union_set_float(d: number): Set | null {
+		return wrapSetOrNull(F.union_set_float(this.ptr, d)) as Set | null;
+	}
+
 	/** MEOS: floatset_out */
 	asText(maxdd: number): string {
 		return this.out(maxdd);
@@ -1539,9 +3152,22 @@ export class FloatSet extends Set {
 		return wrapSet(F.floatset_ceil(this.ptr)) as Set;
 	}
 
+	/** MEOS: contains_set_float, chosen by the arguments' types */
+	override contains(d: number | Set): boolean {
+		if (typeof d === 'number') return this._contains_set_float(d as number);
+		return super.contains(d as Set);
+	}
+
 	/** MEOS: floatset_degrees */
 	degrees(normalize: boolean): Set {
 		return wrapSet(F.floatset_degrees(this.ptr, normalize)) as Set;
+	}
+
+	/** MEOS: distance_floatset_floatset, distance_set_float, chosen by the arguments' types */
+	distance(s2: FloatSet | number): number {
+		if (s2 instanceof FloatSet) return this._distance_floatset_floatset(s2 as FloatSet);
+		if (typeof s2 === 'number') return this._distance_set_float(s2 as number);
+		throw new TypeError(`FloatSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: floatset_end_value */
@@ -1554,14 +3180,90 @@ export class FloatSet extends Set {
 		return wrapSet(F.floatset_floor(this.ptr)) as Set;
 	}
 
+	/** MEOS: intersection_set_float, chosen by the arguments' types */
+	override intersection(d: number | Set): Set | null {
+		if (typeof d === 'number') return this._intersection_set_float(d as number);
+		return super.intersection(d as Set);
+	}
+
+	/** MEOS: left_set_float, chosen by the arguments' types */
+	override left(d: number | Set): boolean {
+		if (typeof d === 'number') return this._left_set_float(d as number);
+		return super.left(d as Set);
+	}
+
+	/** MEOS: minus_set_float, chosen by the arguments' types */
+	override minus(d: number | Set): Set | null {
+		if (typeof d === 'number') return this._minus_set_float(d as number);
+		return super.minus(d as Set);
+	}
+
 	/** MEOS: floatset_out */
 	out(maxdd: number): string {
 		return F.floatset_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: overleft_set_float, chosen by the arguments' types */
+	override overleft(d: number | Set): boolean {
+		if (typeof d === 'number') return this._overleft_set_float(d as number);
+		return super.overleft(d as Set);
+	}
+
+	/** MEOS: overright_set_float, chosen by the arguments' types */
+	override overright(d: number | Set): boolean {
+		if (typeof d === 'number') return this._overright_set_float(d as number);
+		return super.overright(d as Set);
+	}
+
 	/** MEOS: floatset_radians */
 	radians(): Set {
 		return wrapSet(F.floatset_radians(this.ptr)) as Set;
+	}
+
+	/** MEOS: contained_float_set */
+	rcontained(d: number): boolean {
+		return F.contained_float_set(d, this.ptr);
+	}
+
+	/** MEOS: right_set_float, chosen by the arguments' types */
+	override right(d: number | Set): boolean {
+		if (typeof d === 'number') return this._right_set_float(d as number);
+		return super.right(d as Set);
+	}
+
+	/** MEOS: intersection_float_set */
+	rintersection(d: number): Set | null {
+		return wrapSetOrNull(F.intersection_float_set(d, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: left_float_set */
+	rleft(d: number): boolean {
+		return F.left_float_set(d, this.ptr);
+	}
+
+	/** MEOS: minus_float_set */
+	rminus(d: number): Set | null {
+		return wrapSetOrNull(F.minus_float_set(d, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: overleft_float_set */
+	roverleft(d: number): boolean {
+		return F.overleft_float_set(d, this.ptr);
+	}
+
+	/** MEOS: overright_float_set */
+	roverright(d: number): boolean {
+		return F.overright_float_set(d, this.ptr);
+	}
+
+	/** MEOS: right_float_set */
+	rright(d: number): boolean {
+		return F.right_float_set(d, this.ptr);
+	}
+
+	/** MEOS: union_float_set */
+	runion(d: number): Set | null {
+		return wrapSetOrNull(F.union_float_set(d, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: floatset_shift_scale */
@@ -1577,6 +3279,12 @@ export class FloatSet extends Set {
 	/** MEOS: floatset_to_intset */
 	toIntset(): Set {
 		return wrapSet(F.floatset_to_intset(this.ptr)) as Set;
+	}
+
+	/** MEOS: union_set_float, chosen by the arguments' types */
+	override union(d: number | Set): Set | null {
+		if (typeof d === 'number') return this._union_set_float(d as number);
+		return super.union(d as Set);
 	}
 
 	/** MEOS: floatset_value_n */
@@ -1625,6 +3333,67 @@ export class FloatSpan extends Span {
 		return this.out(15);
 	}
 
+	/** MEOS: adjacent_span_float */
+	private _adjacent_span_float(d: number): boolean {
+		return F.adjacent_span_float(this.ptr, d);
+	}
+
+	/** MEOS: contains_span_float */
+	private _contains_span_float(d: number): boolean {
+		return F.contains_span_float(this.ptr, d);
+	}
+
+	/** MEOS: distance_floatspan_floatspan */
+	private _distance_floatspan_floatspan(s2: FloatSpan): number {
+		return F.distance_floatspan_floatspan(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_span_float */
+	private _distance_span_float(d: number): number {
+		return F.distance_span_float(this.ptr, d);
+	}
+
+	/** MEOS: intersection_span_float */
+	private _intersection_span_float(d: number): Span | null {
+		return wrapSpanOrNull(F.intersection_span_float(this.ptr, d)) as Span | null;
+	}
+
+	/** MEOS: left_span_float */
+	private _left_span_float(d: number): boolean {
+		return F.left_span_float(this.ptr, d);
+	}
+
+	/** MEOS: minus_span_float */
+	private _minus_span_float(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_float(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_span_float */
+	private _overleft_span_float(d: number): boolean {
+		return F.overleft_span_float(this.ptr, d);
+	}
+
+	/** MEOS: overright_span_float */
+	private _overright_span_float(d: number): boolean {
+		return F.overright_span_float(this.ptr, d);
+	}
+
+	/** MEOS: right_span_float */
+	private _right_span_float(d: number): boolean {
+		return F.right_span_float(this.ptr, d);
+	}
+
+	/** MEOS: union_span_float */
+	private _union_span_float(d: number): SpanSet {
+		return wrapSpanSet(F.union_span_float(this.ptr, d)) as SpanSet;
+	}
+
+	/** MEOS: adjacent_span_float, chosen by the arguments' types */
+	override adjacent(d: number | SpanSet): boolean {
+		if (typeof d === 'number') return this._adjacent_span_float(d as number);
+		return super.adjacent(d as SpanSet);
+	}
+
 	/** MEOS: floatspan_out */
 	asText(maxdd: number): string {
 		return this.out(maxdd);
@@ -1655,9 +3424,22 @@ export class FloatSpan extends Span {
 		return wrapSpan(F.floatspan_ceil(this.ptr)) as Span;
 	}
 
+	/** MEOS: contains_span_float, chosen by the arguments' types */
+	override contains(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._contains_span_float(d as number);
+		return super.contains(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspan_degrees */
 	degrees(normalize: boolean): Span {
 		return wrapSpan(F.floatspan_degrees(this.ptr, normalize)) as Span;
+	}
+
+	/** MEOS: distance_floatspan_floatspan, distance_span_float, chosen by the arguments' types */
+	distance(s2: FloatSpan | number): number {
+		if (s2 instanceof FloatSpan) return this._distance_floatspan_floatspan(s2 as FloatSpan);
+		if (typeof s2 === 'number') return this._distance_span_float(s2 as number);
+		throw new TypeError(`FloatSpan.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: floatspan_expand */
@@ -1670,9 +3452,32 @@ export class FloatSpan extends Span {
 		return wrapSpan(F.floatspan_floor(this.ptr)) as Span;
 	}
 
+	/** MEOS: intersection_span_float, chosen by the arguments' types */
+	override intersection(d: number | Span | SpanSet): Span | null | SpanSet {
+		if (typeof d === 'number') return this._intersection_span_float(d as number);
+		return super.intersection(d as Span | SpanSet);
+	}
+
+	/** MEOS: left_span_float, chosen by the arguments' types */
+	override left(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._left_span_float(d as number);
+		return super.left(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspan_lower */
 	lower(): number {
 		return F.floatspan_lower(this.ptr);
+	}
+
+	/** MEOS: minus_span_float, chosen by the arguments' types */
+	override minus(d: number | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._minus_span_float(d as number);
+		return super.minus(d as Span | SpanSet);
+	}
+
+	/** MEOS: nad_floatspan_tbox */
+	nad(box: TBox): number {
+		return F.nad_floatspan_tbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: floatspan_out */
@@ -1680,14 +3485,77 @@ export class FloatSpan extends Span {
 		return F.floatspan_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: overleft_span_float, chosen by the arguments' types */
+	override overleft(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._overleft_span_float(d as number);
+		return super.overleft(d as Span | SpanSet);
+	}
+
+	/** MEOS: overright_span_float, chosen by the arguments' types */
+	override overright(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._overright_span_float(d as number);
+		return super.overright(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspan_radians */
 	radians(): Span {
 		return wrapSpan(F.floatspan_radians(this.ptr)) as Span;
 	}
 
+	/** MEOS: adjacent_float_span */
+	radjacent(d: number): boolean {
+		return F.adjacent_float_span(d, this.ptr);
+	}
+
+	/** MEOS: contained_float_span */
+	rcontained(d: number): boolean {
+		return F.contained_float_span(d, this.ptr);
+	}
+
+	/** MEOS: right_span_float, chosen by the arguments' types */
+	override right(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._right_span_float(d as number);
+		return super.right(d as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_float_span */
+	rintersection(d: number): Span | null {
+		return wrapSpanOrNull(F.intersection_float_span(d, this.ptr)) as Span | null;
+	}
+
+	/** MEOS: left_float_span */
+	rleft(d: number): boolean {
+		return F.left_float_span(d, this.ptr);
+	}
+
+	/** MEOS: minus_float_span */
+	rminus(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_float_span(d, this.ptr)) as SpanSet | null;
+	}
+
 	/** MEOS: floatspan_round */
 	round(maxdd: number): Span {
 		return wrapSpan(F.floatspan_round(this.ptr, maxdd)) as Span;
+	}
+
+	/** MEOS: overleft_float_span */
+	roverleft(d: number): boolean {
+		return F.overleft_float_span(d, this.ptr);
+	}
+
+	/** MEOS: overright_float_span */
+	roverright(d: number): boolean {
+		return F.overright_float_span(d, this.ptr);
+	}
+
+	/** MEOS: right_float_span */
+	rright(d: number): boolean {
+		return F.right_float_span(d, this.ptr);
+	}
+
+	/** MEOS: union_float_span */
+	runion(d: number): SpanSet {
+		return wrapSpanSet(F.union_float_span(d, this.ptr)) as SpanSet;
 	}
 
 	/** MEOS: floatspan_shift_scale */
@@ -1703,6 +3571,12 @@ export class FloatSpan extends Span {
 	/** MEOS: floatspan_to_intspan */
 	toIntspan(): Span {
 		return wrapSpan(F.floatspan_to_intspan(this.ptr)) as Span;
+	}
+
+	/** MEOS: union_span_float, chosen by the arguments' types */
+	override union(d: number | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._union_span_float(d as number);
+		return super.union(d as Span | SpanSet);
 	}
 
 	/** MEOS: floatspan_upper */
@@ -1746,6 +3620,72 @@ export class FloatSpanSet extends SpanSet {
 		return this.out(15);
 	}
 
+	/** MEOS: adjacent_spanset_float */
+	private _adjacent_spanset_float(d: number): boolean {
+		return F.adjacent_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: contains_spanset_float */
+	private _contains_spanset_float(d: number): boolean {
+		return F.contains_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: distance_floatspanset_floatspan */
+	private _distance_floatspanset_floatspan(s: FloatSpan): number {
+		return F.distance_floatspanset_floatspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: distance_floatspanset_floatspanset */
+	private _distance_floatspanset_floatspanset(ss2: FloatSpanSet): number {
+		return F.distance_floatspanset_floatspanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: distance_spanset_float */
+	private _distance_spanset_float(d: number): number {
+		return F.distance_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: intersection_spanset_float */
+	private _intersection_spanset_float(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_float(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: left_spanset_float */
+	private _left_spanset_float(d: number): boolean {
+		return F.left_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: minus_spanset_float */
+	private _minus_spanset_float(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_float(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_spanset_float */
+	private _overleft_spanset_float(d: number): boolean {
+		return F.overleft_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: overright_spanset_float */
+	private _overright_spanset_float(d: number): boolean {
+		return F.overright_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: right_spanset_float */
+	private _right_spanset_float(d: number): boolean {
+		return F.right_spanset_float(this.ptr, d);
+	}
+
+	/** MEOS: union_spanset_float */
+	private _union_spanset_float(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_float(this.ptr, d)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_float, chosen by the arguments' types */
+	override adjacent(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._adjacent_spanset_float(d as number);
+		return super.adjacent(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspanset_out */
 	asText(maxdd: number): string {
 		return this.out(maxdd);
@@ -1776,9 +3716,23 @@ export class FloatSpanSet extends SpanSet {
 		return wrapSpanSet(F.floatspanset_ceil(this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: contains_spanset_float, chosen by the arguments' types */
+	override contains(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._contains_spanset_float(d as number);
+		return super.contains(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspanset_degrees */
 	degrees(normalize: boolean): SpanSet {
 		return wrapSpanSet(F.floatspanset_degrees(this.ptr, normalize)) as SpanSet;
+	}
+
+	/** MEOS: distance_floatspanset_floatspan, distance_floatspanset_floatspanset, distance_spanset_float, chosen by the arguments' types */
+	distance(s: FloatSpan | FloatSpanSet | number): number {
+		if (s instanceof FloatSpan) return this._distance_floatspanset_floatspan(s as FloatSpan);
+		if (s instanceof FloatSpanSet) return this._distance_floatspanset_floatspanset(s as FloatSpanSet);
+		if (typeof s === 'number') return this._distance_spanset_float(s as number);
+		throw new TypeError(`FloatSpanSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: floatspanset_floor */
@@ -1786,9 +3740,27 @@ export class FloatSpanSet extends SpanSet {
 		return wrapSpanSet(F.floatspanset_floor(this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: intersection_spanset_float, chosen by the arguments' types */
+	override intersection(d: number | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._intersection_spanset_float(d as number);
+		return super.intersection(d as Span | SpanSet);
+	}
+
+	/** MEOS: left_spanset_float, chosen by the arguments' types */
+	override left(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._left_spanset_float(d as number);
+		return super.left(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspanset_lower */
 	lower(): number {
 		return F.floatspanset_lower(this.ptr);
+	}
+
+	/** MEOS: minus_spanset_float, chosen by the arguments' types */
+	override minus(d: number | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._minus_spanset_float(d as number);
+		return super.minus(d as Span | SpanSet);
 	}
 
 	/** MEOS: floatspanset_out */
@@ -1796,14 +3768,77 @@ export class FloatSpanSet extends SpanSet {
 		return F.floatspanset_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: overleft_spanset_float, chosen by the arguments' types */
+	override overleft(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._overleft_spanset_float(d as number);
+		return super.overleft(d as Span | SpanSet);
+	}
+
+	/** MEOS: overright_spanset_float, chosen by the arguments' types */
+	override overright(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._overright_spanset_float(d as number);
+		return super.overright(d as Span | SpanSet);
+	}
+
 	/** MEOS: floatspanset_radians */
 	radians(): SpanSet {
 		return wrapSpanSet(F.floatspanset_radians(this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: adjacent_float_spanset */
+	radjacent(d: number): boolean {
+		return F.adjacent_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: contained_float_spanset */
+	rcontained(d: number): boolean {
+		return F.contained_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: right_spanset_float, chosen by the arguments' types */
+	override right(d: number | Span | SpanSet): boolean {
+		if (typeof d === 'number') return this._right_spanset_float(d as number);
+		return super.right(d as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_float_spanset */
+	rintersection(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_float_spanset(d, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: left_float_spanset */
+	rleft(d: number): boolean {
+		return F.left_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: minus_float_spanset */
+	rminus(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_float_spanset(d, this.ptr)) as SpanSet | null;
+	}
+
 	/** MEOS: floatspanset_round */
 	round(maxdd: number): SpanSet {
 		return wrapSpanSet(F.floatspanset_round(this.ptr, maxdd)) as SpanSet;
+	}
+
+	/** MEOS: overleft_float_spanset */
+	roverleft(d: number): boolean {
+		return F.overleft_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: overright_float_spanset */
+	roverright(d: number): boolean {
+		return F.overright_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: right_float_spanset */
+	rright(d: number): boolean {
+		return F.right_float_spanset(d, this.ptr);
+	}
+
+	/** MEOS: union_float_spanset */
+	runion(d: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_float_spanset(d, this.ptr)) as SpanSet | null;
 	}
 
 	/** MEOS: floatspanset_shift_scale */
@@ -1814,6 +3849,12 @@ export class FloatSpanSet extends SpanSet {
 	/** MEOS: floatspanset_to_intspanset */
 	toIntspanset(): SpanSet {
 		return wrapSpanSet(F.floatspanset_to_intspanset(this.ptr)) as SpanSet;
+	}
+
+	/** MEOS: union_spanset_float, chosen by the arguments' types */
+	override union(d: number | Span | SpanSet): SpanSet | null {
+		if (typeof d === 'number') return this._union_spanset_float(d as number);
+		return super.union(d as Span | SpanSet);
 	}
 
 	/** MEOS: floatspanset_upper */
@@ -1847,9 +3888,29 @@ export class Geo extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: adisjoint_geo_tgeo */
+	adisjoint(temp: TGeo): number {
+		return F.adisjoint_geo_tgeo(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: geo_affine */
 	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Geo {
 		return wrapGeo(F.geo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as Geo;
+	}
+
+	/** MEOS: aintersects_geo_tgeo */
+	aintersects(temp: TGeo): number {
+		return F.aintersects_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_eq_geo_tgeo */
+	alwaysEq(temp: TGeo): number {
+		return F.always_eq_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_geo_tgeo */
+	alwaysNe(temp: TGeo): number {
+		return F.always_ne_geo_tgeo(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: geo_area */
@@ -1887,6 +3948,11 @@ export class Geo extends Value {
 		return wrapGeoOrNull(F.geo_centroid(this.ptr, spheroid)) as Geo | null;
 	}
 
+	/** MEOS: contained_geo_set */
+	contained(s: GeoSet): boolean {
+		return F.contained_geo_set(this.ptr, s.ptr);
+	}
+
 	/** MEOS: geo_copy */
 	copy(): Geo {
 		return wrapGeo(F.geo_copy(this.ptr)) as Geo;
@@ -1897,14 +3963,44 @@ export class Geo extends Value {
 		return F.geo_distance(this.ptr, gs2.ptr, spheroid);
 	}
 
+	/** MEOS: edisjoint_geo_tgeo */
+	edisjoint(temp: TGeo): number {
+		return F.edisjoint_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: edwithin_geo_tgeo */
+	edwithin(temp: TSpatial, dist: number, spheroid: boolean): number {
+		return F.edwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
+	}
+
+	/** MEOS: eintersects_geo_tgeo */
+	eintersects(temp: TSpatial): number {
+		return F.eintersects_geo_tgeo(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: geo_equals */
 	equals(gs2: Geo): number {
 		return F.geo_equals(this.ptr, gs2.ptr);
 	}
 
+	/** MEOS: ever_eq_geo_tgeo */
+	everEq(temp: TGeo): number {
+		return F.ever_eq_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_geo_tgeo */
+	everNe(temp: TGeo): number {
+		return F.ever_ne_geo_tgeo(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: geo_geo_n */
 	geoN(n: number): Geo | null {
 		return wrapGeoOrNull(F.geo_geo_n(this.ptr, n)) as Geo | null;
+	}
+
+	/** MEOS: intersection_geo_set */
+	intersection(s: GeoSet): Set | null {
+		return wrapSetOrNull(F.intersection_geo_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: geo_is_empty */
@@ -1925,6 +4021,11 @@ export class Geo extends Value {
 	/** MEOS: geo_mem_size */
 	memSize(): number {
 		return F.geo_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_geo_set */
+	minus(s: GeoSet): Set | null {
+		return wrapSetOrNull(F.minus_geo_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: geo_num_geos */
@@ -2107,9 +4208,34 @@ export class Geo extends Value {
 		}
 	}
 
+	/** MEOS: tdisjoint_geo_tgeo */
+	tdisjoint(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_geo_tgeo */
+	tdwithin(temp: TGeo, dist: number, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: teq_geo_tgeo */
+	teq(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.teq_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: geo_timestamptz_to_stbox */
 	timestamptzToStbox(t: TimestampTz): STBox | null {
 		return wrapSTBoxOrNull(F.geo_timestamptz_to_stbox(this.ptr, t)) as STBox | null;
+	}
+
+	/** MEOS: tintersects_geo_tgeo */
+	tintersects(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_geo_tgeo */
+	tne(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tne_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: geo_to_h3index_cell */
@@ -2175,6 +4301,11 @@ export class Geo extends Value {
 	/** MEOS: geo_tstzspan_to_stbox */
 	tstzspanToStbox(s: Span): STBox | null {
 		return wrapSTBoxOrNull(F.geo_tstzspan_to_stbox(this.ptr, s.ptr)) as STBox | null;
+	}
+
+	/** MEOS: union_geo_set */
+	union(s: GeoSet): Set | null {
+		return wrapSetOrNull(F.union_geo_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: geo_cluster_dbscan */
@@ -2306,9 +4437,64 @@ export class Geo extends Value {
  */
 export class GeoSet extends SpatialSet {
 
+	/** MEOS: contains_set_geo */
+	private _contains_set_geo(gs: Geo): boolean {
+		return F.contains_set_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: distance_geoset_geoset */
+	private _distance_geoset_geoset(s2: GeoSet, spheroid: boolean): number {
+		return F.distance_geoset_geoset(this.ptr, s2.ptr, spheroid);
+	}
+
+	/** MEOS: distance_set_geo */
+	private _distance_set_geo(gs: Geo, spheroid: boolean): number {
+		return F.distance_set_geo(this.ptr, gs.ptr, spheroid);
+	}
+
+	/** MEOS: intersection_set_geo */
+	private _intersection_set_geo(gs: Geo): Set | null {
+		return wrapSetOrNull(F.intersection_set_geo(this.ptr, gs.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_geo */
+	private _minus_set_geo(gs: Geo): Set | null {
+		return wrapSetOrNull(F.minus_set_geo(this.ptr, gs.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_geo */
+	private _union_set_geo(gs: Geo): Set | null {
+		return wrapSetOrNull(F.union_set_geo(this.ptr, gs.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_geo, chosen by the arguments' types */
+	override contains(gs: Geo | Set): boolean {
+		if (gs instanceof Geo) return this._contains_set_geo(gs as Geo);
+		return super.contains(gs as Set);
+	}
+
+	/** MEOS: distance_geoset_geoset, distance_set_geo, chosen by the arguments' types */
+	distance(s2: GeoSet | Geo, spheroid: boolean): number {
+		if (s2 instanceof GeoSet && typeof spheroid === 'boolean') return this._distance_geoset_geoset(s2 as GeoSet, spheroid as boolean);
+		if (s2 instanceof Geo && typeof spheroid === 'boolean') return this._distance_set_geo(s2 as Geo, spheroid as boolean);
+		throw new TypeError(`GeoSet.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: geoset_end_value */
 	endValue(): Geo {
 		return wrapGeo(F.geoset_end_value(this.ptr)) as Geo;
+	}
+
+	/** MEOS: intersection_set_geo, chosen by the arguments' types */
+	override intersection(gs: Geo | Set): Set | null {
+		if (gs instanceof Geo) return this._intersection_set_geo(gs as Geo);
+		return super.intersection(gs as Set);
+	}
+
+	/** MEOS: minus_set_geo, chosen by the arguments' types */
+	override minus(gs: Geo | Set): Set | null {
+		if (gs instanceof Geo) return this._minus_set_geo(gs as Geo);
+		return super.minus(gs as Set);
 	}
 
 	/** MEOS: geoset_start_value */
@@ -2319,6 +4505,12 @@ export class GeoSet extends SpatialSet {
 	/** MEOS: geoset_to_geo */
 	toGeo(): Geo {
 		return wrapGeo(F.geoset_to_geo(this.ptr)) as Geo;
+	}
+
+	/** MEOS: union_set_geo, chosen by the arguments' types */
+	override union(gs: Geo | Set): Set | null {
+		if (gs instanceof Geo) return this._union_set_geo(gs as Geo);
+		return super.union(gs as Set);
 	}
 
 	/** MEOS: geoset_value_n */
@@ -2510,6 +4702,258 @@ export class GeomSet extends GeoSet {
  */
 export class Geometry extends Geo {
 
+	/** MEOS: acontains_geo_tcbuffer */
+	private _acontains_geo_tcbuffer(temp: TCbuffer): number {
+		return F.acontains_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acontains_geo_tgeo */
+	private _acontains_geo_tgeo(temp: TGeo): number {
+		return F.acontains_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acontains_geo_trgeometry */
+	private _acontains_geo_trgeometry(temp: TRGeometry): number {
+		return F.acontains_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acovers_geo_tcbuffer */
+	private _acovers_geo_tcbuffer(temp: TCbuffer): number {
+		return F.acovers_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acovers_geo_tgeo */
+	private _acovers_geo_tgeo(temp: TGeo): number {
+		return F.acovers_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: acovers_geo_trgeometry */
+	private _acovers_geo_trgeometry(temp: TRGeometry): number {
+		return F.acovers_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adisjoint_geo_tcbuffer */
+	private _adisjoint_geo_tcbuffer(temp: TCbuffer): number {
+		return F.adisjoint_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adwithin_geo_tcbuffer */
+	private _adwithin_geo_tcbuffer(temp: TCbuffer, dist: number): number {
+		return F.adwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
+	}
+
+	/** MEOS: adwithin_geo_tgeo */
+	private _adwithin_geo_tgeo(temp: TGeo, dist: number, spheroid: boolean): number {
+		return F.adwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
+	}
+
+	/** MEOS: aintersects_geo_tcbuffer */
+	private _aintersects_geo_tcbuffer(temp: TCbuffer): number {
+		return F.aintersects_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_eq_geo_trgeometry */
+	private _always_eq_geo_trgeometry(temp: TRGeometry): number {
+		return F.always_eq_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_geo_trgeometry */
+	private _always_ne_geo_trgeometry(temp: TRGeometry): number {
+		return F.always_ne_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: atouches_geo_tcbuffer */
+	private _atouches_geo_tcbuffer(temp: TCbuffer): number {
+		return F.atouches_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: atouches_geo_tgeo */
+	private _atouches_geo_tgeo(temp: TGeometry): number {
+		return F.atouches_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: atouches_geo_tpoint */
+	private _atouches_geo_tpoint(temp: TGeomPoint): number {
+		return F.atouches_geo_tpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: econtains_geo_tcbuffer */
+	private _econtains_geo_tcbuffer(temp: TCbuffer): number {
+		return F.econtains_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: econtains_geo_tgeo */
+	private _econtains_geo_tgeo(temp: TGeo): number {
+		return F.econtains_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: econtains_geo_trgeometry */
+	private _econtains_geo_trgeometry(temp: TRGeometry): number {
+		return F.econtains_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ecovers_geo_tcbuffer */
+	private _ecovers_geo_tcbuffer(temp: TCbuffer): number {
+		return F.ecovers_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ecovers_geo_tgeo */
+	private _ecovers_geo_tgeo(temp: TGeo): number {
+		return F.ecovers_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ecovers_geo_trgeometry */
+	private _ecovers_geo_trgeometry(temp: TRGeometry): number {
+		return F.ecovers_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: edisjoint_geo_tcbuffer */
+	private _edisjoint_geo_tcbuffer(temp: TCbuffer): number {
+		return F.edisjoint_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: edwithin_geo_tcbuffer */
+	private _edwithin_geo_tcbuffer(temp: TCbuffer, dist: number): number {
+		return F.edwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
+	}
+
+	/** MEOS: eintersects_geo_tcbuffer */
+	private _eintersects_geo_tcbuffer(temp: TCbuffer): number {
+		return F.eintersects_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: etouches_geo_tcbuffer */
+	private _etouches_geo_tcbuffer(temp: TCbuffer): number {
+		return F.etouches_geo_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: etouches_geo_tgeo */
+	private _etouches_geo_tgeo(temp: TGeometry): number {
+		return F.etouches_geo_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: etouches_geo_tpoint */
+	private _etouches_geo_tpoint(temp: TGeomPoint): number {
+		return F.etouches_geo_tpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_eq_geo_trgeometry */
+	private _ever_eq_geo_trgeometry(temp: TRGeometry): number {
+		return F.ever_eq_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_geo_trgeometry */
+	private _ever_ne_geo_trgeometry(temp: TRGeometry): number {
+		return F.ever_ne_geo_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: tcontains_geo_tcbuffer */
+	private _tcontains_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcontains_geo_tgeo */
+	private _tcontains_geo_tgeo(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_geo_tcbuffer */
+	private _tcovers_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_geo_tgeo */
+	private _tcovers_geo_tgeo(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_geo_tcbuffer */
+	private _tdisjoint_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_geo_tcbuffer */
+	private _tdwithin_geo_tcbuffer(temp: TCbuffer, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_geo_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_geo_trgeometry */
+	private _tdwithin_geo_trgeometry(temp: TRGeometry, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_geo_trgeometry(this.ptr, temp.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: teq_geo_trgeometry */
+	private _teq_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.teq_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_geo_tcbuffer */
+	private _tintersects_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_geo_trgeometry */
+	private _tne_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tne_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_geo_tcbuffer */
+	private _ttouches_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_geo_tgeo */
+	private _ttouches_geo_tgeo(temp: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_geo_tgeo(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: acontains_geo_tgeo, acontains_geo_tcbuffer, acontains_geo_trgeometry, chosen by the arguments' types */
+	acontains(temp: TGeo | TCbuffer | TRGeometry): number {
+		if (temp instanceof TGeo) return this._acontains_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._acontains_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TRGeometry) return this._acontains_geo_trgeometry(temp as TRGeometry);
+		throw new TypeError(`Geometry.acontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: acovers_geo_tgeo, acovers_geo_tcbuffer, acovers_geo_trgeometry, chosen by the arguments' types */
+	acovers(temp: TGeo | TCbuffer | TRGeometry): number {
+		if (temp instanceof TGeo) return this._acovers_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._acovers_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TRGeometry) return this._acovers_geo_trgeometry(temp as TRGeometry);
+		throw new TypeError(`Geometry.acovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: adisjoint_geo_tcbuffer, chosen by the arguments' types */
+	override adisjoint(temp: TCbuffer | TGeo): number {
+		if (temp instanceof TCbuffer) return this._adisjoint_geo_tcbuffer(temp as TCbuffer);
+		return super.adisjoint(temp as TGeo);
+	}
+
+	/** MEOS: adwithin_geo_tgeo, adwithin_geo_tcbuffer, chosen by the arguments' types */
+	adwithin(temp: TGeo | TCbuffer, dist: number, spheroid?: boolean): number {
+		if (temp instanceof TCbuffer && typeof dist === 'number' && spheroid === undefined) return this._adwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+		if (temp instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_geo_tgeo(temp as TGeo, dist as number, spheroid as boolean);
+		throw new TypeError(`Geometry.adwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: aintersects_geo_tcbuffer, chosen by the arguments' types */
+	override aintersects(temp: TCbuffer | TGeo): number {
+		if (temp instanceof TCbuffer) return this._aintersects_geo_tcbuffer(temp as TCbuffer);
+		return super.aintersects(temp as TGeo);
+	}
+
+	/** MEOS: always_eq_geo_trgeometry, chosen by the arguments' types */
+	override alwaysEq(temp: TRGeometry | TGeo): number {
+		if (temp instanceof TRGeometry) return this._always_eq_geo_trgeometry(temp as TRGeometry);
+		return super.alwaysEq(temp as TGeo);
+	}
+
+	/** MEOS: always_ne_geo_trgeometry, chosen by the arguments' types */
+	override alwaysNe(temp: TRGeometry | TGeo): number {
+		if (temp instanceof TRGeometry) return this._always_ne_geo_trgeometry(temp as TRGeometry);
+		return super.alwaysNe(temp as TGeo);
+	}
+
 	/** MEOS: geom_area */
 	override area(): number {
 		return F.geom_area(this.ptr);
@@ -2518,6 +4962,14 @@ export class Geometry extends Geo {
 	/** MEOS: geo_as_geojson */
 	asMFJSON(option: number, precision: number, srs: string): string {
 		return this.asGeoJSON(option, precision, srs);
+	}
+
+	/** MEOS: atouches_geo_tgeo, atouches_geo_tpoint, atouches_geo_tcbuffer, chosen by the arguments' types */
+	atouches(temp: TGeometry | TGeomPoint | TCbuffer): number {
+		if (temp instanceof TGeomPoint) return this._atouches_geo_tpoint(temp as TGeomPoint);
+		if (temp instanceof TGeometry) return this._atouches_geo_tgeo(temp as TGeometry);
+		if (temp instanceof TCbuffer) return this._atouches_geo_tcbuffer(temp as TCbuffer);
+		throw new TypeError(`Geometry.atouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: geom_azimuth */
@@ -2598,6 +5050,60 @@ export class Geometry extends Geo {
 	/** MEOS: geom_dwithin3d */
 	dwithin3d(gs2: Geo, dist: number): boolean {
 		return F.geom_dwithin3d(this.ptr, gs2.ptr, dist);
+	}
+
+	/** MEOS: econtains_geo_tgeo, econtains_geo_tcbuffer, econtains_geo_trgeometry, chosen by the arguments' types */
+	econtains(temp: TGeo | TCbuffer | TRGeometry): number {
+		if (temp instanceof TGeo) return this._econtains_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._econtains_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TRGeometry) return this._econtains_geo_trgeometry(temp as TRGeometry);
+		throw new TypeError(`Geometry.econtains: no overload takes these arguments`);
+	}
+
+	/** MEOS: ecovers_geo_tgeo, ecovers_geo_tcbuffer, ecovers_geo_trgeometry, chosen by the arguments' types */
+	ecovers(temp: TGeo | TCbuffer | TRGeometry): number {
+		if (temp instanceof TGeo) return this._ecovers_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._ecovers_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TRGeometry) return this._ecovers_geo_trgeometry(temp as TRGeometry);
+		throw new TypeError(`Geometry.ecovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: edisjoint_geo_tcbuffer, chosen by the arguments' types */
+	override edisjoint(temp: TCbuffer | TGeo): number {
+		if (temp instanceof TCbuffer) return this._edisjoint_geo_tcbuffer(temp as TCbuffer);
+		return super.edisjoint(temp as TGeo);
+	}
+
+	/** MEOS: edwithin_geo_tcbuffer, chosen by the arguments' types */
+	override edwithin(temp: TCbuffer | TSpatial, dist: number, arg2?: boolean): number {
+		if (temp instanceof TCbuffer && typeof dist === 'number' && arg2 === undefined) return this._edwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+		return super.edwithin(temp as TSpatial, dist as number, arg2 as boolean);
+	}
+
+	/** MEOS: eintersects_geo_tcbuffer, chosen by the arguments' types */
+	override eintersects(temp: TCbuffer | TSpatial): number {
+		if (temp instanceof TCbuffer) return this._eintersects_geo_tcbuffer(temp as TCbuffer);
+		return super.eintersects(temp as TSpatial);
+	}
+
+	/** MEOS: etouches_geo_tgeo, etouches_geo_tpoint, etouches_geo_tcbuffer, chosen by the arguments' types */
+	etouches(temp: TGeometry | TGeomPoint | TCbuffer): number {
+		if (temp instanceof TGeomPoint) return this._etouches_geo_tpoint(temp as TGeomPoint);
+		if (temp instanceof TGeometry) return this._etouches_geo_tgeo(temp as TGeometry);
+		if (temp instanceof TCbuffer) return this._etouches_geo_tcbuffer(temp as TCbuffer);
+		throw new TypeError(`Geometry.etouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: ever_eq_geo_trgeometry, chosen by the arguments' types */
+	override everEq(temp: TRGeometry | TGeo): number {
+		if (temp instanceof TRGeometry) return this._ever_eq_geo_trgeometry(temp as TRGeometry);
+		return super.everEq(temp as TGeo);
+	}
+
+	/** MEOS: ever_ne_geo_trgeometry, chosen by the arguments' types */
+	override everNe(temp: TRGeometry | TGeo): number {
+		if (temp instanceof TRGeometry) return this._ever_ne_geo_trgeometry(temp as TRGeometry);
+		return super.everNe(temp as TGeo);
 	}
 
 	/** MEOS: geom_intersection2d */
@@ -2690,6 +5196,51 @@ export class Geometry extends Geo {
 		return wrapGeoOrNull(F.geom_symdifference2d(this.ptr, gs2.ptr)) as Geo | null;
 	}
 
+	/** MEOS: tcontains_geo_tgeo, tcontains_geo_tcbuffer, chosen by the arguments' types */
+	tcontains(temp: TGeo | TCbuffer): Temporal | null {
+		if (temp instanceof TGeo) return this._tcontains_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._tcontains_geo_tcbuffer(temp as TCbuffer);
+		throw new TypeError(`Geometry.tcontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: tcovers_geo_tgeo, tcovers_geo_tcbuffer, chosen by the arguments' types */
+	tcovers(temp: TGeo | TCbuffer): Temporal | null {
+		if (temp instanceof TGeo) return this._tcovers_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._tcovers_geo_tcbuffer(temp as TCbuffer);
+		throw new TypeError(`Geometry.tcovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdisjoint_geo_tcbuffer, chosen by the arguments' types */
+	override tdisjoint(temp: TCbuffer | TGeo): Temporal | null {
+		if (temp instanceof TCbuffer) return this._tdisjoint_geo_tcbuffer(temp as TCbuffer);
+		return super.tdisjoint(temp as TGeo);
+	}
+
+	/** MEOS: tdwithin_geo_tcbuffer, tdwithin_geo_trgeometry, chosen by the arguments' types */
+	override tdwithin(temp: TCbuffer | TRGeometry | TGeo, dist: number, arg2?: boolean): Temporal | null {
+		if (temp instanceof TCbuffer && typeof dist === 'number' && arg2 === undefined) return this._tdwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+		if (temp instanceof TRGeometry && typeof dist === 'number' && arg2 === undefined) return this._tdwithin_geo_trgeometry(temp as TRGeometry, dist as number);
+		return super.tdwithin(temp as TGeo, dist as number, arg2 as boolean);
+	}
+
+	/** MEOS: teq_geo_trgeometry, chosen by the arguments' types */
+	override teq(temp: TRGeometry | TGeo): Temporal | null {
+		if (temp instanceof TRGeometry) return this._teq_geo_trgeometry(temp as TRGeometry);
+		return super.teq(temp as TGeo);
+	}
+
+	/** MEOS: tintersects_geo_tcbuffer, chosen by the arguments' types */
+	override tintersects(temp: TCbuffer | TGeo): Temporal | null {
+		if (temp instanceof TCbuffer) return this._tintersects_geo_tcbuffer(temp as TCbuffer);
+		return super.tintersects(temp as TGeo);
+	}
+
+	/** MEOS: tne_geo_trgeometry, chosen by the arguments' types */
+	override tne(temp: TRGeometry | TGeo): Temporal | null {
+		if (temp instanceof TRGeometry) return this._tne_geo_trgeometry(temp as TRGeometry);
+		return super.tne(temp as TGeo);
+	}
+
 	/** MEOS: geom_to_cbuffer */
 	toCbuffer(): Cbuffer | null {
 		return wrapCbufferOrNull(F.geom_to_cbuffer(this.ptr)) as Cbuffer | null;
@@ -2713,6 +5264,13 @@ export class Geometry extends Geo {
 	/** MEOS: geometry_tpose_to_trgeometry */
 	tposeToTrgeometry(temp: Temporal): Temporal | null {
 		return wrapTemporalOrNull(F.geometry_tpose_to_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_geo_tgeo, ttouches_geo_tcbuffer, chosen by the arguments' types */
+	ttouches(temp: TGeo | TCbuffer): Temporal | null {
+		if (temp instanceof TGeo) return this._ttouches_geo_tgeo(temp as TGeo);
+		if (temp instanceof TCbuffer) return this._ttouches_geo_tcbuffer(temp as TCbuffer);
+		throw new TypeError(`Geometry.ttouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: geom_unary_union */
@@ -2761,6 +5319,32 @@ export class H3IndexSet extends SpatialSet {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_h3index */
+	private _contains_set_h3index(cell: H3Index): boolean {
+		return F.contains_set_h3index(this.ptr, cell);
+	}
+
+	/** MEOS: intersection_set_h3index */
+	private _intersection_set_h3index(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.intersection_set_h3index(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: minus_set_h3index */
+	private _minus_set_h3index(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.minus_set_h3index(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: union_set_h3index */
+	private _union_set_h3index(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.union_set_h3index(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: contains_set_h3index, chosen by the arguments' types */
+	override contains(cell: H3Index | Set): boolean {
+		if (typeof cell === 'bigint') return this._contains_set_h3index(cell as H3Index);
+		return super.contains(cell as Set);
+	}
+
 	/** MEOS: h3indexset_cover_cells */
 	coverCells(resolution: number): Set | null {
 		return wrapSetOrNull(F.h3indexset_cover_cells(this.ptr, resolution)) as Set | null;
@@ -2771,9 +5355,26 @@ export class H3IndexSet extends SpatialSet {
 		return F.h3indexset_end_value(this.ptr);
 	}
 
+	/** MEOS: ever_eq_h3indexset_th3index */
+	everEq(th3idx: TH3Index): number {
+		return F.ever_eq_h3indexset_th3index(this.ptr, th3idx.ptr);
+	}
+
 	/** MEOS: h3indexset_grid_disk */
 	gridDisk(k: number): Set | null {
 		return wrapSetOrNull(F.h3indexset_grid_disk(this.ptr, k)) as Set | null;
+	}
+
+	/** MEOS: intersection_set_h3index, chosen by the arguments' types */
+	override intersection(cell: H3Index | Set): Set | null {
+		if (typeof cell === 'bigint') return this._intersection_set_h3index(cell as H3Index);
+		return super.intersection(cell as Set);
+	}
+
+	/** MEOS: minus_set_h3index, chosen by the arguments' types */
+	override minus(cell: H3Index | Set): Set | null {
+		if (typeof cell === 'bigint') return this._minus_set_h3index(cell as H3Index);
+		return super.minus(cell as Set);
 	}
 
 	/** MEOS: h3indexset_out */
@@ -2781,9 +5382,35 @@ export class H3IndexSet extends SpatialSet {
 		return F.h3indexset_out(this.ptr);
 	}
 
+	/** MEOS: contained_h3index_set */
+	rcontained(cell: H3Index): boolean {
+		return F.contained_h3index_set(cell, this.ptr);
+	}
+
+	/** MEOS: intersection_h3index_set */
+	rintersection(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.intersection_h3index_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_h3index_set */
+	rminus(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.minus_h3index_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_h3index_set */
+	runion(cell: H3Index): Set | null {
+		return wrapSetOrNull(F.union_h3index_set(cell, this.ptr)) as Set | null;
+	}
+
 	/** MEOS: h3indexset_start_value */
 	startValue(): H3Index {
 		return F.h3indexset_start_value(this.ptr);
+	}
+
+	/** MEOS: union_set_h3index, chosen by the arguments' types */
+	override union(cell: H3Index | Set): Set | null {
+		if (typeof cell === 'bigint') return this._union_set_h3index(cell as H3Index);
+		return super.union(cell as Set);
 	}
 
 	/** MEOS: h3indexset_value_n */
@@ -2842,9 +5469,72 @@ export class IntSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_int */
+	private _contains_set_int(i: number): boolean {
+		return F.contains_set_int(this.ptr, i);
+	}
+
+	/** MEOS: distance_intset_intset */
+	private _distance_intset_intset(s2: IntSet): number {
+		return F.distance_intset_intset(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_set_int */
+	private _distance_set_int(i: number): number {
+		return F.distance_set_int(this.ptr, i);
+	}
+
+	/** MEOS: intersection_set_int */
+	private _intersection_set_int(i: number): Set | null {
+		return wrapSetOrNull(F.intersection_set_int(this.ptr, i)) as Set | null;
+	}
+
+	/** MEOS: left_set_int */
+	private _left_set_int(i: number): boolean {
+		return F.left_set_int(this.ptr, i);
+	}
+
+	/** MEOS: minus_set_int */
+	private _minus_set_int(i: number): Set | null {
+		return wrapSetOrNull(F.minus_set_int(this.ptr, i)) as Set | null;
+	}
+
+	/** MEOS: overleft_set_int */
+	private _overleft_set_int(i: number): boolean {
+		return F.overleft_set_int(this.ptr, i);
+	}
+
+	/** MEOS: overright_set_int */
+	private _overright_set_int(i: number): boolean {
+		return F.overright_set_int(this.ptr, i);
+	}
+
+	/** MEOS: right_set_int */
+	private _right_set_int(i: number): boolean {
+		return F.right_set_int(this.ptr, i);
+	}
+
+	/** MEOS: union_set_int */
+	private _union_set_int(i: number): Set | null {
+		return wrapSetOrNull(F.union_set_int(this.ptr, i)) as Set | null;
+	}
+
 	/** MEOS: intset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: contains_set_int, chosen by the arguments' types */
+	override contains(i: number | Set): boolean {
+		if (typeof i === 'number') return this._contains_set_int(i as number);
+		return super.contains(i as Set);
+	}
+
+	/** MEOS: distance_intset_intset, distance_set_int, chosen by the arguments' types */
+	distance(s2: IntSet | number): number {
+		if (s2 instanceof IntSet) return this._distance_intset_intset(s2 as IntSet);
+		if (typeof s2 === 'number') return this._distance_set_int(s2 as number);
+		throw new TypeError(`IntSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: intset_end_value */
@@ -2852,9 +5542,85 @@ export class IntSet extends Set {
 		return F.intset_end_value(this.ptr);
 	}
 
+	/** MEOS: intersection_set_int, chosen by the arguments' types */
+	override intersection(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._intersection_set_int(i as number);
+		return super.intersection(i as Set);
+	}
+
+	/** MEOS: left_set_int, chosen by the arguments' types */
+	override left(i: number | Set): boolean {
+		if (typeof i === 'number') return this._left_set_int(i as number);
+		return super.left(i as Set);
+	}
+
+	/** MEOS: minus_set_int, chosen by the arguments' types */
+	override minus(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._minus_set_int(i as number);
+		return super.minus(i as Set);
+	}
+
 	/** MEOS: intset_out */
 	out(): string {
 		return F.intset_out(this.ptr);
+	}
+
+	/** MEOS: overleft_set_int, chosen by the arguments' types */
+	override overleft(i: number | Set): boolean {
+		if (typeof i === 'number') return this._overleft_set_int(i as number);
+		return super.overleft(i as Set);
+	}
+
+	/** MEOS: overright_set_int, chosen by the arguments' types */
+	override overright(i: number | Set): boolean {
+		if (typeof i === 'number') return this._overright_set_int(i as number);
+		return super.overright(i as Set);
+	}
+
+	/** MEOS: contained_int_set */
+	rcontained(i: number): boolean {
+		return F.contained_int_set(i, this.ptr);
+	}
+
+	/** MEOS: right_set_int, chosen by the arguments' types */
+	override right(i: number | Set): boolean {
+		if (typeof i === 'number') return this._right_set_int(i as number);
+		return super.right(i as Set);
+	}
+
+	/** MEOS: intersection_int_set */
+	rintersection(i: number): Set | null {
+		return wrapSetOrNull(F.intersection_int_set(i, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: left_int_set */
+	rleft(i: number): boolean {
+		return F.left_int_set(i, this.ptr);
+	}
+
+	/** MEOS: minus_int_set */
+	rminus(i: number): Set | null {
+		return wrapSetOrNull(F.minus_int_set(i, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: overleft_int_set */
+	roverleft(i: number): boolean {
+		return F.overleft_int_set(i, this.ptr);
+	}
+
+	/** MEOS: overright_int_set */
+	roverright(i: number): boolean {
+		return F.overright_int_set(i, this.ptr);
+	}
+
+	/** MEOS: right_int_set */
+	rright(i: number): boolean {
+		return F.right_int_set(i, this.ptr);
+	}
+
+	/** MEOS: union_int_set */
+	runion(i: number): Set | null {
+		return wrapSetOrNull(F.union_int_set(i, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: intset_shift_scale */
@@ -2870,6 +5636,12 @@ export class IntSet extends Set {
 	/** MEOS: intset_to_floatset */
 	toFloatset(): Set {
 		return wrapSet(F.intset_to_floatset(this.ptr)) as Set;
+	}
+
+	/** MEOS: union_set_int, chosen by the arguments' types */
+	override union(i: number | Set): Set | null {
+		if (typeof i === 'number') return this._union_set_int(i as number);
+		return super.union(i as Set);
 	}
 
 	/** MEOS: intset_value_n */
@@ -2918,6 +5690,67 @@ export class IntSpan extends Span {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_span_int */
+	private _adjacent_span_int(i: number): boolean {
+		return F.adjacent_span_int(this.ptr, i);
+	}
+
+	/** MEOS: contains_span_int */
+	private _contains_span_int(i: number): boolean {
+		return F.contains_span_int(this.ptr, i);
+	}
+
+	/** MEOS: distance_intspan_intspan */
+	private _distance_intspan_intspan(s2: IntSpan): number {
+		return F.distance_intspan_intspan(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: distance_span_int */
+	private _distance_span_int(i: number): number {
+		return F.distance_span_int(this.ptr, i);
+	}
+
+	/** MEOS: intersection_span_int */
+	private _intersection_span_int(i: number): Span | null {
+		return wrapSpanOrNull(F.intersection_span_int(this.ptr, i)) as Span | null;
+	}
+
+	/** MEOS: left_span_int */
+	private _left_span_int(i: number): boolean {
+		return F.left_span_int(this.ptr, i);
+	}
+
+	/** MEOS: minus_span_int */
+	private _minus_span_int(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_int(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_span_int */
+	private _overleft_span_int(i: number): boolean {
+		return F.overleft_span_int(this.ptr, i);
+	}
+
+	/** MEOS: overright_span_int */
+	private _overright_span_int(i: number): boolean {
+		return F.overright_span_int(this.ptr, i);
+	}
+
+	/** MEOS: right_span_int */
+	private _right_span_int(i: number): boolean {
+		return F.right_span_int(this.ptr, i);
+	}
+
+	/** MEOS: union_span_int */
+	private _union_span_int(i: number): SpanSet {
+		return wrapSpanSet(F.union_span_int(this.ptr, i)) as SpanSet;
+	}
+
+	/** MEOS: adjacent_span_int, chosen by the arguments' types */
+	override adjacent(i: number | SpanSet): boolean {
+		if (typeof i === 'number') return this._adjacent_span_int(i as number);
+		return super.adjacent(i as SpanSet);
+	}
+
 	/** MEOS: intspan_out */
 	asText(): string {
 		return this.out();
@@ -2943,9 +5776,34 @@ export class IntSpan extends Span {
 		}
 	}
 
+	/** MEOS: contains_span_int, chosen by the arguments' types */
+	override contains(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._contains_span_int(i as number);
+		return super.contains(i as Span | SpanSet);
+	}
+
+	/** MEOS: distance_intspan_intspan, distance_span_int, chosen by the arguments' types */
+	distance(s2: IntSpan | number): number {
+		if (s2 instanceof IntSpan) return this._distance_intspan_intspan(s2 as IntSpan);
+		if (typeof s2 === 'number') return this._distance_span_int(s2 as number);
+		throw new TypeError(`IntSpan.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: intspan_expand */
 	expand(value: number): Span | null {
 		return wrapSpanOrNull(F.intspan_expand(this.ptr, value)) as Span | null;
+	}
+
+	/** MEOS: intersection_span_int, chosen by the arguments' types */
+	override intersection(i: number | Span | SpanSet): Span | null | SpanSet {
+		if (typeof i === 'number') return this._intersection_span_int(i as number);
+		return super.intersection(i as Span | SpanSet);
+	}
+
+	/** MEOS: left_span_int, chosen by the arguments' types */
+	override left(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._left_span_int(i as number);
+		return super.left(i as Span | SpanSet);
 	}
 
 	/** MEOS: intspan_lower */
@@ -2953,9 +5811,83 @@ export class IntSpan extends Span {
 		return F.intspan_lower(this.ptr);
 	}
 
+	/** MEOS: minus_span_int, chosen by the arguments' types */
+	override minus(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._minus_span_int(i as number);
+		return super.minus(i as Span | SpanSet);
+	}
+
+	/** MEOS: nad_intspan_tbox */
+	nad(box: TBox): number {
+		return F.nad_intspan_tbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: intspan_out */
 	out(): string {
 		return F.intspan_out(this.ptr);
+	}
+
+	/** MEOS: overleft_span_int, chosen by the arguments' types */
+	override overleft(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overleft_span_int(i as number);
+		return super.overleft(i as Span | SpanSet);
+	}
+
+	/** MEOS: overright_span_int, chosen by the arguments' types */
+	override overright(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overright_span_int(i as number);
+		return super.overright(i as Span | SpanSet);
+	}
+
+	/** MEOS: adjacent_int_span */
+	radjacent(i: number): boolean {
+		return F.adjacent_int_span(i, this.ptr);
+	}
+
+	/** MEOS: contained_int_span */
+	rcontained(i: number): boolean {
+		return F.contained_int_span(i, this.ptr);
+	}
+
+	/** MEOS: right_span_int, chosen by the arguments' types */
+	override right(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._right_span_int(i as number);
+		return super.right(i as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_int_span */
+	rintersection(i: number): Span | null {
+		return wrapSpanOrNull(F.intersection_int_span(i, this.ptr)) as Span | null;
+	}
+
+	/** MEOS: left_int_span */
+	rleft(i: number): boolean {
+		return F.left_int_span(i, this.ptr);
+	}
+
+	/** MEOS: minus_int_span */
+	rminus(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_int_span(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_int_span */
+	roverleft(i: number): boolean {
+		return F.overleft_int_span(i, this.ptr);
+	}
+
+	/** MEOS: overright_int_span */
+	roverright(i: number): boolean {
+		return F.overright_int_span(i, this.ptr);
+	}
+
+	/** MEOS: right_int_span */
+	rright(i: number): boolean {
+		return F.right_int_span(i, this.ptr);
+	}
+
+	/** MEOS: union_int_span */
+	runion(i: number): SpanSet {
+		return wrapSpanSet(F.union_int_span(i, this.ptr)) as SpanSet;
 	}
 
 	/** MEOS: intspan_shift_scale */
@@ -2971,6 +5903,12 @@ export class IntSpan extends Span {
 	/** MEOS: intspan_to_floatspan */
 	toFloatspan(): Span {
 		return wrapSpan(F.intspan_to_floatspan(this.ptr)) as Span;
+	}
+
+	/** MEOS: union_span_int, chosen by the arguments' types */
+	override union(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._union_span_int(i as number);
+		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: intspan_upper */
@@ -3014,6 +5952,72 @@ export class IntSpanSet extends SpanSet {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_spanset_int */
+	private _adjacent_spanset_int(i: number): boolean {
+		return F.adjacent_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: contains_spanset_int */
+	private _contains_spanset_int(i: number): boolean {
+		return F.contains_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: distance_intspanset_intspan */
+	private _distance_intspanset_intspan(s: IntSpan): number {
+		return F.distance_intspanset_intspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: distance_intspanset_intspanset */
+	private _distance_intspanset_intspanset(ss2: IntSpanSet): number {
+		return F.distance_intspanset_intspanset(this.ptr, ss2.ptr);
+	}
+
+	/** MEOS: distance_spanset_int */
+	private _distance_spanset_int(i: number): number {
+		return F.distance_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: intersection_spanset_int */
+	private _intersection_spanset_int(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_int(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: left_spanset_int */
+	private _left_spanset_int(i: number): boolean {
+		return F.left_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: minus_spanset_int */
+	private _minus_spanset_int(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_int(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_spanset_int */
+	private _overleft_spanset_int(i: number): boolean {
+		return F.overleft_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: overright_spanset_int */
+	private _overright_spanset_int(i: number): boolean {
+		return F.overright_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: right_spanset_int */
+	private _right_spanset_int(i: number): boolean {
+		return F.right_spanset_int(this.ptr, i);
+	}
+
+	/** MEOS: union_spanset_int */
+	private _union_spanset_int(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_int(this.ptr, i)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_int, chosen by the arguments' types */
+	override adjacent(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._adjacent_spanset_int(i as number);
+		return super.adjacent(i as Span | SpanSet);
+	}
+
 	/** MEOS: intspanset_out */
 	asText(): string {
 		return this.out();
@@ -3039,14 +6043,109 @@ export class IntSpanSet extends SpanSet {
 		}
 	}
 
+	/** MEOS: contains_spanset_int, chosen by the arguments' types */
+	override contains(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._contains_spanset_int(i as number);
+		return super.contains(i as Span | SpanSet);
+	}
+
+	/** MEOS: distance_intspanset_intspan, distance_intspanset_intspanset, distance_spanset_int, chosen by the arguments' types */
+	distance(s: IntSpan | IntSpanSet | number): number {
+		if (s instanceof IntSpan) return this._distance_intspanset_intspan(s as IntSpan);
+		if (s instanceof IntSpanSet) return this._distance_intspanset_intspanset(s as IntSpanSet);
+		if (typeof s === 'number') return this._distance_spanset_int(s as number);
+		throw new TypeError(`IntSpanSet.distance: no overload takes these arguments`);
+	}
+
+	/** MEOS: intersection_spanset_int, chosen by the arguments' types */
+	override intersection(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._intersection_spanset_int(i as number);
+		return super.intersection(i as Span | SpanSet);
+	}
+
+	/** MEOS: left_spanset_int, chosen by the arguments' types */
+	override left(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._left_spanset_int(i as number);
+		return super.left(i as Span | SpanSet);
+	}
+
 	/** MEOS: intspanset_lower */
 	lower(): number {
 		return F.intspanset_lower(this.ptr);
 	}
 
+	/** MEOS: minus_spanset_int, chosen by the arguments' types */
+	override minus(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._minus_spanset_int(i as number);
+		return super.minus(i as Span | SpanSet);
+	}
+
 	/** MEOS: intspanset_out */
 	out(): string {
 		return F.intspanset_out(this.ptr);
+	}
+
+	/** MEOS: overleft_spanset_int, chosen by the arguments' types */
+	override overleft(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overleft_spanset_int(i as number);
+		return super.overleft(i as Span | SpanSet);
+	}
+
+	/** MEOS: overright_spanset_int, chosen by the arguments' types */
+	override overright(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._overright_spanset_int(i as number);
+		return super.overright(i as Span | SpanSet);
+	}
+
+	/** MEOS: adjacent_int_spanset */
+	radjacent(i: number): boolean {
+		return F.adjacent_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: contained_int_spanset */
+	rcontained(i: number): boolean {
+		return F.contained_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: right_spanset_int, chosen by the arguments' types */
+	override right(i: number | Span | SpanSet): boolean {
+		if (typeof i === 'number') return this._right_spanset_int(i as number);
+		return super.right(i as Span | SpanSet);
+	}
+
+	/** MEOS: intersection_int_spanset */
+	rintersection(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_int_spanset(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: left_int_spanset */
+	rleft(i: number): boolean {
+		return F.left_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: minus_int_spanset */
+	rminus(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_int_spanset(i, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overleft_int_spanset */
+	roverleft(i: number): boolean {
+		return F.overleft_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: overright_int_spanset */
+	roverright(i: number): boolean {
+		return F.overright_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: right_int_spanset */
+	rright(i: number): boolean {
+		return F.right_int_spanset(i, this.ptr);
+	}
+
+	/** MEOS: union_int_spanset */
+	runion(i: number): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_int_spanset(i, this.ptr)) as SpanSet | null;
 	}
 
 	/** MEOS: intspanset_shift_scale */
@@ -3057,6 +6156,12 @@ export class IntSpanSet extends SpanSet {
 	/** MEOS: intspanset_to_floatspanset */
 	toFloatspanset(): SpanSet {
 		return wrapSpanSet(F.intspanset_to_floatspanset(this.ptr)) as SpanSet;
+	}
+
+	/** MEOS: union_spanset_int, chosen by the arguments' types */
+	override union(i: number | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'number') return this._union_spanset_int(i as number);
+		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: intspanset_upper */
@@ -3129,6 +6234,16 @@ export class Jsonb extends Value {
 	/** The text MEOS writes this value as (MEOS: jsonb_out). */
 	override toString(): string {
 		return this.out();
+	}
+
+	/** MEOS: always_eq_jsonb_tjsonb */
+	alwaysEq(temp: TJsonb): number {
+		return F.always_eq_jsonb_tjsonb(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_jsonb_tjsonb */
+	alwaysNe(temp: TJsonb): number {
+		return F.always_ne_jsonb_tjsonb(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: jsonb_array_element */
@@ -3251,6 +6366,16 @@ export class Jsonb extends Value {
 		return F.jsonb_eq(this.ptr, jb2.ptr);
 	}
 
+	/** MEOS: ever_eq_jsonb_tjsonb */
+	everEq(temp: TJsonb): number {
+		return F.ever_eq_jsonb_tjsonb(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_jsonb_tjsonb */
+	everNe(temp: TJsonb): number {
+		return F.ever_ne_jsonb_tjsonb(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: jsonb_exists */
 	exists(key: string): boolean {
 		return F.jsonb_exists(this.ptr, key);
@@ -3316,6 +6441,11 @@ export class Jsonb extends Value {
 		}
 	}
 
+	/** MEOS: intersection_jsonb_set */
+	intersection(s: JsonbSet): Set | null {
+		return wrapSetOrNull(F.intersection_jsonb_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: jsonb_le */
 	le(jb2: Jsonb): boolean {
 		return F.jsonb_le(this.ptr, jb2.ptr);
@@ -3329,6 +6459,11 @@ export class Jsonb extends Value {
 	/** MEOS: jsonb_mem_size */
 	memSize(): number {
 		return F.jsonb_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_jsonb_set */
+	minus(s: JsonbSet): Set | null {
+		return wrapSetOrNull(F.minus_jsonb_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: jsonb_ne */
@@ -3441,6 +6576,16 @@ export class Jsonb extends Value {
 		return wrapJsonb(F.jsonb_strip_nulls(this.ptr, strip_in_arrays)) as Jsonb;
 	}
 
+	/** MEOS: teq_jsonb_tjsonb */
+	teq(temp: TJsonb): Temporal | null {
+		return wrapTemporalOrNull(F.teq_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_jsonb_tjsonb */
+	tne(temp: TJsonb): Temporal | null {
+		return wrapTemporalOrNull(F.tne_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: jsonb_to_bool */
 	toBool(): boolean {
 		return F.jsonb_to_bool(this.ptr);
@@ -3486,6 +6631,11 @@ export class Jsonb extends Value {
 		return F.jsonb_to_text(this.ptr);
 	}
 
+	/** MEOS: union_jsonb_set */
+	union(s: JsonbSet): Set | null {
+		return wrapSetOrNull(F.union_jsonb_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: jsonb_from_text */
 	static fromText(txt: string, unique_keys: boolean): Jsonb {
 		return wrapJsonb(F.jsonb_from_text(txt, unique_keys)) as Jsonb;
@@ -3529,6 +6679,26 @@ export class JsonbSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_jsonb */
+	private _contains_set_jsonb(jb: Jsonb): boolean {
+		return F.contains_set_jsonb(this.ptr, jb.ptr);
+	}
+
+	/** MEOS: intersection_set_jsonb */
+	private _intersection_set_jsonb(jb: Jsonb): Set | null {
+		return wrapSetOrNull(F.intersection_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_jsonb */
+	private _minus_set_jsonb(jb: Jsonb): Set | null {
+		return wrapSetOrNull(F.minus_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_jsonb */
+	private _union_set_jsonb(jb: Jsonb): Set | null {
+		return wrapSetOrNull(F.union_set_jsonb(this.ptr, jb.ptr)) as Set | null;
+	}
+
 	/** MEOS: jsonbset_array_element */
 	arrayElement(idx: number, null_handle: number): Set | null {
 		return wrapSetOrNull(F.jsonbset_array_element(this.ptr, idx, null_handle)) as Set | null;
@@ -3547,6 +6717,17 @@ export class JsonbSet extends Set {
 	/** MEOS: jsonbset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: concat_jsonbset_jsonb */
+	concat(jb: Jsonb, invert: boolean): Set {
+		return wrapSet(F.concat_jsonbset_jsonb(this.ptr, jb.ptr, invert)) as Set;
+	}
+
+	/** MEOS: contains_set_jsonb, chosen by the arguments' types */
+	override contains(jb: Jsonb | Set): boolean {
+		if (jb instanceof Jsonb) return this._contains_set_jsonb(jb as Jsonb);
+		return super.contains(jb as Set);
 	}
 
 	/** MEOS: jsonbset_delete */
@@ -3632,6 +6813,18 @@ export class JsonbSet extends Set {
 		} finally {
 			_free(_path_elems);
 		}
+	}
+
+	/** MEOS: intersection_set_jsonb, chosen by the arguments' types */
+	override intersection(jb: Jsonb | Set): Set | null {
+		if (jb instanceof Jsonb) return this._intersection_set_jsonb(jb as Jsonb);
+		return super.intersection(jb as Set);
+	}
+
+	/** MEOS: minus_set_jsonb, chosen by the arguments' types */
+	override minus(jb: Jsonb | Set): Set | null {
+		if (jb instanceof Jsonb) return this._minus_set_jsonb(jb as Jsonb);
+		return super.minus(jb as Set);
 	}
 
 	/** MEOS: jsonbset_object_field */
@@ -3764,6 +6957,12 @@ export class JsonbSet extends Set {
 		return wrapSetOrNull(F.jsonbset_to_textset_key(this.ptr, key, null_handle)) as Set | null;
 	}
 
+	/** MEOS: union_set_jsonb, chosen by the arguments' types */
+	override union(jb: Jsonb | Set): Set | null {
+		if (jb instanceof Jsonb) return this._union_set_jsonb(jb as Jsonb);
+		return super.union(jb as Set);
+	}
+
 	/** MEOS: jsonbset_value_n */
 	valueN(n: number): Jsonb | null {
 		return wrapJsonbOrNull(F.jsonbset_value_n(this.ptr, n)) as Jsonb | null;
@@ -3866,6 +7065,16 @@ export class Npoint extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: always_eq_npoint_tnpoint */
+	alwaysEq(temp: TNpoint): number {
+		return F.always_eq_npoint_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_npoint_tnpoint */
+	alwaysNe(temp: TNpoint): number {
+		return F.always_ne_npoint_tnpoint(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: npoint_as_ewkb */
 	asEWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.npoint_as_ewkb(this.ptr, variant, _sizeOut));
@@ -3901,6 +7110,16 @@ export class Npoint extends Value {
 		return F.npoint_cmp(this.ptr, np2.ptr);
 	}
 
+	/** MEOS: contained_npoint_set */
+	contained(s: NpointSet): boolean {
+		return F.contained_npoint_set(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_rid_npoint_tnpoint */
+	containedRid(temp: TNpoint): boolean {
+		return F.contained_rid_npoint_tnpoint(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: npoint_copy */
 	copy(): Npoint {
 		return wrapNpoint(F.npoint_copy(this.ptr)) as Npoint;
@@ -3909,6 +7128,16 @@ export class Npoint extends Value {
 	/** MEOS: npoint_eq */
 	eq(np2: Npoint): boolean {
 		return F.npoint_eq(this.ptr, np2.ptr);
+	}
+
+	/** MEOS: ever_eq_npoint_tnpoint */
+	everEq(temp: TNpoint): number {
+		return F.ever_eq_npoint_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_npoint_tnpoint */
+	everNe(temp: TNpoint): number {
+		return F.ever_ne_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: npoint_ge */
@@ -3931,6 +7160,11 @@ export class Npoint extends Value {
 		return F.npoint_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_npoint_set */
+	intersection(s: NpointSet): Set | null {
+		return wrapSetOrNull(F.intersection_npoint_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: npoint_le */
 	le(np2: Npoint): boolean {
 		return F.npoint_le(this.ptr, np2.ptr);
@@ -3939,6 +7173,11 @@ export class Npoint extends Value {
 	/** MEOS: npoint_lt */
 	lt(np2: Npoint): boolean {
 		return F.npoint_lt(this.ptr, np2.ptr);
+	}
+
+	/** MEOS: minus_npoint_set */
+	minus(s: NpointSet): Set | null {
+		return wrapSetOrNull(F.minus_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: npoint_ne */
@@ -3964,6 +7203,11 @@ export class Npoint extends Value {
 	/** MEOS: npoint_route */
 	route(): number {
 		return F.npoint_route(this.ptr);
+	}
+
+	/** MEOS: same_rid_npoint_tnpoint */
+	sameRid(temp: TNpoint): boolean {
+		return F.same_rid_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: npoint_srid */
@@ -3999,6 +7243,11 @@ export class Npoint extends Value {
 	/** MEOS: npoint_tstzspan_to_stbox */
 	tstzspanToStbox(s: Span): STBox {
 		return wrapSTBox(F.npoint_tstzspan_to_stbox(this.ptr, s.ptr)) as STBox;
+	}
+
+	/** MEOS: union_npoint_set */
+	union(s: NpointSet): Set | null {
+		return wrapSetOrNull(F.union_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: npoint_in */
@@ -4042,9 +7291,52 @@ export class NpointSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_npoint */
+	private _contains_set_npoint(np: Npoint): boolean {
+		return F.contains_set_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: intersection_set_npoint */
+	private _intersection_set_npoint(np: Npoint): Set | null {
+		return wrapSetOrNull(F.intersection_set_npoint(this.ptr, np.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_npoint */
+	private _minus_set_npoint(np: Npoint): Set | null {
+		return wrapSetOrNull(F.minus_set_npoint(this.ptr, np.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_npoint */
+	private _union_set_npoint(np: Npoint): Set | null {
+		return wrapSetOrNull(F.union_set_npoint(this.ptr, np.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_npoint, chosen by the arguments' types */
+	override contains(np: Npoint | Set): boolean {
+		if (np instanceof Npoint) return this._contains_set_npoint(np as Npoint);
+		return super.contains(np as Set);
+	}
+
+	/** MEOS: distance_npointset_npointset */
+	distance(s2: NpointSet): number {
+		return F.distance_npointset_npointset(this.ptr, s2.ptr);
+	}
+
 	/** MEOS: npointset_end_value */
 	endValue(): Npoint {
 		return wrapNpoint(F.npointset_end_value(this.ptr)) as Npoint;
+	}
+
+	/** MEOS: intersection_set_npoint, chosen by the arguments' types */
+	override intersection(np: Npoint | Set): Set | null {
+		if (np instanceof Npoint) return this._intersection_set_npoint(np as Npoint);
+		return super.intersection(np as Set);
+	}
+
+	/** MEOS: minus_set_npoint, chosen by the arguments' types */
+	override minus(np: Npoint | Set): Set | null {
+		if (np instanceof Npoint) return this._minus_set_npoint(np as Npoint);
+		return super.minus(np as Set);
 	}
 
 	/** MEOS: npointset_out */
@@ -4060,6 +7352,12 @@ export class NpointSet extends SpatialSet {
 	/** MEOS: npointset_start_value */
 	startValue(): Npoint {
 		return wrapNpoint(F.npointset_start_value(this.ptr)) as Npoint;
+	}
+
+	/** MEOS: union_set_npoint, chosen by the arguments' types */
+	override union(np: Npoint | Set): Set | null {
+		if (np instanceof Npoint) return this._union_set_npoint(np as Npoint);
+		return super.union(np as Set);
 	}
 
 	/** MEOS: npointset_value_n */
@@ -4279,6 +7577,16 @@ export class Pcpatch extends Value {
 		return this.hexOut(15);
 	}
 
+	/** MEOS: always_eq_pcpatch_tpcpatch */
+	alwaysEq(temp: TPcpatch): number {
+		return F.always_eq_pcpatch_tpcpatch(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_pcpatch_tpcpatch */
+	alwaysNe(temp: TPcpatch): number {
+		return F.always_ne_pcpatch_tpcpatch(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: pcpatch_as_hexwkb */
 	asHexWKB(): string {
 		return F.pcpatch_as_hexwkb(this.ptr);
@@ -4294,6 +7602,11 @@ export class Pcpatch extends Value {
 		return F.pcpatch_cmp(this.ptr, pa2.ptr);
 	}
 
+	/** MEOS: contained_pcpatch_set */
+	contained(s: PcpatchSet): boolean {
+		return F.contained_pcpatch_set(this.ptr, s.ptr);
+	}
+
 	/** MEOS: pcpatch_copy */
 	copy(): Pcpatch {
 		return wrapPcpatch(F.pcpatch_copy(this.ptr)) as Pcpatch;
@@ -4302,6 +7615,16 @@ export class Pcpatch extends Value {
 	/** MEOS: pcpatch_eq */
 	eq(pa2: Pcpatch): boolean {
 		return F.pcpatch_eq(this.ptr, pa2.ptr);
+	}
+
+	/** MEOS: ever_eq_pcpatch_tpcpatch */
+	everEq(temp: TPcpatch): number {
+		return F.ever_eq_pcpatch_tpcpatch(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_pcpatch_tpcpatch */
+	everNe(temp: TPcpatch): number {
+		return F.ever_ne_pcpatch_tpcpatch(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: pcpatch_ge */
@@ -4334,6 +7657,11 @@ export class Pcpatch extends Value {
 		return F.pcpatch_hex_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: intersection_pcpatch_set */
+	intersection(s: PcpatchSet): Set | null {
+		return wrapSetOrNull(F.intersection_pcpatch_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: pcpatch_le */
 	le(pa2: Pcpatch): boolean {
 		return F.pcpatch_le(this.ptr, pa2.ptr);
@@ -4347,6 +7675,11 @@ export class Pcpatch extends Value {
 	/** MEOS: pcpatch_mem_size */
 	memSize(): number {
 		return F.pcpatch_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_pcpatch_set */
+	minus(s: PcpatchSet): Set | null {
+		return wrapSetOrNull(F.minus_pcpatch_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpatch_ne */
@@ -4384,6 +7717,16 @@ export class Pcpatch extends Value {
 		}
 	}
 
+	/** MEOS: teq_pcpatch_tpcpatch */
+	teq(temp: TPcpatch): Temporal | null {
+		return wrapTemporalOrNull(F.teq_pcpatch_tpcpatch(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_pcpatch_tpcpatch */
+	tne(temp: TPcpatch): Temporal | null {
+		return wrapTemporalOrNull(F.tne_pcpatch_tpcpatch(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: pcpatch_to_geom */
 	toGeom(): Geo | null {
 		return wrapGeoOrNull(F.pcpatch_to_geom(this.ptr)) as Geo | null;
@@ -4397,6 +7740,11 @@ export class Pcpatch extends Value {
 	/** MEOS: pcpatch_to_tpcbox */
 	toTpcbox(): TPCBox {
 		return wrapTPCBox(F.pcpatch_to_tpcbox(this.ptr)) as TPCBox;
+	}
+
+	/** MEOS: union_pcpatch_set */
+	union(s: PcpatchSet): Set | null {
+		return wrapSetOrNull(F.union_pcpatch_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpatch_from_hexwkb */
@@ -4435,9 +7783,47 @@ export class PcpatchSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_pcpatch */
+	private _contains_set_pcpatch(pa: Pcpatch): boolean {
+		return F.contains_set_pcpatch(this.ptr, pa.ptr);
+	}
+
+	/** MEOS: intersection_set_pcpatch */
+	private _intersection_set_pcpatch(pa: Pcpatch): Set | null {
+		return wrapSetOrNull(F.intersection_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_pcpatch */
+	private _minus_set_pcpatch(pa: Pcpatch): Set | null {
+		return wrapSetOrNull(F.minus_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_pcpatch */
+	private _union_set_pcpatch(pa: Pcpatch): Set | null {
+		return wrapSetOrNull(F.union_set_pcpatch(this.ptr, pa.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_pcpatch, chosen by the arguments' types */
+	override contains(pa: Pcpatch | Set): boolean {
+		if (pa instanceof Pcpatch) return this._contains_set_pcpatch(pa as Pcpatch);
+		return super.contains(pa as Set);
+	}
+
 	/** MEOS: pcpatchset_end_value */
 	endValue(): Pcpatch {
 		return wrapPcpatch(F.pcpatchset_end_value(this.ptr)) as Pcpatch;
+	}
+
+	/** MEOS: intersection_set_pcpatch, chosen by the arguments' types */
+	override intersection(pa: Pcpatch | Set): Set | null {
+		if (pa instanceof Pcpatch) return this._intersection_set_pcpatch(pa as Pcpatch);
+		return super.intersection(pa as Set);
+	}
+
+	/** MEOS: minus_set_pcpatch, chosen by the arguments' types */
+	override minus(pa: Pcpatch | Set): Set | null {
+		if (pa instanceof Pcpatch) return this._minus_set_pcpatch(pa as Pcpatch);
+		return super.minus(pa as Set);
 	}
 
 	/** MEOS: pcpatchset_out */
@@ -4448,6 +7834,12 @@ export class PcpatchSet extends SpatialSet {
 	/** MEOS: pcpatchset_start_value */
 	startValue(): Pcpatch {
 		return wrapPcpatch(F.pcpatchset_start_value(this.ptr)) as Pcpatch;
+	}
+
+	/** MEOS: union_set_pcpatch, chosen by the arguments' types */
+	override union(pa: Pcpatch | Set): Set | null {
+		if (pa instanceof Pcpatch) return this._union_set_pcpatch(pa as Pcpatch);
+		return super.union(pa as Set);
 	}
 
 	/** MEOS: pcpatchset_value_n */
@@ -4516,6 +7908,16 @@ export class Pcpoint extends Value {
 		return this.hexOut(15);
 	}
 
+	/** MEOS: always_eq_pcpoint_tpcpoint */
+	alwaysEq(temp: TPcpoint): number {
+		return F.always_eq_pcpoint_tpcpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_pcpoint_tpcpoint */
+	alwaysNe(temp: TPcpoint): number {
+		return F.always_ne_pcpoint_tpcpoint(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: pcpoint_as_hexwkb */
 	asHexWKB(): string {
 		return F.pcpoint_as_hexwkb(this.ptr);
@@ -4531,6 +7933,11 @@ export class Pcpoint extends Value {
 		return F.pcpoint_cmp(this.ptr, pt2.ptr);
 	}
 
+	/** MEOS: contained_pcpoint_set */
+	contained(s: PcpointSet): boolean {
+		return F.contained_pcpoint_set(this.ptr, s.ptr);
+	}
+
 	/** MEOS: pcpoint_copy */
 	copy(): Pcpoint {
 		return wrapPcpoint(F.pcpoint_copy(this.ptr)) as Pcpoint;
@@ -4539,6 +7946,16 @@ export class Pcpoint extends Value {
 	/** MEOS: pcpoint_eq */
 	eq(pt2: Pcpoint): boolean {
 		return F.pcpoint_eq(this.ptr, pt2.ptr);
+	}
+
+	/** MEOS: ever_eq_pcpoint_tpcpoint */
+	everEq(temp: TPcpoint): number {
+		return F.ever_eq_pcpoint_tpcpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_pcpoint_tpcpoint */
+	everNe(temp: TPcpoint): number {
+		return F.ever_ne_pcpoint_tpcpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: pcpoint_ge */
@@ -4571,6 +7988,11 @@ export class Pcpoint extends Value {
 		return F.pcpoint_hex_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: intersection_pcpoint_set */
+	intersection(s: PcpointSet): Set | null {
+		return wrapSetOrNull(F.intersection_pcpoint_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: pcpoint_le */
 	le(pt2: Pcpoint): boolean {
 		return F.pcpoint_le(this.ptr, pt2.ptr);
@@ -4586,9 +8008,24 @@ export class Pcpoint extends Value {
 		return F.pcpoint_mem_size(this.ptr);
 	}
 
+	/** MEOS: minus_pcpoint_set */
+	minus(s: PcpointSet): Set | null {
+		return wrapSetOrNull(F.minus_pcpoint_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: pcpoint_ne */
 	ne(pt2: Pcpoint): boolean {
 		return F.pcpoint_ne(this.ptr, pt2.ptr);
+	}
+
+	/** MEOS: teq_pcpoint_tpcpoint */
+	teq(temp: TPcpoint): Temporal | null {
+		return wrapTemporalOrNull(F.teq_pcpoint_tpcpoint(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_pcpoint_tpcpoint */
+	tne(temp: TPcpoint): Temporal | null {
+		return wrapTemporalOrNull(F.tne_pcpoint_tpcpoint(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: pcpoint_to_set */
@@ -4599,6 +8036,11 @@ export class Pcpoint extends Value {
 	/** MEOS: pcpoint_to_tpcbox */
 	toTpcbox(): TPCBox | null {
 		return wrapTPCBoxOrNull(F.pcpoint_to_tpcbox(this.ptr)) as TPCBox | null;
+	}
+
+	/** MEOS: union_pcpoint_set */
+	union(s: PcpointSet): Set | null {
+		return wrapSetOrNull(F.union_pcpoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpoint_from_hexwkb */
@@ -4627,9 +8069,47 @@ export class PcpointSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_pcpoint */
+	private _contains_set_pcpoint(pt: Pcpoint): boolean {
+		return F.contains_set_pcpoint(this.ptr, pt.ptr);
+	}
+
+	/** MEOS: intersection_set_pcpoint */
+	private _intersection_set_pcpoint(pt: Pcpoint): Set | null {
+		return wrapSetOrNull(F.intersection_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_pcpoint */
+	private _minus_set_pcpoint(pt: Pcpoint): Set | null {
+		return wrapSetOrNull(F.minus_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_pcpoint */
+	private _union_set_pcpoint(pt: Pcpoint): Set | null {
+		return wrapSetOrNull(F.union_set_pcpoint(this.ptr, pt.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_pcpoint, chosen by the arguments' types */
+	override contains(pt: Pcpoint | Set): boolean {
+		if (pt instanceof Pcpoint) return this._contains_set_pcpoint(pt as Pcpoint);
+		return super.contains(pt as Set);
+	}
+
 	/** MEOS: pcpointset_end_value */
 	endValue(): Pcpoint {
 		return wrapPcpoint(F.pcpointset_end_value(this.ptr)) as Pcpoint;
+	}
+
+	/** MEOS: intersection_set_pcpoint, chosen by the arguments' types */
+	override intersection(pt: Pcpoint | Set): Set | null {
+		if (pt instanceof Pcpoint) return this._intersection_set_pcpoint(pt as Pcpoint);
+		return super.intersection(pt as Set);
+	}
+
+	/** MEOS: minus_set_pcpoint, chosen by the arguments' types */
+	override minus(pt: Pcpoint | Set): Set | null {
+		if (pt instanceof Pcpoint) return this._minus_set_pcpoint(pt as Pcpoint);
+		return super.minus(pt as Set);
 	}
 
 	/** MEOS: pcpointset_out */
@@ -4640,6 +8120,12 @@ export class PcpointSet extends SpatialSet {
 	/** MEOS: pcpointset_start_value */
 	startValue(): Pcpoint {
 		return wrapPcpoint(F.pcpointset_start_value(this.ptr)) as Pcpoint;
+	}
+
+	/** MEOS: union_set_pcpoint, chosen by the arguments' types */
+	override union(pt: Pcpoint | Set): Set | null {
+		if (pt instanceof Pcpoint) return this._union_set_pcpoint(pt as Pcpoint);
+		return super.union(pt as Set);
 	}
 
 	/** MEOS: pcpointset_value_n */
@@ -4754,6 +8240,31 @@ export class Pose extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: distance_pose_geo */
+	private _distance_pose_geo(gs: Geo): number {
+		return F.distance_pose_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: distance_pose_pose */
+	private _distance_pose_pose(pose2: Pose): number {
+		return F.distance_pose_pose(this.ptr, pose2.ptr);
+	}
+
+	/** MEOS: distance_pose_stbox */
+	private _distance_pose_stbox(box: STBox): number {
+		return F.distance_pose_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: always_eq_pose_tpose */
+	alwaysEq(temp: TPose): number {
+		return F.always_eq_pose_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_pose_tpose */
+	alwaysNe(temp: TPose): number {
+		return F.always_ne_pose_tpose(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: pose_angular_distance */
 	angularDistance(pose2: Pose): number {
 		return F.pose_angular_distance(this.ptr, pose2.ptr);
@@ -4814,14 +8325,37 @@ export class Pose extends Value {
 		return wrapTemporalOrNull(F.pose_compose_tpose(this.ptr, frame.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: contained_pose_set */
+	contained(s: PoseSet): boolean {
+		return F.contained_pose_set(this.ptr, s.ptr);
+	}
+
 	/** MEOS: pose_copy */
 	copy(): Pose {
 		return wrapPose(F.pose_copy(this.ptr)) as Pose;
 	}
 
+	/** MEOS: distance_pose_geo, distance_pose_pose, distance_pose_stbox, chosen by the arguments' types */
+	distance(gs: Geo | Pose | STBox): number {
+		if (gs instanceof Geo) return this._distance_pose_geo(gs as Geo);
+		if (gs instanceof Pose) return this._distance_pose_pose(gs as Pose);
+		if (gs instanceof STBox) return this._distance_pose_stbox(gs as STBox);
+		throw new TypeError(`Pose.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: pose_eq */
 	eq(pose2: Pose): boolean {
 		return F.pose_eq(this.ptr, pose2.ptr);
+	}
+
+	/** MEOS: ever_eq_pose_tpose */
+	everEq(temp: TPose): number {
+		return F.ever_eq_pose_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_pose_tpose */
+	everNe(temp: TPose): number {
+		return F.ever_ne_pose_tpose(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: pose_ge */
@@ -4844,6 +8378,11 @@ export class Pose extends Value {
 		return F.pose_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_pose_set */
+	intersection(s: PoseSet): Set | null {
+		return wrapSetOrNull(F.intersection_pose_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: pose_inverse */
 	inverse(): Pose | null {
 		return wrapPoseOrNull(F.pose_inverse(this.ptr)) as Pose | null;
@@ -4862,6 +8401,11 @@ export class Pose extends Value {
 	/** MEOS: pose_mem_size */
 	memSize(): number {
 		return F.pose_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_pose_set */
+	minus(s: PoseSet): Set | null {
+		return wrapSetOrNull(F.minus_pose_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pose_ne */
@@ -4924,9 +8468,19 @@ export class Pose extends Value {
 		return F.pose_srid(this.ptr);
 	}
 
+	/** MEOS: teq_pose_tpose */
+	teq(temp: TPose): Temporal | null {
+		return wrapTemporalOrNull(F.teq_pose_tpose(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: pose_timestamptz_to_stbox */
 	timestamptzToStbox(t: TimestampTz): STBox {
 		return wrapSTBox(F.pose_timestamptz_to_stbox(this.ptr, t)) as STBox;
+	}
+
+	/** MEOS: tne_pose_tpose */
+	tne(temp: TPose): Temporal | null {
+		return wrapTemporalOrNull(F.tne_pose_tpose(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: pose_to_geog */
@@ -4967,6 +8521,11 @@ export class Pose extends Value {
 	/** MEOS: pose_tstzspan_to_stbox */
 	tstzspanToStbox(s: Span): STBox {
 		return wrapSTBox(F.pose_tstzspan_to_stbox(this.ptr, s.ptr)) as STBox;
+	}
+
+	/** MEOS: union_pose_set */
+	union(s: PoseSet): Set | null {
+		return wrapSetOrNull(F.union_pose_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pose_yaw */
@@ -5060,6 +8619,31 @@ export class PoseChain extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: distance_posechain_geo */
+	private _distance_posechain_geo(gs: Geo): number {
+		return F.distance_posechain_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: distance_posechain_posechain */
+	private _distance_posechain_posechain(pc2: PoseChain): number {
+		return F.distance_posechain_posechain(this.ptr, pc2.ptr);
+	}
+
+	/** MEOS: distance_posechain_stbox */
+	private _distance_posechain_stbox(box: STBox): number {
+		return F.distance_posechain_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: always_eq_posechain_tposechain */
+	alwaysEq(temp: TPoseChain): number {
+		return F.always_eq_posechain_tposechain(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_ne_posechain_tposechain */
+	alwaysNe(temp: TPoseChain): number {
+		return F.always_ne_posechain_tposechain(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: posechain_append */
 	append(pose: Pose): PoseChain {
 		return wrapPoseChain(F.posechain_append(this.ptr, pose.ptr)) as PoseChain;
@@ -5100,9 +8684,22 @@ export class PoseChain extends Value {
 		return F.posechain_cmp(this.ptr, pc2.ptr);
 	}
 
+	/** MEOS: contained_posechain_set */
+	contained(s: PoseChainSet): boolean {
+		return F.contained_posechain_set(this.ptr, s.ptr);
+	}
+
 	/** MEOS: posechain_copy */
 	copy(): PoseChain {
 		return wrapPoseChain(F.posechain_copy(this.ptr)) as PoseChain;
+	}
+
+	/** MEOS: distance_posechain_geo, distance_posechain_posechain, distance_posechain_stbox, chosen by the arguments' types */
+	distance(gs: Geo | PoseChain | STBox): number {
+		if (gs instanceof Geo) return this._distance_posechain_geo(gs as Geo);
+		if (gs instanceof PoseChain) return this._distance_posechain_posechain(gs as PoseChain);
+		if (gs instanceof STBox) return this._distance_posechain_stbox(gs as STBox);
+		throw new TypeError(`PoseChain.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: posechain_end_pose */
@@ -5113,6 +8710,16 @@ export class PoseChain extends Value {
 	/** MEOS: posechain_eq */
 	eq(pc2: PoseChain): boolean {
 		return F.posechain_eq(this.ptr, pc2.ptr);
+	}
+
+	/** MEOS: ever_eq_posechain_tposechain */
+	everEq(temp: TPoseChain): number {
+		return F.ever_eq_posechain_tposechain(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_posechain_tposechain */
+	everNe(temp: TPoseChain): number {
+		return F.ever_ne_posechain_tposechain(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: posechain_ge */
@@ -5135,6 +8742,11 @@ export class PoseChain extends Value {
 		return F.posechain_hash_extended(this.ptr, seed);
 	}
 
+	/** MEOS: intersection_posechain_set */
+	intersection(s: PoseChainSet): Set | null {
+		return wrapSetOrNull(F.intersection_posechain_set(this.ptr, s.ptr)) as Set | null;
+	}
+
 	/** MEOS: posechain_le */
 	le(pc2: PoseChain): boolean {
 		return F.posechain_le(this.ptr, pc2.ptr);
@@ -5148,6 +8760,11 @@ export class PoseChain extends Value {
 	/** MEOS: posechain_mem_size */
 	memSize(): number {
 		return F.posechain_mem_size(this.ptr);
+	}
+
+	/** MEOS: minus_posechain_set */
+	minus(s: PoseChainSet): Set | null {
+		return wrapSetOrNull(F.minus_posechain_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: posechain_ne */
@@ -5215,9 +8832,19 @@ export class PoseChain extends Value {
 		return wrapPose(F.posechain_start_pose(this.ptr)) as Pose;
 	}
 
+	/** MEOS: teq_posechain_tposechain */
+	teq(temp: TPoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.teq_posechain_tposechain(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: posechain_timestamptz_to_stbox */
 	timestamptzToStbox(t: TimestampTz): STBox {
 		return wrapSTBox(F.posechain_timestamptz_to_stbox(this.ptr, t)) as STBox;
+	}
+
+	/** MEOS: tne_posechain_tposechain */
+	tne(temp: TPoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.tne_posechain_tposechain(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: posechain_to_point */
@@ -5253,6 +8880,11 @@ export class PoseChain extends Value {
 	/** MEOS: posechain_tstzspan_to_stbox */
 	tstzspanToStbox(s: Span): STBox {
 		return wrapSTBox(F.posechain_tstzspan_to_stbox(this.ptr, s.ptr)) as STBox;
+	}
+
+	/** MEOS: union_posechain_set */
+	union(s: PoseChainSet): Set | null {
+		return wrapSetOrNull(F.union_posechain_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: posechain_in */
@@ -5301,9 +8933,52 @@ export class PoseChainSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_posechain */
+	private _contains_set_posechain(pc: PoseChain): boolean {
+		return F.contains_set_posechain(this.ptr, pc.ptr);
+	}
+
+	/** MEOS: intersection_set_posechain */
+	private _intersection_set_posechain(pc: PoseChain): Set | null {
+		return wrapSetOrNull(F.intersection_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_posechain */
+	private _minus_set_posechain(pc: PoseChain): Set | null {
+		return wrapSetOrNull(F.minus_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_posechain */
+	private _union_set_posechain(pc: PoseChain): Set | null {
+		return wrapSetOrNull(F.union_set_posechain(this.ptr, pc.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_posechain, chosen by the arguments' types */
+	override contains(pc: PoseChain | Set): boolean {
+		if (pc instanceof PoseChain) return this._contains_set_posechain(pc as PoseChain);
+		return super.contains(pc as Set);
+	}
+
+	/** MEOS: distance_posechainset_posechainset */
+	distance(s2: PoseChainSet): number {
+		return F.distance_posechainset_posechainset(this.ptr, s2.ptr);
+	}
+
 	/** MEOS: posechainset_end_value */
 	endValue(): PoseChain {
 		return wrapPoseChain(F.posechainset_end_value(this.ptr)) as PoseChain;
+	}
+
+	/** MEOS: intersection_set_posechain, chosen by the arguments' types */
+	override intersection(pc: PoseChain | Set): Set | null {
+		if (pc instanceof PoseChain) return this._intersection_set_posechain(pc as PoseChain);
+		return super.intersection(pc as Set);
+	}
+
+	/** MEOS: minus_set_posechain, chosen by the arguments' types */
+	override minus(pc: PoseChain | Set): Set | null {
+		if (pc instanceof PoseChain) return this._minus_set_posechain(pc as PoseChain);
+		return super.minus(pc as Set);
 	}
 
 	/** MEOS: posechainset_out */
@@ -5314,6 +8989,12 @@ export class PoseChainSet extends SpatialSet {
 	/** MEOS: posechainset_start_value */
 	startValue(): PoseChain {
 		return wrapPoseChain(F.posechainset_start_value(this.ptr)) as PoseChain;
+	}
+
+	/** MEOS: union_set_posechain, chosen by the arguments' types */
+	override union(pc: PoseChain | Set): Set | null {
+		if (pc instanceof PoseChain) return this._union_set_posechain(pc as PoseChain);
+		return super.union(pc as Set);
 	}
 
 	/** MEOS: posechainset_value_n */
@@ -5382,9 +9063,52 @@ export class PoseSet extends SpatialSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: contains_set_pose */
+	private _contains_set_pose(pose: Pose): boolean {
+		return F.contains_set_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: intersection_set_pose */
+	private _intersection_set_pose(pose: Pose): Set | null {
+		return wrapSetOrNull(F.intersection_set_pose(this.ptr, pose.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_set_pose */
+	private _minus_set_pose(pose: Pose): Set | null {
+		return wrapSetOrNull(F.minus_set_pose(this.ptr, pose.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_pose */
+	private _union_set_pose(pose: Pose): Set | null {
+		return wrapSetOrNull(F.union_set_pose(this.ptr, pose.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_pose, chosen by the arguments' types */
+	override contains(pose: Pose | Set): boolean {
+		if (pose instanceof Pose) return this._contains_set_pose(pose as Pose);
+		return super.contains(pose as Set);
+	}
+
+	/** MEOS: distance_poseset_poseset */
+	distance(s2: PoseSet): number {
+		return F.distance_poseset_poseset(this.ptr, s2.ptr);
+	}
+
 	/** MEOS: poseset_end_value */
 	endValue(): Pose {
 		return wrapPose(F.poseset_end_value(this.ptr)) as Pose;
+	}
+
+	/** MEOS: intersection_set_pose, chosen by the arguments' types */
+	override intersection(pose: Pose | Set): Set | null {
+		if (pose instanceof Pose) return this._intersection_set_pose(pose as Pose);
+		return super.intersection(pose as Set);
+	}
+
+	/** MEOS: minus_set_pose, chosen by the arguments' types */
+	override minus(pose: Pose | Set): Set | null {
+		if (pose instanceof Pose) return this._minus_set_pose(pose as Pose);
+		return super.minus(pose as Set);
 	}
 
 	/** MEOS: poseset_out */
@@ -5395,6 +9119,12 @@ export class PoseSet extends SpatialSet {
 	/** MEOS: poseset_start_value */
 	startValue(): Pose {
 		return wrapPose(F.poseset_start_value(this.ptr)) as Pose;
+	}
+
+	/** MEOS: union_set_pose, chosen by the arguments' types */
+	override union(pose: Pose | Set): Set | null {
+		if (pose instanceof Pose) return this._union_set_pose(pose as Pose);
+		return super.union(pose as Set);
 	}
 
 	/** MEOS: poseset_value_n */
@@ -5463,9 +9193,35 @@ export class QuadbinSet extends SpatialSet {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_quadbin */
+	private _contains_set_quadbin(cell: Quadbin): boolean {
+		return F.contains_set_quadbin(this.ptr, cell);
+	}
+
+	/** MEOS: intersection_set_quadbin */
+	private _intersection_set_quadbin(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.intersection_set_quadbin(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: minus_set_quadbin */
+	private _minus_set_quadbin(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.minus_set_quadbin(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: union_set_quadbin */
+	private _union_set_quadbin(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.union_set_quadbin(this.ptr, cell)) as Set | null;
+	}
+
 	/** MEOS: quadbinset_compact_cells */
 	compactCells(): Set | null {
 		return wrapSetOrNull(F.quadbinset_compact_cells(this.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_quadbin, chosen by the arguments' types */
+	override contains(cell: Quadbin | Set): boolean {
+		if (typeof cell === 'bigint') return this._contains_set_quadbin(cell as Quadbin);
+		return super.contains(cell as Set);
 	}
 
 	/** MEOS: quadbinset_cover_cells */
@@ -5478,14 +9234,51 @@ export class QuadbinSet extends SpatialSet {
 		return F.quadbinset_end_value(this.ptr);
 	}
 
+	/** MEOS: ever_eq_quadbinset_tquadbin */
+	everEq(tqb: TQuadbin): number {
+		return F.ever_eq_quadbinset_tquadbin(this.ptr, tqb.ptr);
+	}
+
 	/** MEOS: quadbinset_grid_disk */
 	gridDisk(k: number): Set | null {
 		return wrapSetOrNull(F.quadbinset_grid_disk(this.ptr, k)) as Set | null;
 	}
 
+	/** MEOS: intersection_set_quadbin, chosen by the arguments' types */
+	override intersection(cell: Quadbin | Set): Set | null {
+		if (typeof cell === 'bigint') return this._intersection_set_quadbin(cell as Quadbin);
+		return super.intersection(cell as Set);
+	}
+
+	/** MEOS: minus_set_quadbin, chosen by the arguments' types */
+	override minus(cell: Quadbin | Set): Set | null {
+		if (typeof cell === 'bigint') return this._minus_set_quadbin(cell as Quadbin);
+		return super.minus(cell as Set);
+	}
+
 	/** MEOS: quadbinset_out */
 	override out(): string {
 		return F.quadbinset_out(this.ptr);
+	}
+
+	/** MEOS: contained_quadbin_set */
+	rcontained(cell: Quadbin): boolean {
+		return F.contained_quadbin_set(cell, this.ptr);
+	}
+
+	/** MEOS: intersection_quadbin_set */
+	rintersection(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.intersection_quadbin_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_quadbin_set */
+	rminus(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.minus_quadbin_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_quadbin_set */
+	runion(cell: Quadbin): Set | null {
+		return wrapSetOrNull(F.union_quadbin_set(cell, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: quadbinset_start_value */
@@ -5496,6 +9289,12 @@ export class QuadbinSet extends SpatialSet {
 	/** MEOS: quadbinset_uncompact_cells */
 	uncompactCells(resolution: number): Set | null {
 		return wrapSetOrNull(F.quadbinset_uncompact_cells(this.ptr, resolution)) as Set | null;
+	}
+
+	/** MEOS: union_set_quadbin, chosen by the arguments' types */
+	override union(cell: Quadbin | Set): Set | null {
+		if (typeof cell === 'bigint') return this._union_set_quadbin(cell as Quadbin);
+		return super.union(cell as Set);
 	}
 
 	/** MEOS: quadbinset_value_n */
@@ -5802,6 +9601,53 @@ export class Raquet extends Value {
  */
 export class Raster extends Value {
 
+	/** MEOS: add_raster_float */
+	private _add_raster_float(d: number): Raster | null {
+		return wrapRasterOrNull(F.add_raster_float(this.ptr, d)) as Raster | null;
+	}
+
+	/** MEOS: add_raster_raster */
+	private _add_raster_raster(rast2: Raster): Raster | null {
+		return wrapRasterOrNull(F.add_raster_raster(this.ptr, rast2.ptr)) as Raster | null;
+	}
+
+	/** MEOS: div_raster_float */
+	private _div_raster_float(d: number): Raster | null {
+		return wrapRasterOrNull(F.div_raster_float(this.ptr, d)) as Raster | null;
+	}
+
+	/** MEOS: div_raster_raster */
+	private _div_raster_raster(rast2: Raster): Raster | null {
+		return wrapRasterOrNull(F.div_raster_raster(this.ptr, rast2.ptr)) as Raster | null;
+	}
+
+	/** MEOS: mul_raster_float */
+	private _mul_raster_float(d: number): Raster | null {
+		return wrapRasterOrNull(F.mul_raster_float(this.ptr, d)) as Raster | null;
+	}
+
+	/** MEOS: mul_raster_raster */
+	private _mul_raster_raster(rast2: Raster): Raster | null {
+		return wrapRasterOrNull(F.mul_raster_raster(this.ptr, rast2.ptr)) as Raster | null;
+	}
+
+	/** MEOS: sub_raster_float */
+	private _sub_raster_float(d: number): Raster | null {
+		return wrapRasterOrNull(F.sub_raster_float(this.ptr, d)) as Raster | null;
+	}
+
+	/** MEOS: sub_raster_raster */
+	private _sub_raster_raster(rast2: Raster): Raster | null {
+		return wrapRasterOrNull(F.sub_raster_raster(this.ptr, rast2.ptr)) as Raster | null;
+	}
+
+	/** MEOS: add_raster_float, add_raster_raster, chosen by the arguments' types */
+	add(d: number | Raster): Raster | null {
+		if (d instanceof Raster) return this._add_raster_raster(d as Raster);
+		if (typeof d === 'number') return this._add_raster_float(d as number);
+		throw new TypeError(`Raster.add: no overload takes these arguments`);
+	}
+
 	/** MEOS: raster_add_band */
 	addBand(index: number, pixeltype: string, initialvalue: number, nodataval: number, has_nodata: boolean): Raster | null {
 		return wrapRasterOrNull(F.raster_add_band(this.ptr, index, pixeltype, initialvalue, nodataval, has_nodata)) as Raster | null;
@@ -5847,6 +9693,13 @@ export class Raster extends Value {
 		return wrapRaster(F.raster_copy(this.ptr)) as Raster;
 	}
 
+	/** MEOS: div_raster_float, div_raster_raster, chosen by the arguments' types */
+	div(d: number | Raster): Raster | null {
+		if (d instanceof Raster) return this._div_raster_raster(d as Raster);
+		if (typeof d === 'number') return this._div_raster_float(d as number);
+		throw new TypeError(`Raster.div: no overload takes these arguments`);
+	}
+
 	/** MEOS: raster_height */
 	height(): number {
 		return F.raster_height(this.ptr);
@@ -5862,6 +9715,13 @@ export class Raster extends Value {
 		return F.raster_mem_size(this.ptr);
 	}
 
+	/** MEOS: mul_raster_float, mul_raster_raster, chosen by the arguments' types */
+	mul(d: number | Raster): Raster | null {
+		if (d instanceof Raster) return this._mul_raster_raster(d as Raster);
+		if (typeof d === 'number') return this._mul_raster_float(d as number);
+		throw new TypeError(`Raster.mul: no overload takes these arguments`);
+	}
+
 	/** MEOS: raster_not_same_alignment_reason */
 	notSameAlignmentReason(rast2: Raster): string {
 		return F.raster_not_same_alignment_reason(this.ptr, rast2.ptr);
@@ -5872,6 +9732,16 @@ export class Raster extends Value {
 		return F.raster_num_bands(this.ptr);
 	}
 
+	/** MEOS: add_float_raster */
+	radd(d: number): Raster | null {
+		return wrapRasterOrNull(F.add_float_raster(d, this.ptr)) as Raster | null;
+	}
+
+	/** MEOS: div_float_raster */
+	rdiv(d: number): Raster | null {
+		return wrapRasterOrNull(F.div_float_raster(d, this.ptr)) as Raster | null;
+	}
+
 	/** MEOS: raster_reclass */
 	reclass(band: number, expr: string, pixeltype: string, has_nodata: boolean, nodataval: number): Raster | null {
 		return wrapRasterOrNull(F.raster_reclass(this.ptr, band, expr, pixeltype, has_nodata, nodataval)) as Raster | null;
@@ -5880,6 +9750,16 @@ export class Raster extends Value {
 	/** MEOS: raster_rescale */
 	rescale(scale_x: number, scale_y: number, algorithm: string, max_err: number): Raster | null {
 		return wrapRasterOrNull(F.raster_rescale(this.ptr, scale_x, scale_y, algorithm, max_err)) as Raster | null;
+	}
+
+	/** MEOS: mul_float_raster */
+	rmul(d: number): Raster | null {
+		return wrapRasterOrNull(F.mul_float_raster(d, this.ptr)) as Raster | null;
+	}
+
+	/** MEOS: sub_float_raster */
+	rsub(d: number): Raster | null {
+		return wrapRasterOrNull(F.sub_float_raster(d, this.ptr)) as Raster | null;
 	}
 
 	/** MEOS: raster_same_alignment */
@@ -5915,6 +9795,13 @@ export class Raster extends Value {
 	/** MEOS: raster_srid */
 	SRID(): number {
 		return F.raster_srid(this.ptr);
+	}
+
+	/** MEOS: sub_raster_float, sub_raster_raster, chosen by the arguments' types */
+	sub(d: number | Raster): Raster | null {
+		if (d instanceof Raster) return this._sub_raster_raster(d as Raster);
+		if (typeof d === 'number') return this._sub_raster_float(d as number);
+		throw new TypeError(`Raster.sub: no overload takes these arguments`);
 	}
 
 	/** MEOS: raster_summary_stats */
@@ -6033,9 +9920,35 @@ export class S2CellSet extends SpatialSet {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_s2cell */
+	private _contains_set_s2cell(cell: S2CellId): boolean {
+		return F.contains_set_s2cell(this.ptr, cell);
+	}
+
+	/** MEOS: intersection_set_s2cell */
+	private _intersection_set_s2cell(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.intersection_set_s2cell(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: minus_set_s2cell */
+	private _minus_set_s2cell(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.minus_set_s2cell(this.ptr, cell)) as Set | null;
+	}
+
+	/** MEOS: union_set_s2cell */
+	private _union_set_s2cell(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.union_set_s2cell(this.ptr, cell)) as Set | null;
+	}
+
 	/** MEOS: s2cellset_compact_cells */
 	compactCells(): Set | null {
 		return wrapSetOrNull(F.s2cellset_compact_cells(this.ptr)) as Set | null;
+	}
+
+	/** MEOS: contains_set_s2cell, chosen by the arguments' types */
+	override contains(cell: S2CellId | Set): boolean {
+		if (typeof cell === 'bigint') return this._contains_set_s2cell(cell as S2CellId);
+		return super.contains(cell as Set);
 	}
 
 	/** MEOS: s2cellset_cover_cells */
@@ -6048,9 +9961,46 @@ export class S2CellSet extends SpatialSet {
 		return F.s2cellset_end_value(this.ptr);
 	}
 
+	/** MEOS: ever_eq_s2cellset_ts2cell */
+	everEq(temp: TS2Cell): number {
+		return F.ever_eq_s2cellset_ts2cell(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: intersection_set_s2cell, chosen by the arguments' types */
+	override intersection(cell: S2CellId | Set): Set | null {
+		if (typeof cell === 'bigint') return this._intersection_set_s2cell(cell as S2CellId);
+		return super.intersection(cell as Set);
+	}
+
+	/** MEOS: minus_set_s2cell, chosen by the arguments' types */
+	override minus(cell: S2CellId | Set): Set | null {
+		if (typeof cell === 'bigint') return this._minus_set_s2cell(cell as S2CellId);
+		return super.minus(cell as Set);
+	}
+
 	/** MEOS: s2cellset_out */
 	override out(): string {
 		return F.s2cellset_out(this.ptr);
+	}
+
+	/** MEOS: contained_s2cell_set */
+	rcontained(cell: S2CellId): boolean {
+		return F.contained_s2cell_set(cell, this.ptr);
+	}
+
+	/** MEOS: intersection_s2cell_set */
+	rintersection(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.intersection_s2cell_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_s2cell_set */
+	rminus(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.minus_s2cell_set(cell, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_s2cell_set */
+	runion(cell: S2CellId): Set | null {
+		return wrapSetOrNull(F.union_s2cell_set(cell, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: s2cellset_start_value */
@@ -6061,6 +10011,12 @@ export class S2CellSet extends SpatialSet {
 	/** MEOS: s2cellset_uncompact_cells */
 	uncompactCells(resolution: number): Set | null {
 		return wrapSetOrNull(F.s2cellset_uncompact_cells(this.ptr, resolution)) as Set | null;
+	}
+
+	/** MEOS: union_set_s2cell, chosen by the arguments' types */
+	override union(cell: S2CellId | Set): Set | null {
+		if (typeof cell === 'bigint') return this._union_set_s2cell(cell as S2CellId);
+		return super.union(cell as Set);
 	}
 
 	/** MEOS: s2cellset_value_n */
@@ -6216,6 +10172,252 @@ export class STBox extends Box {
 		return this.out(15);
 	}
 
+	/** MEOS: above_stbox_stbox */
+	private _above_stbox_stbox(box2: STBox): boolean {
+		return F.above_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: above_stbox_tspatial */
+	private _above_stbox_tspatial(temp: TSpatial): boolean {
+		return F.above_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adjacent_stbox_stbox */
+	private _adjacent_stbox_stbox(box2: STBox): boolean {
+		return F.adjacent_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: adjacent_stbox_tspatial */
+	private _adjacent_stbox_tspatial(temp: TSpatial): boolean {
+		return F.adjacent_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: after_stbox_stbox */
+	private _after_stbox_stbox(box2: STBox): boolean {
+		return F.after_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: after_stbox_tspatial */
+	private _after_stbox_tspatial(temp: TSpatial): boolean {
+		return F.after_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: back_stbox_stbox */
+	private _back_stbox_stbox(box2: STBox): boolean {
+		return F.back_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: back_stbox_tspatial */
+	private _back_stbox_tspatial(temp: TSpatial): boolean {
+		return F.back_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: before_stbox_stbox */
+	private _before_stbox_stbox(box2: STBox): boolean {
+		return F.before_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: before_stbox_tspatial */
+	private _before_stbox_tspatial(temp: TSpatial): boolean {
+		return F.before_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: below_stbox_stbox */
+	private _below_stbox_stbox(box2: STBox): boolean {
+		return F.below_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: below_stbox_tspatial */
+	private _below_stbox_tspatial(temp: TSpatial): boolean {
+		return F.below_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contained_stbox_stbox */
+	private _contained_stbox_stbox(box2: STBox): boolean {
+		return F.contained_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_stbox_tspatial */
+	private _contained_stbox_tspatial(temp: TSpatial): boolean {
+		return F.contained_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contains_stbox_stbox */
+	private _contains_stbox_stbox(box2: STBox): boolean {
+		return F.contains_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contains_stbox_tspatial */
+	private _contains_stbox_tspatial(temp: TSpatial): boolean {
+		return F.contains_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: front_stbox_stbox */
+	private _front_stbox_stbox(box2: STBox): boolean {
+		return F.front_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: front_stbox_tspatial */
+	private _front_stbox_tspatial(temp: TSpatial): boolean {
+		return F.front_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: left_stbox_stbox */
+	private _left_stbox_stbox(box2: STBox): boolean {
+		return F.left_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: left_stbox_tspatial */
+	private _left_stbox_tspatial(temp: TSpatial): boolean {
+		return F.left_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: nad_stbox_geo */
+	private _nad_stbox_geo(gs: Geo, spheroid: boolean): number {
+		return F.nad_stbox_geo(this.ptr, gs.ptr, spheroid);
+	}
+
+	/** MEOS: nad_stbox_stbox */
+	private _nad_stbox_stbox(box2: STBox, spheroid: boolean): number {
+		return F.nad_stbox_stbox(this.ptr, box2.ptr, spheroid);
+	}
+
+	/** MEOS: nad_stbox_trgeometry */
+	private _nad_stbox_trgeometry(temp: Temporal): number {
+		return F.nad_stbox_trgeometry(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overabove_stbox_stbox */
+	private _overabove_stbox_stbox(box2: STBox): boolean {
+		return F.overabove_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overabove_stbox_tspatial */
+	private _overabove_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overabove_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overafter_stbox_stbox */
+	private _overafter_stbox_stbox(box2: STBox): boolean {
+		return F.overafter_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overafter_stbox_tspatial */
+	private _overafter_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overafter_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overback_stbox_stbox */
+	private _overback_stbox_stbox(box2: STBox): boolean {
+		return F.overback_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overback_stbox_tspatial */
+	private _overback_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overback_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbefore_stbox_stbox */
+	private _overbefore_stbox_stbox(box2: STBox): boolean {
+		return F.overbefore_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overbefore_stbox_tspatial */
+	private _overbefore_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overbefore_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbelow_stbox_stbox */
+	private _overbelow_stbox_stbox(box2: STBox): boolean {
+		return F.overbelow_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overbelow_stbox_tspatial */
+	private _overbelow_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overbelow_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overfront_stbox_stbox */
+	private _overfront_stbox_stbox(box2: STBox): boolean {
+		return F.overfront_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overfront_stbox_tspatial */
+	private _overfront_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overfront_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overlaps_stbox_stbox */
+	private _overlaps_stbox_stbox(box2: STBox): boolean {
+		return F.overlaps_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overlaps_stbox_tspatial */
+	private _overlaps_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overlaps_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overleft_stbox_stbox */
+	private _overleft_stbox_stbox(box2: STBox): boolean {
+		return F.overleft_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overleft_stbox_tspatial */
+	private _overleft_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overleft_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overright_stbox_stbox */
+	private _overright_stbox_stbox(box2: STBox): boolean {
+		return F.overright_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overright_stbox_tspatial */
+	private _overright_stbox_tspatial(temp: TSpatial): boolean {
+		return F.overright_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: right_stbox_stbox */
+	private _right_stbox_stbox(box2: STBox): boolean {
+		return F.right_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: right_stbox_tspatial */
+	private _right_stbox_tspatial(temp: TSpatial): boolean {
+		return F.right_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: same_stbox_stbox */
+	private _same_stbox_stbox(box2: STBox): boolean {
+		return F.same_stbox_stbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: same_stbox_tspatial */
+	private _same_stbox_tspatial(temp: TSpatial): boolean {
+		return F.same_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: above_stbox_stbox, above_stbox_tspatial, chosen by the arguments' types */
+	above(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._above_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._above_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.above: no overload takes these arguments`);
+	}
+
+	/** MEOS: adjacent_stbox_stbox, adjacent_stbox_tspatial, chosen by the arguments' types */
+	adjacent(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._adjacent_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._adjacent_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.adjacent: no overload takes these arguments`);
+	}
+
+	/** MEOS: after_stbox_stbox, after_stbox_tspatial, chosen by the arguments' types */
+	after(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._after_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._after_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.after: no overload takes these arguments`);
+	}
+
 	/** MEOS: stbox_area */
 	area(spheroid: boolean): number {
 		return F.stbox_area(this.ptr, spheroid);
@@ -6246,9 +10448,44 @@ export class STBox extends Box {
 		return readWkb(_sizeOut => F.stbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: back_stbox_stbox, back_stbox_tspatial, chosen by the arguments' types */
+	back(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._back_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._back_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.back: no overload takes these arguments`);
+	}
+
+	/** MEOS: before_stbox_stbox, before_stbox_tspatial, chosen by the arguments' types */
+	before(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._before_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._before_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.before: no overload takes these arguments`);
+	}
+
+	/** MEOS: below_stbox_stbox, below_stbox_tspatial, chosen by the arguments' types */
+	below(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._below_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._below_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.below: no overload takes these arguments`);
+	}
+
 	/** MEOS: stbox_cmp */
 	cmp(box2: STBox): number {
 		return F.stbox_cmp(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_stbox_stbox, contained_stbox_tspatial, chosen by the arguments' types */
+	contained(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._contained_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._contained_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.contained: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_stbox_stbox, contains_stbox_tspatial, chosen by the arguments' types */
+	contains(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._contains_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._contains_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.contains: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_copy */
@@ -6274,6 +10511,13 @@ export class STBox extends Box {
 		} finally {
 			_free(_interv);
 		}
+	}
+
+	/** MEOS: front_stbox_stbox, front_stbox_tspatial, chosen by the arguments' types */
+	front(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._front_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._front_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.front: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_ge */
@@ -6316,6 +10560,11 @@ export class STBox extends Box {
 		return F.stbox_hasz(this.ptr);
 	}
 
+	/** MEOS: intersection_stbox_stbox */
+	intersection(box2: STBox): STBox | null {
+		return wrapSTBoxOrNull(F.intersection_stbox_stbox(this.ptr, box2.ptr)) as STBox | null;
+	}
+
 	/** MEOS: stbox_isgeodetic */
 	isgeodetic(): boolean {
 		return F.stbox_isgeodetic(this.ptr);
@@ -6326,9 +10575,24 @@ export class STBox extends Box {
 		return F.stbox_le(this.ptr, box2.ptr);
 	}
 
+	/** MEOS: left_stbox_stbox, left_stbox_tspatial, chosen by the arguments' types */
+	left(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._left_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._left_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.left: no overload takes these arguments`);
+	}
+
 	/** MEOS: stbox_lt */
 	lt(box2: STBox): boolean {
 		return F.stbox_lt(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: nad_stbox_geo, nad_stbox_stbox, nad_stbox_trgeometry, chosen by the arguments' types */
+	nad(gs: Geo | STBox | Temporal, spheroid?: boolean): number {
+		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nad_stbox_geo(gs as Geo, spheroid as boolean);
+		if (gs instanceof STBox && typeof spheroid === 'boolean') return this._nad_stbox_stbox(gs as STBox, spheroid as boolean);
+		if (gs instanceof Temporal && spheroid === undefined) return this._nad_stbox_trgeometry(gs as Temporal);
+		throw new TypeError(`STBox.nad: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_ne */
@@ -6339,6 +10603,69 @@ export class STBox extends Box {
 	/** MEOS: stbox_out */
 	out(maxdd: number): string {
 		return F.stbox_out(this.ptr, maxdd);
+	}
+
+	/** MEOS: overabove_stbox_stbox, overabove_stbox_tspatial, chosen by the arguments' types */
+	overabove(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overabove_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overabove_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overabove: no overload takes these arguments`);
+	}
+
+	/** MEOS: overafter_stbox_stbox, overafter_stbox_tspatial, chosen by the arguments' types */
+	overafter(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overafter_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overafter_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overafter: no overload takes these arguments`);
+	}
+
+	/** MEOS: overback_stbox_stbox, overback_stbox_tspatial, chosen by the arguments' types */
+	overback(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overback_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overback_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overback: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbefore_stbox_stbox, overbefore_stbox_tspatial, chosen by the arguments' types */
+	overbefore(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overbefore_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overbefore_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overbefore: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbelow_stbox_stbox, overbelow_stbox_tspatial, chosen by the arguments' types */
+	overbelow(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overbelow_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overbelow_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overbelow: no overload takes these arguments`);
+	}
+
+	/** MEOS: overfront_stbox_stbox, overfront_stbox_tspatial, chosen by the arguments' types */
+	overfront(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overfront_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overfront_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overfront: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_stbox_stbox, overlaps_stbox_tspatial, chosen by the arguments' types */
+	overlaps(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overlaps_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overlaps_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overlaps: no overload takes these arguments`);
+	}
+
+	/** MEOS: overleft_stbox_stbox, overleft_stbox_tspatial, chosen by the arguments' types */
+	overleft(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overleft_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overleft_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_stbox_stbox, overright_stbox_tspatial, chosen by the arguments' types */
+	overright(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._overright_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._overright_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.overright: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_perimeter */
@@ -6366,9 +10693,23 @@ export class STBox extends Box {
 		}
 	}
 
+	/** MEOS: right_stbox_stbox, right_stbox_tspatial, chosen by the arguments' types */
+	right(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._right_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._right_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.right: no overload takes these arguments`);
+	}
+
 	/** MEOS: stbox_round */
 	round(maxdd: number): STBox {
 		return wrapSTBox(F.stbox_round(this.ptr, maxdd)) as STBox;
+	}
+
+	/** MEOS: same_stbox_stbox, same_stbox_tspatial, chosen by the arguments' types */
+	same(box2: STBox | TSpatial): boolean {
+		if (box2 instanceof STBox) return this._same_stbox_stbox(box2 as STBox);
+		if (box2 instanceof TSpatial) return this._same_stbox_tspatial(box2 as TSpatial);
+		throw new TypeError(`STBox.same: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_scale_time */
@@ -6532,6 +10873,11 @@ export class STBox extends Box {
 		return wrapSTBox(F.stbox_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as STBox;
 	}
 
+	/** MEOS: union_stbox_stbox */
+	union(box2: STBox, strict: boolean): STBox {
+		return wrapSTBox(F.union_stbox_stbox(this.ptr, box2.ptr, strict)) as STBox;
+	}
+
 	/** MEOS: stbox_volume */
 	volume(): number {
 		return F.stbox_volume(this.ptr);
@@ -6623,9 +10969,49 @@ export class STBox extends Box {
  */
 export class Temporal extends MeosObject {
 
+	/** MEOS: adjacent_temporal_tstzspan */
+	adjacent(s: TsTzSpan): boolean {
+		return F.adjacent_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: after_temporal_tstzspan */
+	after(s: TsTzSpan): boolean {
+		return F.after_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
 	/** MEOS: temporal_after_timestamptz */
 	afterTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_temporal_temporal */
+	alwaysEq(temp2: Temporal): number {
+		return F.always_eq_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ge_temporal_temporal */
+	alwaysGe(temp2: Temporal): number {
+		return F.always_ge_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_gt_temporal_temporal */
+	alwaysGt(temp2: Temporal): number {
+		return F.always_gt_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_le_temporal_temporal */
+	alwaysLe(temp2: Temporal): number {
+		return F.always_le_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_lt_temporal_temporal */
+	alwaysLt(temp2: Temporal): number {
+		return F.always_lt_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_temporal_temporal */
+	alwaysNe(temp2: Temporal): number {
+		return F.always_ne_temporal_temporal(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: temporal_append_tinstant */
@@ -6708,6 +11094,11 @@ export class Temporal extends MeosObject {
 		return F.temporal_basetype_name(this.ptr);
 	}
 
+	/** MEOS: before_temporal_tstzspan */
+	before(s: TsTzSpan): boolean {
+		return F.before_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
 	/** MEOS: temporal_before_timestamptz */
 	beforeTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_before_timestamptz(this.ptr, t, strict)) as Temporal | null;
@@ -6716,6 +11107,16 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_cmp */
 	cmp(temp2: Temporal): number {
 		return F.temporal_cmp(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contained_temporal_tstzspan */
+	contained(s: TsTzSpan): boolean {
+		return F.contained_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_temporal_tstzspan */
+	contains(s: TsTzSpan): boolean {
+		return F.contains_temporal_tstzspan(this.ptr, s.ptr);
 	}
 
 	/** MEOS: temporal_copy */
@@ -6791,6 +11192,36 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_eq */
 	eq(temp2: Temporal): boolean {
 		return F.temporal_eq(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_temporal_temporal */
+	everEq(temp2: Temporal): number {
+		return F.ever_eq_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ge_temporal_temporal */
+	everGe(temp2: Temporal): number {
+		return F.ever_ge_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_gt_temporal_temporal */
+	everGt(temp2: Temporal): number {
+		return F.ever_gt_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_le_temporal_temporal */
+	everLe(temp2: Temporal): number {
+		return F.ever_le_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_lt_temporal_temporal */
+	everLt(temp2: Temporal): number {
+		return F.ever_lt_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_temporal_temporal */
+	everNe(temp2: Temporal): number {
+		return F.ever_ne_temporal_temporal(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: temporal_ext_kalman_filter */
@@ -6973,9 +11404,29 @@ export class Temporal extends MeosObject {
 		return F.temporal_num_timestamps(this.ptr);
 	}
 
+	/** MEOS: overafter_temporal_tstzspan */
+	overafter(s: TsTzSpan): boolean {
+		return F.overafter_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overbefore_temporal_tstzspan */
+	overbefore(s: TsTzSpan): boolean {
+		return F.overbefore_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_temporal_tstzspan */
+	overlaps(s: TsTzSpan): boolean {
+		return F.overlaps_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
 	/** MEOS: temporal_round */
 	round(maxdd: number): Temporal {
 		return wrapTemporal(F.temporal_round(this.ptr, maxdd)) as Temporal;
+	}
+
+	/** MEOS: same_temporal_tstzspan */
+	same(s: TsTzSpan): boolean {
+		return F.same_temporal_tstzspan(this.ptr, s.ptr);
 	}
 
 	/** MEOS: temporal_scale_time */
@@ -7190,6 +11641,21 @@ export class Temporal extends MeosObject {
 		return F.temporal_subtype(this.ptr);
 	}
 
+	/** MEOS: teq_temporal_temporal */
+	teq(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.teq_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tge_temporal_temporal */
+	tge(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.tge_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tgt_temporal_temporal */
+	tgt(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.tgt_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_time */
 	time(): SpanSet {
 		return wrapSpanSet(F.temporal_time(this.ptr)) as SpanSet;
@@ -7240,6 +11706,21 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_timestamptz_n */
 	timestamptzN(n: number): TimestampTz {
 		return F.temporal_timestamptz_n(this.ptr, n);
+	}
+
+	/** MEOS: tle_temporal_temporal */
+	tle(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.tle_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tlt_temporal_temporal */
+	tlt(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.tlt_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_temporal_temporal */
+	tne(temp2: Temporal): Temporal | null {
+		return wrapTemporalOrNull(F.tne_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: temporal_to_tstzspan */
@@ -7302,6 +11783,105 @@ export class Temporal extends MeosObject {
  * Non-numeric, non-spatial temporal types (step/discrete interpolation only). A real MEOS grouping (talpha_type) with no user-facing class name in PyMEOS — see corrections.
  */
 export class TAlpha extends Temporal {
+
+	/** MEOS: adjacent_temporal_temporal */
+	private _adjacent_temporal_temporal(temp2: TAlpha): boolean {
+		return F.adjacent_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: after_temporal_temporal */
+	private _after_temporal_temporal(temp2: TAlpha): boolean {
+		return F.after_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: before_temporal_temporal */
+	private _before_temporal_temporal(temp2: TAlpha): boolean {
+		return F.before_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contained_temporal_temporal */
+	private _contained_temporal_temporal(temp2: TAlpha): boolean {
+		return F.contained_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contains_temporal_temporal */
+	private _contains_temporal_temporal(temp2: TAlpha): boolean {
+		return F.contains_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overafter_temporal_temporal */
+	private _overafter_temporal_temporal(temp2: TAlpha): boolean {
+		return F.overafter_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overbefore_temporal_temporal */
+	private _overbefore_temporal_temporal(temp2: TAlpha): boolean {
+		return F.overbefore_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overlaps_temporal_temporal */
+	private _overlaps_temporal_temporal(temp2: TAlpha): boolean {
+		return F.overlaps_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: same_temporal_temporal */
+	private _same_temporal_temporal(temp2: TAlpha): boolean {
+		return F.same_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adjacent_temporal_temporal, chosen by the arguments' types */
+	override adjacent(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._adjacent_temporal_temporal(temp2 as TAlpha);
+		return super.adjacent(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: after_temporal_temporal, chosen by the arguments' types */
+	override after(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._after_temporal_temporal(temp2 as TAlpha);
+		return super.after(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: before_temporal_temporal, chosen by the arguments' types */
+	override before(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._before_temporal_temporal(temp2 as TAlpha);
+		return super.before(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: contained_temporal_temporal, chosen by the arguments' types */
+	override contained(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._contained_temporal_temporal(temp2 as TAlpha);
+		return super.contained(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: contains_temporal_temporal, chosen by the arguments' types */
+	override contains(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._contains_temporal_temporal(temp2 as TAlpha);
+		return super.contains(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: overafter_temporal_temporal, chosen by the arguments' types */
+	override overafter(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._overafter_temporal_temporal(temp2 as TAlpha);
+		return super.overafter(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: overbefore_temporal_temporal, chosen by the arguments' types */
+	override overbefore(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._overbefore_temporal_temporal(temp2 as TAlpha);
+		return super.overbefore(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: overlaps_temporal_temporal, chosen by the arguments' types */
+	override overlaps(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._overlaps_temporal_temporal(temp2 as TAlpha);
+		return super.overlaps(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: same_temporal_temporal, chosen by the arguments' types */
+	override same(temp2: TAlpha | TsTzSpan): boolean {
+		if (temp2 instanceof TAlpha) return this._same_temporal_temporal(temp2 as TAlpha);
+		return super.same(temp2 as TsTzSpan);
+	}
 }
 
 /**
@@ -7309,9 +11889,204 @@ export class TAlpha extends Temporal {
  */
 export class TNumber extends Temporal {
 
+	/** MEOS: adjacent_tnumber_numspan */
+	private _adjacent_tnumber_numspan(s: Span): boolean {
+		return F.adjacent_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: adjacent_tnumber_tbox */
+	private _adjacent_tnumber_tbox(box: TBox): boolean {
+		return F.adjacent_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: adjacent_tnumber_tnumber */
+	private _adjacent_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.adjacent_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: after_tnumber_tbox */
+	private _after_tnumber_tbox(box: TBox): boolean {
+		return F.after_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: after_tnumber_tnumber */
+	private _after_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.after_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: before_tnumber_tbox */
+	private _before_tnumber_tbox(box: TBox): boolean {
+		return F.before_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: before_tnumber_tnumber */
+	private _before_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.before_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contained_tnumber_numspan */
+	private _contained_tnumber_numspan(s: Span): boolean {
+		return F.contained_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_tnumber_tbox */
+	private _contained_tnumber_tbox(box: TBox): boolean {
+		return F.contained_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contained_tnumber_tnumber */
+	private _contained_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.contained_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contains_tnumber_numspan */
+	private _contains_tnumber_numspan(s: Span): boolean {
+		return F.contains_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_tnumber_tbox */
+	private _contains_tnumber_tbox(box: TBox): boolean {
+		return F.contains_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contains_tnumber_tnumber */
+	private _contains_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.contains_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: left_tnumber_numspan */
+	private _left_tnumber_numspan(s: Span): boolean {
+		return F.left_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: left_tnumber_tbox */
+	private _left_tnumber_tbox(box: TBox): boolean {
+		return F.left_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: left_tnumber_tnumber */
+	private _left_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.left_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overafter_tnumber_tbox */
+	private _overafter_tnumber_tbox(box: TBox): boolean {
+		return F.overafter_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overafter_tnumber_tnumber */
+	private _overafter_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.overafter_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overbefore_tnumber_tbox */
+	private _overbefore_tnumber_tbox(box: TBox): boolean {
+		return F.overbefore_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overbefore_tnumber_tnumber */
+	private _overbefore_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.overbefore_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overlaps_tnumber_numspan */
+	private _overlaps_tnumber_numspan(s: Span): boolean {
+		return F.overlaps_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_tnumber_tbox */
+	private _overlaps_tnumber_tbox(box: TBox): boolean {
+		return F.overlaps_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overlaps_tnumber_tnumber */
+	private _overlaps_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.overlaps_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overleft_tnumber_numspan */
+	private _overleft_tnumber_numspan(s: Span): boolean {
+		return F.overleft_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overleft_tnumber_tbox */
+	private _overleft_tnumber_tbox(box: TBox): boolean {
+		return F.overleft_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overleft_tnumber_tnumber */
+	private _overleft_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.overleft_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overright_tnumber_numspan */
+	private _overright_tnumber_numspan(s: Span): boolean {
+		return F.overright_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overright_tnumber_tbox */
+	private _overright_tnumber_tbox(box: TBox): boolean {
+		return F.overright_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overright_tnumber_tnumber */
+	private _overright_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.overright_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: right_tnumber_numspan */
+	private _right_tnumber_numspan(s: Span): boolean {
+		return F.right_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: right_tnumber_tbox */
+	private _right_tnumber_tbox(box: TBox): boolean {
+		return F.right_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: right_tnumber_tnumber */
+	private _right_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.right_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: same_tnumber_numspan */
+	private _same_tnumber_numspan(s: Span): boolean {
+		return F.same_tnumber_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: same_tnumber_tbox */
+	private _same_tnumber_tbox(box: TBox): boolean {
+		return F.same_tnumber_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: same_tnumber_tnumber */
+	private _same_tnumber_tnumber(temp2: TNumber): boolean {
+		return F.same_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
 	/** MEOS: tnumber_abs */
 	abs(): Temporal {
 		return wrapTemporal(F.tnumber_abs(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: add_tnumber_tnumber */
+	add(tnumber2: TNumber): Temporal | null {
+		return wrapTemporalOrNull(F.add_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: adjacent_tnumber_numspan, adjacent_tnumber_tbox, adjacent_tnumber_tnumber, chosen by the arguments' types */
+	override adjacent(s: Span | TBox | TNumber | TsTzSpan): boolean {
+		if (s instanceof Span) return this._adjacent_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._adjacent_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._adjacent_tnumber_tnumber(s as TNumber);
+		return super.adjacent(s as TsTzSpan);
+	}
+
+	/** MEOS: after_tnumber_tbox, after_tnumber_tnumber, chosen by the arguments' types */
+	override after(box: TBox | TNumber | TsTzSpan): boolean {
+		if (box instanceof TBox) return this._after_tnumber_tbox(box as TBox);
+		if (box instanceof TNumber) return this._after_tnumber_tnumber(box as TNumber);
+		return super.after(box as TsTzSpan);
 	}
 
 	/** MEOS: tnumber_angular_difference */
@@ -7339,14 +12114,50 @@ export class TNumber extends Temporal {
 		return F.tnumber_avg_value(this.ptr);
 	}
 
+	/** MEOS: before_tnumber_tbox, before_tnumber_tnumber, chosen by the arguments' types */
+	override before(box: TBox | TNumber | TsTzSpan): boolean {
+		if (box instanceof TBox) return this._before_tnumber_tbox(box as TBox);
+		if (box instanceof TNumber) return this._before_tnumber_tnumber(box as TNumber);
+		return super.before(box as TsTzSpan);
+	}
+
+	/** MEOS: contained_tnumber_numspan, contained_tnumber_tbox, contained_tnumber_tnumber, chosen by the arguments' types */
+	override contained(s: Span | TBox | TNumber | TsTzSpan): boolean {
+		if (s instanceof Span) return this._contained_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._contained_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._contained_tnumber_tnumber(s as TNumber);
+		return super.contained(s as TsTzSpan);
+	}
+
+	/** MEOS: contains_tnumber_numspan, contains_tnumber_tbox, contains_tnumber_tnumber, chosen by the arguments' types */
+	override contains(s: Span | TBox | TNumber | TsTzSpan): boolean {
+		if (s instanceof Span) return this._contains_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._contains_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._contains_tnumber_tnumber(s as TNumber);
+		return super.contains(s as TsTzSpan);
+	}
+
 	/** MEOS: tnumber_delta_value */
 	deltaValue(): Temporal | null {
 		return wrapTemporalOrNull(F.tnumber_delta_value(this.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: div_tnumber_tnumber */
+	div(tnumber2: TNumber): Temporal | null {
+		return wrapTemporalOrNull(F.div_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tnumber_integral */
 	integral(): number {
 		return F.tnumber_integral(this.ptr);
+	}
+
+	/** MEOS: left_tnumber_numspan, left_tnumber_tbox, left_tnumber_tnumber, chosen by the arguments' types */
+	left(s: Span | TBox | TNumber): boolean {
+		if (s instanceof Span) return this._left_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._left_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._left_tnumber_tnumber(s as TNumber);
+		throw new TypeError(`TNumber.left: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnumber_minus_span */
@@ -7362,6 +12173,65 @@ export class TNumber extends Temporal {
 	/** MEOS: tnumber_minus_tbox */
 	minusTbox(box: TBox): Temporal | null {
 		return wrapTemporalOrNull(F.tnumber_minus_tbox(this.ptr, box.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: mul_tnumber_tnumber */
+	mul(tnumber2: TNumber): Temporal | null {
+		return wrapTemporalOrNull(F.mul_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: overafter_tnumber_tbox, overafter_tnumber_tnumber, chosen by the arguments' types */
+	override overafter(box: TBox | TNumber | TsTzSpan): boolean {
+		if (box instanceof TBox) return this._overafter_tnumber_tbox(box as TBox);
+		if (box instanceof TNumber) return this._overafter_tnumber_tnumber(box as TNumber);
+		return super.overafter(box as TsTzSpan);
+	}
+
+	/** MEOS: overbefore_tnumber_tbox, overbefore_tnumber_tnumber, chosen by the arguments' types */
+	override overbefore(box: TBox | TNumber | TsTzSpan): boolean {
+		if (box instanceof TBox) return this._overbefore_tnumber_tbox(box as TBox);
+		if (box instanceof TNumber) return this._overbefore_tnumber_tnumber(box as TNumber);
+		return super.overbefore(box as TsTzSpan);
+	}
+
+	/** MEOS: overlaps_tnumber_numspan, overlaps_tnumber_tbox, overlaps_tnumber_tnumber, chosen by the arguments' types */
+	override overlaps(s: Span | TBox | TNumber | TsTzSpan): boolean {
+		if (s instanceof Span) return this._overlaps_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._overlaps_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._overlaps_tnumber_tnumber(s as TNumber);
+		return super.overlaps(s as TsTzSpan);
+	}
+
+	/** MEOS: overleft_tnumber_numspan, overleft_tnumber_tbox, overleft_tnumber_tnumber, chosen by the arguments' types */
+	overleft(s: Span | TBox | TNumber): boolean {
+		if (s instanceof Span) return this._overleft_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._overleft_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._overleft_tnumber_tnumber(s as TNumber);
+		throw new TypeError(`TNumber.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_tnumber_numspan, overright_tnumber_tbox, overright_tnumber_tnumber, chosen by the arguments' types */
+	overright(s: Span | TBox | TNumber): boolean {
+		if (s instanceof Span) return this._overright_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._overright_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._overright_tnumber_tnumber(s as TNumber);
+		throw new TypeError(`TNumber.overright: no overload takes these arguments`);
+	}
+
+	/** MEOS: right_tnumber_numspan, right_tnumber_tbox, right_tnumber_tnumber, chosen by the arguments' types */
+	right(s: Span | TBox | TNumber): boolean {
+		if (s instanceof Span) return this._right_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._right_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._right_tnumber_tnumber(s as TNumber);
+		throw new TypeError(`TNumber.right: no overload takes these arguments`);
+	}
+
+	/** MEOS: same_tnumber_numspan, same_tnumber_tbox, same_tnumber_tnumber, chosen by the arguments' types */
+	override same(s: Span | TBox | TNumber | TsTzSpan): boolean {
+		if (s instanceof Span) return this._same_tnumber_numspan(s as Span);
+		if (s instanceof TBox) return this._same_tnumber_tbox(s as TBox);
+		if (s instanceof TNumber) return this._same_tnumber_tnumber(s as TNumber);
+		return super.same(s as TsTzSpan);
 	}
 
 	/** MEOS: tnumber_split_each_n_tboxes */
@@ -7404,6 +12274,11 @@ export class TNumber extends Temporal {
 		}
 	}
 
+	/** MEOS: sub_tnumber_tnumber */
+	sub(tnumber2: TNumber): Temporal | null {
+		return wrapTemporalOrNull(F.sub_tnumber_tnumber(this.ptr, tnumber2.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tnumber_tboxes */
 	tboxes(): TBox[] {
 		const _count = _alloc(4);
@@ -7422,6 +12297,11 @@ export class TNumber extends Temporal {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tdistance_tnumber_tnumber */
+	tdistance(temp2: TNumber): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tnumber_tnumber(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tnumber_to_span */
@@ -7460,6 +12340,178 @@ export class TBigint extends TNumber {
 		return this.out();
 	}
 
+	/** MEOS: add_tbigint_bigint */
+	private _add_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.add_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: always_eq_tbigint_bigint */
+	private _always_eq_tbigint_bigint(i: number): number {
+		return F.always_eq_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: always_ge_tbigint_bigint */
+	private _always_ge_tbigint_bigint(i: number): number {
+		return F.always_ge_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: always_gt_tbigint_bigint */
+	private _always_gt_tbigint_bigint(i: number): number {
+		return F.always_gt_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: always_le_tbigint_bigint */
+	private _always_le_tbigint_bigint(i: number): number {
+		return F.always_le_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: always_lt_tbigint_bigint */
+	private _always_lt_tbigint_bigint(i: number): number {
+		return F.always_lt_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: always_ne_tbigint_bigint */
+	private _always_ne_tbigint_bigint(i: number): number {
+		return F.always_ne_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: div_tbigint_bigint */
+	private _div_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.div_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_tbigint_bigint */
+	private _ever_eq_tbigint_bigint(i: number): number {
+		return F.ever_eq_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: ever_ge_tbigint_bigint */
+	private _ever_ge_tbigint_bigint(i: number): number {
+		return F.ever_ge_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: ever_gt_tbigint_bigint */
+	private _ever_gt_tbigint_bigint(i: number): number {
+		return F.ever_gt_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: ever_le_tbigint_bigint */
+	private _ever_le_tbigint_bigint(i: number): number {
+		return F.ever_le_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: ever_lt_tbigint_bigint */
+	private _ever_lt_tbigint_bigint(i: number): number {
+		return F.ever_lt_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: ever_ne_tbigint_bigint */
+	private _ever_ne_tbigint_bigint(i: number): number {
+		return F.ever_ne_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: mul_tbigint_bigint */
+	private _mul_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.mul_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: nad_tbigint_bigint */
+	private _nad_tbigint_bigint(i: number): number {
+		return F.nad_tbigint_bigint(this.ptr, i);
+	}
+
+	/** MEOS: nad_tbigint_bigintspan */
+	private _nad_tbigint_bigintspan(s: BigIntSpan): number {
+		return F.nad_tbigint_bigintspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: nad_tbigint_tbigint */
+	private _nad_tbigint_tbigint(temp2: TBigint): number {
+		return F.nad_tbigint_tbigint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tbigint_tbox */
+	private _nad_tbigint_tbox(box: TBox): number {
+		return F.nad_tbigint_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: sub_tbigint_bigint */
+	private _sub_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.sub_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: teq_tbigint_bigint */
+	private _teq_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.teq_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tge_tbigint_bigint */
+	private _tge_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.tge_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tgt_tbigint_bigint */
+	private _tgt_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.tgt_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tle_tbigint_bigint */
+	private _tle_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.tle_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tlt_tbigint_bigint */
+	private _tlt_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.tlt_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tne_tbigint_bigint */
+	private _tne_tbigint_bigint(i: number): Temporal {
+		return wrapTemporal(F.tne_tbigint_bigint(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: add_tbigint_bigint, chosen by the arguments' types */
+	override add(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._add_tbigint_bigint(i as number);
+		return super.add(i as TNumber);
+	}
+
+	/** MEOS: always_eq_tbigint_bigint, chosen by the arguments' types */
+	override alwaysEq(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_eq_tbigint_bigint(i as number);
+		return super.alwaysEq(i as Temporal);
+	}
+
+	/** MEOS: always_ge_tbigint_bigint, chosen by the arguments' types */
+	override alwaysGe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_ge_tbigint_bigint(i as number);
+		return super.alwaysGe(i as Temporal);
+	}
+
+	/** MEOS: always_gt_tbigint_bigint, chosen by the arguments' types */
+	override alwaysGt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_gt_tbigint_bigint(i as number);
+		return super.alwaysGt(i as Temporal);
+	}
+
+	/** MEOS: always_le_tbigint_bigint, chosen by the arguments' types */
+	override alwaysLe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_le_tbigint_bigint(i as number);
+		return super.alwaysLe(i as Temporal);
+	}
+
+	/** MEOS: always_lt_tbigint_bigint, chosen by the arguments' types */
+	override alwaysLt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_lt_tbigint_bigint(i as number);
+		return super.alwaysLt(i as Temporal);
+	}
+
+	/** MEOS: always_ne_tbigint_bigint, chosen by the arguments' types */
+	override alwaysNe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_ne_tbigint_bigint(i as number);
+		return super.alwaysNe(i as Temporal);
+	}
+
 	/** MEOS: tbigint_out */
 	asText(): string {
 		return this.out();
@@ -7470,9 +12522,51 @@ export class TBigint extends TNumber {
 		return wrapTemporalOrNull(F.tbigint_at_value(this.ptr, i)) as Temporal | null;
 	}
 
+	/** MEOS: div_tbigint_bigint, chosen by the arguments' types */
+	override div(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._div_tbigint_bigint(i as number);
+		return super.div(i as TNumber);
+	}
+
 	/** MEOS: tbigint_end_value */
 	endValue(): number {
 		return F.tbigint_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_tbigint_bigint, chosen by the arguments' types */
+	override everEq(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_eq_tbigint_bigint(i as number);
+		return super.everEq(i as Temporal);
+	}
+
+	/** MEOS: ever_ge_tbigint_bigint, chosen by the arguments' types */
+	override everGe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_ge_tbigint_bigint(i as number);
+		return super.everGe(i as Temporal);
+	}
+
+	/** MEOS: ever_gt_tbigint_bigint, chosen by the arguments' types */
+	override everGt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_gt_tbigint_bigint(i as number);
+		return super.everGt(i as Temporal);
+	}
+
+	/** MEOS: ever_le_tbigint_bigint, chosen by the arguments' types */
+	override everLe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_le_tbigint_bigint(i as number);
+		return super.everLe(i as Temporal);
+	}
+
+	/** MEOS: ever_lt_tbigint_bigint, chosen by the arguments' types */
+	override everLt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_lt_tbigint_bigint(i as number);
+		return super.everLt(i as Temporal);
+	}
+
+	/** MEOS: ever_ne_tbigint_bigint, chosen by the arguments' types */
+	override everNe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_ne_tbigint_bigint(i as number);
+		return super.everNe(i as Temporal);
 	}
 
 	/** MEOS: tbigint_max_value */
@@ -7490,9 +12584,134 @@ export class TBigint extends TNumber {
 		return F.tbigint_min_value(this.ptr);
 	}
 
+	/** MEOS: mul_tbigint_bigint, chosen by the arguments' types */
+	override mul(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._mul_tbigint_bigint(i as number);
+		return super.mul(i as TNumber);
+	}
+
+	/** MEOS: nad_tbigint_bigint, nad_tbigint_bigintspan, nad_tbigint_tbox, nad_tbigint_tbigint, chosen by the arguments' types */
+	nad(i: number | BigIntSpan | TBox | TBigint): number {
+		if (i instanceof BigIntSpan) return this._nad_tbigint_bigintspan(i as BigIntSpan);
+		if (i instanceof TBigint) return this._nad_tbigint_tbigint(i as TBigint);
+		if (i instanceof TBox) return this._nad_tbigint_tbox(i as TBox);
+		if (typeof i === 'number') return this._nad_tbigint_bigint(i as number);
+		throw new TypeError(`TBigint.nad: no overload takes these arguments`);
+	}
+
 	/** MEOS: tbigint_out */
 	out(): string {
 		return F.tbigint_out(this.ptr);
+	}
+
+	/** MEOS: add_bigint_tbigint */
+	radd(i: number): Temporal {
+		return wrapTemporal(F.add_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_bigint_tbigint */
+	ralwaysEq(i: number): number {
+		return F.always_eq_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: always_ge_bigint_tbigint */
+	ralwaysGe(i: number): number {
+		return F.always_ge_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: always_gt_bigint_tbigint */
+	ralwaysGt(i: number): number {
+		return F.always_gt_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: always_le_bigint_tbigint */
+	ralwaysLe(i: number): number {
+		return F.always_le_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: always_lt_bigint_tbigint */
+	ralwaysLt(i: number): number {
+		return F.always_lt_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: always_ne_bigint_tbigint */
+	ralwaysNe(i: number): number {
+		return F.always_ne_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: div_bigint_tbigint */
+	rdiv(i: number): Temporal {
+		return wrapTemporal(F.div_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_bigint_tbigint */
+	reverEq(i: number): number {
+		return F.ever_eq_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: ever_ge_bigint_tbigint */
+	reverGe(i: number): number {
+		return F.ever_ge_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: ever_gt_bigint_tbigint */
+	reverGt(i: number): number {
+		return F.ever_gt_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: ever_le_bigint_tbigint */
+	reverLe(i: number): number {
+		return F.ever_le_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: ever_lt_bigint_tbigint */
+	reverLt(i: number): number {
+		return F.ever_lt_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: ever_ne_bigint_tbigint */
+	reverNe(i: number): number {
+		return F.ever_ne_bigint_tbigint(i, this.ptr);
+	}
+
+	/** MEOS: mul_bigint_tbigint */
+	rmul(i: number): Temporal {
+		return wrapTemporal(F.mul_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: sub_bigint_tbigint */
+	rsub(i: number): Temporal {
+		return wrapTemporal(F.sub_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: teq_bigint_tbigint */
+	rteq(i: number): Temporal {
+		return wrapTemporal(F.teq_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tge_bigint_tbigint */
+	rtge(i: number): Temporal {
+		return wrapTemporal(F.tge_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tgt_bigint_tbigint */
+	rtgt(i: number): Temporal {
+		return wrapTemporal(F.tgt_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tle_bigint_tbigint */
+	rtle(i: number): Temporal {
+		return wrapTemporal(F.tle_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tlt_bigint_tbigint */
+	rtlt(i: number): Temporal {
+		return wrapTemporal(F.tlt_bigint_tbigint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_bigint_tbigint */
+	rtne(i: number): Temporal {
+		return wrapTemporal(F.tne_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tbigint_scale_value */
@@ -7515,6 +12734,30 @@ export class TBigint extends TNumber {
 		return F.tbigint_start_value(this.ptr);
 	}
 
+	/** MEOS: sub_tbigint_bigint, chosen by the arguments' types */
+	override sub(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._sub_tbigint_bigint(i as number);
+		return super.sub(i as TNumber);
+	}
+
+	/** MEOS: teq_tbigint_bigint, chosen by the arguments' types */
+	override teq(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._teq_tbigint_bigint(i as number);
+		return super.teq(i as Temporal);
+	}
+
+	/** MEOS: tge_tbigint_bigint, chosen by the arguments' types */
+	override tge(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tge_tbigint_bigint(i as number);
+		return super.tge(i as Temporal);
+	}
+
+	/** MEOS: tgt_tbigint_bigint, chosen by the arguments' types */
+	override tgt(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tgt_tbigint_bigint(i as number);
+		return super.tgt(i as Temporal);
+	}
+
 	/** MEOS: tbigint_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
 		const _duration = _putInterval(duration);
@@ -7535,6 +12778,24 @@ export class TBigint extends TNumber {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tle_tbigint_bigint, chosen by the arguments' types */
+	override tle(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tle_tbigint_bigint(i as number);
+		return super.tle(i as Temporal);
+	}
+
+	/** MEOS: tlt_tbigint_bigint, chosen by the arguments' types */
+	override tlt(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tlt_tbigint_bigint(i as number);
+		return super.tlt(i as Temporal);
+	}
+
+	/** MEOS: tne_tbigint_bigint, chosen by the arguments' types */
+	override tne(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tne_tbigint_bigint(i as number);
+		return super.tne(i as Temporal);
 	}
 
 	/** MEOS: tbigint_to_tfloat */
@@ -7723,6 +12984,68 @@ export class TBool extends TAlpha {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_tbool_bool */
+	private _always_eq_tbool_bool(b: boolean): number {
+		return F.always_eq_tbool_bool(this.ptr, b);
+	}
+
+	/** MEOS: always_ne_tbool_bool */
+	private _always_ne_tbool_bool(b: boolean): number {
+		return F.always_ne_tbool_bool(this.ptr, b);
+	}
+
+	/** MEOS: ever_eq_tbool_bool */
+	private _ever_eq_tbool_bool(b: boolean): number {
+		return F.ever_eq_tbool_bool(this.ptr, b);
+	}
+
+	/** MEOS: ever_ne_tbool_bool */
+	private _ever_ne_tbool_bool(b: boolean): number {
+		return F.ever_ne_tbool_bool(this.ptr, b);
+	}
+
+	/** MEOS: tand_tbool_bool */
+	private _tand_tbool_bool(b: boolean): Temporal {
+		return wrapTemporal(F.tand_tbool_bool(this.ptr, b)) as Temporal;
+	}
+
+	/** MEOS: tand_tbool_tbool */
+	private _tand_tbool_tbool(temp2: TBool): Temporal | null {
+		return wrapTemporalOrNull(F.tand_tbool_tbool(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tbool_bool */
+	private _teq_tbool_bool(b: boolean): Temporal {
+		return wrapTemporal(F.teq_tbool_bool(this.ptr, b)) as Temporal;
+	}
+
+	/** MEOS: tne_tbool_bool */
+	private _tne_tbool_bool(b: boolean): Temporal {
+		return wrapTemporal(F.tne_tbool_bool(this.ptr, b)) as Temporal;
+	}
+
+	/** MEOS: tor_tbool_bool */
+	private _tor_tbool_bool(b: boolean): Temporal {
+		return wrapTemporal(F.tor_tbool_bool(this.ptr, b)) as Temporal;
+	}
+
+	/** MEOS: tor_tbool_tbool */
+	private _tor_tbool_tbool(temp2: TBool): Temporal | null {
+		return wrapTemporalOrNull(F.tor_tbool_tbool(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tbool_bool, chosen by the arguments' types */
+	override alwaysEq(b: boolean | Temporal): number {
+		if (typeof b === 'boolean') return this._always_eq_tbool_bool(b as boolean);
+		return super.alwaysEq(b as Temporal);
+	}
+
+	/** MEOS: always_ne_tbool_bool, chosen by the arguments' types */
+	override alwaysNe(b: boolean | Temporal): number {
+		if (typeof b === 'boolean') return this._always_ne_tbool_bool(b as boolean);
+		return super.alwaysNe(b as Temporal);
+	}
+
 	/** MEOS: tbool_out */
 	asText(): string {
 		return this.out();
@@ -7738,6 +13061,18 @@ export class TBool extends TAlpha {
 		return F.tbool_end_value(this.ptr);
 	}
 
+	/** MEOS: ever_eq_tbool_bool, chosen by the arguments' types */
+	override everEq(b: boolean | Temporal): number {
+		if (typeof b === 'boolean') return this._ever_eq_tbool_bool(b as boolean);
+		return super.everEq(b as Temporal);
+	}
+
+	/** MEOS: ever_ne_tbool_bool, chosen by the arguments' types */
+	override everNe(b: boolean | Temporal): number {
+		if (typeof b === 'boolean') return this._ever_ne_tbool_bool(b as boolean);
+		return super.everNe(b as Temporal);
+	}
+
 	/** MEOS: tbool_minus_value */
 	minusValue(b: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.tbool_minus_value(this.ptr, b)) as Temporal | null;
@@ -7748,9 +13083,80 @@ export class TBool extends TAlpha {
 		return F.tbool_out(this.ptr);
 	}
 
+	/** MEOS: always_eq_bool_tbool */
+	ralwaysEq(b: boolean): number {
+		return F.always_eq_bool_tbool(b, this.ptr);
+	}
+
+	/** MEOS: always_ne_bool_tbool */
+	ralwaysNe(b: boolean): number {
+		return F.always_ne_bool_tbool(b, this.ptr);
+	}
+
+	/** MEOS: ever_eq_bool_tbool */
+	reverEq(b: boolean): number {
+		return F.ever_eq_bool_tbool(b, this.ptr);
+	}
+
+	/** MEOS: ever_ne_bool_tbool */
+	reverNe(b: boolean): number {
+		return F.ever_ne_bool_tbool(b, this.ptr);
+	}
+
+	/** MEOS: tand_bool_tbool */
+	rtand(b: boolean): Temporal {
+		return wrapTemporal(F.tand_bool_tbool(b, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: teq_bool_tbool */
+	rteq(b: boolean): Temporal {
+		return wrapTemporal(F.teq_bool_tbool(b, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_bool_tbool */
+	rtne(b: boolean): Temporal {
+		return wrapTemporal(F.tne_bool_tbool(b, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tor_bool_tbool */
+	rtor(b: boolean): Temporal {
+		return wrapTemporal(F.tor_bool_tbool(b, this.ptr)) as Temporal;
+	}
+
 	/** MEOS: tbool_start_value */
 	startValue(): boolean {
 		return F.tbool_start_value(this.ptr);
+	}
+
+	/** MEOS: tand_tbool_bool, tand_tbool_tbool, chosen by the arguments' types */
+	tand(b: boolean | TBool): Temporal | null {
+		if (b instanceof TBool) return this._tand_tbool_tbool(b as TBool);
+		if (typeof b === 'boolean') return this._tand_tbool_bool(b as boolean);
+		throw new TypeError(`TBool.tand: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tbool_bool, chosen by the arguments' types */
+	override teq(b: boolean | Temporal): Temporal | null {
+		if (typeof b === 'boolean') return this._teq_tbool_bool(b as boolean);
+		return super.teq(b as Temporal);
+	}
+
+	/** MEOS: tne_tbool_bool, chosen by the arguments' types */
+	override tne(b: boolean | Temporal): Temporal | null {
+		if (typeof b === 'boolean') return this._tne_tbool_bool(b as boolean);
+		return super.tne(b as Temporal);
+	}
+
+	/** MEOS: tnot_tbool */
+	tnot(): Temporal {
+		return wrapTemporal(F.tnot_tbool(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tor_tbool_bool, tor_tbool_tbool, chosen by the arguments' types */
+	tor(b: boolean | TBool): Temporal | null {
+		if (b instanceof TBool) return this._tor_tbool_tbool(b as TBool);
+		if (typeof b === 'boolean') return this._tor_tbool_bool(b as boolean);
+		throw new TypeError(`TBool.tor: no overload takes these arguments`);
 	}
 
 	/** MEOS: tbool_to_tint */
@@ -7862,6 +13268,243 @@ export class TBox extends Box {
 		return this.out(15);
 	}
 
+	/** MEOS: adjacent_tbox_numspan */
+	private _adjacent_tbox_numspan(s: Span): boolean {
+		return F.adjacent_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: adjacent_tbox_tbox */
+	private _adjacent_tbox_tbox(box2: TBox): boolean {
+		return F.adjacent_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: adjacent_tbox_tnumber */
+	private _adjacent_tbox_tnumber(temp: TNumber): boolean {
+		return F.adjacent_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adjacent_tbox_tstzspan */
+	private _adjacent_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.adjacent_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: after_tbox_tbox */
+	private _after_tbox_tbox(box2: TBox): boolean {
+		return F.after_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: after_tbox_tnumber */
+	private _after_tbox_tnumber(temp: TNumber): boolean {
+		return F.after_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: after_tbox_tstzspan */
+	private _after_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.after_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: before_tbox_tbox */
+	private _before_tbox_tbox(box2: TBox): boolean {
+		return F.before_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: before_tbox_tnumber */
+	private _before_tbox_tnumber(temp: TNumber): boolean {
+		return F.before_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: before_tbox_tstzspan */
+	private _before_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.before_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_tbox_numspan */
+	private _contained_tbox_numspan(s: Span): boolean {
+		return F.contained_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_tbox_tbox */
+	private _contained_tbox_tbox(box2: TBox): boolean {
+		return F.contained_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_tbox_tnumber */
+	private _contained_tbox_tnumber(temp: TNumber): boolean {
+		return F.contained_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contained_tbox_tstzspan */
+	private _contained_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.contained_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_tbox_numspan */
+	private _contains_tbox_numspan(s: Span): boolean {
+		return F.contains_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_tbox_tbox */
+	private _contains_tbox_tbox(box2: TBox): boolean {
+		return F.contains_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contains_tbox_tnumber */
+	private _contains_tbox_tnumber(temp: TNumber): boolean {
+		return F.contains_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contains_tbox_tstzspan */
+	private _contains_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.contains_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: left_tbox_numspan */
+	private _left_tbox_numspan(s: Span): boolean {
+		return F.left_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: left_tbox_tbox */
+	private _left_tbox_tbox(box2: TBox): boolean {
+		return F.left_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: left_tbox_tnumber */
+	private _left_tbox_tnumber(temp: TNumber): boolean {
+		return F.left_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overafter_tbox_tbox */
+	private _overafter_tbox_tbox(box2: TBox): boolean {
+		return F.overafter_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overafter_tbox_tnumber */
+	private _overafter_tbox_tnumber(temp: TNumber): boolean {
+		return F.overafter_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overafter_tbox_tstzspan */
+	private _overafter_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.overafter_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overbefore_tbox_tbox */
+	private _overbefore_tbox_tbox(box2: TBox): boolean {
+		return F.overbefore_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overbefore_tbox_tnumber */
+	private _overbefore_tbox_tnumber(temp: TNumber): boolean {
+		return F.overbefore_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbefore_tbox_tstzspan */
+	private _overbefore_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.overbefore_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_tbox_numspan */
+	private _overlaps_tbox_numspan(s: Span): boolean {
+		return F.overlaps_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_tbox_tbox */
+	private _overlaps_tbox_tbox(box2: TBox): boolean {
+		return F.overlaps_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overlaps_tbox_tnumber */
+	private _overlaps_tbox_tnumber(temp: TNumber): boolean {
+		return F.overlaps_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overlaps_tbox_tstzspan */
+	private _overlaps_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.overlaps_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overleft_tbox_numspan */
+	private _overleft_tbox_numspan(s: Span): boolean {
+		return F.overleft_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overleft_tbox_tbox */
+	private _overleft_tbox_tbox(box2: TBox): boolean {
+		return F.overleft_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overleft_tbox_tnumber */
+	private _overleft_tbox_tnumber(temp: TNumber): boolean {
+		return F.overleft_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overright_tbox_numspan */
+	private _overright_tbox_numspan(s: Span): boolean {
+		return F.overright_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overright_tbox_tbox */
+	private _overright_tbox_tbox(box2: TBox): boolean {
+		return F.overright_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overright_tbox_tnumber */
+	private _overright_tbox_tnumber(temp: TNumber): boolean {
+		return F.overright_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: right_tbox_numspan */
+	private _right_tbox_numspan(s: Span): boolean {
+		return F.right_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: right_tbox_tbox */
+	private _right_tbox_tbox(box2: TBox): boolean {
+		return F.right_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: right_tbox_tnumber */
+	private _right_tbox_tnumber(temp: TNumber): boolean {
+		return F.right_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: same_tbox_numspan */
+	private _same_tbox_numspan(s: Span): boolean {
+		return F.same_tbox_numspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: same_tbox_tbox */
+	private _same_tbox_tbox(box2: TBox): boolean {
+		return F.same_tbox_tbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: same_tbox_tnumber */
+	private _same_tbox_tnumber(temp: TNumber): boolean {
+		return F.same_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: same_tbox_tstzspan */
+	private _same_tbox_tstzspan(s: TsTzSpan): boolean {
+		return F.same_tbox_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: adjacent_tbox_tbox, adjacent_tbox_numspan, adjacent_tbox_tstzspan, adjacent_tbox_tnumber, chosen by the arguments' types */
+	adjacent(box2: TBox | Span | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._adjacent_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._adjacent_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._adjacent_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._adjacent_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.adjacent: no overload takes these arguments`);
+	}
+
+	/** MEOS: after_tbox_tbox, after_tbox_tstzspan, after_tbox_tnumber, chosen by the arguments' types */
+	after(box2: TBox | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._after_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._after_tbox_tbox(box2 as TBox);
+		if (box2 instanceof TNumber) return this._after_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.after: no overload takes these arguments`);
+	}
+
 	/** MEOS: tbox_as_hexwkb */
 	asHexWKB(variant: number): string {
 		return F.tbox_as_hexwkb(this.ptr, variant);
@@ -7877,9 +13520,35 @@ export class TBox extends Box {
 		return readWkb(_sizeOut => F.tbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: before_tbox_tbox, before_tbox_tstzspan, before_tbox_tnumber, chosen by the arguments' types */
+	before(box2: TBox | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._before_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._before_tbox_tbox(box2 as TBox);
+		if (box2 instanceof TNumber) return this._before_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.before: no overload takes these arguments`);
+	}
+
 	/** MEOS: tbox_cmp */
 	cmp(box2: TBox): number {
 		return F.tbox_cmp(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_tbox_tbox, contained_tbox_numspan, contained_tbox_tstzspan, contained_tbox_tnumber, chosen by the arguments' types */
+	contained(box2: TBox | Span | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._contained_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._contained_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._contained_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._contained_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.contained: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_tbox_tbox, contains_tbox_numspan, contains_tbox_tstzspan, contains_tbox_tnumber, chosen by the arguments' types */
+	contains(box2: TBox | Span | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._contains_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._contains_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._contains_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._contains_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.contains: no overload takes these arguments`);
 	}
 
 	/** MEOS: tbox_copy */
@@ -7932,9 +13601,22 @@ export class TBox extends Box {
 		return F.tbox_hasx(this.ptr);
 	}
 
+	/** MEOS: intersection_tbox_tbox */
+	intersection(box2: TBox): TBox | null {
+		return wrapTBoxOrNull(F.intersection_tbox_tbox(this.ptr, box2.ptr)) as TBox | null;
+	}
+
 	/** MEOS: tbox_le */
 	le(box2: TBox): boolean {
 		return F.tbox_le(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: left_tbox_tbox, left_tbox_numspan, left_tbox_tnumber, chosen by the arguments' types */
+	left(box2: TBox | Span | TNumber): boolean {
+		if (box2 instanceof TBox) return this._left_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._left_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._left_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.left: no overload takes these arguments`);
 	}
 
 	/** MEOS: tbox_lt */
@@ -7952,9 +13634,67 @@ export class TBox extends Box {
 		return F.tbox_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: overafter_tbox_tbox, overafter_tbox_tstzspan, overafter_tbox_tnumber, chosen by the arguments' types */
+	overafter(box2: TBox | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._overafter_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._overafter_tbox_tbox(box2 as TBox);
+		if (box2 instanceof TNumber) return this._overafter_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.overafter: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbefore_tbox_tbox, overbefore_tbox_tstzspan, overbefore_tbox_tnumber, chosen by the arguments' types */
+	overbefore(box2: TBox | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._overbefore_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._overbefore_tbox_tbox(box2 as TBox);
+		if (box2 instanceof TNumber) return this._overbefore_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.overbefore: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_tbox_tbox, overlaps_tbox_numspan, overlaps_tbox_tstzspan, overlaps_tbox_tnumber, chosen by the arguments' types */
+	overlaps(box2: TBox | Span | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._overlaps_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._overlaps_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._overlaps_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._overlaps_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.overlaps: no overload takes these arguments`);
+	}
+
+	/** MEOS: overleft_tbox_tbox, overleft_tbox_numspan, overleft_tbox_tnumber, chosen by the arguments' types */
+	overleft(box2: TBox | Span | TNumber): boolean {
+		if (box2 instanceof TBox) return this._overleft_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._overleft_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._overleft_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_tbox_tbox, overright_tbox_numspan, overright_tbox_tnumber, chosen by the arguments' types */
+	overright(box2: TBox | Span | TNumber): boolean {
+		if (box2 instanceof TBox) return this._overright_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._overright_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._overright_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.overright: no overload takes these arguments`);
+	}
+
+	/** MEOS: right_tbox_tbox, right_tbox_numspan, right_tbox_tnumber, chosen by the arguments' types */
+	right(box2: TBox | Span | TNumber): boolean {
+		if (box2 instanceof TBox) return this._right_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._right_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._right_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.right: no overload takes these arguments`);
+	}
+
 	/** MEOS: tbox_round */
 	round(maxdd: number): TBox {
 		return wrapTBox(F.tbox_round(this.ptr, maxdd)) as TBox;
+	}
+
+	/** MEOS: same_tbox_tbox, same_tbox_numspan, same_tbox_tstzspan, same_tbox_tnumber, chosen by the arguments' types */
+	same(box2: TBox | Span | TsTzSpan | TNumber): boolean {
+		if (box2 instanceof TsTzSpan) return this._same_tbox_tstzspan(box2 as TsTzSpan);
+		if (box2 instanceof TBox) return this._same_tbox_tbox(box2 as TBox);
+		if (box2 instanceof Span) return this._same_tbox_numspan(box2 as Span);
+		if (box2 instanceof TNumber) return this._same_tbox_tnumber(box2 as TNumber);
+		throw new TypeError(`TBox.same: no overload takes these arguments`);
 	}
 
 	/** MEOS: tbox_scale_time */
@@ -8056,6 +13796,11 @@ export class TBox extends Box {
 		return wrapSpan(F.tbox_to_tstzspan(this.ptr)) as Span;
 	}
 
+	/** MEOS: union_tbox_tbox */
+	union(box2: TBox, strict: boolean): TBox {
+		return wrapTBox(F.union_tbox_tbox(this.ptr, box2.ptr, strict)) as TBox;
+	}
+
 	/** MEOS: tbox_xmax */
 	xmax(): number {
 		return F.tbox_xmax(this.ptr);
@@ -8127,6 +13872,237 @@ export class TBox extends Box {
  */
 export class TSpatial extends Temporal {
 
+	/** MEOS: above_tspatial_stbox */
+	private _above_tspatial_stbox(box: STBox): boolean {
+		return F.above_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: above_tspatial_tspatial */
+	private _above_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.above_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adjacent_tspatial_stbox */
+	private _adjacent_tspatial_stbox(box: STBox): boolean {
+		return F.adjacent_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: adjacent_tspatial_tspatial */
+	private _adjacent_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.adjacent_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: after_tspatial_stbox */
+	private _after_tspatial_stbox(box: STBox): boolean {
+		return F.after_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: after_tspatial_tspatial */
+	private _after_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.after_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: back_tspatial_stbox */
+	private _back_tspatial_stbox(box: STBox): boolean {
+		return F.back_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: back_tspatial_tspatial */
+	private _back_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.back_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: before_tspatial_stbox */
+	private _before_tspatial_stbox(box: STBox): boolean {
+		return F.before_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: before_tspatial_tspatial */
+	private _before_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.before_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: below_tspatial_stbox */
+	private _below_tspatial_stbox(box: STBox): boolean {
+		return F.below_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: below_tspatial_tspatial */
+	private _below_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.below_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contained_tspatial_stbox */
+	private _contained_tspatial_stbox(box: STBox): boolean {
+		return F.contained_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contained_tspatial_tspatial */
+	private _contained_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.contained_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contains_tspatial_stbox */
+	private _contains_tspatial_stbox(box: STBox): boolean {
+		return F.contains_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contains_tspatial_tspatial */
+	private _contains_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.contains_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: front_tspatial_stbox */
+	private _front_tspatial_stbox(box: STBox): boolean {
+		return F.front_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: front_tspatial_tspatial */
+	private _front_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.front_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: left_tspatial_stbox */
+	private _left_tspatial_stbox(box: STBox): boolean {
+		return F.left_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: left_tspatial_tspatial */
+	private _left_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.left_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overabove_tspatial_stbox */
+	private _overabove_tspatial_stbox(box: STBox): boolean {
+		return F.overabove_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overabove_tspatial_tspatial */
+	private _overabove_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overabove_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overafter_tspatial_stbox */
+	private _overafter_tspatial_stbox(box: STBox): boolean {
+		return F.overafter_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overafter_tspatial_tspatial */
+	private _overafter_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overafter_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overback_tspatial_stbox */
+	private _overback_tspatial_stbox(box: STBox): boolean {
+		return F.overback_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overback_tspatial_tspatial */
+	private _overback_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overback_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overbefore_tspatial_stbox */
+	private _overbefore_tspatial_stbox(box: STBox): boolean {
+		return F.overbefore_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overbefore_tspatial_tspatial */
+	private _overbefore_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overbefore_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overbelow_tspatial_stbox */
+	private _overbelow_tspatial_stbox(box: STBox): boolean {
+		return F.overbelow_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overbelow_tspatial_tspatial */
+	private _overbelow_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overbelow_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overfront_tspatial_stbox */
+	private _overfront_tspatial_stbox(box: STBox): boolean {
+		return F.overfront_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overfront_tspatial_tspatial */
+	private _overfront_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overfront_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overlaps_tspatial_stbox */
+	private _overlaps_tspatial_stbox(box: STBox): boolean {
+		return F.overlaps_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overlaps_tspatial_tspatial */
+	private _overlaps_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overlaps_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overleft_tspatial_stbox */
+	private _overleft_tspatial_stbox(box: STBox): boolean {
+		return F.overleft_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overleft_tspatial_tspatial */
+	private _overleft_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overleft_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: overright_tspatial_stbox */
+	private _overright_tspatial_stbox(box: STBox): boolean {
+		return F.overright_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overright_tspatial_tspatial */
+	private _overright_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.overright_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: right_tspatial_stbox */
+	private _right_tspatial_stbox(box: STBox): boolean {
+		return F.right_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: right_tspatial_tspatial */
+	private _right_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.right_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: same_tspatial_stbox */
+	private _same_tspatial_stbox(box: STBox): boolean {
+		return F.same_tspatial_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: same_tspatial_tspatial */
+	private _same_tspatial_tspatial(temp2: TSpatial): boolean {
+		return F.same_tspatial_tspatial(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: above_tspatial_stbox, above_tspatial_tspatial, chosen by the arguments' types */
+	above(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._above_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._above_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.above: no overload takes these arguments`);
+	}
+
+	/** MEOS: adjacent_tspatial_stbox, adjacent_tspatial_tspatial, chosen by the arguments' types */
+	override adjacent(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._adjacent_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._adjacent_tspatial_tspatial(box as TSpatial);
+		return super.adjacent(box as TsTzSpan);
+	}
+
+	/** MEOS: after_tspatial_stbox, after_tspatial_tspatial, chosen by the arguments' types */
+	override after(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._after_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._after_tspatial_tspatial(box as TSpatial);
+		return super.after(box as TsTzSpan);
+	}
+
 	/** MEOS: tspatial_as_ewkb */
 	asEWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.tspatial_as_ewkb(this.ptr, variant, _sizeOut));
@@ -8147,9 +14123,135 @@ export class TSpatial extends Temporal {
 		return F.tspatial_as_text(this.ptr, maxdd);
 	}
 
+	/** MEOS: back_tspatial_stbox, back_tspatial_tspatial, chosen by the arguments' types */
+	back(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._back_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._back_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.back: no overload takes these arguments`);
+	}
+
+	/** MEOS: before_tspatial_stbox, before_tspatial_tspatial, chosen by the arguments' types */
+	override before(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._before_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._before_tspatial_tspatial(box as TSpatial);
+		return super.before(box as TsTzSpan);
+	}
+
+	/** MEOS: below_tspatial_stbox, below_tspatial_tspatial, chosen by the arguments' types */
+	below(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._below_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._below_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.below: no overload takes these arguments`);
+	}
+
+	/** MEOS: contained_tspatial_stbox, contained_tspatial_tspatial, chosen by the arguments' types */
+	override contained(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._contained_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._contained_tspatial_tspatial(box as TSpatial);
+		return super.contained(box as TsTzSpan);
+	}
+
+	/** MEOS: contains_tspatial_stbox, contains_tspatial_tspatial, chosen by the arguments' types */
+	override contains(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._contains_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._contains_tspatial_tspatial(box as TSpatial);
+		return super.contains(box as TsTzSpan);
+	}
+
+	/** MEOS: front_tspatial_stbox, front_tspatial_tspatial, chosen by the arguments' types */
+	front(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._front_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._front_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.front: no overload takes these arguments`);
+	}
+
+	/** MEOS: left_tspatial_stbox, left_tspatial_tspatial, chosen by the arguments' types */
+	left(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._left_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._left_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.left: no overload takes these arguments`);
+	}
+
 	/** MEOS: tspatial_out */
 	out(maxdd: number): string {
 		return F.tspatial_out(this.ptr, maxdd);
+	}
+
+	/** MEOS: overabove_tspatial_stbox, overabove_tspatial_tspatial, chosen by the arguments' types */
+	overabove(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overabove_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overabove_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overabove: no overload takes these arguments`);
+	}
+
+	/** MEOS: overafter_tspatial_stbox, overafter_tspatial_tspatial, chosen by the arguments' types */
+	override overafter(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._overafter_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overafter_tspatial_tspatial(box as TSpatial);
+		return super.overafter(box as TsTzSpan);
+	}
+
+	/** MEOS: overback_tspatial_stbox, overback_tspatial_tspatial, chosen by the arguments' types */
+	overback(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overback_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overback_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overback: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbefore_tspatial_stbox, overbefore_tspatial_tspatial, chosen by the arguments' types */
+	override overbefore(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._overbefore_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overbefore_tspatial_tspatial(box as TSpatial);
+		return super.overbefore(box as TsTzSpan);
+	}
+
+	/** MEOS: overbelow_tspatial_stbox, overbelow_tspatial_tspatial, chosen by the arguments' types */
+	overbelow(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overbelow_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overbelow_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overbelow: no overload takes these arguments`);
+	}
+
+	/** MEOS: overfront_tspatial_stbox, overfront_tspatial_tspatial, chosen by the arguments' types */
+	overfront(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overfront_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overfront_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overfront: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_tspatial_stbox, overlaps_tspatial_tspatial, chosen by the arguments' types */
+	override overlaps(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._overlaps_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overlaps_tspatial_tspatial(box as TSpatial);
+		return super.overlaps(box as TsTzSpan);
+	}
+
+	/** MEOS: overleft_tspatial_stbox, overleft_tspatial_tspatial, chosen by the arguments' types */
+	overleft(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overleft_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overleft_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_tspatial_stbox, overright_tspatial_tspatial, chosen by the arguments' types */
+	overright(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._overright_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._overright_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.overright: no overload takes these arguments`);
+	}
+
+	/** MEOS: right_tspatial_stbox, right_tspatial_tspatial, chosen by the arguments' types */
+	right(box: STBox | TSpatial): boolean {
+		if (box instanceof STBox) return this._right_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._right_tspatial_tspatial(box as TSpatial);
+		throw new TypeError(`TSpatial.right: no overload takes these arguments`);
+	}
+
+	/** MEOS: same_tspatial_stbox, same_tspatial_tspatial, chosen by the arguments' types */
+	override same(box: STBox | TSpatial | TsTzSpan): boolean {
+		if (box instanceof STBox) return this._same_tspatial_stbox(box as STBox);
+		if (box instanceof TSpatial) return this._same_tspatial_tspatial(box as TSpatial);
+		return super.same(box as TsTzSpan);
 	}
 
 	/** MEOS: tspatial_set_srid */
@@ -8188,6 +14290,445 @@ export class TCbuffer extends TSpatial {
 		return this.asText(15);
 	}
 
+	/** MEOS: acontains_tcbuffer_cbuffer */
+	private _acontains_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.acontains_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: acontains_tcbuffer_geo */
+	private _acontains_tcbuffer_geo(gs: Geometry): number {
+		return F.acontains_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: acontains_tcbuffer_tcbuffer */
+	private _acontains_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.acontains_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: acovers_tcbuffer_cbuffer */
+	private _acovers_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.acovers_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: acovers_tcbuffer_geo */
+	private _acovers_tcbuffer_geo(gs: Geometry): number {
+		return F.acovers_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: acovers_tcbuffer_tcbuffer */
+	private _acovers_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.acovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adisjoint_tcbuffer_cbuffer */
+	private _adisjoint_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.adisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: adisjoint_tcbuffer_geo */
+	private _adisjoint_tcbuffer_geo(gs: Geometry): number {
+		return F.adisjoint_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: adisjoint_tcbuffer_tcbuffer */
+	private _adisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.adisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adwithin_tcbuffer_cbuffer */
+	private _adwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): number {
+		return F.adwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist);
+	}
+
+	/** MEOS: adwithin_tcbuffer_geo */
+	private _adwithin_tcbuffer_geo(gs: Geometry, dist: number): number {
+		return F.adwithin_tcbuffer_geo(this.ptr, gs.ptr, dist);
+	}
+
+	/** MEOS: adwithin_tcbuffer_tcbuffer */
+	private _adwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): number {
+		return F.adwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist);
+	}
+
+	/** MEOS: aintersects_tcbuffer_cbuffer */
+	private _aintersects_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.aintersects_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: aintersects_tcbuffer_geo */
+	private _aintersects_tcbuffer_geo(gs: Geometry): number {
+		return F.aintersects_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: aintersects_tcbuffer_tcbuffer */
+	private _aintersects_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.aintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_eq_tcbuffer_cbuffer */
+	private _always_eq_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.always_eq_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: always_eq_tcbuffer_tcbuffer */
+	private _always_eq_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.always_eq_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tcbuffer_cbuffer */
+	private _always_ne_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.always_ne_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: always_ne_tcbuffer_tcbuffer */
+	private _always_ne_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.always_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: atouches_tcbuffer_cbuffer */
+	private _atouches_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.atouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: atouches_tcbuffer_geo */
+	private _atouches_tcbuffer_geo(gs: Geometry): number {
+		return F.atouches_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: atouches_tcbuffer_tcbuffer */
+	private _atouches_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.atouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: econtains_tcbuffer_cbuffer */
+	private _econtains_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.econtains_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: econtains_tcbuffer_geo */
+	private _econtains_tcbuffer_geo(gs: Geometry): number {
+		return F.econtains_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: econtains_tcbuffer_tcbuffer */
+	private _econtains_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.econtains_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ecovers_tcbuffer_cbuffer */
+	private _ecovers_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.ecovers_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: ecovers_tcbuffer_geo */
+	private _ecovers_tcbuffer_geo(gs: Geometry): number {
+		return F.ecovers_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ecovers_tcbuffer_tcbuffer */
+	private _ecovers_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.ecovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edisjoint_tcbuffer_cbuffer */
+	private _edisjoint_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.edisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: edisjoint_tcbuffer_geo */
+	private _edisjoint_tcbuffer_geo(gs: Geometry): number {
+		return F.edisjoint_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: edisjoint_tcbuffer_tcbuffer */
+	private _edisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.edisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edwithin_tcbuffer_cbuffer */
+	private _edwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): number {
+		return F.edwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist);
+	}
+
+	/** MEOS: edwithin_tcbuffer_geo */
+	private _edwithin_tcbuffer_geo(gs: Geometry, dist: number): number {
+		return F.edwithin_tcbuffer_geo(this.ptr, gs.ptr, dist);
+	}
+
+	/** MEOS: edwithin_tcbuffer_tcbuffer */
+	private _edwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): number {
+		return F.edwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist);
+	}
+
+	/** MEOS: eintersects_tcbuffer_cbuffer */
+	private _eintersects_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.eintersects_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: eintersects_tcbuffer_geo */
+	private _eintersects_tcbuffer_geo(gs: Geometry): number {
+		return F.eintersects_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: eintersects_tcbuffer_tcbuffer */
+	private _eintersects_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.eintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: etouches_tcbuffer_cbuffer */
+	private _etouches_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.etouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: etouches_tcbuffer_geo */
+	private _etouches_tcbuffer_geo(gs: Geometry): number {
+		return F.etouches_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: etouches_tcbuffer_tcbuffer */
+	private _etouches_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.etouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tcbuffer_cbuffer */
+	private _ever_eq_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.ever_eq_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: ever_eq_tcbuffer_tcbuffer */
+	private _ever_eq_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.ever_eq_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tcbuffer_cbuffer */
+	private _ever_ne_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.ever_ne_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: ever_ne_tcbuffer_tcbuffer */
+	private _ever_ne_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.ever_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tcbuffer_cbuffer */
+	private _nad_tcbuffer_cbuffer(cb: Cbuffer): number {
+		return F.nad_tcbuffer_cbuffer(this.ptr, cb.ptr);
+	}
+
+	/** MEOS: nad_tcbuffer_geo */
+	private _nad_tcbuffer_geo(gs: Geometry): number {
+		return F.nad_tcbuffer_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: nad_tcbuffer_stbox */
+	private _nad_tcbuffer_stbox(box: STBox): number {
+		return F.nad_tcbuffer_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tcbuffer_tcbuffer */
+	private _nad_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+		return F.nad_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nai_tcbuffer_cbuffer */
+	private _nai_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tcbuffer_geo */
+	private _nai_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tcbuffer_tcbuffer */
+	private _nai_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_tcbuffer_cbuffer */
+	private _shortestline_tcbuffer_cbuffer(cb: Cbuffer): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tcbuffer_geo */
+	private _shortestline_tcbuffer_geo(gs: Geometry): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tcbuffer_geo(this.ptr, gs.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tcbuffer_tcbuffer */
+	private _shortestline_tcbuffer_tcbuffer(temp2: TCbuffer): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: tcontains_tcbuffer_cbuffer */
+	private _tcontains_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcontains_tcbuffer_geo */
+	private _tcontains_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcontains_tcbuffer_tcbuffer */
+	private _tcontains_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_tcbuffer_cbuffer */
+	private _tcovers_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_tcbuffer_geo */
+	private _tcovers_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_tcbuffer_tcbuffer */
+	private _tcovers_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_tcbuffer_cbuffer */
+	private _tdisjoint_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_tcbuffer_geo */
+	private _tdisjoint_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_tcbuffer_tcbuffer */
+	private _tdisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tcbuffer_cbuffer */
+	private _tdistance_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tcbuffer_geo */
+	private _tdistance_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tcbuffer_tcbuffer */
+	private _tdistance_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_tcbuffer_cbuffer */
+	private _tdwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_tcbuffer_geo */
+	private _tdwithin_tcbuffer_geo(gs: Geometry, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_tcbuffer_geo(this.ptr, gs.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_tcbuffer_tcbuffer */
+	private _tdwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tcbuffer_cbuffer */
+	private _teq_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_tcbuffer_cbuffer */
+	private _tintersects_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_tcbuffer_geo */
+	private _tintersects_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_tcbuffer_tcbuffer */
+	private _tintersects_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tcbuffer_cbuffer */
+	private _tne_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_tcbuffer_cbuffer */
+	private _ttouches_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_tcbuffer_geo */
+	private _ttouches_tcbuffer_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_tcbuffer_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_tcbuffer_tcbuffer */
+	private _ttouches_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: acontains_tcbuffer_cbuffer, acontains_tcbuffer_geo, acontains_tcbuffer_tcbuffer, chosen by the arguments' types */
+	acontains(cb: Cbuffer | Geometry | TCbuffer): number {
+		if (cb instanceof Geometry) return this._acontains_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._acontains_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._acontains_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.acontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: acovers_tcbuffer_cbuffer, acovers_tcbuffer_geo, acovers_tcbuffer_tcbuffer, chosen by the arguments' types */
+	acovers(cb: Cbuffer | Geometry | TCbuffer): number {
+		if (cb instanceof Geometry) return this._acovers_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._acovers_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._acovers_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.acovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: adisjoint_tcbuffer_geo, adisjoint_tcbuffer_cbuffer, adisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
+	adisjoint(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._adisjoint_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._adisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._adisjoint_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.adisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: adwithin_tcbuffer_geo, adwithin_tcbuffer_cbuffer, adwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
+	adwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): number {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._adwithin_tcbuffer_geo(gs as Geometry, dist as number);
+		if (gs instanceof TCbuffer && typeof dist === 'number') return this._adwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
+		if (gs instanceof Cbuffer && typeof dist === 'number') return this._adwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
+		throw new TypeError(`TCbuffer.adwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: aintersects_tcbuffer_geo, aintersects_tcbuffer_cbuffer, aintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
+	aintersects(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._aintersects_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._aintersects_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._aintersects_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.aintersects: no overload takes these arguments`);
+	}
+
+	/** MEOS: always_eq_tcbuffer_cbuffer, always_eq_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override alwaysEq(cb: Cbuffer | TCbuffer | Temporal): number {
+		if (cb instanceof TCbuffer) return this._always_eq_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._always_eq_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.alwaysEq(cb as Temporal);
+	}
+
+	/** MEOS: always_ne_tcbuffer_cbuffer, always_ne_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override alwaysNe(cb: Cbuffer | TCbuffer | Temporal): number {
+		if (cb instanceof TCbuffer) return this._always_ne_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._always_ne_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.alwaysNe(cb as Temporal);
+	}
+
 	/** MEOS: tcbuffer_at_cbuffer */
 	atCbuffer(cb: Cbuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcbuffer_at_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
@@ -8196,6 +14737,14 @@ export class TCbuffer extends TSpatial {
 	/** MEOS: tcbuffer_at_geom */
 	atGeom(gs: Geo): Temporal | null {
 		return wrapTemporalOrNull(F.tcbuffer_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: atouches_tcbuffer_geo, atouches_tcbuffer_cbuffer, atouches_tcbuffer_tcbuffer, chosen by the arguments' types */
+	atouches(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._atouches_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._atouches_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._atouches_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.atouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_at_stbox */
@@ -8208,9 +14757,71 @@ export class TCbuffer extends TSpatial {
 		return wrapGeo(F.tcbuffer_convex_hull(this.ptr)) as Geo;
 	}
 
+	/** MEOS: econtains_tcbuffer_cbuffer, econtains_tcbuffer_geo, econtains_tcbuffer_tcbuffer, chosen by the arguments' types */
+	econtains(cb: Cbuffer | Geometry | TCbuffer): number {
+		if (cb instanceof Geometry) return this._econtains_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._econtains_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._econtains_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.econtains: no overload takes these arguments`);
+	}
+
+	/** MEOS: ecovers_tcbuffer_cbuffer, ecovers_tcbuffer_geo, ecovers_tcbuffer_tcbuffer, chosen by the arguments' types */
+	ecovers(cb: Cbuffer | Geometry | TCbuffer): number {
+		if (cb instanceof Geometry) return this._ecovers_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._ecovers_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._ecovers_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.ecovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: edisjoint_tcbuffer_geo, edisjoint_tcbuffer_cbuffer, edisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
+	edisjoint(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._edisjoint_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._edisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._edisjoint_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.edisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: edwithin_tcbuffer_geo, edwithin_tcbuffer_cbuffer, edwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
+	edwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): number {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._edwithin_tcbuffer_geo(gs as Geometry, dist as number);
+		if (gs instanceof TCbuffer && typeof dist === 'number') return this._edwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
+		if (gs instanceof Cbuffer && typeof dist === 'number') return this._edwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
+		throw new TypeError(`TCbuffer.edwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: eintersects_tcbuffer_geo, eintersects_tcbuffer_cbuffer, eintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
+	eintersects(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._eintersects_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._eintersects_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._eintersects_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.eintersects: no overload takes these arguments`);
+	}
+
 	/** MEOS: tcbuffer_end_value */
 	endValue(): Cbuffer {
 		return wrapCbuffer(F.tcbuffer_end_value(this.ptr)) as Cbuffer;
+	}
+
+	/** MEOS: etouches_tcbuffer_geo, etouches_tcbuffer_cbuffer, etouches_tcbuffer_tcbuffer, chosen by the arguments' types */
+	etouches(gs: Geometry | Cbuffer | TCbuffer): number {
+		if (gs instanceof Geometry) return this._etouches_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._etouches_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._etouches_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.etouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: ever_eq_tcbuffer_cbuffer, ever_eq_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override everEq(cb: Cbuffer | TCbuffer | Temporal): number {
+		if (cb instanceof TCbuffer) return this._ever_eq_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._ever_eq_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.everEq(cb as Temporal);
+	}
+
+	/** MEOS: ever_ne_tcbuffer_cbuffer, ever_ne_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override everNe(cb: Cbuffer | TCbuffer | Temporal): number {
+		if (cb instanceof TCbuffer) return this._ever_ne_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._ever_ne_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.everNe(cb as Temporal);
 	}
 
 	/** MEOS: tcbuffer_expand */
@@ -8221,6 +14832,11 @@ export class TCbuffer extends TSpatial {
 	/** MEOS: tcbuffer_make */
 	make(tfloat: Temporal): TCbuffer | null {
 		return wrapTemporalOrNull(F.tcbuffer_make(this.ptr, tfloat.ptr)) as TCbuffer | null;
+	}
+
+	/** MEOS: mindistance_tcbuffer_tcbuffer */
+	mindistance(temp2: Temporal, threshold: number): number {
+		return F.mindistance_tcbuffer_tcbuffer(this.ptr, temp2.ptr, threshold);
 	}
 
 	/** MEOS: tcbuffer_minus_cbuffer */
@@ -8236,6 +14852,23 @@ export class TCbuffer extends TSpatial {
 	/** MEOS: tcbuffer_minus_stbox */
 	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.tcbuffer_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	}
+
+	/** MEOS: nad_tcbuffer_cbuffer, nad_tcbuffer_geo, nad_tcbuffer_stbox, nad_tcbuffer_tcbuffer, chosen by the arguments' types */
+	nad(cb: Cbuffer | Geometry | STBox | TCbuffer): number {
+		if (cb instanceof Geometry) return this._nad_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._nad_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._nad_tcbuffer_cbuffer(cb as Cbuffer);
+		if (cb instanceof STBox) return this._nad_tcbuffer_stbox(cb as STBox);
+		throw new TypeError(`TCbuffer.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_tcbuffer_cbuffer, nai_tcbuffer_geo, nai_tcbuffer_tcbuffer, chosen by the arguments' types */
+	nai(cb: Cbuffer | Geometry | TCbuffer): Temporal | null {
+		if (cb instanceof Geometry) return this._nai_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._nai_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._nai_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_points */
@@ -8258,9 +14891,77 @@ export class TCbuffer extends TSpatial {
 		return wrapTemporal(F.tcbuffer_rotate_z(this.ptr, angle)) as Temporal;
 	}
 
+	/** MEOS: shortestline_tcbuffer_cbuffer, shortestline_tcbuffer_geo, shortestline_tcbuffer_tcbuffer, chosen by the arguments' types */
+	shortestline(cb: Cbuffer | Geometry | TCbuffer): Geo | null {
+		if (cb instanceof Geometry) return this._shortestline_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._shortestline_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._shortestline_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.shortestline: no overload takes these arguments`);
+	}
+
 	/** MEOS: tcbuffer_start_value */
 	startValue(): Cbuffer {
 		return wrapCbuffer(F.tcbuffer_start_value(this.ptr)) as Cbuffer;
+	}
+
+	/** MEOS: tcontains_tcbuffer_geo, tcontains_tcbuffer_cbuffer, tcontains_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tcontains(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+		if (gs instanceof Geometry) return this._tcontains_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._tcontains_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._tcontains_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.tcontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: tcovers_tcbuffer_geo, tcovers_tcbuffer_cbuffer, tcovers_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tcovers(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+		if (gs instanceof Geometry) return this._tcovers_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._tcovers_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._tcovers_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.tcovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdisjoint_tcbuffer_geo, tdisjoint_tcbuffer_cbuffer, tdisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tdisjoint(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+		if (gs instanceof Geometry) return this._tdisjoint_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._tdisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._tdisjoint_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.tdisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdistance_tcbuffer_cbuffer, tdistance_tcbuffer_geo, tdistance_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tdistance(cb: Cbuffer | Geometry | TCbuffer): Temporal | null {
+		if (cb instanceof Geometry) return this._tdistance_tcbuffer_geo(cb as Geometry);
+		if (cb instanceof TCbuffer) return this._tdistance_tcbuffer_tcbuffer(cb as TCbuffer);
+		if (cb instanceof Cbuffer) return this._tdistance_tcbuffer_cbuffer(cb as Cbuffer);
+		throw new TypeError(`TCbuffer.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdwithin_tcbuffer_geo, tdwithin_tcbuffer_cbuffer, tdwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tdwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): Temporal | null {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._tdwithin_tcbuffer_geo(gs as Geometry, dist as number);
+		if (gs instanceof TCbuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
+		if (gs instanceof Cbuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
+		throw new TypeError(`TCbuffer.tdwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tcbuffer_cbuffer, chosen by the arguments' types */
+	override teq(cb: Cbuffer | Temporal): Temporal | null {
+		if (cb instanceof Cbuffer) return this._teq_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.teq(cb as Temporal);
+	}
+
+	/** MEOS: tintersects_tcbuffer_geo, tintersects_tcbuffer_cbuffer, tintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
+	tintersects(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+		if (gs instanceof Geometry) return this._tintersects_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._tintersects_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._tintersects_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.tintersects: no overload takes these arguments`);
+	}
+
+	/** MEOS: tne_tcbuffer_cbuffer, chosen by the arguments' types */
+	override tne(cb: Cbuffer | Temporal): Temporal | null {
+		if (cb instanceof Cbuffer) return this._tne_tcbuffer_cbuffer(cb as Cbuffer);
+		return super.tne(cb as Temporal);
 	}
 
 	/** MEOS: tcbuffer_to_tfloat */
@@ -8281,6 +14982,14 @@ export class TCbuffer extends TSpatial {
 	/** MEOS: tcbuffer_traversed_area */
 	traversedArea(unary_union: boolean): Geo {
 		return wrapGeo(F.tcbuffer_traversed_area(this.ptr, unary_union)) as Geo;
+	}
+
+	/** MEOS: ttouches_tcbuffer_geo, ttouches_tcbuffer_cbuffer, ttouches_tcbuffer_tcbuffer, chosen by the arguments' types */
+	ttouches(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+		if (gs instanceof Geometry) return this._ttouches_tcbuffer_geo(gs as Geometry);
+		if (gs instanceof TCbuffer) return this._ttouches_tcbuffer_tcbuffer(gs as TCbuffer);
+		if (gs instanceof Cbuffer) return this._ttouches_tcbuffer_cbuffer(gs as Cbuffer);
+		throw new TypeError(`TCbuffer.ttouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_value */
@@ -8428,6 +15137,183 @@ export class TFloat extends TNumber {
 		return this.out(15);
 	}
 
+	/** MEOS: add_tfloat_float */
+	private _add_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.add_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: always_eq_tfloat_float */
+	private _always_eq_tfloat_float(d: number): number {
+		return F.always_eq_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: always_ge_tfloat_float */
+	private _always_ge_tfloat_float(d: number): number {
+		return F.always_ge_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: always_gt_tfloat_float */
+	private _always_gt_tfloat_float(d: number): number {
+		return F.always_gt_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: always_le_tfloat_float */
+	private _always_le_tfloat_float(d: number): number {
+		return F.always_le_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: always_lt_tfloat_float */
+	private _always_lt_tfloat_float(d: number): number {
+		return F.always_lt_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: always_ne_tfloat_float */
+	private _always_ne_tfloat_float(d: number): number {
+		return F.always_ne_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: div_tfloat_float */
+	private _div_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.div_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_tfloat_float */
+	private _ever_eq_tfloat_float(d: number): number {
+		return F.ever_eq_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: ever_ge_tfloat_float */
+	private _ever_ge_tfloat_float(d: number): number {
+		return F.ever_ge_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: ever_gt_tfloat_float */
+	private _ever_gt_tfloat_float(d: number): number {
+		return F.ever_gt_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: ever_le_tfloat_float */
+	private _ever_le_tfloat_float(d: number): number {
+		return F.ever_le_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: ever_lt_tfloat_float */
+	private _ever_lt_tfloat_float(d: number): number {
+		return F.ever_lt_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: ever_ne_tfloat_float */
+	private _ever_ne_tfloat_float(d: number): number {
+		return F.ever_ne_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: mul_tfloat_float */
+	private _mul_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.mul_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: nad_tfloat_float */
+	private _nad_tfloat_float(d: number): number {
+		return F.nad_tfloat_float(this.ptr, d);
+	}
+
+	/** MEOS: nad_tfloat_floatspan */
+	private _nad_tfloat_floatspan(s: FloatSpan): number {
+		return F.nad_tfloat_floatspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: nad_tfloat_tbox */
+	private _nad_tfloat_tbox(box: TBox): number {
+		return F.nad_tfloat_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tfloat_tfloat */
+	private _nad_tfloat_tfloat(temp2: TFloat): number {
+		return F.nad_tfloat_tfloat(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: sub_tfloat_float */
+	private _sub_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.sub_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tdistance_tfloat_float */
+	private _tdistance_tfloat_float(d: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tfloat_float(this.ptr, d)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tfloat_float */
+	private _teq_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.teq_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tge_tfloat_float */
+	private _tge_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.tge_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tgt_tfloat_float */
+	private _tgt_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.tgt_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tle_tfloat_float */
+	private _tle_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.tle_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tlt_tfloat_float */
+	private _tlt_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.tlt_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: tne_tfloat_float */
+	private _tne_tfloat_float(d: number): Temporal {
+		return wrapTemporal(F.tne_tfloat_float(this.ptr, d)) as Temporal;
+	}
+
+	/** MEOS: add_tfloat_float, chosen by the arguments' types */
+	override add(d: number | TNumber): Temporal | null {
+		if (typeof d === 'number') return this._add_tfloat_float(d as number);
+		return super.add(d as TNumber);
+	}
+
+	/** MEOS: always_eq_tfloat_float, chosen by the arguments' types */
+	override alwaysEq(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_eq_tfloat_float(d as number);
+		return super.alwaysEq(d as Temporal);
+	}
+
+	/** MEOS: always_ge_tfloat_float, chosen by the arguments' types */
+	override alwaysGe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_ge_tfloat_float(d as number);
+		return super.alwaysGe(d as Temporal);
+	}
+
+	/** MEOS: always_gt_tfloat_float, chosen by the arguments' types */
+	override alwaysGt(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_gt_tfloat_float(d as number);
+		return super.alwaysGt(d as Temporal);
+	}
+
+	/** MEOS: always_le_tfloat_float, chosen by the arguments' types */
+	override alwaysLe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_le_tfloat_float(d as number);
+		return super.alwaysLe(d as Temporal);
+	}
+
+	/** MEOS: always_lt_tfloat_float, chosen by the arguments' types */
+	override alwaysLt(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_lt_tfloat_float(d as number);
+		return super.alwaysLt(d as Temporal);
+	}
+
+	/** MEOS: always_ne_tfloat_float, chosen by the arguments' types */
+	override alwaysNe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._always_ne_tfloat_float(d as number);
+		return super.alwaysNe(d as Temporal);
+	}
+
 	/** MEOS: tfloat_out */
 	asText(maxdd: number): string {
 		return this.out(maxdd);
@@ -8453,9 +15339,51 @@ export class TFloat extends TNumber {
 		return wrapTemporal(F.tfloat_degrees(this.ptr, normalize)) as Temporal;
 	}
 
+	/** MEOS: div_tfloat_float, chosen by the arguments' types */
+	override div(d: number | TNumber): Temporal | null {
+		if (typeof d === 'number') return this._div_tfloat_float(d as number);
+		return super.div(d as TNumber);
+	}
+
 	/** MEOS: tfloat_end_value */
 	endValue(): number {
 		return F.tfloat_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_tfloat_float, chosen by the arguments' types */
+	override everEq(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_eq_tfloat_float(d as number);
+		return super.everEq(d as Temporal);
+	}
+
+	/** MEOS: ever_ge_tfloat_float, chosen by the arguments' types */
+	override everGe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_ge_tfloat_float(d as number);
+		return super.everGe(d as Temporal);
+	}
+
+	/** MEOS: ever_gt_tfloat_float, chosen by the arguments' types */
+	override everGt(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_gt_tfloat_float(d as number);
+		return super.everGt(d as Temporal);
+	}
+
+	/** MEOS: ever_le_tfloat_float, chosen by the arguments' types */
+	override everLe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_le_tfloat_float(d as number);
+		return super.everLe(d as Temporal);
+	}
+
+	/** MEOS: ever_lt_tfloat_float, chosen by the arguments' types */
+	override everLt(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_lt_tfloat_float(d as number);
+		return super.everLt(d as Temporal);
+	}
+
+	/** MEOS: ever_ne_tfloat_float, chosen by the arguments' types */
+	override everNe(d: number | Temporal): number {
+		if (typeof d === 'number') return this._ever_ne_tfloat_float(d as number);
+		return super.everNe(d as Temporal);
 	}
 
 	/** MEOS: tfloat_exp */
@@ -8493,14 +15421,139 @@ export class TFloat extends TNumber {
 		return F.tfloat_min_value(this.ptr);
 	}
 
+	/** MEOS: mul_tfloat_float, chosen by the arguments' types */
+	override mul(d: number | TNumber): Temporal | null {
+		if (typeof d === 'number') return this._mul_tfloat_float(d as number);
+		return super.mul(d as TNumber);
+	}
+
+	/** MEOS: nad_tfloat_float, nad_tfloat_floatspan, nad_tfloat_tfloat, nad_tfloat_tbox, chosen by the arguments' types */
+	nad(d: number | FloatSpan | TFloat | TBox): number {
+		if (d instanceof FloatSpan) return this._nad_tfloat_floatspan(d as FloatSpan);
+		if (d instanceof TFloat) return this._nad_tfloat_tfloat(d as TFloat);
+		if (d instanceof TBox) return this._nad_tfloat_tbox(d as TBox);
+		if (typeof d === 'number') return this._nad_tfloat_float(d as number);
+		throw new TypeError(`TFloat.nad: no overload takes these arguments`);
+	}
+
 	/** MEOS: tfloat_out */
 	out(maxdd: number): string {
 		return F.tfloat_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: add_float_tfloat */
+	radd(d: number): Temporal {
+		return wrapTemporal(F.add_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
 	/** MEOS: tfloat_radians */
 	radians(): Temporal {
 		return wrapTemporal(F.tfloat_radians(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_float_tfloat */
+	ralwaysEq(d: number): number {
+		return F.always_eq_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: always_ge_float_tfloat */
+	ralwaysGe(d: number): number {
+		return F.always_ge_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: always_gt_float_tfloat */
+	ralwaysGt(d: number): number {
+		return F.always_gt_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: always_le_float_tfloat */
+	ralwaysLe(d: number): number {
+		return F.always_le_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: always_lt_float_tfloat */
+	ralwaysLt(d: number): number {
+		return F.always_lt_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: always_ne_float_tfloat */
+	ralwaysNe(d: number): number {
+		return F.always_ne_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: div_float_tfloat */
+	rdiv(d: number): Temporal {
+		return wrapTemporal(F.div_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_float_tfloat */
+	reverEq(d: number): number {
+		return F.ever_eq_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: ever_ge_float_tfloat */
+	reverGe(d: number): number {
+		return F.ever_ge_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: ever_gt_float_tfloat */
+	reverGt(d: number): number {
+		return F.ever_gt_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: ever_le_float_tfloat */
+	reverLe(d: number): number {
+		return F.ever_le_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: ever_lt_float_tfloat */
+	reverLt(d: number): number {
+		return F.ever_lt_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: ever_ne_float_tfloat */
+	reverNe(d: number): number {
+		return F.ever_ne_float_tfloat(d, this.ptr);
+	}
+
+	/** MEOS: mul_float_tfloat */
+	rmul(d: number): Temporal {
+		return wrapTemporal(F.mul_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: sub_float_tfloat */
+	rsub(d: number): Temporal {
+		return wrapTemporal(F.sub_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: teq_float_tfloat */
+	rteq(d: number): Temporal {
+		return wrapTemporal(F.teq_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tge_float_tfloat */
+	rtge(d: number): Temporal {
+		return wrapTemporal(F.tge_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tgt_float_tfloat */
+	rtgt(d: number): Temporal {
+		return wrapTemporal(F.tgt_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tle_float_tfloat */
+	rtle(d: number): Temporal {
+		return wrapTemporal(F.tle_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tlt_float_tfloat */
+	rtlt(d: number): Temporal {
+		return wrapTemporal(F.tlt_float_tfloat(d, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_float_tfloat */
+	rtne(d: number): Temporal {
+		return wrapTemporal(F.tne_float_tfloat(d, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tfloat_scale_value */
@@ -8528,9 +15581,39 @@ export class TFloat extends TNumber {
 		return F.tfloat_start_value(this.ptr);
 	}
 
+	/** MEOS: sub_tfloat_float, chosen by the arguments' types */
+	override sub(d: number | TNumber): Temporal | null {
+		if (typeof d === 'number') return this._sub_tfloat_float(d as number);
+		return super.sub(d as TNumber);
+	}
+
 	/** MEOS: tfloat_tan */
 	tan(): Temporal {
 		return wrapTemporal(F.tfloat_tan(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tdistance_tfloat_float, chosen by the arguments' types */
+	override tdistance(d: number | TNumber): Temporal | null {
+		if (typeof d === 'number') return this._tdistance_tfloat_float(d as number);
+		return super.tdistance(d as TNumber);
+	}
+
+	/** MEOS: teq_tfloat_float, chosen by the arguments' types */
+	override teq(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._teq_tfloat_float(d as number);
+		return super.teq(d as Temporal);
+	}
+
+	/** MEOS: tge_tfloat_float, chosen by the arguments' types */
+	override tge(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._tge_tfloat_float(d as number);
+		return super.tge(d as Temporal);
+	}
+
+	/** MEOS: tgt_tfloat_float, chosen by the arguments' types */
+	override tgt(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._tgt_tfloat_float(d as number);
+		return super.tgt(d as Temporal);
 	}
 
 	/** MEOS: tfloat_time_boxes */
@@ -8553,6 +15636,24 @@ export class TFloat extends TNumber {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tle_tfloat_float, chosen by the arguments' types */
+	override tle(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._tle_tfloat_float(d as number);
+		return super.tle(d as Temporal);
+	}
+
+	/** MEOS: tlt_tfloat_float, chosen by the arguments' types */
+	override tlt(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._tlt_tfloat_float(d as number);
+		return super.tlt(d as Temporal);
+	}
+
+	/** MEOS: tne_tfloat_float, chosen by the arguments' types */
+	override tne(d: number | Temporal): Temporal | null {
+		if (typeof d === 'number') return this._tne_tfloat_float(d as number);
+		return super.tne(d as Temporal);
 	}
 
 	/** MEOS: tfloat_to_tbigint */
@@ -8721,9 +15822,229 @@ export class TFloatSeqSet extends TFloat {
  */
 export class TGeo extends TSpatial {
 
+	/** MEOS: adisjoint_tgeo_geo */
+	private _adisjoint_tgeo_geo(gs: Geo): number {
+		return F.adisjoint_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: adisjoint_tgeo_tgeo */
+	private _adisjoint_tgeo_tgeo(temp2: TGeo): number {
+		return F.adisjoint_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adwithin_tgeo_geo */
+	private _adwithin_tgeo_geo(gs: Geometry, dist: number, spheroid: boolean): number {
+		return F.adwithin_tgeo_geo(this.ptr, gs.ptr, dist, spheroid);
+	}
+
+	/** MEOS: adwithin_tgeo_tgeo */
+	private _adwithin_tgeo_tgeo(temp2: TGeo, dist: number, spheroid: boolean): number {
+		return F.adwithin_tgeo_tgeo(this.ptr, temp2.ptr, dist, spheroid);
+	}
+
+	/** MEOS: aintersects_tgeo_geo */
+	private _aintersects_tgeo_geo(gs: Geo): number {
+		return F.aintersects_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: aintersects_tgeo_tgeo */
+	private _aintersects_tgeo_tgeo(temp2: TGeo): number {
+		return F.aintersects_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_eq_tgeo_geo */
+	private _always_eq_tgeo_geo(gs: Geo): number {
+		return F.always_eq_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: always_eq_tgeo_tgeo */
+	private _always_eq_tgeo_tgeo(temp2: TGeo): number {
+		return F.always_eq_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tgeo_geo */
+	private _always_ne_tgeo_geo(gs: Geo): number {
+		return F.always_ne_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: always_ne_tgeo_tgeo */
+	private _always_ne_tgeo_tgeo(temp2: TGeo): number {
+		return F.always_ne_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edisjoint_tgeo_geo */
+	private _edisjoint_tgeo_geo(gs: Geo): number {
+		return F.edisjoint_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: edisjoint_tgeo_tgeo */
+	private _edisjoint_tgeo_tgeo(temp2: TGeo): number {
+		return F.edisjoint_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edwithin_tgeo_geo */
+	private _edwithin_tgeo_geo(gs: Geo, dist: number, spheroid: boolean): number {
+		return F.edwithin_tgeo_geo(this.ptr, gs.ptr, dist, spheroid);
+	}
+
+	/** MEOS: edwithin_tgeo_tgeo */
+	private _edwithin_tgeo_tgeo(temp2: TSpatial, dist: number, spheroid: boolean): number {
+		return F.edwithin_tgeo_tgeo(this.ptr, temp2.ptr, dist, spheroid);
+	}
+
+	/** MEOS: eintersects_tgeo_geo */
+	private _eintersects_tgeo_geo(gs: Geo): number {
+		return F.eintersects_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: eintersects_tgeo_tgeo */
+	private _eintersects_tgeo_tgeo(temp2: TSpatial): number {
+		return F.eintersects_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tgeo_geo */
+	private _ever_eq_tgeo_geo(gs: Geo): number {
+		return F.ever_eq_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ever_eq_tgeo_tgeo */
+	private _ever_eq_tgeo_tgeo(temp2: TGeo): number {
+		return F.ever_eq_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tgeo_geo */
+	private _ever_ne_tgeo_geo(gs: Geo): number {
+		return F.ever_ne_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ever_ne_tgeo_tgeo */
+	private _ever_ne_tgeo_tgeo(temp2: TGeo): number {
+		return F.ever_ne_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tgeo_geo */
+	private _nad_tgeo_geo(gs: Geo, spheroid: boolean): number {
+		return F.nad_tgeo_geo(this.ptr, gs.ptr, spheroid);
+	}
+
+	/** MEOS: nad_tgeo_stbox */
+	private _nad_tgeo_stbox(box: STBox, spheroid: boolean): number {
+		return F.nad_tgeo_stbox(this.ptr, box.ptr, spheroid);
+	}
+
+	/** MEOS: nad_tgeo_tgeo */
+	private _nad_tgeo_tgeo(temp2: TGeo, spheroid: boolean): number {
+		return F.nad_tgeo_tgeo(this.ptr, temp2.ptr, spheroid);
+	}
+
+	/** MEOS: nai_tgeo_geo */
+	private _nai_tgeo_geo(gs: Geo, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tgeo_geo(this.ptr, gs.ptr, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tgeo_tgeo */
+	private _nai_tgeo_tgeo(temp2: TGeo, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tgeo_tgeo(this.ptr, temp2.ptr, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_tgeo_geo */
+	private _shortestline_tgeo_geo(gs: Geo, spheroid: boolean): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tgeo_geo(this.ptr, gs.ptr, spheroid)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tgeo_tgeo */
+	private _shortestline_tgeo_tgeo(temp2: TGeo, spheroid: boolean): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tgeo_tgeo(this.ptr, temp2.ptr, spheroid)) as Geo | null;
+	}
+
+	/** MEOS: tdisjoint_tgeo_geo */
+	private _tdisjoint_tgeo_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_tgeo_tgeo */
+	private _tdisjoint_tgeo_tgeo(temp2: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_tgeo_tgeo(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tgeo_geo */
+	private _tdistance_tgeo_geo(gs: Geo, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tgeo_geo(this.ptr, gs.ptr, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tgeo_tgeo */
+	private _tdistance_tgeo_tgeo(temp2: TGeo, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tgeo_tgeo(this.ptr, temp2.ptr, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_geo */
+	private _tdwithin_tgeo_geo(gs: Geo, dist: number, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_tgeo_geo(this.ptr, gs.ptr, dist, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_tgeo */
+	private _tdwithin_tgeo_tgeo(temp2: TGeo, dist: number, spheroid: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_tgeo_tgeo(this.ptr, temp2.ptr, dist, spheroid)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tgeo_geo */
+	private _teq_tgeo_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_tgeo_geo */
+	private _tintersects_tgeo_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_tgeo_tgeo */
+	private _tintersects_tgeo_tgeo(temp2: TGeo): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_tgeo_tgeo(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tgeo_geo */
+	private _tne_tgeo_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: adisjoint_tgeo_geo, adisjoint_tgeo_tgeo, chosen by the arguments' types */
+	adisjoint(gs: Geo | TGeo): number {
+		if (gs instanceof TGeo) return this._adisjoint_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._adisjoint_tgeo_geo(gs as Geo);
+		throw new TypeError(`TGeo.adisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: adwithin_tgeo_geo, adwithin_tgeo_tgeo, chosen by the arguments' types */
+	adwithin(gs: Geometry | TGeo, dist: number, spheroid: boolean): number {
+		if (gs instanceof Geometry && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_geo(gs as Geometry, dist as number, spheroid as boolean);
+		if (gs instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_tgeo(gs as TGeo, dist as number, spheroid as boolean);
+		throw new TypeError(`TGeo.adwithin: no overload takes these arguments`);
+	}
+
 	/** MEOS: tgeo_affine */
 	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): Temporal {
 		return wrapTemporal(F.tgeo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as Temporal;
+	}
+
+	/** MEOS: aintersects_tgeo_geo, aintersects_tgeo_tgeo, chosen by the arguments' types */
+	aintersects(gs: Geo | TGeo): number {
+		if (gs instanceof TGeo) return this._aintersects_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._aintersects_tgeo_geo(gs as Geo);
+		throw new TypeError(`TGeo.aintersects: no overload takes these arguments`);
+	}
+
+	/** MEOS: always_eq_tgeo_geo, always_eq_tgeo_tgeo, chosen by the arguments' types */
+	override alwaysEq(gs: Geo | TGeo | Temporal): number {
+		if (gs instanceof TGeo) return this._always_eq_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._always_eq_tgeo_geo(gs as Geo);
+		return super.alwaysEq(gs as Temporal);
+	}
+
+	/** MEOS: always_ne_tgeo_geo, always_ne_tgeo_tgeo, chosen by the arguments' types */
+	override alwaysNe(gs: Geo | TGeo | Temporal): number {
+		if (gs instanceof TGeo) return this._always_ne_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._always_ne_tgeo_geo(gs as Geo);
+		return super.alwaysNe(gs as Temporal);
 	}
 
 	/** MEOS: tgeo_at_geom */
@@ -8751,9 +16072,44 @@ export class TGeo extends TSpatial {
 		return wrapGeo(F.tgeo_convex_hull(this.ptr)) as Geo;
 	}
 
+	/** MEOS: edisjoint_tgeo_geo, edisjoint_tgeo_tgeo, chosen by the arguments' types */
+	edisjoint(gs: Geo | TGeo): number {
+		if (gs instanceof TGeo) return this._edisjoint_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._edisjoint_tgeo_geo(gs as Geo);
+		throw new TypeError(`TGeo.edisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: edwithin_tgeo_geo, edwithin_tgeo_tgeo, chosen by the arguments' types */
+	edwithin(gs: Geo | TSpatial, dist: number, spheroid: boolean): number {
+		if (gs instanceof Geo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._edwithin_tgeo_geo(gs as Geo, dist as number, spheroid as boolean);
+		if (gs instanceof TSpatial && typeof dist === 'number' && typeof spheroid === 'boolean') return this._edwithin_tgeo_tgeo(gs as TSpatial, dist as number, spheroid as boolean);
+		throw new TypeError(`TGeo.edwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: eintersects_tgeo_geo, eintersects_tgeo_tgeo, chosen by the arguments' types */
+	eintersects(gs: Geo | TSpatial): number {
+		if (gs instanceof Geo) return this._eintersects_tgeo_geo(gs as Geo);
+		if (gs instanceof TSpatial) return this._eintersects_tgeo_tgeo(gs as TSpatial);
+		throw new TypeError(`TGeo.eintersects: no overload takes these arguments`);
+	}
+
 	/** MEOS: tgeo_end_value */
 	endValue(): Geo {
 		return wrapGeo(F.tgeo_end_value(this.ptr)) as Geo;
+	}
+
+	/** MEOS: ever_eq_tgeo_geo, ever_eq_tgeo_tgeo, chosen by the arguments' types */
+	override everEq(gs: Geo | TGeo | Temporal): number {
+		if (gs instanceof TGeo) return this._ever_eq_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._ever_eq_tgeo_geo(gs as Geo);
+		return super.everEq(gs as Temporal);
+	}
+
+	/** MEOS: ever_ne_tgeo_geo, ever_ne_tgeo_tgeo, chosen by the arguments' types */
+	override everNe(gs: Geo | TGeo | Temporal): number {
+		if (gs instanceof TGeo) return this._ever_ne_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._ever_ne_tgeo_geo(gs as Geo);
+		return super.everNe(gs as Temporal);
 	}
 
 	/** MEOS: tgeo_force2d */
@@ -8779,6 +16135,21 @@ export class TGeo extends TSpatial {
 	/** MEOS: tgeo_minus_value */
 	minusValue(gs: Geo): Temporal | null {
 		return wrapTemporalOrNull(F.tgeo_minus_value(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nad_tgeo_geo, nad_tgeo_stbox, nad_tgeo_tgeo, chosen by the arguments' types */
+	nad(gs: Geo | STBox | TGeo, spheroid: boolean): number {
+		if (gs instanceof TGeo && typeof spheroid === 'boolean') return this._nad_tgeo_tgeo(gs as TGeo, spheroid as boolean);
+		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nad_tgeo_geo(gs as Geo, spheroid as boolean);
+		if (gs instanceof STBox && typeof spheroid === 'boolean') return this._nad_tgeo_stbox(gs as STBox, spheroid as boolean);
+		throw new TypeError(`TGeo.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_tgeo_geo, nai_tgeo_tgeo, chosen by the arguments' types */
+	nai(gs: Geo | TGeo, spheroid: boolean): Temporal | null {
+		if (gs instanceof TGeo && typeof spheroid === 'boolean') return this._nai_tgeo_tgeo(gs as TGeo, spheroid as boolean);
+		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._nai_tgeo_geo(gs as Geo, spheroid as boolean);
+		throw new TypeError(`TGeo.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tgeo_rotate */
@@ -8819,6 +16190,13 @@ export class TGeo extends TSpatial {
 	/** MEOS: tgeo_scale_geo_origin */
 	scaleGeoOrigin(scale: Geo, sorigin: Geo): Temporal | null {
 		return wrapTemporalOrNull(F.tgeo_scale_geo_origin(this.ptr, scale.ptr, sorigin.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, chosen by the arguments' types */
+	shortestline(gs: Geo | TGeo, spheroid: boolean): Geo | null {
+		if (gs instanceof TGeo && typeof spheroid === 'boolean') return this._shortestline_tgeo_tgeo(gs as TGeo, spheroid as boolean);
+		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._shortestline_tgeo_geo(gs as Geo, spheroid as boolean);
+		throw new TypeError(`TGeo.shortestline: no overload takes these arguments`);
 	}
 
 	/** MEOS: tgeo_space_boxes */
@@ -8928,6 +16306,33 @@ export class TGeo extends TSpatial {
 		}
 	}
 
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, chosen by the arguments' types */
+	tdisjoint(gs: Geo | TGeo): Temporal | null {
+		if (gs instanceof TGeo) return this._tdisjoint_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._tdisjoint_tgeo_geo(gs as Geo);
+		throw new TypeError(`TGeo.tdisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, chosen by the arguments' types */
+	tdistance(gs: Geo | TGeo, spheroid: boolean): Temporal | null {
+		if (gs instanceof TGeo && typeof spheroid === 'boolean') return this._tdistance_tgeo_tgeo(gs as TGeo, spheroid as boolean);
+		if (gs instanceof Geo && typeof spheroid === 'boolean') return this._tdistance_tgeo_geo(gs as Geo, spheroid as boolean);
+		throw new TypeError(`TGeo.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdwithin_tgeo_geo, tdwithin_tgeo_tgeo, chosen by the arguments' types */
+	tdwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): Temporal | null {
+		if (gs instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._tdwithin_tgeo_tgeo(gs as TGeo, dist as number, spheroid as boolean);
+		if (gs instanceof Geo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._tdwithin_tgeo_geo(gs as Geo, dist as number, spheroid as boolean);
+		throw new TypeError(`TGeo.tdwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tgeo_geo, chosen by the arguments' types */
+	override teq(gs: Geo | Temporal): Temporal | null {
+		if (gs instanceof Geo) return this._teq_tgeo_geo(gs as Geo);
+		return super.teq(gs as Temporal);
+	}
+
 	/** MEOS: tgeo_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): STBox[] {
 		const _duration = _putInterval(duration);
@@ -8950,6 +16355,19 @@ export class TGeo extends TSpatial {
 		}
 	}
 
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, chosen by the arguments' types */
+	tintersects(gs: Geo | TGeo): Temporal | null {
+		if (gs instanceof TGeo) return this._tintersects_tgeo_tgeo(gs as TGeo);
+		if (gs instanceof Geo) return this._tintersects_tgeo_geo(gs as Geo);
+		throw new TypeError(`TGeo.tintersects: no overload takes these arguments`);
+	}
+
+	/** MEOS: tne_tgeo_geo, chosen by the arguments' types */
+	override tne(gs: Geo | Temporal): Temporal | null {
+		if (gs instanceof Geo) return this._tne_tgeo_geo(gs as Geo);
+		return super.tne(gs as Temporal);
+	}
+
 	/** MEOS: tgeo_translate */
 	translate(deltax: number, deltay: number, deltaz: number): Temporal {
 		return wrapTemporal(F.tgeo_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
@@ -8963,6 +16381,11 @@ export class TGeo extends TSpatial {
 	/** MEOS: tgeo_traversed_area */
 	traversedArea(unary_union: boolean): Geo {
 		return wrapGeo(F.tgeo_traversed_area(this.ptr, unary_union)) as Geo;
+	}
+
+	/** MEOS: ttouches_tgeo_geo */
+	ttouches(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tgeo_value */
@@ -9034,6 +16457,11 @@ export class TPoint extends TGeo {
 	/** MEOS: tpoint_azimuth */
 	azimuth(): Temporal | null {
 		return wrapTemporalOrNull(F.tpoint_azimuth(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: bearing_tpoint_point */
+	bearing(gs: Geo, invert: boolean): Temporal | null {
+		return wrapTemporalOrNull(F.bearing_tpoint_point(this.ptr, gs.ptr, invert)) as Temporal | null;
 	}
 
 	/** MEOS: tpoint_cumulative_length */
@@ -9295,6 +16723,27 @@ export class TGeomPoint extends TPoint {
 		return this.asText(15);
 	}
 
+	/** MEOS: bearing_tpoint_tpoint */
+	private _bearing_tpoint_tpoint(temp2: TGeomPoint): Temporal | null {
+		return wrapTemporalOrNull(F.bearing_tpoint_tpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: atouches_tpoint_geo */
+	atouches(gs: Geometry): number {
+		return F.atouches_tpoint_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: bearing_tpoint_tpoint, chosen by the arguments' types */
+	override bearing(temp2: TGeomPoint | Geo, arg1?: boolean): Temporal | null {
+		if (temp2 instanceof TGeomPoint && arg1 === undefined) return this._bearing_tpoint_tpoint(temp2 as TGeomPoint);
+		return super.bearing(temp2 as Geo, arg1 as boolean);
+	}
+
+	/** MEOS: etouches_tpoint_geo */
+	etouches(gs: Geometry): number {
+		return F.etouches_tpoint_geo(this.ptr, gs.ptr);
+	}
+
 	/** MEOS: tgeompoint_to_tgeogpoint */
 	toTgeogpoint(): Temporal {
 		return wrapTemporal(F.tgeompoint_to_tgeogpoint(this.ptr)) as Temporal;
@@ -9379,6 +16828,147 @@ export class TGeometry extends TGeo {
 		return this.asText(15);
 	}
 
+	/** MEOS: acontains_tgeo_geo */
+	private _acontains_tgeo_geo(gs: Geometry): number {
+		return F.acontains_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: acontains_tgeo_tgeo */
+	private _acontains_tgeo_tgeo(temp2: TGeometry): number {
+		return F.acontains_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: acovers_tgeo_geo */
+	private _acovers_tgeo_geo(gs: Geometry): number {
+		return F.acovers_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: acovers_tgeo_tgeo */
+	private _acovers_tgeo_tgeo(temp2: TGeometry): number {
+		return F.acovers_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: atouches_tgeo_geo */
+	private _atouches_tgeo_geo(gs: Geometry): number {
+		return F.atouches_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: atouches_tgeo_tgeo */
+	private _atouches_tgeo_tgeo(temp2: TGeometry): number {
+		return F.atouches_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: econtains_tgeo_geo */
+	private _econtains_tgeo_geo(gs: Geometry): number {
+		return F.econtains_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: econtains_tgeo_tgeo */
+	private _econtains_tgeo_tgeo(temp2: TGeometry): number {
+		return F.econtains_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ecovers_tgeo_geo */
+	private _ecovers_tgeo_geo(gs: Geometry): number {
+		return F.ecovers_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ecovers_tgeo_tgeo */
+	private _ecovers_tgeo_tgeo(temp2: TGeometry): number {
+		return F.ecovers_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: etouches_tgeo_geo */
+	private _etouches_tgeo_geo(gs: Geometry): number {
+		return F.etouches_tgeo_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: etouches_tgeo_tgeo */
+	private _etouches_tgeo_tgeo(temp2: TGeometry): number {
+		return F.etouches_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: tcontains_tgeo_geo */
+	private _tcontains_tgeo_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcontains_tgeo_tgeo */
+	private _tcontains_tgeo_tgeo(temp2: TGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcontains_tgeo_tgeo(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_tgeo_geo */
+	private _tcovers_tgeo_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tcovers_tgeo_tgeo */
+	private _tcovers_tgeo_tgeo(temp2: TGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tcovers_tgeo_tgeo(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ttouches_tgeo_tgeo */
+	private _ttouches_tgeo_tgeo(temp2: TGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.ttouches_tgeo_tgeo(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: acontains_tgeo_geo, acontains_tgeo_tgeo, chosen by the arguments' types */
+	acontains(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._acontains_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._acontains_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.acontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: acovers_tgeo_geo, acovers_tgeo_tgeo, chosen by the arguments' types */
+	acovers(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._acovers_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._acovers_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.acovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: atouches_tgeo_geo, atouches_tgeo_tgeo, chosen by the arguments' types */
+	atouches(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._atouches_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._atouches_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.atouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: econtains_tgeo_geo, econtains_tgeo_tgeo, chosen by the arguments' types */
+	econtains(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._econtains_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._econtains_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.econtains: no overload takes these arguments`);
+	}
+
+	/** MEOS: ecovers_tgeo_geo, ecovers_tgeo_tgeo, chosen by the arguments' types */
+	ecovers(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._ecovers_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._ecovers_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.ecovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: etouches_tgeo_geo, etouches_tgeo_tgeo, chosen by the arguments' types */
+	etouches(gs: Geometry | TGeometry): number {
+		if (gs instanceof TGeometry) return this._etouches_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._etouches_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.etouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: tcontains_tgeo_geo, tcontains_tgeo_tgeo, chosen by the arguments' types */
+	tcontains(gs: Geometry | TGeometry): Temporal | null {
+		if (gs instanceof TGeometry) return this._tcontains_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._tcontains_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.tcontains: no overload takes these arguments`);
+	}
+
+	/** MEOS: tcovers_tgeo_geo, tcovers_tgeo_tgeo, chosen by the arguments' types */
+	tcovers(gs: Geometry | TGeometry): Temporal | null {
+		if (gs instanceof TGeometry) return this._tcovers_tgeo_tgeo(gs as TGeometry);
+		if (gs instanceof Geometry) return this._tcovers_tgeo_geo(gs as Geometry);
+		throw new TypeError(`TGeometry.tcovers: no overload takes these arguments`);
+	}
+
 	/** MEOS: tgeometry_to_tcbuffer */
 	toTcbuffer(): Temporal {
 		return wrapTemporal(F.tgeometry_to_tcbuffer(this.ptr)) as Temporal;
@@ -9392,6 +16982,12 @@ export class TGeometry extends TGeo {
 	/** MEOS: tgeometry_to_tgeompoint */
 	toTgeompoint(): Temporal {
 		return wrapTemporal(F.tgeometry_to_tgeompoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: ttouches_tgeo_tgeo, chosen by the arguments' types */
+	override ttouches(temp2: TGeometry | Geometry): Temporal | null {
+		if (temp2 instanceof TGeometry) return this._ttouches_tgeo_tgeo(temp2 as TGeometry);
+		return super.ttouches(temp2 as Geometry);
 	}
 
 	/** MEOS: tgeometry_in */
@@ -9446,6 +17042,85 @@ export class TH3Index extends TCellIndex {
 	/** The text MEOS writes this value as (MEOS: th3index_out). */
 	override toString(): string {
 		return this.out();
+	}
+
+	/** MEOS: always_eq_th3index_h3index */
+	private _always_eq_th3index_h3index(cell: H3Index): number {
+		return F.always_eq_th3index_h3index(this.ptr, cell);
+	}
+
+	/** MEOS: always_eq_th3index_th3index */
+	private _always_eq_th3index_th3index(temp2: TH3Index): number {
+		return F.always_eq_th3index_th3index(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_th3index_h3index */
+	private _always_ne_th3index_h3index(cell: H3Index): number {
+		return F.always_ne_th3index_h3index(this.ptr, cell);
+	}
+
+	/** MEOS: always_ne_th3index_th3index */
+	private _always_ne_th3index_th3index(temp2: TH3Index): number {
+		return F.always_ne_th3index_th3index(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_th3index_h3index */
+	private _ever_eq_th3index_h3index(cell: H3Index): number {
+		return F.ever_eq_th3index_h3index(this.ptr, cell);
+	}
+
+	/** MEOS: ever_eq_th3index_h3indexset */
+	private _ever_eq_th3index_h3indexset(cells: H3IndexSet): number {
+		return F.ever_eq_th3index_h3indexset(this.ptr, cells.ptr);
+	}
+
+	/** MEOS: ever_eq_th3index_th3index */
+	private _ever_eq_th3index_th3index(temp2: TH3Index): number {
+		return F.ever_eq_th3index_th3index(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_th3index_h3index */
+	private _ever_ne_th3index_h3index(cell: H3Index): number {
+		return F.ever_ne_th3index_h3index(this.ptr, cell);
+	}
+
+	/** MEOS: ever_ne_th3index_th3index */
+	private _ever_ne_th3index_th3index(temp2: TH3Index): number {
+		return F.ever_ne_th3index_th3index(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_th3index_h3index */
+	private _teq_th3index_h3index(cell: H3Index): Temporal {
+		return wrapTemporal(F.teq_th3index_h3index(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: teq_th3index_th3index */
+	private _teq_th3index_th3index(temp2: Temporal): Temporal {
+		return wrapTemporal(F.teq_th3index_th3index(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_th3index_h3index */
+	private _tne_th3index_h3index(cell: H3Index): Temporal {
+		return wrapTemporal(F.tne_th3index_h3index(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: tne_th3index_th3index */
+	private _tne_th3index_th3index(temp2: Temporal): Temporal {
+		return wrapTemporal(F.tne_th3index_th3index(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_th3index_h3index, always_eq_th3index_th3index, chosen by the arguments' types */
+	override alwaysEq(cell: H3Index | TH3Index | Temporal): number {
+		if (cell instanceof TH3Index) return this._always_eq_th3index_th3index(cell as TH3Index);
+		if (typeof cell === 'bigint') return this._always_eq_th3index_h3index(cell as H3Index);
+		return super.alwaysEq(cell as Temporal);
+	}
+
+	/** MEOS: always_ne_th3index_h3index, always_ne_th3index_th3index, chosen by the arguments' types */
+	override alwaysNe(cell: H3Index | TH3Index | Temporal): number {
+		if (cell instanceof TH3Index) return this._always_ne_th3index_th3index(cell as TH3Index);
+		if (typeof cell === 'bigint') return this._always_ne_th3index_h3index(cell as H3Index);
+		return super.alwaysNe(cell as Temporal);
 	}
 
 	/** MEOS: th3index_are_neighbor_cells */
@@ -9513,6 +17188,21 @@ export class TH3Index extends TCellIndex {
 		return F.th3index_end_value(this.ptr);
 	}
 
+	/** MEOS: ever_eq_th3index_h3index, ever_eq_th3index_th3index, ever_eq_th3index_h3indexset, chosen by the arguments' types */
+	override everEq(cell: H3Index | TH3Index | H3IndexSet | Temporal): number {
+		if (cell instanceof TH3Index) return this._ever_eq_th3index_th3index(cell as TH3Index);
+		if (cell instanceof H3IndexSet) return this._ever_eq_th3index_h3indexset(cell as H3IndexSet);
+		if (typeof cell === 'bigint') return this._ever_eq_th3index_h3index(cell as H3Index);
+		return super.everEq(cell as Temporal);
+	}
+
+	/** MEOS: ever_ne_th3index_h3index, ever_ne_th3index_th3index, chosen by the arguments' types */
+	override everNe(cell: H3Index | TH3Index | Temporal): number {
+		if (cell instanceof TH3Index) return this._ever_ne_th3index_th3index(cell as TH3Index);
+		if (typeof cell === 'bigint') return this._ever_ne_th3index_h3index(cell as H3Index);
+		return super.everNe(cell as Temporal);
+	}
+
 	/** MEOS: th3index_get_base_cell_number */
 	getBaseCellNumber(): Temporal {
 		return wrapTemporal(F.th3index_get_base_cell_number(this.ptr)) as Temporal;
@@ -9568,9 +17258,53 @@ export class TH3Index extends TCellIndex {
 		return F.th3index_out(this.ptr);
 	}
 
+	/** MEOS: always_eq_h3index_th3index */
+	ralwaysEq(cell: H3Index): number {
+		return F.always_eq_h3index_th3index(cell, this.ptr);
+	}
+
+	/** MEOS: always_ne_h3index_th3index */
+	ralwaysNe(cell: H3Index): number {
+		return F.always_ne_h3index_th3index(cell, this.ptr);
+	}
+
+	/** MEOS: ever_eq_h3index_th3index */
+	reverEq(cell: H3Index): number {
+		return F.ever_eq_h3index_th3index(cell, this.ptr);
+	}
+
+	/** MEOS: ever_ne_h3index_th3index */
+	reverNe(cell: H3Index): number {
+		return F.ever_ne_h3index_th3index(cell, this.ptr);
+	}
+
+	/** MEOS: teq_h3index_th3index */
+	rteq(cell: H3Index): Temporal {
+		return wrapTemporal(F.teq_h3index_th3index(cell, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_h3index_th3index */
+	rtne(cell: H3Index): Temporal {
+		return wrapTemporal(F.tne_h3index_th3index(cell, this.ptr)) as Temporal;
+	}
+
 	/** MEOS: th3index_start_value */
 	startValue(): H3Index {
 		return F.th3index_start_value(this.ptr);
+	}
+
+	/** MEOS: teq_th3index_h3index, teq_th3index_th3index, chosen by the arguments' types */
+	override teq(cell: H3Index | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._teq_th3index_th3index(cell as Temporal);
+		if (typeof cell === 'bigint') return this._teq_th3index_h3index(cell as H3Index);
+		return super.teq(cell as Temporal);
+	}
+
+	/** MEOS: tne_th3index_h3index, tne_th3index_th3index, chosen by the arguments' types */
+	override tne(cell: H3Index | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._tne_th3index_th3index(cell as Temporal);
+		if (typeof cell === 'bigint') return this._tne_th3index_h3index(cell as H3Index);
+		return super.tne(cell as Temporal);
 	}
 
 	/** MEOS: th3index_to_tbigint */
@@ -9723,6 +17457,183 @@ export class TInt extends TNumber {
 		return this.out();
 	}
 
+	/** MEOS: add_tint_int */
+	private _add_tint_int(i: number): Temporal {
+		return wrapTemporal(F.add_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: always_eq_tint_int */
+	private _always_eq_tint_int(i: number): number {
+		return F.always_eq_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: always_ge_tint_int */
+	private _always_ge_tint_int(i: number): number {
+		return F.always_ge_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: always_gt_tint_int */
+	private _always_gt_tint_int(i: number): number {
+		return F.always_gt_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: always_le_tint_int */
+	private _always_le_tint_int(i: number): number {
+		return F.always_le_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: always_lt_tint_int */
+	private _always_lt_tint_int(i: number): number {
+		return F.always_lt_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: always_ne_tint_int */
+	private _always_ne_tint_int(i: number): number {
+		return F.always_ne_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: div_tint_int */
+	private _div_tint_int(i: number): Temporal {
+		return wrapTemporal(F.div_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_tint_int */
+	private _ever_eq_tint_int(i: number): number {
+		return F.ever_eq_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: ever_ge_tint_int */
+	private _ever_ge_tint_int(i: number): number {
+		return F.ever_ge_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: ever_gt_tint_int */
+	private _ever_gt_tint_int(i: number): number {
+		return F.ever_gt_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: ever_le_tint_int */
+	private _ever_le_tint_int(i: number): number {
+		return F.ever_le_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: ever_lt_tint_int */
+	private _ever_lt_tint_int(i: number): number {
+		return F.ever_lt_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: ever_ne_tint_int */
+	private _ever_ne_tint_int(i: number): number {
+		return F.ever_ne_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: mul_tint_int */
+	private _mul_tint_int(i: number): Temporal {
+		return wrapTemporal(F.mul_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: nad_tint_int */
+	private _nad_tint_int(i: number): number {
+		return F.nad_tint_int(this.ptr, i);
+	}
+
+	/** MEOS: nad_tint_intspan */
+	private _nad_tint_intspan(s: IntSpan): number {
+		return F.nad_tint_intspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: nad_tint_tbox */
+	private _nad_tint_tbox(box: TBox): number {
+		return F.nad_tint_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tint_tint */
+	private _nad_tint_tint(temp2: TInt): number {
+		return F.nad_tint_tint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: sub_tint_int */
+	private _sub_tint_int(i: number): Temporal {
+		return wrapTemporal(F.sub_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tdistance_tint_int */
+	private _tdistance_tint_int(i: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tint_int(this.ptr, i)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tint_int */
+	private _teq_tint_int(i: number): Temporal {
+		return wrapTemporal(F.teq_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tge_tint_int */
+	private _tge_tint_int(i: number): Temporal {
+		return wrapTemporal(F.tge_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tgt_tint_int */
+	private _tgt_tint_int(i: number): Temporal {
+		return wrapTemporal(F.tgt_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tle_tint_int */
+	private _tle_tint_int(i: number): Temporal {
+		return wrapTemporal(F.tle_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tlt_tint_int */
+	private _tlt_tint_int(i: number): Temporal {
+		return wrapTemporal(F.tlt_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: tne_tint_int */
+	private _tne_tint_int(i: number): Temporal {
+		return wrapTemporal(F.tne_tint_int(this.ptr, i)) as Temporal;
+	}
+
+	/** MEOS: add_tint_int, chosen by the arguments' types */
+	override add(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._add_tint_int(i as number);
+		return super.add(i as TNumber);
+	}
+
+	/** MEOS: always_eq_tint_int, chosen by the arguments' types */
+	override alwaysEq(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_eq_tint_int(i as number);
+		return super.alwaysEq(i as Temporal);
+	}
+
+	/** MEOS: always_ge_tint_int, chosen by the arguments' types */
+	override alwaysGe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_ge_tint_int(i as number);
+		return super.alwaysGe(i as Temporal);
+	}
+
+	/** MEOS: always_gt_tint_int, chosen by the arguments' types */
+	override alwaysGt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_gt_tint_int(i as number);
+		return super.alwaysGt(i as Temporal);
+	}
+
+	/** MEOS: always_le_tint_int, chosen by the arguments' types */
+	override alwaysLe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_le_tint_int(i as number);
+		return super.alwaysLe(i as Temporal);
+	}
+
+	/** MEOS: always_lt_tint_int, chosen by the arguments' types */
+	override alwaysLt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_lt_tint_int(i as number);
+		return super.alwaysLt(i as Temporal);
+	}
+
+	/** MEOS: always_ne_tint_int, chosen by the arguments' types */
+	override alwaysNe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._always_ne_tint_int(i as number);
+		return super.alwaysNe(i as Temporal);
+	}
+
 	/** MEOS: tint_out */
 	asText(): string {
 		return this.out();
@@ -9733,9 +17644,51 @@ export class TInt extends TNumber {
 		return wrapTemporalOrNull(F.tint_at_value(this.ptr, i)) as Temporal | null;
 	}
 
+	/** MEOS: div_tint_int, chosen by the arguments' types */
+	override div(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._div_tint_int(i as number);
+		return super.div(i as TNumber);
+	}
+
 	/** MEOS: tint_end_value */
 	endValue(): number {
 		return F.tint_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_tint_int, chosen by the arguments' types */
+	override everEq(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_eq_tint_int(i as number);
+		return super.everEq(i as Temporal);
+	}
+
+	/** MEOS: ever_ge_tint_int, chosen by the arguments' types */
+	override everGe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_ge_tint_int(i as number);
+		return super.everGe(i as Temporal);
+	}
+
+	/** MEOS: ever_gt_tint_int, chosen by the arguments' types */
+	override everGt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_gt_tint_int(i as number);
+		return super.everGt(i as Temporal);
+	}
+
+	/** MEOS: ever_le_tint_int, chosen by the arguments' types */
+	override everLe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_le_tint_int(i as number);
+		return super.everLe(i as Temporal);
+	}
+
+	/** MEOS: ever_lt_tint_int, chosen by the arguments' types */
+	override everLt(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_lt_tint_int(i as number);
+		return super.everLt(i as Temporal);
+	}
+
+	/** MEOS: ever_ne_tint_int, chosen by the arguments' types */
+	override everNe(i: number | Temporal): number {
+		if (typeof i === 'number') return this._ever_ne_tint_int(i as number);
+		return super.everNe(i as Temporal);
 	}
 
 	/** MEOS: tint_max_value */
@@ -9753,9 +17706,134 @@ export class TInt extends TNumber {
 		return F.tint_min_value(this.ptr);
 	}
 
+	/** MEOS: mul_tint_int, chosen by the arguments' types */
+	override mul(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._mul_tint_int(i as number);
+		return super.mul(i as TNumber);
+	}
+
+	/** MEOS: nad_tint_int, nad_tint_intspan, nad_tint_tbox, nad_tint_tint, chosen by the arguments' types */
+	nad(i: number | IntSpan | TBox | TInt): number {
+		if (i instanceof IntSpan) return this._nad_tint_intspan(i as IntSpan);
+		if (i instanceof TInt) return this._nad_tint_tint(i as TInt);
+		if (i instanceof TBox) return this._nad_tint_tbox(i as TBox);
+		if (typeof i === 'number') return this._nad_tint_int(i as number);
+		throw new TypeError(`TInt.nad: no overload takes these arguments`);
+	}
+
 	/** MEOS: tint_out */
 	out(): string {
 		return F.tint_out(this.ptr);
+	}
+
+	/** MEOS: add_int_tint */
+	radd(i: number): Temporal {
+		return wrapTemporal(F.add_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_int_tint */
+	ralwaysEq(i: number): number {
+		return F.always_eq_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: always_ge_int_tint */
+	ralwaysGe(i: number): number {
+		return F.always_ge_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: always_gt_int_tint */
+	ralwaysGt(i: number): number {
+		return F.always_gt_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: always_le_int_tint */
+	ralwaysLe(i: number): number {
+		return F.always_le_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: always_lt_int_tint */
+	ralwaysLt(i: number): number {
+		return F.always_lt_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: always_ne_int_tint */
+	ralwaysNe(i: number): number {
+		return F.always_ne_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: div_int_tint */
+	rdiv(i: number): Temporal {
+		return wrapTemporal(F.div_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: ever_eq_int_tint */
+	reverEq(i: number): number {
+		return F.ever_eq_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: ever_ge_int_tint */
+	reverGe(i: number): number {
+		return F.ever_ge_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: ever_gt_int_tint */
+	reverGt(i: number): number {
+		return F.ever_gt_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: ever_le_int_tint */
+	reverLe(i: number): number {
+		return F.ever_le_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: ever_lt_int_tint */
+	reverLt(i: number): number {
+		return F.ever_lt_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: ever_ne_int_tint */
+	reverNe(i: number): number {
+		return F.ever_ne_int_tint(i, this.ptr);
+	}
+
+	/** MEOS: mul_int_tint */
+	rmul(i: number): Temporal {
+		return wrapTemporal(F.mul_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: sub_int_tint */
+	rsub(i: number): Temporal {
+		return wrapTemporal(F.sub_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: teq_int_tint */
+	rteq(i: number): Temporal {
+		return wrapTemporal(F.teq_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tge_int_tint */
+	rtge(i: number): Temporal {
+		return wrapTemporal(F.tge_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tgt_int_tint */
+	rtgt(i: number): Temporal {
+		return wrapTemporal(F.tgt_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tle_int_tint */
+	rtle(i: number): Temporal {
+		return wrapTemporal(F.tle_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tlt_int_tint */
+	rtlt(i: number): Temporal {
+		return wrapTemporal(F.tlt_int_tint(i, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_int_tint */
+	rtne(i: number): Temporal {
+		return wrapTemporal(F.tne_int_tint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tint_scale_value */
@@ -9778,6 +17856,36 @@ export class TInt extends TNumber {
 		return F.tint_start_value(this.ptr);
 	}
 
+	/** MEOS: sub_tint_int, chosen by the arguments' types */
+	override sub(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._sub_tint_int(i as number);
+		return super.sub(i as TNumber);
+	}
+
+	/** MEOS: tdistance_tint_int, chosen by the arguments' types */
+	override tdistance(i: number | TNumber): Temporal | null {
+		if (typeof i === 'number') return this._tdistance_tint_int(i as number);
+		return super.tdistance(i as TNumber);
+	}
+
+	/** MEOS: teq_tint_int, chosen by the arguments' types */
+	override teq(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._teq_tint_int(i as number);
+		return super.teq(i as Temporal);
+	}
+
+	/** MEOS: tge_tint_int, chosen by the arguments' types */
+	override tge(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tge_tint_int(i as number);
+		return super.tge(i as Temporal);
+	}
+
+	/** MEOS: tgt_tint_int, chosen by the arguments' types */
+	override tgt(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tgt_tint_int(i as number);
+		return super.tgt(i as Temporal);
+	}
+
 	/** MEOS: tint_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
 		const _duration = _putInterval(duration);
@@ -9798,6 +17906,24 @@ export class TInt extends TNumber {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tle_tint_int, chosen by the arguments' types */
+	override tle(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tle_tint_int(i as number);
+		return super.tle(i as Temporal);
+	}
+
+	/** MEOS: tlt_tint_int, chosen by the arguments' types */
+	override tlt(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tlt_tint_int(i as number);
+		return super.tlt(i as Temporal);
+	}
+
+	/** MEOS: tne_tint_int, chosen by the arguments' types */
+	override tne(i: number | Temporal): Temporal | null {
+		if (typeof i === 'number') return this._tne_tint_int(i as number);
+		return super.tne(i as Temporal);
 	}
 
 	/** MEOS: tint_to_tbigint */
@@ -9971,6 +18097,80 @@ export class TJsonb extends TAlpha {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_tjsonb_jsonb */
+	private _always_eq_tjsonb_jsonb(jb: Jsonb): number {
+		return F.always_eq_tjsonb_jsonb(this.ptr, jb.ptr);
+	}
+
+	/** MEOS: always_eq_tjsonb_tjsonb */
+	private _always_eq_tjsonb_tjsonb(temp2: TJsonb): number {
+		return F.always_eq_tjsonb_tjsonb(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tjsonb_jsonb */
+	private _always_ne_tjsonb_jsonb(jb: Jsonb): number {
+		return F.always_ne_tjsonb_jsonb(this.ptr, jb.ptr);
+	}
+
+	/** MEOS: always_ne_tjsonb_tjsonb */
+	private _always_ne_tjsonb_tjsonb(temp2: TJsonb): number {
+		return F.always_ne_tjsonb_tjsonb(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: concat_tjsonb_jsonb */
+	private _concat_tjsonb_jsonb(jb: Jsonb, invert: boolean): Temporal {
+		return wrapTemporal(F.concat_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as Temporal;
+	}
+
+	/** MEOS: concat_tjsonb_tjsonb */
+	private _concat_tjsonb_tjsonb(temp2: TJsonb): Temporal | null {
+		return wrapTemporalOrNull(F.concat_tjsonb_tjsonb(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: ever_eq_tjsonb_jsonb */
+	private _ever_eq_tjsonb_jsonb(jb: Jsonb): number {
+		return F.ever_eq_tjsonb_jsonb(this.ptr, jb.ptr);
+	}
+
+	/** MEOS: ever_eq_tjsonb_tjsonb */
+	private _ever_eq_tjsonb_tjsonb(temp2: TJsonb): number {
+		return F.ever_eq_tjsonb_tjsonb(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tjsonb_jsonb */
+	private _ever_ne_tjsonb_jsonb(jb: Jsonb): number {
+		return F.ever_ne_tjsonb_jsonb(this.ptr, jb.ptr);
+	}
+
+	/** MEOS: ever_ne_tjsonb_tjsonb */
+	private _ever_ne_tjsonb_tjsonb(temp2: TJsonb): number {
+		return F.ever_ne_tjsonb_tjsonb(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_tjsonb_jsonb */
+	private _teq_tjsonb_jsonb(jb: Jsonb): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tjsonb_jsonb(this.ptr, jb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tjsonb_jsonb */
+	private _tne_tjsonb_jsonb(jb: Jsonb): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tjsonb_jsonb(this.ptr, jb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tjsonb_jsonb, always_eq_tjsonb_tjsonb, chosen by the arguments' types */
+	override alwaysEq(jb: Jsonb | TJsonb | Temporal): number {
+		if (jb instanceof TJsonb) return this._always_eq_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._always_eq_tjsonb_jsonb(jb as Jsonb);
+		return super.alwaysEq(jb as Temporal);
+	}
+
+	/** MEOS: always_ne_tjsonb_jsonb, always_ne_tjsonb_tjsonb, chosen by the arguments' types */
+	override alwaysNe(jb: Jsonb | TJsonb | Temporal): number {
+		if (jb instanceof TJsonb) return this._always_ne_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._always_ne_tjsonb_jsonb(jb as Jsonb);
+		return super.alwaysNe(jb as Temporal);
+	}
+
 	/** MEOS: tjsonb_array_element */
 	arrayElement(idx: number, null_handle: number): Temporal | null {
 		return wrapTemporalOrNull(F.tjsonb_array_element(this.ptr, idx, null_handle)) as Temporal | null;
@@ -9994,6 +18194,13 @@ export class TJsonb extends TAlpha {
 	/** MEOS: tjsonb_at_value */
 	atValue(jsb: Jsonb): Temporal | null {
 		return wrapTemporalOrNull(F.tjsonb_at_value(this.ptr, jsb.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: concat_tjsonb_jsonb, concat_tjsonb_tjsonb, chosen by the arguments' types */
+	concat(jb: Jsonb | TJsonb, invert?: boolean): Temporal | null {
+		if (jb instanceof TJsonb && invert === undefined) return this._concat_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb && typeof invert === 'boolean') return this._concat_tjsonb_jsonb(jb as Jsonb, invert as boolean);
+		throw new TypeError(`TJsonb.concat: no overload takes these arguments`);
 	}
 
 	/** MEOS: tjsonb_delete */
@@ -10029,6 +18236,20 @@ export class TJsonb extends TAlpha {
 	/** MEOS: tjsonb_end_value */
 	endValue(): Jsonb {
 		return wrapJsonb(F.tjsonb_end_value(this.ptr)) as Jsonb;
+	}
+
+	/** MEOS: ever_eq_tjsonb_jsonb, ever_eq_tjsonb_tjsonb, chosen by the arguments' types */
+	override everEq(jb: Jsonb | TJsonb | Temporal): number {
+		if (jb instanceof TJsonb) return this._ever_eq_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._ever_eq_tjsonb_jsonb(jb as Jsonb);
+		return super.everEq(jb as Temporal);
+	}
+
+	/** MEOS: ever_ne_tjsonb_jsonb, ever_ne_tjsonb_tjsonb, chosen by the arguments' types */
+	override everNe(jb: Jsonb | TJsonb | Temporal): number {
+		if (jb instanceof TJsonb) return this._ever_ne_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._ever_ne_tjsonb_jsonb(jb as Jsonb);
+		return super.everNe(jb as Temporal);
 	}
 
 	/** MEOS: tjsonb_exists */
@@ -10159,6 +18380,18 @@ export class TJsonb extends TAlpha {
 	/** MEOS: tjsonb_strip_nulls */
 	stripNulls(strip_in_arrays: boolean): Temporal {
 		return wrapTemporal(F.tjsonb_strip_nulls(this.ptr, strip_in_arrays)) as Temporal;
+	}
+
+	/** MEOS: teq_tjsonb_jsonb, chosen by the arguments' types */
+	override teq(jb: Jsonb | Temporal): Temporal | null {
+		if (jb instanceof Jsonb) return this._teq_tjsonb_jsonb(jb as Jsonb);
+		return super.teq(jb as Temporal);
+	}
+
+	/** MEOS: tne_tjsonb_jsonb, chosen by the arguments' types */
+	override tne(jb: Jsonb | Temporal): Temporal | null {
+		if (jb instanceof Jsonb) return this._tne_tjsonb_jsonb(jb as Jsonb);
+		return super.tne(jb as Temporal);
 	}
 
 	/** MEOS: tjsonb_to_tbigint */
@@ -10310,6 +18543,195 @@ export class TNpoint extends TSpatial {
 		return this.asText(15);
 	}
 
+	/** MEOS: always_eq_tnpoint_npoint */
+	private _always_eq_tnpoint_npoint(np: Npoint): number {
+		return F.always_eq_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: always_eq_tnpoint_tnpoint */
+	private _always_eq_tnpoint_tnpoint(temp2: TNpoint): number {
+		return F.always_eq_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tnpoint_npoint */
+	private _always_ne_tnpoint_npoint(np: Npoint): number {
+		return F.always_ne_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: always_ne_tnpoint_tnpoint */
+	private _always_ne_tnpoint_tnpoint(temp2: TNpoint): number {
+		return F.always_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contained_rid_tnpoint_bigintset */
+	private _contained_rid_tnpoint_bigintset(s: BigIntSet): boolean {
+		return F.contained_rid_tnpoint_bigintset(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contained_rid_tnpoint_tnpoint */
+	private _contained_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+		return F.contained_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: contains_rid_tnpoint_bigint */
+	private _contains_rid_tnpoint_bigint(rid: number): boolean {
+		return F.contains_rid_tnpoint_bigint(this.ptr, rid);
+	}
+
+	/** MEOS: contains_rid_tnpoint_bigintset */
+	private _contains_rid_tnpoint_bigintset(s: BigIntSet): boolean {
+		return F.contains_rid_tnpoint_bigintset(this.ptr, s.ptr);
+	}
+
+	/** MEOS: contains_rid_tnpoint_npoint */
+	private _contains_rid_tnpoint_npoint(np: Npoint): boolean {
+		return F.contains_rid_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: contains_rid_tnpoint_tnpoint */
+	private _contains_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+		return F.contains_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tnpoint_npoint */
+	private _ever_eq_tnpoint_npoint(np: Npoint): number {
+		return F.ever_eq_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: ever_eq_tnpoint_tnpoint */
+	private _ever_eq_tnpoint_tnpoint(temp2: TNpoint): number {
+		return F.ever_eq_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tnpoint_npoint */
+	private _ever_ne_tnpoint_npoint(np: Npoint): number {
+		return F.ever_ne_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: ever_ne_tnpoint_tnpoint */
+	private _ever_ne_tnpoint_tnpoint(temp2: TNpoint): number {
+		return F.ever_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tnpoint_geo */
+	private _nad_tnpoint_geo(gs: Geometry): number {
+		return F.nad_tnpoint_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: nad_tnpoint_npoint */
+	private _nad_tnpoint_npoint(np: Npoint): number {
+		return F.nad_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: nad_tnpoint_stbox */
+	private _nad_tnpoint_stbox(box: STBox): number {
+		return F.nad_tnpoint_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tnpoint_tnpoint */
+	private _nad_tnpoint_tnpoint(temp2: TNpoint): number {
+		return F.nad_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nai_tnpoint_geo */
+	private _nai_tnpoint_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tnpoint_npoint */
+	private _nai_tnpoint_npoint(np: Npoint): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tnpoint_tnpoint */
+	private _nai_tnpoint_tnpoint(temp2: TNpoint): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: overlaps_rid_tnpoint_bigintset */
+	private _overlaps_rid_tnpoint_bigintset(s: BigIntSet): boolean {
+		return F.overlaps_rid_tnpoint_bigintset(this.ptr, s.ptr);
+	}
+
+	/** MEOS: overlaps_rid_tnpoint_tnpoint */
+	private _overlaps_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+		return F.overlaps_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: same_rid_tnpoint_bigint */
+	private _same_rid_tnpoint_bigint(rid: number): boolean {
+		return F.same_rid_tnpoint_bigint(this.ptr, rid);
+	}
+
+	/** MEOS: same_rid_tnpoint_bigintset */
+	private _same_rid_tnpoint_bigintset(s: BigIntSet): boolean {
+		return F.same_rid_tnpoint_bigintset(this.ptr, s.ptr);
+	}
+
+	/** MEOS: same_rid_tnpoint_npoint */
+	private _same_rid_tnpoint_npoint(np: Npoint): boolean {
+		return F.same_rid_tnpoint_npoint(this.ptr, np.ptr);
+	}
+
+	/** MEOS: same_rid_tnpoint_tnpoint */
+	private _same_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+		return F.same_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: shortestline_tnpoint_geo */
+	private _shortestline_tnpoint_geo(gs: Geometry): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tnpoint_geo(this.ptr, gs.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tnpoint_npoint */
+	private _shortestline_tnpoint_npoint(np: Npoint): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tnpoint_npoint(this.ptr, np.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tnpoint_tnpoint */
+	private _shortestline_tnpoint_tnpoint(temp2: TNpoint): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: tdistance_tnpoint_geo */
+	private _tdistance_tnpoint_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tnpoint_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tnpoint_npoint */
+	private _tdistance_tnpoint_npoint(np: Npoint): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tnpoint_tnpoint */
+	private _tdistance_tnpoint_tnpoint(temp2: TNpoint): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tnpoint_npoint */
+	private _teq_tnpoint_npoint(np: Npoint): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tnpoint_npoint */
+	private _tne_tnpoint_npoint(np: Npoint): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tnpoint_npoint, always_eq_tnpoint_tnpoint, chosen by the arguments' types */
+	override alwaysEq(np: Npoint | TNpoint | Temporal): number {
+		if (np instanceof TNpoint) return this._always_eq_tnpoint_tnpoint(np as TNpoint);
+		if (np instanceof Npoint) return this._always_eq_tnpoint_npoint(np as Npoint);
+		return super.alwaysEq(np as Temporal);
+	}
+
+	/** MEOS: always_ne_tnpoint_npoint, always_ne_tnpoint_tnpoint, chosen by the arguments' types */
+	override alwaysNe(np: Npoint | TNpoint | Temporal): number {
+		if (np instanceof TNpoint) return this._always_ne_tnpoint_tnpoint(np as TNpoint);
+		if (np instanceof Npoint) return this._always_ne_tnpoint_npoint(np as Npoint);
+		return super.alwaysNe(np as Temporal);
+	}
+
 	/** MEOS: tnpoint_at_geom */
 	atGeom(gs: Geo): Temporal | null {
 		return wrapTemporalOrNull(F.tnpoint_at_geom(this.ptr, gs.ptr)) as Temporal | null;
@@ -10330,6 +18752,22 @@ export class TNpoint extends TSpatial {
 		return wrapTemporalOrNull(F.tnpoint_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
+	/** MEOS: contained_rid_tnpoint_bigintset, contained_rid_tnpoint_tnpoint, chosen by the arguments' types */
+	containedRid(s: BigIntSet | TNpoint): boolean {
+		if (s instanceof BigIntSet) return this._contained_rid_tnpoint_bigintset(s as BigIntSet);
+		if (s instanceof TNpoint) return this._contained_rid_tnpoint_tnpoint(s as TNpoint);
+		throw new TypeError(`TNpoint.containedRid: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_rid_tnpoint_bigint, contains_rid_tnpoint_bigintset, contains_rid_tnpoint_npoint, contains_rid_tnpoint_tnpoint, chosen by the arguments' types */
+	containsRid(rid: number | BigIntSet | Npoint | TNpoint): boolean {
+		if (rid instanceof BigIntSet) return this._contains_rid_tnpoint_bigintset(rid as BigIntSet);
+		if (rid instanceof TNpoint) return this._contains_rid_tnpoint_tnpoint(rid as TNpoint);
+		if (rid instanceof Npoint) return this._contains_rid_tnpoint_npoint(rid as Npoint);
+		if (typeof rid === 'number') return this._contains_rid_tnpoint_bigint(rid as number);
+		throw new TypeError(`TNpoint.containsRid: no overload takes these arguments`);
+	}
+
 	/** MEOS: tnpoint_cumulative_length */
 	cumulativeLength(): Temporal {
 		return wrapTemporal(F.tnpoint_cumulative_length(this.ptr)) as Temporal;
@@ -10338,6 +18776,20 @@ export class TNpoint extends TSpatial {
 	/** MEOS: tnpoint_end_value */
 	endValue(): Npoint {
 		return wrapNpoint(F.tnpoint_end_value(this.ptr)) as Npoint;
+	}
+
+	/** MEOS: ever_eq_tnpoint_npoint, ever_eq_tnpoint_tnpoint, chosen by the arguments' types */
+	override everEq(np: Npoint | TNpoint | Temporal): number {
+		if (np instanceof TNpoint) return this._ever_eq_tnpoint_tnpoint(np as TNpoint);
+		if (np instanceof Npoint) return this._ever_eq_tnpoint_npoint(np as Npoint);
+		return super.everEq(np as Temporal);
+	}
+
+	/** MEOS: ever_ne_tnpoint_npoint, ever_ne_tnpoint_tnpoint, chosen by the arguments' types */
+	override everNe(np: Npoint | TNpoint | Temporal): number {
+		if (np instanceof TNpoint) return this._ever_ne_tnpoint_tnpoint(np as TNpoint);
+		if (np instanceof Npoint) return this._ever_ne_tnpoint_npoint(np as Npoint);
+		return super.everNe(np as Temporal);
 	}
 
 	/** MEOS: tnpoint_length */
@@ -10365,9 +18817,33 @@ export class TNpoint extends TSpatial {
 		return wrapTemporalOrNull(F.tnpoint_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
+	/** MEOS: nad_tnpoint_geo, nad_tnpoint_npoint, nad_tnpoint_stbox, nad_tnpoint_tnpoint, chosen by the arguments' types */
+	nad(gs: Geometry | Npoint | STBox | TNpoint): number {
+		if (gs instanceof Geometry) return this._nad_tnpoint_geo(gs as Geometry);
+		if (gs instanceof TNpoint) return this._nad_tnpoint_tnpoint(gs as TNpoint);
+		if (gs instanceof Npoint) return this._nad_tnpoint_npoint(gs as Npoint);
+		if (gs instanceof STBox) return this._nad_tnpoint_stbox(gs as STBox);
+		throw new TypeError(`TNpoint.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_tnpoint_geo, nai_tnpoint_npoint, nai_tnpoint_tnpoint, chosen by the arguments' types */
+	nai(gs: Geometry | Npoint | TNpoint): Temporal | null {
+		if (gs instanceof Geometry) return this._nai_tnpoint_geo(gs as Geometry);
+		if (gs instanceof TNpoint) return this._nai_tnpoint_tnpoint(gs as TNpoint);
+		if (gs instanceof Npoint) return this._nai_tnpoint_npoint(gs as Npoint);
+		throw new TypeError(`TNpoint.nai: no overload takes these arguments`);
+	}
+
 	/** MEOS: tnpoint_out */
 	override out(maxdd: number): string {
 		return F.tnpoint_out(this.ptr, maxdd);
+	}
+
+	/** MEOS: overlaps_rid_tnpoint_bigintset, overlaps_rid_tnpoint_tnpoint, chosen by the arguments' types */
+	overlapsRid(s: BigIntSet | TNpoint): boolean {
+		if (s instanceof BigIntSet) return this._overlaps_rid_tnpoint_bigintset(s as BigIntSet);
+		if (s instanceof TNpoint) return this._overlaps_rid_tnpoint_tnpoint(s as TNpoint);
+		throw new TypeError(`TNpoint.overlapsRid: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnpoint_positions */
@@ -10390,6 +18866,11 @@ export class TNpoint extends TSpatial {
 		}
 	}
 
+	/** MEOS: contained_rid_bigint_tnpoint */
+	rcontainedRid(rid: number): boolean {
+		return F.contained_rid_bigint_tnpoint(rid, this.ptr);
+	}
+
 	/** MEOS: tnpoint_route */
 	route(): number {
 		return F.tnpoint_route(this.ptr);
@@ -10400,6 +18881,28 @@ export class TNpoint extends TSpatial {
 		return wrapSet(F.tnpoint_routes(this.ptr)) as Set;
 	}
 
+	/** MEOS: same_rid_bigint_tnpoint */
+	rsameRid(rid: number): boolean {
+		return F.same_rid_bigint_tnpoint(rid, this.ptr);
+	}
+
+	/** MEOS: same_rid_tnpoint_bigint, same_rid_tnpoint_bigintset, same_rid_tnpoint_npoint, same_rid_tnpoint_tnpoint, chosen by the arguments' types */
+	sameRid(rid: number | BigIntSet | Npoint | TNpoint): boolean {
+		if (rid instanceof BigIntSet) return this._same_rid_tnpoint_bigintset(rid as BigIntSet);
+		if (rid instanceof TNpoint) return this._same_rid_tnpoint_tnpoint(rid as TNpoint);
+		if (rid instanceof Npoint) return this._same_rid_tnpoint_npoint(rid as Npoint);
+		if (typeof rid === 'number') return this._same_rid_tnpoint_bigint(rid as number);
+		throw new TypeError(`TNpoint.sameRid: no overload takes these arguments`);
+	}
+
+	/** MEOS: shortestline_tnpoint_geo, shortestline_tnpoint_npoint, shortestline_tnpoint_tnpoint, chosen by the arguments' types */
+	shortestline(gs: Geometry | Npoint | TNpoint): Geo | null {
+		if (gs instanceof Geometry) return this._shortestline_tnpoint_geo(gs as Geometry);
+		if (gs instanceof TNpoint) return this._shortestline_tnpoint_tnpoint(gs as TNpoint);
+		if (gs instanceof Npoint) return this._shortestline_tnpoint_npoint(gs as Npoint);
+		throw new TypeError(`TNpoint.shortestline: no overload takes these arguments`);
+	}
+
 	/** MEOS: tnpoint_speed */
 	speed(): Temporal | null {
 		return wrapTemporalOrNull(F.tnpoint_speed(this.ptr)) as Temporal | null;
@@ -10408,6 +18911,26 @@ export class TNpoint extends TSpatial {
 	/** MEOS: tnpoint_start_value */
 	startValue(): Npoint {
 		return wrapNpoint(F.tnpoint_start_value(this.ptr)) as Npoint;
+	}
+
+	/** MEOS: tdistance_tnpoint_npoint, tdistance_tnpoint_geo, tdistance_tnpoint_tnpoint, chosen by the arguments' types */
+	tdistance(np: Npoint | Geometry | TNpoint): Temporal | null {
+		if (np instanceof Geometry) return this._tdistance_tnpoint_geo(np as Geometry);
+		if (np instanceof TNpoint) return this._tdistance_tnpoint_tnpoint(np as TNpoint);
+		if (np instanceof Npoint) return this._tdistance_tnpoint_npoint(np as Npoint);
+		throw new TypeError(`TNpoint.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tnpoint_npoint, chosen by the arguments' types */
+	override teq(np: Npoint | Temporal): Temporal | null {
+		if (np instanceof Npoint) return this._teq_tnpoint_npoint(np as Npoint);
+		return super.teq(np as Temporal);
+	}
+
+	/** MEOS: tne_tnpoint_npoint, chosen by the arguments' types */
+	override tne(np: Npoint | Temporal): Temporal | null {
+		if (np instanceof Npoint) return this._tne_tnpoint_npoint(np as Npoint);
+		return super.tne(np as Temporal);
 	}
 
 	/** MEOS: tnpoint_to_tgeompoint */
@@ -10534,6 +19057,237 @@ export class TPCBox extends Box {
 		return this.out(15);
 	}
 
+	/** MEOS: above_tpcbox_tpcbox */
+	private _above_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.above_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: above_tpcbox_tpointcloud */
+	private _above_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.above_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: adjacent_tpcbox_tpcbox */
+	private _adjacent_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.adjacent_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: adjacent_tpcbox_tpointcloud */
+	private _adjacent_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.adjacent_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: after_tpcbox_tpcbox */
+	private _after_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.after_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: after_tpcbox_tpointcloud */
+	private _after_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.after_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: back_tpcbox_tpcbox */
+	private _back_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.back_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: back_tpcbox_tpointcloud */
+	private _back_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.back_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: before_tpcbox_tpcbox */
+	private _before_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.before_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: before_tpcbox_tpointcloud */
+	private _before_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.before_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: below_tpcbox_tpcbox */
+	private _below_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.below_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: below_tpcbox_tpointcloud */
+	private _below_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.below_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contained_tpcbox_tpcbox */
+	private _contained_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.contained_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_tpcbox_tpointcloud */
+	private _contained_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.contained_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contains_tpcbox_tpcbox */
+	private _contains_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.contains_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contains_tpcbox_tpointcloud */
+	private _contains_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.contains_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: front_tpcbox_tpcbox */
+	private _front_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.front_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: front_tpcbox_tpointcloud */
+	private _front_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.front_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: left_tpcbox_tpcbox */
+	private _left_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.left_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: left_tpcbox_tpointcloud */
+	private _left_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.left_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overabove_tpcbox_tpcbox */
+	private _overabove_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overabove_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overabove_tpcbox_tpointcloud */
+	private _overabove_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overabove_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overafter_tpcbox_tpcbox */
+	private _overafter_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overafter_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overafter_tpcbox_tpointcloud */
+	private _overafter_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overafter_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overback_tpcbox_tpcbox */
+	private _overback_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overback_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overback_tpcbox_tpointcloud */
+	private _overback_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overback_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbefore_tpcbox_tpcbox */
+	private _overbefore_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overbefore_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overbefore_tpcbox_tpointcloud */
+	private _overbefore_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overbefore_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbelow_tpcbox_tpcbox */
+	private _overbelow_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overbelow_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overbelow_tpcbox_tpointcloud */
+	private _overbelow_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overbelow_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overfront_tpcbox_tpcbox */
+	private _overfront_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overfront_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overfront_tpcbox_tpointcloud */
+	private _overfront_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overfront_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overlaps_tpcbox_tpcbox */
+	private _overlaps_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overlaps_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overlaps_tpcbox_tpointcloud */
+	private _overlaps_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overlaps_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overleft_tpcbox_tpcbox */
+	private _overleft_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overleft_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overleft_tpcbox_tpointcloud */
+	private _overleft_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overleft_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overright_tpcbox_tpcbox */
+	private _overright_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.overright_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: overright_tpcbox_tpointcloud */
+	private _overright_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.overright_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: right_tpcbox_tpcbox */
+	private _right_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.right_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: right_tpcbox_tpointcloud */
+	private _right_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.right_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: same_tpcbox_tpcbox */
+	private _same_tpcbox_tpcbox(box2: TPCBox): boolean {
+		return F.same_tpcbox_tpcbox(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: same_tpcbox_tpointcloud */
+	private _same_tpcbox_tpointcloud(temp: TSpatial): boolean {
+		return F.same_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: above_tpcbox_tpcbox, above_tpcbox_tpointcloud, chosen by the arguments' types */
+	above(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._above_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._above_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.above: no overload takes these arguments`);
+	}
+
+	/** MEOS: adjacent_tpcbox_tpcbox, adjacent_tpcbox_tpointcloud, chosen by the arguments' types */
+	adjacent(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._adjacent_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._adjacent_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.adjacent: no overload takes these arguments`);
+	}
+
+	/** MEOS: after_tpcbox_tpcbox, after_tpcbox_tpointcloud, chosen by the arguments' types */
+	after(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._after_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._after_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.after: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_as_ewkb */
 	asEWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.tpcbox_as_ewkb(this.ptr, variant, _sizeOut));
@@ -10559,9 +19313,44 @@ export class TPCBox extends Box {
 		return readWkb(_sizeOut => F.tpcbox_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: back_tpcbox_tpcbox, back_tpcbox_tpointcloud, chosen by the arguments' types */
+	back(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._back_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._back_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.back: no overload takes these arguments`);
+	}
+
+	/** MEOS: before_tpcbox_tpcbox, before_tpcbox_tpointcloud, chosen by the arguments' types */
+	before(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._before_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._before_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.before: no overload takes these arguments`);
+	}
+
+	/** MEOS: below_tpcbox_tpcbox, below_tpcbox_tpointcloud, chosen by the arguments' types */
+	below(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._below_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._below_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.below: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_cmp */
 	cmp(box2: TPCBox): number {
 		return F.tpcbox_cmp(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: contained_tpcbox_tpcbox, contained_tpcbox_tpointcloud, chosen by the arguments' types */
+	contained(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._contained_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._contained_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.contained: no overload takes these arguments`);
+	}
+
+	/** MEOS: contains_tpcbox_tpcbox, contains_tpcbox_tpointcloud, chosen by the arguments' types */
+	contains(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._contains_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._contains_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.contains: no overload takes these arguments`);
 	}
 
 	/** MEOS: tpcbox_copy */
@@ -10572,6 +19361,13 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_eq */
 	eq(box2: TPCBox): boolean {
 		return F.tpcbox_eq(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: front_tpcbox_tpcbox, front_tpcbox_tpointcloud, chosen by the arguments' types */
+	front(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._front_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._front_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.front: no overload takes these arguments`);
 	}
 
 	/** MEOS: tpcbox_ge */
@@ -10604,14 +19400,31 @@ export class TPCBox extends Box {
 		return F.tpcbox_hasz(this.ptr);
 	}
 
+	/** MEOS: intersection_tpcbox_tpcbox */
+	intersection(box2: TPCBox): TPCBox | null {
+		return wrapTPCBoxOrNull(F.intersection_tpcbox_tpcbox(this.ptr, box2.ptr)) as TPCBox | null;
+	}
+
 	/** MEOS: tpcbox_le */
 	le(box2: TPCBox): boolean {
 		return F.tpcbox_le(this.ptr, box2.ptr);
 	}
 
+	/** MEOS: left_tpcbox_tpcbox, left_tpcbox_tpointcloud, chosen by the arguments' types */
+	left(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._left_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._left_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.left: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_lt */
 	lt(box2: TPCBox): boolean {
 		return F.tpcbox_lt(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: nad_tpcbox_tpcbox */
+	nad(box2: TPCBox): number {
+		return F.nad_tpcbox_tpcbox(this.ptr, box2.ptr);
 	}
 
 	/** MEOS: tpcbox_ne */
@@ -10624,14 +19437,91 @@ export class TPCBox extends Box {
 		return F.tpcbox_out(this.ptr, maxdd);
 	}
 
+	/** MEOS: overabove_tpcbox_tpcbox, overabove_tpcbox_tpointcloud, chosen by the arguments' types */
+	overabove(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overabove_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overabove_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overabove: no overload takes these arguments`);
+	}
+
+	/** MEOS: overafter_tpcbox_tpcbox, overafter_tpcbox_tpointcloud, chosen by the arguments' types */
+	overafter(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overafter_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overafter_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overafter: no overload takes these arguments`);
+	}
+
+	/** MEOS: overback_tpcbox_tpcbox, overback_tpcbox_tpointcloud, chosen by the arguments' types */
+	overback(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overback_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overback_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overback: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbefore_tpcbox_tpcbox, overbefore_tpcbox_tpointcloud, chosen by the arguments' types */
+	overbefore(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overbefore_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overbefore_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overbefore: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbelow_tpcbox_tpcbox, overbelow_tpcbox_tpointcloud, chosen by the arguments' types */
+	overbelow(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overbelow_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overbelow_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overbelow: no overload takes these arguments`);
+	}
+
+	/** MEOS: overfront_tpcbox_tpcbox, overfront_tpcbox_tpointcloud, chosen by the arguments' types */
+	overfront(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overfront_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overfront_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overfront: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_tpcbox_tpcbox, overlaps_tpcbox_tpointcloud, chosen by the arguments' types */
+	overlaps(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overlaps_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overlaps_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overlaps: no overload takes these arguments`);
+	}
+
+	/** MEOS: overleft_tpcbox_tpcbox, overleft_tpcbox_tpointcloud, chosen by the arguments' types */
+	overleft(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overleft_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overleft_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overleft: no overload takes these arguments`);
+	}
+
+	/** MEOS: overright_tpcbox_tpcbox, overright_tpcbox_tpointcloud, chosen by the arguments' types */
+	overright(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._overright_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._overright_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.overright: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_pcid */
 	pcid(): number {
 		return F.tpcbox_pcid(this.ptr);
 	}
 
+	/** MEOS: right_tpcbox_tpcbox, right_tpcbox_tpointcloud, chosen by the arguments' types */
+	right(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._right_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._right_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.right: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_round */
 	round(maxdd: number): TPCBox | null {
 		return wrapTPCBoxOrNull(F.tpcbox_round(this.ptr, maxdd)) as TPCBox | null;
+	}
+
+	/** MEOS: same_tpcbox_tpcbox, same_tpcbox_tpointcloud, chosen by the arguments' types */
+	same(box2: TPCBox | TSpatial): boolean {
+		if (box2 instanceof TPCBox) return this._same_tpcbox_tpcbox(box2 as TPCBox);
+		if (box2 instanceof TSpatial) return this._same_tpcbox_tpointcloud(box2 as TSpatial);
+		throw new TypeError(`TPCBox.same: no overload takes these arguments`);
 	}
 
 	/** MEOS: tpcbox_set_srid */
@@ -10672,6 +19562,11 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_to_stbox */
 	toStbox(): STBox {
 		return wrapSTBox(F.tpcbox_to_stbox(this.ptr)) as STBox;
+	}
+
+	/** MEOS: union_tpcbox_tpcbox */
+	union(box2: TPCBox, strict: boolean): TPCBox | null {
+		return wrapTPCBoxOrNull(F.union_tpcbox_tpcbox(this.ptr, box2.ptr, strict)) as TPCBox | null;
 	}
 
 	/** MEOS: tpcbox_xmax */
@@ -10740,6 +19635,70 @@ export class TPcpatch extends TSpatial {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_tpcpatch_pcpatch */
+	private _always_eq_tpcpatch_pcpatch(pa: Pcpatch): number {
+		return F.always_eq_tpcpatch_pcpatch(this.ptr, pa.ptr);
+	}
+
+	/** MEOS: always_eq_tpcpatch_tpcpatch */
+	private _always_eq_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+		return F.always_eq_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tpcpatch_pcpatch */
+	private _always_ne_tpcpatch_pcpatch(pa: Pcpatch): number {
+		return F.always_ne_tpcpatch_pcpatch(this.ptr, pa.ptr);
+	}
+
+	/** MEOS: always_ne_tpcpatch_tpcpatch */
+	private _always_ne_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+		return F.always_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tpcpatch_pcpatch */
+	private _ever_eq_tpcpatch_pcpatch(pa: Pcpatch): number {
+		return F.ever_eq_tpcpatch_pcpatch(this.ptr, pa.ptr);
+	}
+
+	/** MEOS: ever_eq_tpcpatch_tpcpatch */
+	private _ever_eq_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+		return F.ever_eq_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tpcpatch_pcpatch */
+	private _ever_ne_tpcpatch_pcpatch(pa: Pcpatch): number {
+		return F.ever_ne_tpcpatch_pcpatch(this.ptr, pa.ptr);
+	}
+
+	/** MEOS: ever_ne_tpcpatch_tpcpatch */
+	private _ever_ne_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+		return F.ever_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_tpcpatch_pcpatch */
+	private _teq_tpcpatch_pcpatch(pa: Pcpatch): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tpcpatch_pcpatch(this.ptr, pa.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tpcpatch_pcpatch */
+	private _tne_tpcpatch_pcpatch(pa: Pcpatch): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tpcpatch_pcpatch(this.ptr, pa.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tpcpatch_pcpatch, always_eq_tpcpatch_tpcpatch, chosen by the arguments' types */
+	override alwaysEq(pa: Pcpatch | TPcpatch | Temporal): number {
+		if (pa instanceof TPcpatch) return this._always_eq_tpcpatch_tpcpatch(pa as TPcpatch);
+		if (pa instanceof Pcpatch) return this._always_eq_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.alwaysEq(pa as Temporal);
+	}
+
+	/** MEOS: always_ne_tpcpatch_pcpatch, always_ne_tpcpatch_tpcpatch, chosen by the arguments' types */
+	override alwaysNe(pa: Pcpatch | TPcpatch | Temporal): number {
+		if (pa instanceof TPcpatch) return this._always_ne_tpcpatch_tpcpatch(pa as TPcpatch);
+		if (pa instanceof Pcpatch) return this._always_ne_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.alwaysNe(pa as Temporal);
+	}
+
 	/** MEOS: tpcpatch_at_value */
 	atValue(pa: Pcpatch): Temporal | null {
 		return wrapTemporalOrNull(F.tpcpatch_at_value(this.ptr, pa.ptr)) as Temporal | null;
@@ -10753,6 +19712,20 @@ export class TPcpatch extends TSpatial {
 	/** MEOS: tpcpatch_end_value */
 	endValue(): Pcpatch {
 		return wrapPcpatch(F.tpcpatch_end_value(this.ptr)) as Pcpatch;
+	}
+
+	/** MEOS: ever_eq_tpcpatch_pcpatch, ever_eq_tpcpatch_tpcpatch, chosen by the arguments' types */
+	override everEq(pa: Pcpatch | TPcpatch | Temporal): number {
+		if (pa instanceof TPcpatch) return this._ever_eq_tpcpatch_tpcpatch(pa as TPcpatch);
+		if (pa instanceof Pcpatch) return this._ever_eq_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.everEq(pa as Temporal);
+	}
+
+	/** MEOS: ever_ne_tpcpatch_pcpatch, ever_ne_tpcpatch_tpcpatch, chosen by the arguments' types */
+	override everNe(pa: Pcpatch | TPcpatch | Temporal): number {
+		if (pa instanceof TPcpatch) return this._ever_ne_tpcpatch_tpcpatch(pa as TPcpatch);
+		if (pa instanceof Pcpatch) return this._ever_ne_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.everNe(pa as Temporal);
 	}
 
 	/** MEOS: tpcpatch_minus_value */
@@ -10793,6 +19766,18 @@ export class TPcpatch extends TSpatial {
 		} finally {
 			_free(_maxt);
 		}
+	}
+
+	/** MEOS: teq_tpcpatch_pcpatch, chosen by the arguments' types */
+	override teq(pa: Pcpatch | Temporal): Temporal | null {
+		if (pa instanceof Pcpatch) return this._teq_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.teq(pa as Temporal);
+	}
+
+	/** MEOS: tne_tpcpatch_pcpatch, chosen by the arguments' types */
+	override tne(pa: Pcpatch | Temporal): Temporal | null {
+		if (pa instanceof Pcpatch) return this._tne_tpcpatch_pcpatch(pa as Pcpatch);
+		return super.tne(pa as Temporal);
 	}
 
 	/** MEOS: tpcpatch_to_tgeometry */
@@ -10909,9 +19894,78 @@ export class TPcpoint extends TSpatial {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_tpcpoint_pcpoint */
+	private _always_eq_tpcpoint_pcpoint(pt: Pcpoint): number {
+		return F.always_eq_tpcpoint_pcpoint(this.ptr, pt.ptr);
+	}
+
+	/** MEOS: always_eq_tpcpoint_tpcpoint */
+	private _always_eq_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+		return F.always_eq_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tpcpoint_pcpoint */
+	private _always_ne_tpcpoint_pcpoint(pt: Pcpoint): number {
+		return F.always_ne_tpcpoint_pcpoint(this.ptr, pt.ptr);
+	}
+
+	/** MEOS: always_ne_tpcpoint_tpcpoint */
+	private _always_ne_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+		return F.always_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tpcpoint_pcpoint */
+	private _ever_eq_tpcpoint_pcpoint(pt: Pcpoint): number {
+		return F.ever_eq_tpcpoint_pcpoint(this.ptr, pt.ptr);
+	}
+
+	/** MEOS: ever_eq_tpcpoint_tpcpoint */
+	private _ever_eq_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+		return F.ever_eq_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tpcpoint_pcpoint */
+	private _ever_ne_tpcpoint_pcpoint(pt: Pcpoint): number {
+		return F.ever_ne_tpcpoint_pcpoint(this.ptr, pt.ptr);
+	}
+
+	/** MEOS: ever_ne_tpcpoint_tpcpoint */
+	private _ever_ne_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+		return F.ever_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_tpcpoint_pcpoint */
+	private _teq_tpcpoint_pcpoint(pt: Pcpoint): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tpcpoint_pcpoint(this.ptr, pt.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tpcpoint_pcpoint */
+	private _tne_tpcpoint_pcpoint(pt: Pcpoint): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tpcpoint_pcpoint(this.ptr, pt.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tpcpoint_pcpoint, always_eq_tpcpoint_tpcpoint, chosen by the arguments' types */
+	override alwaysEq(pt: Pcpoint | TPcpoint | Temporal): number {
+		if (pt instanceof TPcpoint) return this._always_eq_tpcpoint_tpcpoint(pt as TPcpoint);
+		if (pt instanceof Pcpoint) return this._always_eq_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.alwaysEq(pt as Temporal);
+	}
+
+	/** MEOS: always_ne_tpcpoint_pcpoint, always_ne_tpcpoint_tpcpoint, chosen by the arguments' types */
+	override alwaysNe(pt: Pcpoint | TPcpoint | Temporal): number {
+		if (pt instanceof TPcpoint) return this._always_ne_tpcpoint_tpcpoint(pt as TPcpoint);
+		if (pt instanceof Pcpoint) return this._always_ne_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.alwaysNe(pt as Temporal);
+	}
+
 	/** MEOS: tpcpoint_at_value */
 	atValue(pt: Pcpoint): Temporal | null {
 		return wrapTemporalOrNull(F.tpcpoint_at_value(this.ptr, pt.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: eintersects_tpcpoint_geo */
+	eintersects(gs: Geo): boolean {
+		return F.eintersects_tpcpoint_geo(this.ptr, gs.ptr);
 	}
 
 	/** MEOS: tpcpoint_end_value */
@@ -10919,9 +19973,28 @@ export class TPcpoint extends TSpatial {
 		return wrapPcpoint(F.tpcpoint_end_value(this.ptr)) as Pcpoint;
 	}
 
+	/** MEOS: ever_eq_tpcpoint_pcpoint, ever_eq_tpcpoint_tpcpoint, chosen by the arguments' types */
+	override everEq(pt: Pcpoint | TPcpoint | Temporal): number {
+		if (pt instanceof TPcpoint) return this._ever_eq_tpcpoint_tpcpoint(pt as TPcpoint);
+		if (pt instanceof Pcpoint) return this._ever_eq_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.everEq(pt as Temporal);
+	}
+
+	/** MEOS: ever_ne_tpcpoint_pcpoint, ever_ne_tpcpoint_tpcpoint, chosen by the arguments' types */
+	override everNe(pt: Pcpoint | TPcpoint | Temporal): number {
+		if (pt instanceof TPcpoint) return this._ever_ne_tpcpoint_tpcpoint(pt as TPcpoint);
+		if (pt instanceof Pcpoint) return this._ever_ne_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.everNe(pt as Temporal);
+	}
+
 	/** MEOS: tpcpoint_minus_value */
 	minusValue(pt: Pcpoint): Temporal | null {
 		return wrapTemporalOrNull(F.tpcpoint_minus_value(this.ptr, pt.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nad_tpcpoint_geo */
+	nad(gs: Geo): number {
+		return F.nad_tpcpoint_geo(this.ptr, gs.ptr);
 	}
 
 	/** MEOS: tpcpoint_out */
@@ -10937,6 +20010,18 @@ export class TPcpoint extends TSpatial {
 	/** MEOS: tpcpoint_start_value */
 	startValue(): Pcpoint {
 		return wrapPcpoint(F.tpcpoint_start_value(this.ptr)) as Pcpoint;
+	}
+
+	/** MEOS: teq_tpcpoint_pcpoint, chosen by the arguments' types */
+	override teq(pt: Pcpoint | Temporal): Temporal | null {
+		if (pt instanceof Pcpoint) return this._teq_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.teq(pt as Temporal);
+	}
+
+	/** MEOS: tne_tpcpoint_pcpoint, chosen by the arguments' types */
+	override tne(pt: Pcpoint | Temporal): Temporal | null {
+		if (pt instanceof Pcpoint) return this._tne_tpcpoint_pcpoint(pt as Pcpoint);
+		return super.tne(pt as Temporal);
 	}
 
 	/** MEOS: tpcpoint_to_tgeompoint */
@@ -11053,6 +20138,135 @@ export class TPose extends TSpatial {
 		return this.asText(15);
 	}
 
+	/** MEOS: always_eq_tpose_pose */
+	private _always_eq_tpose_pose(pose: Pose): number {
+		return F.always_eq_tpose_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: always_eq_tpose_tpose */
+	private _always_eq_tpose_tpose(temp2: TPose): number {
+		return F.always_eq_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tpose_pose */
+	private _always_ne_tpose_pose(pose: Pose): number {
+		return F.always_ne_tpose_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: always_ne_tpose_tpose */
+	private _always_ne_tpose_tpose(temp2: TPose): number {
+		return F.always_ne_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tpose_pose */
+	private _ever_eq_tpose_pose(pose: Pose): number {
+		return F.ever_eq_tpose_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: ever_eq_tpose_tpose */
+	private _ever_eq_tpose_tpose(temp2: TPose): number {
+		return F.ever_eq_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tpose_pose */
+	private _ever_ne_tpose_pose(pose: Pose): number {
+		return F.ever_ne_tpose_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: ever_ne_tpose_tpose */
+	private _ever_ne_tpose_tpose(temp2: TPose): number {
+		return F.ever_ne_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tpose_geo */
+	private _nad_tpose_geo(gs: Geo): number {
+		return F.nad_tpose_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: nad_tpose_pose */
+	private _nad_tpose_pose(pose: Pose): number {
+		return F.nad_tpose_pose(this.ptr, pose.ptr);
+	}
+
+	/** MEOS: nad_tpose_stbox */
+	private _nad_tpose_stbox(box: STBox): number {
+		return F.nad_tpose_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tpose_tpose */
+	private _nad_tpose_tpose(temp2: TPose): number {
+		return F.nad_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nai_tpose_geo */
+	private _nai_tpose_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tpose_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tpose_pose */
+	private _nai_tpose_pose(pose: Pose): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tpose_pose(this.ptr, pose.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tpose_tpose */
+	private _nai_tpose_tpose(temp2: TPose): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tpose_tpose(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_tpose_geo */
+	private _shortestline_tpose_geo(gs: Geo): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tpose_geo(this.ptr, gs.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tpose_pose */
+	private _shortestline_tpose_pose(pose: Pose): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tpose_pose(this.ptr, pose.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tpose_tpose */
+	private _shortestline_tpose_tpose(temp2: TPose): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tpose_tpose(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: tdistance_tpose_geo */
+	private _tdistance_tpose_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tpose_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tpose_pose */
+	private _tdistance_tpose_pose(pose: Pose): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tpose_pose(this.ptr, pose.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tpose_tpose */
+	private _tdistance_tpose_tpose(temp2: TPose): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tpose_tpose(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tpose_pose */
+	private _teq_tpose_pose(pose: Pose): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tpose_pose(this.ptr, pose.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tpose_pose */
+	private _tne_tpose_pose(pose: Pose): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tpose_pose(this.ptr, pose.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tpose_pose, always_eq_tpose_tpose, chosen by the arguments' types */
+	override alwaysEq(pose: Pose | TPose | Temporal): number {
+		if (pose instanceof TPose) return this._always_eq_tpose_tpose(pose as TPose);
+		if (pose instanceof Pose) return this._always_eq_tpose_pose(pose as Pose);
+		return super.alwaysEq(pose as Temporal);
+	}
+
+	/** MEOS: always_ne_tpose_pose, always_ne_tpose_tpose, chosen by the arguments' types */
+	override alwaysNe(pose: Pose | TPose | Temporal): number {
+		if (pose instanceof TPose) return this._always_ne_tpose_tpose(pose as TPose);
+		if (pose instanceof Pose) return this._always_ne_tpose_pose(pose as Pose);
+		return super.alwaysNe(pose as Temporal);
+	}
+
 	/** MEOS: tpose_angular_speed */
 	angularSpeed(): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_angular_speed(this.ptr)) as Temporal | null;
@@ -11118,6 +20332,20 @@ export class TPose extends TSpatial {
 		return wrapPose(F.tpose_end_value(this.ptr)) as Pose;
 	}
 
+	/** MEOS: ever_eq_tpose_pose, ever_eq_tpose_tpose, chosen by the arguments' types */
+	override everEq(pose: Pose | TPose | Temporal): number {
+		if (pose instanceof TPose) return this._ever_eq_tpose_tpose(pose as TPose);
+		if (pose instanceof Pose) return this._ever_eq_tpose_pose(pose as Pose);
+		return super.everEq(pose as Temporal);
+	}
+
+	/** MEOS: ever_ne_tpose_pose, ever_ne_tpose_tpose, chosen by the arguments' types */
+	override everNe(pose: Pose | TPose | Temporal): number {
+		if (pose instanceof TPose) return this._ever_ne_tpose_tpose(pose as TPose);
+		if (pose instanceof Pose) return this._ever_ne_tpose_pose(pose as Pose);
+		return super.everNe(pose as Temporal);
+	}
+
 	/** MEOS: tpose_force2d */
 	force2d(): Temporal {
 		return wrapTemporal(F.tpose_force2d(this.ptr)) as Temporal;
@@ -11151,6 +20379,23 @@ export class TPose extends TSpatial {
 	/** MEOS: tpose_minus_stbox */
 	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
+	}
+
+	/** MEOS: nad_tpose_geo, nad_tpose_pose, nad_tpose_stbox, nad_tpose_tpose, chosen by the arguments' types */
+	nad(gs: Geo | Pose | STBox | TPose): number {
+		if (gs instanceof TPose) return this._nad_tpose_tpose(gs as TPose);
+		if (gs instanceof Geo) return this._nad_tpose_geo(gs as Geo);
+		if (gs instanceof Pose) return this._nad_tpose_pose(gs as Pose);
+		if (gs instanceof STBox) return this._nad_tpose_stbox(gs as STBox);
+		throw new TypeError(`TPose.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_tpose_geo, nai_tpose_pose, nai_tpose_tpose, chosen by the arguments' types */
+	nai(gs: Geo | Pose | TPose): Temporal | null {
+		if (gs instanceof TPose) return this._nai_tpose_tpose(gs as TPose);
+		if (gs instanceof Geo) return this._nai_tpose_geo(gs as Geo);
+		if (gs instanceof Pose) return this._nai_tpose_pose(gs as Pose);
+		throw new TypeError(`TPose.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tpose_pitch */
@@ -11188,6 +20433,14 @@ export class TPose extends TSpatial {
 		return wrapTemporal(F.tpose_rotate_z(this.ptr, angle)) as Temporal;
 	}
 
+	/** MEOS: shortestline_tpose_geo, shortestline_tpose_pose, shortestline_tpose_tpose, chosen by the arguments' types */
+	shortestline(gs: Geo | Pose | TPose): Geo | null {
+		if (gs instanceof TPose) return this._shortestline_tpose_tpose(gs as TPose);
+		if (gs instanceof Geo) return this._shortestline_tpose_geo(gs as Geo);
+		if (gs instanceof Pose) return this._shortestline_tpose_pose(gs as Pose);
+		throw new TypeError(`TPose.shortestline: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpose_speed */
 	speed(): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_speed(this.ptr)) as Temporal | null;
@@ -11196,6 +20449,26 @@ export class TPose extends TSpatial {
 	/** MEOS: tpose_start_value */
 	startValue(): Pose {
 		return wrapPose(F.tpose_start_value(this.ptr)) as Pose;
+	}
+
+	/** MEOS: tdistance_tpose_pose, tdistance_tpose_geo, tdistance_tpose_tpose, chosen by the arguments' types */
+	tdistance(pose: Pose | Geo | TPose): Temporal | null {
+		if (pose instanceof TPose) return this._tdistance_tpose_tpose(pose as TPose);
+		if (pose instanceof Pose) return this._tdistance_tpose_pose(pose as Pose);
+		if (pose instanceof Geo) return this._tdistance_tpose_geo(pose as Geo);
+		throw new TypeError(`TPose.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tpose_pose, chosen by the arguments' types */
+	override teq(pose: Pose | Temporal): Temporal | null {
+		if (pose instanceof Pose) return this._teq_tpose_pose(pose as Pose);
+		return super.teq(pose as Temporal);
+	}
+
+	/** MEOS: tne_tpose_pose, chosen by the arguments' types */
+	override tne(pose: Pose | Temporal): Temporal | null {
+		if (pose instanceof Pose) return this._tne_tpose_pose(pose as Pose);
+		return super.tne(pose as Temporal);
 	}
 
 	/** MEOS: tpose_to_tpoint */
@@ -11299,6 +20572,135 @@ export class TPoseChain extends TSpatial {
 		return this.asText(15);
 	}
 
+	/** MEOS: always_eq_tposechain_posechain */
+	private _always_eq_tposechain_posechain(posechain: PoseChain): number {
+		return F.always_eq_tposechain_posechain(this.ptr, posechain.ptr);
+	}
+
+	/** MEOS: always_eq_tposechain_tposechain */
+	private _always_eq_tposechain_tposechain(temp2: TPoseChain): number {
+		return F.always_eq_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tposechain_posechain */
+	private _always_ne_tposechain_posechain(posechain: PoseChain): number {
+		return F.always_ne_tposechain_posechain(this.ptr, posechain.ptr);
+	}
+
+	/** MEOS: always_ne_tposechain_tposechain */
+	private _always_ne_tposechain_tposechain(temp2: TPoseChain): number {
+		return F.always_ne_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tposechain_posechain */
+	private _ever_eq_tposechain_posechain(posechain: PoseChain): number {
+		return F.ever_eq_tposechain_posechain(this.ptr, posechain.ptr);
+	}
+
+	/** MEOS: ever_eq_tposechain_tposechain */
+	private _ever_eq_tposechain_tposechain(temp2: TPoseChain): number {
+		return F.ever_eq_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tposechain_posechain */
+	private _ever_ne_tposechain_posechain(posechain: PoseChain): number {
+		return F.ever_ne_tposechain_posechain(this.ptr, posechain.ptr);
+	}
+
+	/** MEOS: ever_ne_tposechain_tposechain */
+	private _ever_ne_tposechain_tposechain(temp2: TPoseChain): number {
+		return F.ever_ne_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_tposechain_geo */
+	private _nad_tposechain_geo(gs: Geo): number {
+		return F.nad_tposechain_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: nad_tposechain_posechain */
+	private _nad_tposechain_posechain(pc: PoseChain): number {
+		return F.nad_tposechain_posechain(this.ptr, pc.ptr);
+	}
+
+	/** MEOS: nad_tposechain_stbox */
+	private _nad_tposechain_stbox(box: STBox): number {
+		return F.nad_tposechain_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_tposechain_tposechain */
+	private _nad_tposechain_tposechain(temp2: TPoseChain): number {
+		return F.nad_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nai_tposechain_geo */
+	private _nai_tposechain_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tposechain_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tposechain_posechain */
+	private _nai_tposechain_posechain(pc: PoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tposechain_posechain(this.ptr, pc.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_tposechain_tposechain */
+	private _nai_tposechain_tposechain(temp2: TPoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.nai_tposechain_tposechain(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_tposechain_geo */
+	private _shortestline_tposechain_geo(gs: Geo): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tposechain_geo(this.ptr, gs.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tposechain_posechain */
+	private _shortestline_tposechain_posechain(pc: PoseChain): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tposechain_posechain(this.ptr, pc.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_tposechain_tposechain */
+	private _shortestline_tposechain_tposechain(temp2: TPoseChain): Geo | null {
+		return wrapGeoOrNull(F.shortestline_tposechain_tposechain(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: tdistance_tposechain_geo */
+	private _tdistance_tposechain_geo(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tposechain_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tposechain_posechain */
+	private _tdistance_tposechain_posechain(pc: PoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tposechain_posechain(this.ptr, pc.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_tposechain_tposechain */
+	private _tdistance_tposechain_tposechain(temp2: TPoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_tposechain_tposechain(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: teq_tposechain_posechain */
+	private _teq_tposechain_posechain(posechain: PoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.teq_tposechain_posechain(this.ptr, posechain.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_tposechain_posechain */
+	private _tne_tposechain_posechain(posechain: PoseChain): Temporal | null {
+		return wrapTemporalOrNull(F.tne_tposechain_posechain(this.ptr, posechain.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: always_eq_tposechain_posechain, always_eq_tposechain_tposechain, chosen by the arguments' types */
+	override alwaysEq(posechain: PoseChain | TPoseChain | Temporal): number {
+		if (posechain instanceof TPoseChain) return this._always_eq_tposechain_tposechain(posechain as TPoseChain);
+		if (posechain instanceof PoseChain) return this._always_eq_tposechain_posechain(posechain as PoseChain);
+		return super.alwaysEq(posechain as Temporal);
+	}
+
+	/** MEOS: always_ne_tposechain_posechain, always_ne_tposechain_tposechain, chosen by the arguments' types */
+	override alwaysNe(posechain: PoseChain | TPoseChain | Temporal): number {
+		if (posechain instanceof TPoseChain) return this._always_ne_tposechain_tposechain(posechain as TPoseChain);
+		if (posechain instanceof PoseChain) return this._always_ne_tposechain_posechain(posechain as PoseChain);
+		return super.alwaysNe(posechain as Temporal);
+	}
+
 	/** MEOS: tposechain_as_geopose */
 	asGeopose(precision: number): string {
 		return F.tposechain_as_geopose(this.ptr, precision);
@@ -11314,9 +20716,40 @@ export class TPoseChain extends TSpatial {
 		return wrapPoseChain(F.tposechain_end_value(this.ptr)) as PoseChain;
 	}
 
+	/** MEOS: ever_eq_tposechain_posechain, ever_eq_tposechain_tposechain, chosen by the arguments' types */
+	override everEq(posechain: PoseChain | TPoseChain | Temporal): number {
+		if (posechain instanceof TPoseChain) return this._ever_eq_tposechain_tposechain(posechain as TPoseChain);
+		if (posechain instanceof PoseChain) return this._ever_eq_tposechain_posechain(posechain as PoseChain);
+		return super.everEq(posechain as Temporal);
+	}
+
+	/** MEOS: ever_ne_tposechain_posechain, ever_ne_tposechain_tposechain, chosen by the arguments' types */
+	override everNe(posechain: PoseChain | TPoseChain | Temporal): number {
+		if (posechain instanceof TPoseChain) return this._ever_ne_tposechain_tposechain(posechain as TPoseChain);
+		if (posechain instanceof PoseChain) return this._ever_ne_tposechain_posechain(posechain as PoseChain);
+		return super.everNe(posechain as Temporal);
+	}
+
 	/** MEOS: tposechain_minus_value */
 	minusValue(pc: PoseChain): Temporal | null {
 		return wrapTemporalOrNull(F.tposechain_minus_value(this.ptr, pc.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nad_tposechain_geo, nad_tposechain_posechain, nad_tposechain_stbox, nad_tposechain_tposechain, chosen by the arguments' types */
+	nad(gs: Geo | PoseChain | STBox | TPoseChain): number {
+		if (gs instanceof TPoseChain) return this._nad_tposechain_tposechain(gs as TPoseChain);
+		if (gs instanceof Geo) return this._nad_tposechain_geo(gs as Geo);
+		if (gs instanceof PoseChain) return this._nad_tposechain_posechain(gs as PoseChain);
+		if (gs instanceof STBox) return this._nad_tposechain_stbox(gs as STBox);
+		throw new TypeError(`TPoseChain.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_tposechain_geo, nai_tposechain_posechain, nai_tposechain_tposechain, chosen by the arguments' types */
+	nai(gs: Geo | PoseChain | TPoseChain): Temporal | null {
+		if (gs instanceof TPoseChain) return this._nai_tposechain_tposechain(gs as TPoseChain);
+		if (gs instanceof Geo) return this._nai_tposechain_geo(gs as Geo);
+		if (gs instanceof PoseChain) return this._nai_tposechain_posechain(gs as PoseChain);
+		throw new TypeError(`TPoseChain.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tposechain_num_poses */
@@ -11344,9 +20777,37 @@ export class TPoseChain extends TSpatial {
 		return wrapTemporal(F.tposechain_rotate_z(this.ptr, angle)) as Temporal;
 	}
 
+	/** MEOS: shortestline_tposechain_geo, shortestline_tposechain_posechain, shortestline_tposechain_tposechain, chosen by the arguments' types */
+	shortestline(gs: Geo | PoseChain | TPoseChain): Geo | null {
+		if (gs instanceof TPoseChain) return this._shortestline_tposechain_tposechain(gs as TPoseChain);
+		if (gs instanceof Geo) return this._shortestline_tposechain_geo(gs as Geo);
+		if (gs instanceof PoseChain) return this._shortestline_tposechain_posechain(gs as PoseChain);
+		throw new TypeError(`TPoseChain.shortestline: no overload takes these arguments`);
+	}
+
 	/** MEOS: tposechain_start_value */
 	startValue(): PoseChain {
 		return wrapPoseChain(F.tposechain_start_value(this.ptr)) as PoseChain;
+	}
+
+	/** MEOS: tdistance_tposechain_geo, tdistance_tposechain_posechain, tdistance_tposechain_tposechain, chosen by the arguments' types */
+	tdistance(gs: Geo | PoseChain | TPoseChain): Temporal | null {
+		if (gs instanceof TPoseChain) return this._tdistance_tposechain_tposechain(gs as TPoseChain);
+		if (gs instanceof Geo) return this._tdistance_tposechain_geo(gs as Geo);
+		if (gs instanceof PoseChain) return this._tdistance_tposechain_posechain(gs as PoseChain);
+		throw new TypeError(`TPoseChain.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_tposechain_posechain, chosen by the arguments' types */
+	override teq(posechain: PoseChain | Temporal): Temporal | null {
+		if (posechain instanceof PoseChain) return this._teq_tposechain_posechain(posechain as PoseChain);
+		return super.teq(posechain as Temporal);
+	}
+
+	/** MEOS: tne_tposechain_posechain, chosen by the arguments' types */
+	override tne(posechain: PoseChain | Temporal): Temporal | null {
+		if (posechain instanceof PoseChain) return this._tne_tposechain_posechain(posechain as PoseChain);
+		return super.tne(posechain as Temporal);
 	}
 
 	/** MEOS: tposechain_to_tpose */
@@ -11516,6 +20977,85 @@ export class TQuadbin extends TCellIndex {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_tquadbin_quadbin */
+	private _always_eq_tquadbin_quadbin(cell: Quadbin): number {
+		return F.always_eq_tquadbin_quadbin(this.ptr, cell);
+	}
+
+	/** MEOS: always_eq_tquadbin_tquadbin */
+	private _always_eq_tquadbin_tquadbin(temp2: TQuadbin): number {
+		return F.always_eq_tquadbin_tquadbin(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_tquadbin_quadbin */
+	private _always_ne_tquadbin_quadbin(cell: Quadbin): number {
+		return F.always_ne_tquadbin_quadbin(this.ptr, cell);
+	}
+
+	/** MEOS: always_ne_tquadbin_tquadbin */
+	private _always_ne_tquadbin_tquadbin(temp2: TQuadbin): number {
+		return F.always_ne_tquadbin_tquadbin(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_tquadbin_quadbin */
+	private _ever_eq_tquadbin_quadbin(cell: Quadbin): number {
+		return F.ever_eq_tquadbin_quadbin(this.ptr, cell);
+	}
+
+	/** MEOS: ever_eq_tquadbin_quadbinset */
+	private _ever_eq_tquadbin_quadbinset(cells: QuadbinSet): number {
+		return F.ever_eq_tquadbin_quadbinset(this.ptr, cells.ptr);
+	}
+
+	/** MEOS: ever_eq_tquadbin_tquadbin */
+	private _ever_eq_tquadbin_tquadbin(temp2: TQuadbin): number {
+		return F.ever_eq_tquadbin_tquadbin(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_tquadbin_quadbin */
+	private _ever_ne_tquadbin_quadbin(cell: Quadbin): number {
+		return F.ever_ne_tquadbin_quadbin(this.ptr, cell);
+	}
+
+	/** MEOS: ever_ne_tquadbin_tquadbin */
+	private _ever_ne_tquadbin_tquadbin(temp2: TQuadbin): number {
+		return F.ever_ne_tquadbin_tquadbin(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_tquadbin_quadbin */
+	private _teq_tquadbin_quadbin(cell: Quadbin): Temporal {
+		return wrapTemporal(F.teq_tquadbin_quadbin(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: teq_tquadbin_tquadbin */
+	private _teq_tquadbin_tquadbin(temp2: Temporal): Temporal {
+		return wrapTemporal(F.teq_tquadbin_tquadbin(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_tquadbin_quadbin */
+	private _tne_tquadbin_quadbin(cell: Quadbin): Temporal {
+		return wrapTemporal(F.tne_tquadbin_quadbin(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: tne_tquadbin_tquadbin */
+	private _tne_tquadbin_tquadbin(temp2: Temporal): Temporal {
+		return wrapTemporal(F.tne_tquadbin_tquadbin(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_tquadbin_quadbin, always_eq_tquadbin_tquadbin, chosen by the arguments' types */
+	override alwaysEq(cell: Quadbin | TQuadbin | Temporal): number {
+		if (cell instanceof TQuadbin) return this._always_eq_tquadbin_tquadbin(cell as TQuadbin);
+		if (typeof cell === 'bigint') return this._always_eq_tquadbin_quadbin(cell as Quadbin);
+		return super.alwaysEq(cell as Temporal);
+	}
+
+	/** MEOS: always_ne_tquadbin_quadbin, always_ne_tquadbin_tquadbin, chosen by the arguments' types */
+	override alwaysNe(cell: Quadbin | TQuadbin | Temporal): number {
+		if (cell instanceof TQuadbin) return this._always_ne_tquadbin_tquadbin(cell as TQuadbin);
+		if (typeof cell === 'bigint') return this._always_ne_tquadbin_quadbin(cell as Quadbin);
+		return super.alwaysNe(cell as Temporal);
+	}
+
 	/** MEOS: tquadbin_at_value */
 	atValue(cell: Quadbin): Temporal | null {
 		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell)) as Temporal | null;
@@ -11529,6 +21069,21 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_end_value */
 	endValue(): Quadbin {
 		return F.tquadbin_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_tquadbin_quadbinset, ever_eq_tquadbin_quadbin, ever_eq_tquadbin_tquadbin, chosen by the arguments' types */
+	override everEq(cells: QuadbinSet | Quadbin | TQuadbin | Temporal): number {
+		if (cells instanceof QuadbinSet) return this._ever_eq_tquadbin_quadbinset(cells as QuadbinSet);
+		if (cells instanceof TQuadbin) return this._ever_eq_tquadbin_tquadbin(cells as TQuadbin);
+		if (typeof cells === 'bigint') return this._ever_eq_tquadbin_quadbin(cells as Quadbin);
+		return super.everEq(cells as Temporal);
+	}
+
+	/** MEOS: ever_ne_tquadbin_quadbin, ever_ne_tquadbin_tquadbin, chosen by the arguments' types */
+	override everNe(cell: Quadbin | TQuadbin | Temporal): number {
+		if (cell instanceof TQuadbin) return this._ever_ne_tquadbin_tquadbin(cell as TQuadbin);
+		if (typeof cell === 'bigint') return this._ever_ne_tquadbin_quadbin(cell as Quadbin);
+		return super.everNe(cell as Temporal);
 	}
 
 	/** MEOS: tquadbin_grid_distance */
@@ -11546,9 +21101,53 @@ export class TQuadbin extends TCellIndex {
 		return F.tquadbin_out(this.ptr);
 	}
 
+	/** MEOS: always_eq_quadbin_tquadbin */
+	ralwaysEq(cell: Quadbin): number {
+		return F.always_eq_quadbin_tquadbin(cell, this.ptr);
+	}
+
+	/** MEOS: always_ne_quadbin_tquadbin */
+	ralwaysNe(cell: Quadbin): number {
+		return F.always_ne_quadbin_tquadbin(cell, this.ptr);
+	}
+
+	/** MEOS: ever_eq_quadbin_tquadbin */
+	reverEq(cell: Quadbin): number {
+		return F.ever_eq_quadbin_tquadbin(cell, this.ptr);
+	}
+
+	/** MEOS: ever_ne_quadbin_tquadbin */
+	reverNe(cell: Quadbin): number {
+		return F.ever_ne_quadbin_tquadbin(cell, this.ptr);
+	}
+
+	/** MEOS: teq_quadbin_tquadbin */
+	rteq(cell: Quadbin): Temporal {
+		return wrapTemporal(F.teq_quadbin_tquadbin(cell, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_quadbin_tquadbin */
+	rtne(cell: Quadbin): Temporal {
+		return wrapTemporal(F.tne_quadbin_tquadbin(cell, this.ptr)) as Temporal;
+	}
+
 	/** MEOS: tquadbin_start_value */
 	startValue(): Quadbin {
 		return F.tquadbin_start_value(this.ptr);
+	}
+
+	/** MEOS: teq_tquadbin_quadbin, teq_tquadbin_tquadbin, chosen by the arguments' types */
+	override teq(cell: Quadbin | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._teq_tquadbin_tquadbin(cell as Temporal);
+		if (typeof cell === 'bigint') return this._teq_tquadbin_quadbin(cell as Quadbin);
+		return super.teq(cell as Temporal);
+	}
+
+	/** MEOS: tne_tquadbin_quadbin, tne_tquadbin_tquadbin, chosen by the arguments' types */
+	override tne(cell: Quadbin | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._tne_tquadbin_tquadbin(cell as Temporal);
+		if (typeof cell === 'bigint') return this._tne_tquadbin_quadbin(cell as Quadbin);
+		return super.tne(cell as Temporal);
 	}
 
 	/** MEOS: tquadbin_to_tbigint */
@@ -11675,9 +21274,234 @@ export class TRGeometry extends TSpatial {
 		return this.asText(15);
 	}
 
+	/** MEOS: adisjoint_trgeometry_geo */
+	private _adisjoint_trgeometry_geo(gs: Geometry): number {
+		return F.adisjoint_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: adisjoint_trgeometry_trgeometry */
+	private _adisjoint_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.adisjoint_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: adwithin_trgeometry_geo */
+	private _adwithin_trgeometry_geo(gs: Geometry, dist: number): number {
+		return F.adwithin_trgeometry_geo(this.ptr, gs.ptr, dist);
+	}
+
+	/** MEOS: adwithin_trgeometry_trgeometry */
+	private _adwithin_trgeometry_trgeometry(temp2: TRGeometry, dist: number): number {
+		return F.adwithin_trgeometry_trgeometry(this.ptr, temp2.ptr, dist);
+	}
+
+	/** MEOS: aintersects_trgeometry_geo */
+	private _aintersects_trgeometry_geo(gs: Geometry): number {
+		return F.aintersects_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: aintersects_trgeometry_trgeometry */
+	private _aintersects_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.aintersects_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_eq_trgeometry_geo */
+	private _always_eq_trgeometry_geo(gs: Geometry): number {
+		return F.always_eq_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: always_eq_trgeometry_trgeometry */
+	private _always_eq_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.always_eq_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_trgeometry_geo */
+	private _always_ne_trgeometry_geo(gs: Geometry): number {
+		return F.always_ne_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: always_ne_trgeometry_trgeometry */
+	private _always_ne_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.always_ne_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edisjoint_trgeometry_geo */
+	private _edisjoint_trgeometry_geo(gs: Geometry): number {
+		return F.edisjoint_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: edisjoint_trgeometry_trgeometry */
+	private _edisjoint_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.edisjoint_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: edwithin_trgeometry_geo */
+	private _edwithin_trgeometry_geo(gs: Geometry, dist: number): number {
+		return F.edwithin_trgeometry_geo(this.ptr, gs.ptr, dist);
+	}
+
+	/** MEOS: edwithin_trgeometry_trgeometry */
+	private _edwithin_trgeometry_trgeometry(temp2: TRGeometry, dist: number): number {
+		return F.edwithin_trgeometry_trgeometry(this.ptr, temp2.ptr, dist);
+	}
+
+	/** MEOS: eintersects_trgeometry_geo */
+	private _eintersects_trgeometry_geo(gs: Geometry): number {
+		return F.eintersects_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: eintersects_trgeometry_trgeometry */
+	private _eintersects_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.eintersects_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_trgeometry_geo */
+	private _ever_eq_trgeometry_geo(gs: Geometry): number {
+		return F.ever_eq_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ever_eq_trgeometry_trgeometry */
+	private _ever_eq_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.ever_eq_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_trgeometry_geo */
+	private _ever_ne_trgeometry_geo(gs: Geometry): number {
+		return F.ever_ne_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ever_ne_trgeometry_trgeometry */
+	private _ever_ne_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.ever_ne_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_trgeometry_geo */
+	private _nad_trgeometry_geo(gs: Geometry): number {
+		return F.nad_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: nad_trgeometry_stbox */
+	private _nad_trgeometry_stbox(box: STBox): number {
+		return F.nad_trgeometry_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: nad_trgeometry_tpoint */
+	private _nad_trgeometry_tpoint(temp2: TGeomPoint): number {
+		return F.nad_trgeometry_tpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nad_trgeometry_trgeometry */
+	private _nad_trgeometry_trgeometry(temp2: TRGeometry): number {
+		return F.nad_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: nai_trgeometry_geo */
+	private _nai_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_trgeometry_tpoint */
+	private _nai_trgeometry_tpoint(temp2: TGeomPoint): Temporal | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_tpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nai_trgeometry_trgeometry */
+	private _nai_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.nai_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: shortestline_trgeometry_geo */
+	private _shortestline_trgeometry_geo(gs: Geometry): Geo | null {
+		return wrapGeoOrNull(F.shortestline_trgeometry_geo(this.ptr, gs.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_trgeometry_tpoint */
+	private _shortestline_trgeometry_tpoint(temp2: TGeomPoint): Geo | null {
+		return wrapGeoOrNull(F.shortestline_trgeometry_tpoint(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: shortestline_trgeometry_trgeometry */
+	private _shortestline_trgeometry_trgeometry(temp2: TRGeometry): Geo | null {
+		return wrapGeoOrNull(F.shortestline_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Geo | null;
+	}
+
+	/** MEOS: tdistance_trgeometry_geo */
+	private _tdistance_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_trgeometry_tpoint */
+	private _tdistance_trgeometry_tpoint(temp2: TGeomPoint): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_trgeometry_tpoint(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdistance_trgeometry_trgeometry */
+	private _tdistance_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdistance_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_trgeometry_geo */
+	private _tdwithin_trgeometry_geo(gs: Geometry, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_trgeometry_geo(this.ptr, gs.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: tdwithin_trgeometry_trgeometry */
+	private _tdwithin_trgeometry_trgeometry(temp2: TRGeometry, dist: number): Temporal | null {
+		return wrapTemporalOrNull(F.tdwithin_trgeometry_trgeometry(this.ptr, temp2.ptr, dist)) as Temporal | null;
+	}
+
+	/** MEOS: teq_trgeometry_geo */
+	private _teq_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.teq_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tne_trgeometry_geo */
+	private _tne_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tne_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: acovers_trgeometry_geo */
+	acovers(gs: Geometry): number {
+		return F.acovers_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: adisjoint_trgeometry_geo, adisjoint_trgeometry_trgeometry, chosen by the arguments' types */
+	adisjoint(gs: Geometry | TRGeometry): number {
+		if (gs instanceof Geometry) return this._adisjoint_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._adisjoint_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.adisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: adwithin_trgeometry_geo, adwithin_trgeometry_trgeometry, chosen by the arguments' types */
+	adwithin(gs: Geometry | TRGeometry, dist: number): number {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._adwithin_trgeometry_geo(gs as Geometry, dist as number);
+		if (gs instanceof TRGeometry && typeof dist === 'number') return this._adwithin_trgeometry_trgeometry(gs as TRGeometry, dist as number);
+		throw new TypeError(`TRGeometry.adwithin: no overload takes these arguments`);
+	}
+
 	/** MEOS: trgeometry_after_timestamptz */
 	override afterTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
+	}
+
+	/** MEOS: aintersects_trgeometry_geo, aintersects_trgeometry_trgeometry, chosen by the arguments' types */
+	aintersects(gs: Geometry | TRGeometry): number {
+		if (gs instanceof Geometry) return this._aintersects_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._aintersects_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.aintersects: no overload takes these arguments`);
+	}
+
+	/** MEOS: always_eq_trgeometry_geo, always_eq_trgeometry_trgeometry, chosen by the arguments' types */
+	override alwaysEq(gs: Geometry | TRGeometry | Temporal): number {
+		if (gs instanceof Geometry) return this._always_eq_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._always_eq_trgeometry_trgeometry(gs as TRGeometry);
+		return super.alwaysEq(gs as Temporal);
+	}
+
+	/** MEOS: always_ne_trgeometry_geo, always_ne_trgeometry_trgeometry, chosen by the arguments' types */
+	override alwaysNe(gs: Geometry | TRGeometry | Temporal): number {
+		if (gs instanceof Geometry) return this._always_ne_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._always_ne_trgeometry_trgeometry(gs as TRGeometry);
+		return super.alwaysNe(gs as Temporal);
 	}
 
 	/** MEOS: trgeometry_angular_speed */
@@ -11718,6 +21542,11 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_at_geom */
 	atGeom(gs: Geo): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_at_geom(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: atouches_trgeometry_geo */
+	atouches(gs: Geometry): number {
+		return F.atouches_trgeometry_geo(this.ptr, gs.ptr);
 	}
 
 	/** MEOS: trgeometry_at_stbox */
@@ -11800,6 +21629,32 @@ export class TRGeometry extends TSpatial {
 		return wrapTemporalOrNull(F.trgeometry_delete_tstzspanset(this.ptr, ss.ptr, connect)) as Temporal | null;
 	}
 
+	/** MEOS: ecovers_trgeometry_geo */
+	ecovers(gs: Geometry): number {
+		return F.ecovers_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: edisjoint_trgeometry_geo, edisjoint_trgeometry_trgeometry, chosen by the arguments' types */
+	edisjoint(gs: Geometry | TRGeometry): number {
+		if (gs instanceof Geometry) return this._edisjoint_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._edisjoint_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.edisjoint: no overload takes these arguments`);
+	}
+
+	/** MEOS: edwithin_trgeometry_geo, edwithin_trgeometry_trgeometry, chosen by the arguments' types */
+	edwithin(gs: Geometry | TRGeometry, dist: number): number {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._edwithin_trgeometry_geo(gs as Geometry, dist as number);
+		if (gs instanceof TRGeometry && typeof dist === 'number') return this._edwithin_trgeometry_trgeometry(gs as TRGeometry, dist as number);
+		throw new TypeError(`TRGeometry.edwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: eintersects_trgeometry_geo, eintersects_trgeometry_trgeometry, chosen by the arguments' types */
+	eintersects(gs: Geometry | TRGeometry): number {
+		if (gs instanceof Geometry) return this._eintersects_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._eintersects_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.eintersects: no overload takes these arguments`);
+	}
+
 	/** MEOS: trgeometry_end_instant */
 	override endInstant(): Temporal {
 		return wrapTemporal(F.trgeometry_end_instant(this.ptr)) as Temporal;
@@ -11813,6 +21668,25 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_end_value */
 	endValue(): Geo {
 		return wrapGeo(F.trgeometry_end_value(this.ptr)) as Geo;
+	}
+
+	/** MEOS: etouches_trgeometry_geo */
+	etouches(gs: Geometry): number {
+		return F.etouches_trgeometry_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: ever_eq_trgeometry_geo, ever_eq_trgeometry_trgeometry, chosen by the arguments' types */
+	override everEq(gs: Geometry | TRGeometry | Temporal): number {
+		if (gs instanceof Geometry) return this._ever_eq_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._ever_eq_trgeometry_trgeometry(gs as TRGeometry);
+		return super.everEq(gs as Temporal);
+	}
+
+	/** MEOS: ever_ne_trgeometry_geo, ever_ne_trgeometry_trgeometry, chosen by the arguments' types */
+	override everNe(gs: Geometry | TRGeometry | Temporal): number {
+		if (gs instanceof Geometry) return this._ever_ne_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._ever_ne_trgeometry_trgeometry(gs as TRGeometry);
+		return super.everNe(gs as Temporal);
 	}
 
 	/** MEOS: trgeometry_force2d */
@@ -11898,6 +21772,23 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_minus_values */
 	override minusValues(s: Set): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_minus_values(this.ptr, s.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: nad_trgeometry_geo, nad_trgeometry_stbox, nad_trgeometry_tpoint, nad_trgeometry_trgeometry, chosen by the arguments' types */
+	nad(gs: Geometry | STBox | TGeomPoint | TRGeometry): number {
+		if (gs instanceof TGeomPoint) return this._nad_trgeometry_tpoint(gs as TGeomPoint);
+		if (gs instanceof Geometry) return this._nad_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._nad_trgeometry_trgeometry(gs as TRGeometry);
+		if (gs instanceof STBox) return this._nad_trgeometry_stbox(gs as STBox);
+		throw new TypeError(`TRGeometry.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: nai_trgeometry_geo, nai_trgeometry_tpoint, nai_trgeometry_trgeometry, chosen by the arguments' types */
+	nai(gs: Geometry | TGeomPoint | TRGeometry): Temporal | null {
+		if (gs instanceof TGeomPoint) return this._nai_trgeometry_tpoint(gs as TGeomPoint);
+		if (gs instanceof Geometry) return this._nai_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._nai_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: trgeometry_out */
@@ -11993,6 +21884,14 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_set_interp */
 	override setInterp(interp: number): Temporal {
 		return wrapTemporal(F.trgeometry_set_interp(this.ptr, interp)) as Temporal;
+	}
+
+	/** MEOS: shortestline_trgeometry_geo, shortestline_trgeometry_tpoint, shortestline_trgeometry_trgeometry, chosen by the arguments' types */
+	shortestline(gs: Geometry | TGeomPoint | TRGeometry): Geo | null {
+		if (gs instanceof TGeomPoint) return this._shortestline_trgeometry_tpoint(gs as TGeomPoint);
+		if (gs instanceof Geometry) return this._shortestline_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._shortestline_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.shortestline: no overload takes these arguments`);
 	}
 
 	/** MEOS: trgeometry_space_boxes */
@@ -12117,6 +22016,27 @@ export class TRGeometry extends TSpatial {
 		}
 	}
 
+	/** MEOS: tdistance_trgeometry_geo, tdistance_trgeometry_tpoint, tdistance_trgeometry_trgeometry, chosen by the arguments' types */
+	tdistance(gs: Geometry | TGeomPoint | TRGeometry): Temporal | null {
+		if (gs instanceof TGeomPoint) return this._tdistance_trgeometry_tpoint(gs as TGeomPoint);
+		if (gs instanceof Geometry) return this._tdistance_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._tdistance_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.tdistance: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdwithin_trgeometry_geo, tdwithin_trgeometry_trgeometry, chosen by the arguments' types */
+	tdwithin(gs: Geometry | TRGeometry, dist: number): Temporal | null {
+		if (gs instanceof Geometry && typeof dist === 'number') return this._tdwithin_trgeometry_geo(gs as Geometry, dist as number);
+		if (gs instanceof TRGeometry && typeof dist === 'number') return this._tdwithin_trgeometry_trgeometry(gs as TRGeometry, dist as number);
+		throw new TypeError(`TRGeometry.tdwithin: no overload takes these arguments`);
+	}
+
+	/** MEOS: teq_trgeometry_geo, chosen by the arguments' types */
+	override teq(gs: Geometry | Temporal): Temporal | null {
+		if (gs instanceof Geometry) return this._teq_trgeometry_geo(gs as Geometry);
+		return super.teq(gs as Temporal);
+	}
+
 	/** MEOS: trgeometry_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): STBox[] {
 		const _duration = _putInterval(duration);
@@ -12137,6 +22057,12 @@ export class TRGeometry extends TSpatial {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tne_trgeometry_geo, chosen by the arguments' types */
+	override tne(gs: Geometry | Temporal): Temporal | null {
+		if (gs instanceof Geometry) return this._tne_trgeometry_geo(gs as Geometry);
+		return super.tne(gs as Temporal);
 	}
 
 	/** MEOS: trgeometry_to_tgeometry */
@@ -12310,6 +22236,85 @@ export class TS2Cell extends TCellIndex {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_ts2cell_s2cell */
+	private _always_eq_ts2cell_s2cell(cell: S2CellId): number {
+		return F.always_eq_ts2cell_s2cell(this.ptr, cell);
+	}
+
+	/** MEOS: always_eq_ts2cell_ts2cell */
+	private _always_eq_ts2cell_ts2cell(temp2: TS2Cell): number {
+		return F.always_eq_ts2cell_ts2cell(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_ne_ts2cell_s2cell */
+	private _always_ne_ts2cell_s2cell(cell: S2CellId): number {
+		return F.always_ne_ts2cell_s2cell(this.ptr, cell);
+	}
+
+	/** MEOS: always_ne_ts2cell_ts2cell */
+	private _always_ne_ts2cell_ts2cell(temp2: TS2Cell): number {
+		return F.always_ne_ts2cell_ts2cell(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_eq_ts2cell_s2cell */
+	private _ever_eq_ts2cell_s2cell(cell: S2CellId): number {
+		return F.ever_eq_ts2cell_s2cell(this.ptr, cell);
+	}
+
+	/** MEOS: ever_eq_ts2cell_s2cellset */
+	private _ever_eq_ts2cell_s2cellset(cells: S2CellSet): number {
+		return F.ever_eq_ts2cell_s2cellset(this.ptr, cells.ptr);
+	}
+
+	/** MEOS: ever_eq_ts2cell_ts2cell */
+	private _ever_eq_ts2cell_ts2cell(temp2: TS2Cell): number {
+		return F.ever_eq_ts2cell_ts2cell(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_ne_ts2cell_s2cell */
+	private _ever_ne_ts2cell_s2cell(cell: S2CellId): number {
+		return F.ever_ne_ts2cell_s2cell(this.ptr, cell);
+	}
+
+	/** MEOS: ever_ne_ts2cell_ts2cell */
+	private _ever_ne_ts2cell_ts2cell(temp2: TS2Cell): number {
+		return F.ever_ne_ts2cell_ts2cell(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: teq_ts2cell_s2cell */
+	private _teq_ts2cell_s2cell(cell: S2CellId): Temporal {
+		return wrapTemporal(F.teq_ts2cell_s2cell(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: teq_ts2cell_ts2cell */
+	private _teq_ts2cell_ts2cell(temp2: Temporal): Temporal {
+		return wrapTemporal(F.teq_ts2cell_ts2cell(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_ts2cell_s2cell */
+	private _tne_ts2cell_s2cell(cell: S2CellId): Temporal {
+		return wrapTemporal(F.tne_ts2cell_s2cell(this.ptr, cell)) as Temporal;
+	}
+
+	/** MEOS: tne_ts2cell_ts2cell */
+	private _tne_ts2cell_ts2cell(temp2: Temporal): Temporal {
+		return wrapTemporal(F.tne_ts2cell_ts2cell(this.ptr, temp2.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_ts2cell_s2cell, always_eq_ts2cell_ts2cell, chosen by the arguments' types */
+	override alwaysEq(cell: S2CellId | TS2Cell | Temporal): number {
+		if (cell instanceof TS2Cell) return this._always_eq_ts2cell_ts2cell(cell as TS2Cell);
+		if (typeof cell === 'bigint') return this._always_eq_ts2cell_s2cell(cell as S2CellId);
+		return super.alwaysEq(cell as Temporal);
+	}
+
+	/** MEOS: always_ne_ts2cell_s2cell, always_ne_ts2cell_ts2cell, chosen by the arguments' types */
+	override alwaysNe(cell: S2CellId | TS2Cell | Temporal): number {
+		if (cell instanceof TS2Cell) return this._always_ne_ts2cell_ts2cell(cell as TS2Cell);
+		if (typeof cell === 'bigint') return this._always_ne_ts2cell_s2cell(cell as S2CellId);
+		return super.alwaysNe(cell as Temporal);
+	}
+
 	/** MEOS: ts2cell_at_value */
 	atValue(cell: S2CellId): Temporal | null {
 		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell)) as Temporal | null;
@@ -12323,6 +22328,21 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_end_value */
 	endValue(): S2CellId {
 		return F.ts2cell_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_ts2cell_s2cellset, ever_eq_ts2cell_s2cell, ever_eq_ts2cell_ts2cell, chosen by the arguments' types */
+	override everEq(cells: S2CellSet | S2CellId | TS2Cell | Temporal): number {
+		if (cells instanceof S2CellSet) return this._ever_eq_ts2cell_s2cellset(cells as S2CellSet);
+		if (cells instanceof TS2Cell) return this._ever_eq_ts2cell_ts2cell(cells as TS2Cell);
+		if (typeof cells === 'bigint') return this._ever_eq_ts2cell_s2cell(cells as S2CellId);
+		return super.everEq(cells as Temporal);
+	}
+
+	/** MEOS: ever_ne_ts2cell_s2cell, ever_ne_ts2cell_ts2cell, chosen by the arguments' types */
+	override everNe(cell: S2CellId | TS2Cell | Temporal): number {
+		if (cell instanceof TS2Cell) return this._ever_ne_ts2cell_ts2cell(cell as TS2Cell);
+		if (typeof cell === 'bigint') return this._ever_ne_ts2cell_s2cell(cell as S2CellId);
+		return super.everNe(cell as Temporal);
 	}
 
 	/** MEOS: ts2cell_grid_distance */
@@ -12340,9 +22360,53 @@ export class TS2Cell extends TCellIndex {
 		return F.ts2cell_out(this.ptr);
 	}
 
+	/** MEOS: always_eq_s2cell_ts2cell */
+	ralwaysEq(cell: S2CellId): number {
+		return F.always_eq_s2cell_ts2cell(cell, this.ptr);
+	}
+
+	/** MEOS: always_ne_s2cell_ts2cell */
+	ralwaysNe(cell: S2CellId): number {
+		return F.always_ne_s2cell_ts2cell(cell, this.ptr);
+	}
+
+	/** MEOS: ever_eq_s2cell_ts2cell */
+	reverEq(cell: S2CellId): number {
+		return F.ever_eq_s2cell_ts2cell(cell, this.ptr);
+	}
+
+	/** MEOS: ever_ne_s2cell_ts2cell */
+	reverNe(cell: S2CellId): number {
+		return F.ever_ne_s2cell_ts2cell(cell, this.ptr);
+	}
+
+	/** MEOS: teq_s2cell_ts2cell */
+	rteq(cell: S2CellId): Temporal {
+		return wrapTemporal(F.teq_s2cell_ts2cell(cell, this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_s2cell_ts2cell */
+	rtne(cell: S2CellId): Temporal {
+		return wrapTemporal(F.tne_s2cell_ts2cell(cell, this.ptr)) as Temporal;
+	}
+
 	/** MEOS: ts2cell_start_value */
 	startValue(): S2CellId {
 		return F.ts2cell_start_value(this.ptr);
+	}
+
+	/** MEOS: teq_ts2cell_s2cell, teq_ts2cell_ts2cell, chosen by the arguments' types */
+	override teq(cell: S2CellId | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._teq_ts2cell_ts2cell(cell as Temporal);
+		if (typeof cell === 'bigint') return this._teq_ts2cell_s2cell(cell as S2CellId);
+		return super.teq(cell as Temporal);
+	}
+
+	/** MEOS: tne_ts2cell_s2cell, tne_ts2cell_ts2cell, chosen by the arguments' types */
+	override tne(cell: S2CellId | Temporal): Temporal | null {
+		if (cell instanceof Temporal) return this._tne_ts2cell_ts2cell(cell as Temporal);
+		if (typeof cell === 'bigint') return this._tne_ts2cell_s2cell(cell as S2CellId);
+		return super.tne(cell as Temporal);
 	}
 
 	/** MEOS: ts2cell_to_tbigint */
@@ -12513,6 +22577,142 @@ export class TText extends TAlpha {
 		return this.out();
 	}
 
+	/** MEOS: always_eq_ttext_text */
+	private _always_eq_ttext_text(txt: string): number {
+		return F.always_eq_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: always_ge_ttext_text */
+	private _always_ge_ttext_text(txt: string): number {
+		return F.always_ge_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: always_gt_ttext_text */
+	private _always_gt_ttext_text(txt: string): number {
+		return F.always_gt_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: always_le_ttext_text */
+	private _always_le_ttext_text(txt: string): number {
+		return F.always_le_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: always_lt_ttext_text */
+	private _always_lt_ttext_text(txt: string): number {
+		return F.always_lt_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: always_ne_ttext_text */
+	private _always_ne_ttext_text(txt: string): number {
+		return F.always_ne_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_eq_ttext_text */
+	private _ever_eq_ttext_text(txt: string): number {
+		return F.ever_eq_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_ge_ttext_text */
+	private _ever_ge_ttext_text(txt: string): number {
+		return F.ever_ge_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_gt_ttext_text */
+	private _ever_gt_ttext_text(txt: string): number {
+		return F.ever_gt_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_le_ttext_text */
+	private _ever_le_ttext_text(txt: string): number {
+		return F.ever_le_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_lt_ttext_text */
+	private _ever_lt_ttext_text(txt: string): number {
+		return F.ever_lt_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: ever_ne_ttext_text */
+	private _ever_ne_ttext_text(txt: string): number {
+		return F.ever_ne_ttext_text(this.ptr, txt);
+	}
+
+	/** MEOS: teq_ttext_text */
+	private _teq_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.teq_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: textcat_ttext_text */
+	private _textcat_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.textcat_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: textcat_ttext_ttext */
+	private _textcat_ttext_ttext(temp2: TText): Temporal | null {
+		return wrapTemporalOrNull(F.textcat_ttext_ttext(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tge_ttext_text */
+	private _tge_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.tge_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: tgt_ttext_text */
+	private _tgt_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.tgt_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: tle_ttext_text */
+	private _tle_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.tle_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: tlt_ttext_text */
+	private _tlt_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.tlt_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: tne_ttext_text */
+	private _tne_ttext_text(txt: string): Temporal {
+		return wrapTemporal(F.tne_ttext_text(this.ptr, txt)) as Temporal;
+	}
+
+	/** MEOS: always_eq_ttext_text, chosen by the arguments' types */
+	override alwaysEq(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_eq_ttext_text(txt as string);
+		return super.alwaysEq(txt as Temporal);
+	}
+
+	/** MEOS: always_ge_ttext_text, chosen by the arguments' types */
+	override alwaysGe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_ge_ttext_text(txt as string);
+		return super.alwaysGe(txt as Temporal);
+	}
+
+	/** MEOS: always_gt_ttext_text, chosen by the arguments' types */
+	override alwaysGt(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_gt_ttext_text(txt as string);
+		return super.alwaysGt(txt as Temporal);
+	}
+
+	/** MEOS: always_le_ttext_text, chosen by the arguments' types */
+	override alwaysLe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_le_ttext_text(txt as string);
+		return super.alwaysLe(txt as Temporal);
+	}
+
+	/** MEOS: always_lt_ttext_text, chosen by the arguments' types */
+	override alwaysLt(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_lt_ttext_text(txt as string);
+		return super.alwaysLt(txt as Temporal);
+	}
+
+	/** MEOS: always_ne_ttext_text, chosen by the arguments' types */
+	override alwaysNe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._always_ne_ttext_text(txt as string);
+		return super.alwaysNe(txt as Temporal);
+	}
+
 	/** MEOS: ttext_out */
 	asText(): string {
 		return this.out();
@@ -12526,6 +22726,42 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_end_value */
 	endValue(): string {
 		return F.ttext_end_value(this.ptr);
+	}
+
+	/** MEOS: ever_eq_ttext_text, chosen by the arguments' types */
+	override everEq(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_eq_ttext_text(txt as string);
+		return super.everEq(txt as Temporal);
+	}
+
+	/** MEOS: ever_ge_ttext_text, chosen by the arguments' types */
+	override everGe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_ge_ttext_text(txt as string);
+		return super.everGe(txt as Temporal);
+	}
+
+	/** MEOS: ever_gt_ttext_text, chosen by the arguments' types */
+	override everGt(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_gt_ttext_text(txt as string);
+		return super.everGt(txt as Temporal);
+	}
+
+	/** MEOS: ever_le_ttext_text, chosen by the arguments' types */
+	override everLe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_le_ttext_text(txt as string);
+		return super.everLe(txt as Temporal);
+	}
+
+	/** MEOS: ever_lt_ttext_text, chosen by the arguments' types */
+	override everLt(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_lt_ttext_text(txt as string);
+		return super.everLt(txt as Temporal);
+	}
+
+	/** MEOS: ever_ne_ttext_text, chosen by the arguments' types */
+	override everNe(txt: string | Temporal): number {
+		if (typeof txt === 'string') return this._ever_ne_ttext_text(txt as string);
+		return super.everNe(txt as Temporal);
 	}
 
 	/** MEOS: ttext_initcap */
@@ -12561,6 +22797,49 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_start_value */
 	startValue(): string {
 		return F.ttext_start_value(this.ptr);
+	}
+
+	/** MEOS: teq_ttext_text, chosen by the arguments' types */
+	override teq(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._teq_ttext_text(txt as string);
+		return super.teq(txt as Temporal);
+	}
+
+	/** MEOS: textcat_ttext_text, textcat_ttext_ttext, chosen by the arguments' types */
+	textcat(txt: string | TText): Temporal | null {
+		if (txt instanceof TText) return this._textcat_ttext_ttext(txt as TText);
+		if (typeof txt === 'string') return this._textcat_ttext_text(txt as string);
+		throw new TypeError(`TText.textcat: no overload takes these arguments`);
+	}
+
+	/** MEOS: tge_ttext_text, chosen by the arguments' types */
+	override tge(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._tge_ttext_text(txt as string);
+		return super.tge(txt as Temporal);
+	}
+
+	/** MEOS: tgt_ttext_text, chosen by the arguments' types */
+	override tgt(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._tgt_ttext_text(txt as string);
+		return super.tgt(txt as Temporal);
+	}
+
+	/** MEOS: tle_ttext_text, chosen by the arguments' types */
+	override tle(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._tle_ttext_text(txt as string);
+		return super.tle(txt as Temporal);
+	}
+
+	/** MEOS: tlt_ttext_text, chosen by the arguments' types */
+	override tlt(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._tlt_ttext_text(txt as string);
+		return super.tlt(txt as Temporal);
+	}
+
+	/** MEOS: tne_ttext_text, chosen by the arguments' types */
+	override tne(txt: string | Temporal): Temporal | null {
+		if (typeof txt === 'string') return this._tne_ttext_text(txt as string);
+		return super.tne(txt as Temporal);
 	}
 
 	/** MEOS: ttext_to_tjsonb */
@@ -12713,9 +22992,55 @@ export class TextSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_text */
+	private _contains_set_text(t: string): boolean {
+		return F.contains_set_text(this.ptr, t);
+	}
+
+	/** MEOS: intersection_set_text */
+	private _intersection_set_text(txt: string): Set | null {
+		return wrapSetOrNull(F.intersection_set_text(this.ptr, txt)) as Set | null;
+	}
+
+	/** MEOS: left_set_text */
+	private _left_set_text(txt: string): boolean {
+		return F.left_set_text(this.ptr, txt);
+	}
+
+	/** MEOS: minus_set_text */
+	private _minus_set_text(txt: string): Set | null {
+		return wrapSetOrNull(F.minus_set_text(this.ptr, txt)) as Set | null;
+	}
+
+	/** MEOS: overleft_set_text */
+	private _overleft_set_text(txt: string): boolean {
+		return F.overleft_set_text(this.ptr, txt);
+	}
+
+	/** MEOS: overright_set_text */
+	private _overright_set_text(txt: string): boolean {
+		return F.overright_set_text(this.ptr, txt);
+	}
+
+	/** MEOS: right_set_text */
+	private _right_set_text(txt: string): boolean {
+		return F.right_set_text(this.ptr, txt);
+	}
+
+	/** MEOS: union_set_text */
+	private _union_set_text(txt: string): Set | null {
+		return wrapSetOrNull(F.union_set_text(this.ptr, txt)) as Set | null;
+	}
+
 	/** MEOS: textset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: contains_set_text, chosen by the arguments' types */
+	override contains(t: string | Set): boolean {
+		if (typeof t === 'string') return this._contains_set_text(t as string);
+		return super.contains(t as Set);
 	}
 
 	/** MEOS: textset_end_value */
@@ -12728,9 +23053,27 @@ export class TextSet extends Set {
 		return wrapSet(F.textset_initcap(this.ptr)) as Set;
 	}
 
+	/** MEOS: intersection_set_text, chosen by the arguments' types */
+	override intersection(txt: string | Set): Set | null {
+		if (typeof txt === 'string') return this._intersection_set_text(txt as string);
+		return super.intersection(txt as Set);
+	}
+
+	/** MEOS: left_set_text, chosen by the arguments' types */
+	override left(txt: string | Set): boolean {
+		if (typeof txt === 'string') return this._left_set_text(txt as string);
+		return super.left(txt as Set);
+	}
+
 	/** MEOS: textset_lower */
 	lower(): Set {
 		return wrapSet(F.textset_lower(this.ptr)) as Set;
+	}
+
+	/** MEOS: minus_set_text, chosen by the arguments' types */
+	override minus(txt: string | Set): Set | null {
+		if (typeof txt === 'string') return this._minus_set_text(txt as string);
+		return super.minus(txt as Set);
 	}
 
 	/** MEOS: textset_out */
@@ -12738,14 +23081,43 @@ export class TextSet extends Set {
 		return F.textset_out(this.ptr);
 	}
 
+	/** MEOS: overleft_set_text, chosen by the arguments' types */
+	override overleft(txt: string | Set): boolean {
+		if (typeof txt === 'string') return this._overleft_set_text(txt as string);
+		return super.overleft(txt as Set);
+	}
+
+	/** MEOS: overright_set_text, chosen by the arguments' types */
+	override overright(txt: string | Set): boolean {
+		if (typeof txt === 'string') return this._overright_set_text(txt as string);
+		return super.overright(txt as Set);
+	}
+
+	/** MEOS: right_set_text, chosen by the arguments' types */
+	override right(txt: string | Set): boolean {
+		if (typeof txt === 'string') return this._right_set_text(txt as string);
+		return super.right(txt as Set);
+	}
+
 	/** MEOS: textset_start_value */
 	startValue(): string {
 		return F.textset_start_value(this.ptr);
 	}
 
+	/** MEOS: textcat_textset_text */
+	textcat(txt: string): Set {
+		return wrapSet(F.textcat_textset_text(this.ptr, txt)) as Set;
+	}
+
 	/** MEOS: textset_to_jsonbset */
 	toJsonbset(): Set | null {
 		return wrapSetOrNull(F.textset_to_jsonbset(this.ptr)) as Set | null;
+	}
+
+	/** MEOS: union_set_text, chosen by the arguments' types */
+	override union(txt: string | Set): Set | null {
+		if (typeof txt === 'string') return this._union_set_text(txt as string);
+		return super.union(txt as Set);
 	}
 
 	/** MEOS: textset_upper */
@@ -12804,14 +23176,129 @@ export class TsTzSet extends Set {
 		return this.out();
 	}
 
+	/** MEOS: contains_set_timestamptz */
+	private _contains_set_timestamptz(t: TimestampTz): boolean {
+		return F.contains_set_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: distance_set_timestamptz */
+	private _distance_set_timestamptz(t: TimestampTz): Interval {
+		return _takeInterval(F.distance_set_timestamptz(this.ptr, t))!;
+	}
+
+	/** MEOS: distance_tstzset_tstzset */
+	private _distance_tstzset_tstzset(s2: TsTzSet): Interval {
+		return _takeInterval(F.distance_tstzset_tstzset(this.ptr, s2.ptr))!;
+	}
+
+	/** MEOS: intersection_set_timestamptz */
+	private _intersection_set_timestamptz(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.intersection_set_timestamptz(this.ptr, t)) as Set | null;
+	}
+
+	/** MEOS: minus_set_timestamptz */
+	private _minus_set_timestamptz(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.minus_set_timestamptz(this.ptr, t)) as Set | null;
+	}
+
+	/** MEOS: union_set_timestamptz */
+	private _union_set_timestamptz(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.union_set_timestamptz(this.ptr, t)) as Set | null;
+	}
+
+	/** MEOS: after_set_timestamptz */
+	after(t: TimestampTz): boolean {
+		return F.after_set_timestamptz(this.ptr, t);
+	}
+
 	/** MEOS: tstzset_out */
 	asText(): string {
 		return this.out();
 	}
 
+	/** MEOS: before_set_timestamptz */
+	before(t: TimestampTz): boolean {
+		return F.before_set_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: contains_set_timestamptz, chosen by the arguments' types */
+	override contains(t: TimestampTz | Set): boolean {
+		if (typeof t === 'number') return this._contains_set_timestamptz(t as TimestampTz);
+		return super.contains(t as Set);
+	}
+
+	/** MEOS: distance_set_timestamptz, distance_tstzset_tstzset, chosen by the arguments' types */
+	distance(t: TimestampTz | TsTzSet): Interval {
+		if (t instanceof TsTzSet) return this._distance_tstzset_tstzset(t as TsTzSet);
+		if (typeof t === 'number') return this._distance_set_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSet.distance: no overload takes these arguments`);
+	}
+
+	/** MEOS: intersection_set_timestamptz, chosen by the arguments' types */
+	override intersection(t: TimestampTz | Set): Set | null {
+		if (typeof t === 'number') return this._intersection_set_timestamptz(t as TimestampTz);
+		return super.intersection(t as Set);
+	}
+
+	/** MEOS: minus_set_timestamptz, chosen by the arguments' types */
+	override minus(t: TimestampTz | Set): Set | null {
+		if (typeof t === 'number') return this._minus_set_timestamptz(t as TimestampTz);
+		return super.minus(t as Set);
+	}
+
 	/** MEOS: tstzset_out */
 	out(): string {
 		return F.tstzset_out(this.ptr);
+	}
+
+	/** MEOS: overafter_set_timestamptz */
+	overafter(t: TimestampTz): boolean {
+		return F.overafter_set_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: overbefore_set_timestamptz */
+	overbefore(t: TimestampTz): boolean {
+		return F.overbefore_set_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: after_timestamptz_set */
+	rafter(t: TimestampTz): boolean {
+		return F.after_timestamptz_set(t, this.ptr);
+	}
+
+	/** MEOS: before_timestamptz_set */
+	rbefore(t: TimestampTz): boolean {
+		return F.before_timestamptz_set(t, this.ptr);
+	}
+
+	/** MEOS: contained_timestamptz_set */
+	rcontained(t: TimestampTz): boolean {
+		return F.contained_timestamptz_set(t, this.ptr);
+	}
+
+	/** MEOS: intersection_timestamptz_set */
+	rintersection(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.intersection_timestamptz_set(t, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: minus_timestamptz_set */
+	rminus(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.minus_timestamptz_set(t, this.ptr)) as Set | null;
+	}
+
+	/** MEOS: overafter_timestamptz_set */
+	roverafter(t: TimestampTz): boolean {
+		return F.overafter_timestamptz_set(t, this.ptr);
+	}
+
+	/** MEOS: overbefore_timestamptz_set */
+	roverbefore(t: TimestampTz): boolean {
+		return F.overbefore_timestamptz_set(t, this.ptr);
+	}
+
+	/** MEOS: union_timestamptz_set */
+	runion(t: TimestampTz): Set | null {
+		return wrapSetOrNull(F.union_timestamptz_set(t, this.ptr)) as Set | null;
 	}
 
 	/** MEOS: tstzset_scale */
@@ -12866,6 +23353,12 @@ export class TsTzSet extends Set {
 		}
 	}
 
+	/** MEOS: union_set_timestamptz, chosen by the arguments' types */
+	override union(t: TimestampTz | Set): Set | null {
+		if (typeof t === 'number') return this._union_set_timestamptz(t as TimestampTz);
+		return super.union(t as Set);
+	}
+
 	/** MEOS: tstzset_values */
 	values(): TimestampTz[] {
 		const _count = _alloc(4);
@@ -12907,9 +23400,178 @@ export class TsTzSpan extends Span {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_span_timestamptz */
+	private _adjacent_span_timestamptz(t: TimestampTz): boolean {
+		return F.adjacent_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: adjacent_tstzspan_tbox */
+	private _adjacent_tstzspan_tbox(box: TBox): boolean {
+		return F.adjacent_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: adjacent_tstzspan_temporal */
+	private _adjacent_tstzspan_temporal(temp: Temporal): boolean {
+		return F.adjacent_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: after_span_timestamptz */
+	private _after_span_timestamptz(t: TimestampTz): boolean {
+		return F.after_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: after_tstzspan_tbox */
+	private _after_tstzspan_tbox(box: TBox): boolean {
+		return F.after_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: after_tstzspan_temporal */
+	private _after_tstzspan_temporal(temp: Temporal): boolean {
+		return F.after_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: before_span_timestamptz */
+	private _before_span_timestamptz(t: TimestampTz): boolean {
+		return F.before_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: before_tstzspan_tbox */
+	private _before_tstzspan_tbox(box: TBox): boolean {
+		return F.before_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: before_tstzspan_temporal */
+	private _before_tstzspan_temporal(temp: Temporal): boolean {
+		return F.before_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contained_tstzspan_tbox */
+	private _contained_tstzspan_tbox(box: TBox): boolean {
+		return F.contained_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contained_tstzspan_temporal */
+	private _contained_tstzspan_temporal(temp: Temporal): boolean {
+		return F.contained_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: contains_span_timestamptz */
+	private _contains_span_timestamptz(t: TimestampTz): boolean {
+		return F.contains_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: contains_tstzspan_tbox */
+	private _contains_tstzspan_tbox(box: TBox): boolean {
+		return F.contains_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: contains_tstzspan_temporal */
+	private _contains_tstzspan_temporal(temp: Temporal): boolean {
+		return F.contains_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: distance_span_timestamptz */
+	private _distance_span_timestamptz(t: TimestampTz): Interval {
+		return _takeInterval(F.distance_span_timestamptz(this.ptr, t))!;
+	}
+
+	/** MEOS: distance_tstzspan_tstzspan */
+	private _distance_tstzspan_tstzspan(s2: TsTzSpan): Interval {
+		return _takeInterval(F.distance_tstzspan_tstzspan(this.ptr, s2.ptr))!;
+	}
+
+	/** MEOS: intersection_span_timestamptz */
+	private _intersection_span_timestamptz(t: TimestampTz): Span | null {
+		return wrapSpanOrNull(F.intersection_span_timestamptz(this.ptr, t)) as Span | null;
+	}
+
+	/** MEOS: minus_span_timestamptz */
+	private _minus_span_timestamptz(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_span_timestamptz(this.ptr, t)) as SpanSet | null;
+	}
+
+	/** MEOS: overafter_span_timestamptz */
+	private _overafter_span_timestamptz(t: TimestampTz): boolean {
+		return F.overafter_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: overafter_tstzspan_tbox */
+	private _overafter_tstzspan_tbox(box: TBox): boolean {
+		return F.overafter_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overafter_tstzspan_temporal */
+	private _overafter_tstzspan_temporal(temp: Temporal): boolean {
+		return F.overafter_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overbefore_span_timestamptz */
+	private _overbefore_span_timestamptz(t: TimestampTz): boolean {
+		return F.overbefore_span_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: overbefore_tstzspan_tbox */
+	private _overbefore_tstzspan_tbox(box: TBox): boolean {
+		return F.overbefore_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overbefore_tstzspan_temporal */
+	private _overbefore_tstzspan_temporal(temp: Temporal): boolean {
+		return F.overbefore_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: overlaps_tstzspan_tbox */
+	private _overlaps_tstzspan_tbox(box: TBox): boolean {
+		return F.overlaps_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: overlaps_tstzspan_temporal */
+	private _overlaps_tstzspan_temporal(temp: Temporal): boolean {
+		return F.overlaps_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: same_tstzspan_tbox */
+	private _same_tstzspan_tbox(box: TBox): boolean {
+		return F.same_tstzspan_tbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: same_tstzspan_temporal */
+	private _same_tstzspan_temporal(temp: Temporal): boolean {
+		return F.same_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: union_span_timestamptz */
+	private _union_span_timestamptz(t: TimestampTz): SpanSet {
+		return wrapSpanSet(F.union_span_timestamptz(this.ptr, t)) as SpanSet;
+	}
+
+	/** MEOS: adjacent_span_timestamptz, adjacent_tstzspan_tbox, adjacent_tstzspan_temporal, chosen by the arguments' types */
+	override adjacent(t: TimestampTz | TBox | Temporal | SpanSet): boolean {
+		if (t instanceof TBox) return this._adjacent_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._adjacent_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._adjacent_span_timestamptz(t as TimestampTz);
+		return super.adjacent(t as SpanSet);
+	}
+
+	/** MEOS: after_span_timestamptz, after_tstzspan_tbox, after_tstzspan_temporal, chosen by the arguments' types */
+	after(t: TimestampTz | TBox | Temporal): boolean {
+		if (t instanceof TBox) return this._after_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._after_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._after_span_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpan.after: no overload takes these arguments`);
+	}
+
 	/** MEOS: tstzspan_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: before_span_timestamptz, before_tstzspan_tbox, before_tstzspan_temporal, chosen by the arguments' types */
+	before(t: TimestampTz | TBox | Temporal): boolean {
+		if (t instanceof TBox) return this._before_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._before_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._before_span_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpan.before: no overload takes these arguments`);
 	}
 
 	/** MEOS: tstzspan_bins */
@@ -12934,6 +23596,28 @@ export class TsTzSpan extends Span {
 		}
 	}
 
+	/** MEOS: contained_tstzspan_tbox, contained_tstzspan_temporal, chosen by the arguments' types */
+	override contained(box: TBox | Temporal | Span | SpanSet): boolean {
+		if (box instanceof TBox) return this._contained_tstzspan_tbox(box as TBox);
+		if (box instanceof Temporal) return this._contained_tstzspan_temporal(box as Temporal);
+		return super.contained(box as Span | SpanSet);
+	}
+
+	/** MEOS: contains_span_timestamptz, contains_tstzspan_tbox, contains_tstzspan_temporal, chosen by the arguments' types */
+	override contains(t: TimestampTz | TBox | Temporal | Span | SpanSet): boolean {
+		if (t instanceof TBox) return this._contains_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._contains_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._contains_span_timestamptz(t as TimestampTz);
+		return super.contains(t as Span | SpanSet);
+	}
+
+	/** MEOS: distance_span_timestamptz, distance_tstzspan_tstzspan, chosen by the arguments' types */
+	distance(t: TimestampTz | TsTzSpan): Interval {
+		if (t instanceof TsTzSpan) return this._distance_tstzspan_tstzspan(t as TsTzSpan);
+		if (typeof t === 'number') return this._distance_span_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpan.distance: no overload takes these arguments`);
+	}
+
 	/** MEOS: tstzspan_duration */
 	duration(): Interval {
 		return _takeInterval(F.tstzspan_duration(this.ptr))!;
@@ -12949,9 +23633,101 @@ export class TsTzSpan extends Span {
 		}
 	}
 
+	/** MEOS: intersection_span_timestamptz, chosen by the arguments' types */
+	override intersection(t: TimestampTz | Span | SpanSet): Span | null | SpanSet {
+		if (typeof t === 'number') return this._intersection_span_timestamptz(t as TimestampTz);
+		return super.intersection(t as Span | SpanSet);
+	}
+
+	/** MEOS: minus_span_timestamptz, chosen by the arguments' types */
+	override minus(t: TimestampTz | Span | SpanSet): SpanSet | null {
+		if (typeof t === 'number') return this._minus_span_timestamptz(t as TimestampTz);
+		return super.minus(t as Span | SpanSet);
+	}
+
+	/** MEOS: numspan_tstzspan_to_tbox */
+	numspan(p: TsTzSpan): TBox {
+		return wrapTBox(F.numspan_tstzspan_to_tbox(this.ptr, p.ptr)) as TBox;
+	}
+
 	/** MEOS: tstzspan_out */
 	out(): string {
 		return F.tstzspan_out(this.ptr);
+	}
+
+	/** MEOS: overafter_span_timestamptz, overafter_tstzspan_tbox, overafter_tstzspan_temporal, chosen by the arguments' types */
+	overafter(t: TimestampTz | TBox | Temporal): boolean {
+		if (t instanceof TBox) return this._overafter_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._overafter_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._overafter_span_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpan.overafter: no overload takes these arguments`);
+	}
+
+	/** MEOS: overbefore_span_timestamptz, overbefore_tstzspan_tbox, overbefore_tstzspan_temporal, chosen by the arguments' types */
+	overbefore(t: TimestampTz | TBox | Temporal): boolean {
+		if (t instanceof TBox) return this._overbefore_tstzspan_tbox(t as TBox);
+		if (t instanceof Temporal) return this._overbefore_tstzspan_temporal(t as Temporal);
+		if (typeof t === 'number') return this._overbefore_span_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpan.overbefore: no overload takes these arguments`);
+	}
+
+	/** MEOS: overlaps_tstzspan_tbox, overlaps_tstzspan_temporal, chosen by the arguments' types */
+	override overlaps(box: TBox | Temporal | Span | SpanSet): boolean {
+		if (box instanceof TBox) return this._overlaps_tstzspan_tbox(box as TBox);
+		if (box instanceof Temporal) return this._overlaps_tstzspan_temporal(box as Temporal);
+		return super.overlaps(box as Span | SpanSet);
+	}
+
+	/** MEOS: adjacent_timestamptz_span */
+	radjacent(t: TimestampTz): boolean {
+		return F.adjacent_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: after_timestamptz_span */
+	rafter(t: TimestampTz): boolean {
+		return F.after_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: before_timestamptz_span */
+	rbefore(t: TimestampTz): boolean {
+		return F.before_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: contained_timestamptz_span */
+	rcontained(t: TimestampTz): boolean {
+		return F.contained_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: intersection_timestamptz_span */
+	rintersection(t: TimestampTz): Span | null {
+		return wrapSpanOrNull(F.intersection_timestamptz_span(t, this.ptr)) as Span | null;
+	}
+
+	/** MEOS: minus_timestamptz_span */
+	rminus(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_timestamptz_span(t, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overafter_timestamptz_span */
+	roverafter(t: TimestampTz): boolean {
+		return F.overafter_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: overbefore_timestamptz_span */
+	roverbefore(t: TimestampTz): boolean {
+		return F.overbefore_timestamptz_span(t, this.ptr);
+	}
+
+	/** MEOS: union_timestamptz_span */
+	runion(t: TimestampTz): SpanSet {
+		return wrapSpanSet(F.union_timestamptz_span(t, this.ptr)) as SpanSet;
+	}
+
+	/** MEOS: same_tstzspan_tbox, same_tstzspan_temporal, chosen by the arguments' types */
+	override same(box: TBox | Temporal | Span): boolean {
+		if (box instanceof TBox) return this._same_tstzspan_tbox(box as TBox);
+		if (box instanceof Temporal) return this._same_tstzspan_temporal(box as Temporal);
+		return super.same(box as Span);
 	}
 
 	/** MEOS: tstzspan_scale */
@@ -13006,6 +23782,12 @@ export class TsTzSpan extends Span {
 		}
 	}
 
+	/** MEOS: union_span_timestamptz, chosen by the arguments' types */
+	override union(t: TimestampTz | Span | SpanSet): SpanSet | null {
+		if (typeof t === 'number') return this._union_span_timestamptz(t as TimestampTz);
+		return super.union(t as Span | SpanSet);
+	}
+
 	/** MEOS: tstzspan_in */
 	static fromText(str: string): TsTzSpan {
 		return TsTzSpan.in(str);
@@ -13042,9 +23824,65 @@ export class TsTzSpanSet extends SpanSet {
 		return this.out();
 	}
 
+	/** MEOS: adjacent_spanset_timestamptz */
+	private _adjacent_spanset_timestamptz(t: TimestampTz): boolean {
+		return F.adjacent_spanset_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: contains_spanset_timestamptz */
+	private _contains_spanset_timestamptz(t: TimestampTz): boolean {
+		return F.contains_spanset_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: distance_spanset_timestamptz */
+	private _distance_spanset_timestamptz(t: TimestampTz): Interval {
+		return _takeInterval(F.distance_spanset_timestamptz(this.ptr, t))!;
+	}
+
+	/** MEOS: distance_tstzspanset_tstzspan */
+	private _distance_tstzspanset_tstzspan(s: TsTzSpan): Interval {
+		return _takeInterval(F.distance_tstzspanset_tstzspan(this.ptr, s.ptr))!;
+	}
+
+	/** MEOS: distance_tstzspanset_tstzspanset */
+	private _distance_tstzspanset_tstzspanset(ss2: TsTzSpanSet): Interval {
+		return _takeInterval(F.distance_tstzspanset_tstzspanset(this.ptr, ss2.ptr))!;
+	}
+
+	/** MEOS: intersection_spanset_timestamptz */
+	private _intersection_spanset_timestamptz(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_spanset_timestamptz */
+	private _minus_spanset_timestamptz(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	}
+
+	/** MEOS: union_spanset_timestamptz */
+	private _union_spanset_timestamptz(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_spanset_timestamptz(this.ptr, t)) as SpanSet | null;
+	}
+
+	/** MEOS: adjacent_spanset_timestamptz, chosen by the arguments' types */
+	override adjacent(t: TimestampTz | Span | SpanSet): boolean {
+		if (typeof t === 'number') return this._adjacent_spanset_timestamptz(t as TimestampTz);
+		return super.adjacent(t as Span | SpanSet);
+	}
+
+	/** MEOS: after_spanset_timestamptz */
+	after(t: TimestampTz): boolean {
+		return F.after_spanset_timestamptz(this.ptr, t);
+	}
+
 	/** MEOS: tstzspanset_out */
 	asText(): string {
 		return this.out();
+	}
+
+	/** MEOS: before_spanset_timestamptz */
+	before(t: TimestampTz): boolean {
+		return F.before_spanset_timestamptz(this.ptr, t);
 	}
 
 	/** MEOS: tstzspanset_bins */
@@ -13069,6 +23907,32 @@ export class TsTzSpanSet extends SpanSet {
 		}
 	}
 
+	/** MEOS: contains_spanset_timestamptz, chosen by the arguments' types */
+	override contains(t: TimestampTz | Span | SpanSet): boolean {
+		if (typeof t === 'number') return this._contains_spanset_timestamptz(t as TimestampTz);
+		return super.contains(t as Span | SpanSet);
+	}
+
+	/** MEOS: distance_spanset_timestamptz, distance_tstzspanset_tstzspan, distance_tstzspanset_tstzspanset, chosen by the arguments' types */
+	distance(t: TimestampTz | TsTzSpan | TsTzSpanSet): Interval {
+		if (t instanceof TsTzSpan) return this._distance_tstzspanset_tstzspan(t as TsTzSpan);
+		if (t instanceof TsTzSpanSet) return this._distance_tstzspanset_tstzspanset(t as TsTzSpanSet);
+		if (typeof t === 'number') return this._distance_spanset_timestamptz(t as TimestampTz);
+		throw new TypeError(`TsTzSpanSet.distance: no overload takes these arguments`);
+	}
+
+	/** MEOS: intersection_spanset_timestamptz, chosen by the arguments' types */
+	override intersection(t: TimestampTz | Span | SpanSet): SpanSet | null {
+		if (typeof t === 'number') return this._intersection_spanset_timestamptz(t as TimestampTz);
+		return super.intersection(t as Span | SpanSet);
+	}
+
+	/** MEOS: minus_spanset_timestamptz, chosen by the arguments' types */
+	override minus(t: TimestampTz | Span | SpanSet): SpanSet | null {
+		if (typeof t === 'number') return this._minus_spanset_timestamptz(t as TimestampTz);
+		return super.minus(t as Span | SpanSet);
+	}
+
 	/** MEOS: tstzspanset_num_timestamps */
 	numTimestamps(): number {
 		return F.tstzspanset_num_timestamps(this.ptr);
@@ -13077,6 +23941,61 @@ export class TsTzSpanSet extends SpanSet {
 	/** MEOS: tstzspanset_out */
 	out(): string {
 		return F.tstzspanset_out(this.ptr);
+	}
+
+	/** MEOS: overafter_spanset_timestamptz */
+	overafter(t: TimestampTz): boolean {
+		return F.overafter_spanset_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: overbefore_spanset_timestamptz */
+	overbefore(t: TimestampTz): boolean {
+		return F.overbefore_spanset_timestamptz(this.ptr, t);
+	}
+
+	/** MEOS: adjacent_timestamptz_spanset */
+	radjacent(t: TimestampTz): boolean {
+		return F.adjacent_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: after_timestamptz_spanset */
+	rafter(t: TimestampTz): boolean {
+		return F.after_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: before_timestamptz_spanset */
+	rbefore(t: TimestampTz): boolean {
+		return F.before_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: contained_timestamptz_spanset */
+	rcontained(t: TimestampTz): boolean {
+		return F.contained_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: intersection_timestamptz_spanset */
+	rintersection(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.intersection_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: minus_timestamptz_spanset */
+	rminus(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.minus_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
+	}
+
+	/** MEOS: overafter_timestamptz_spanset */
+	roverafter(t: TimestampTz): boolean {
+		return F.overafter_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: overbefore_timestamptz_spanset */
+	roverbefore(t: TimestampTz): boolean {
+		return F.overbefore_timestamptz_spanset(t, this.ptr);
+	}
+
+	/** MEOS: union_timestamptz_spanset */
+	runion(t: TimestampTz): SpanSet | null {
+		return wrapSpanSetOrNull(F.union_timestamptz_spanset(t, this.ptr)) as SpanSet | null;
 	}
 
 	/** MEOS: tstzspanset_scale */
@@ -13134,6 +24053,12 @@ export class TsTzSpanSet extends SpanSet {
 		} finally {
 			_free(_duration);
 		}
+	}
+
+	/** MEOS: union_spanset_timestamptz, chosen by the arguments' types */
+	override union(t: TimestampTz | Span | SpanSet): SpanSet | null {
+		if (typeof t === 'number') return this._union_spanset_timestamptz(t as TimestampTz);
+		return super.union(t as Span | SpanSet);
 	}
 
 	/** MEOS: tstzspanset_in */
