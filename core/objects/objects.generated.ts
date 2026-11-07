@@ -692,6 +692,16 @@ export class BigIntSet extends Set {
 		return F.bigintset_start_value(this.ptr);
 	}
 
+	/** MEOS: set_to_span, which answers a BigIntSpan for a BigIntSet */
+	override toSpan(): BigIntSpan {
+		return super.toSpan() as BigIntSpan;
+	}
+
+	/** MEOS: set_to_spanset, which answers a BigIntSpanSet for a BigIntSet */
+	override toSpanset(): BigIntSpanSet {
+		return super.toSpanset() as BigIntSpanSet;
+	}
+
 	/** MEOS: union_set_bigint, chosen by the arguments' types */
 	override union(i: number | Set): this | null {
 		if (typeof i === 'number') return this._union_set_bigint(i as number);
@@ -1273,6 +1283,11 @@ export class BigIntSpan extends Span {
 		return wrapSpan(F.bigintspan_to_intspan(this.ptr)) as Span;
 	}
 
+	/** MEOS: span_to_spanset, which answers a BigIntSpanSet for a BigIntSpan */
+	override toSpanset(): BigIntSpanSet {
+		return super.toSpanset() as BigIntSpanSet;
+	}
+
 	/** MEOS: union_span_bigint, chosen by the arguments' types */
 	override union(i: number | Span | SpanSet): SpanSet | null {
 		if (typeof i === 'number') return this._union_span_bigint(i as number);
@@ -1838,6 +1853,11 @@ export class BigIntSpanSet extends SpanSet {
 		throw new TypeError(`BigIntSpanSet.distance: no overload takes these arguments`);
 	}
 
+	/** MEOS: spanset_end_span, which answers a BigIntSpan for a BigIntSpanSet */
+	override endSpan(): BigIntSpan {
+		return super.endSpan() as BigIntSpan;
+	}
+
 	/** MEOS: intersection_spanset_bigint, chosen by the arguments' types */
 	override intersection(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._intersection_spanset_bigint(i as number);
@@ -1932,6 +1952,21 @@ export class BigIntSpanSet extends SpanSet {
 	/** MEOS: bigintspanset_shift_scale */
 	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
 		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
+	/** MEOS: spanset_span, which answers a BigIntSpan for a BigIntSpanSet */
+	override span(): BigIntSpan {
+		return super.span() as BigIntSpan;
+	}
+
+	/** MEOS: spanset_span_n, which answers a BigIntSpan for a BigIntSpanSet */
+	override spanN(i: number): BigIntSpan | null {
+		return super.spanN(i) as BigIntSpan | null;
+	}
+
+	/** MEOS: spanset_start_span, which answers a BigIntSpan for a BigIntSpanSet */
+	override startSpan(): BigIntSpan {
+		return super.startSpan() as BigIntSpan;
 	}
 
 	/** MEOS: union_spanset_bigint, chosen by the arguments' types */
@@ -2713,6 +2748,16 @@ export class DateSet extends Set {
 		return F.dateset_start_value(this.ptr);
 	}
 
+	/** MEOS: set_to_span, which answers a DateSpan for a DateSet */
+	override toSpan(): DateSpan {
+		return super.toSpan() as DateSpan;
+	}
+
+	/** MEOS: set_to_spanset, which answers a DateSpanSet for a DateSet */
+	override toSpanset(): DateSpanSet {
+		return super.toSpanset() as DateSpanSet;
+	}
+
 	/** MEOS: dateset_to_tstzset */
 	toTstzset(): Set {
 		return wrapSet(F.dateset_to_tstzset(this.ptr)) as Set;
@@ -2964,6 +3009,11 @@ export class DateSpan extends Span {
 		return wrapSpan(F.datespan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
+	/** MEOS: span_to_spanset, which answers a DateSpanSet for a DateSpan */
+	override toSpanset(): DateSpanSet {
+		return super.toSpanset() as DateSpanSet;
+	}
+
 	/** MEOS: datespan_to_tstzspan */
 	toTstzspan(): Span {
 		return wrapSpan(F.datespan_to_tstzspan(this.ptr)) as Span;
@@ -3138,6 +3188,11 @@ export class DateSpanSet extends SpanSet {
 		return F.datespanset_end_date(this.ptr);
 	}
 
+	/** MEOS: spanset_end_span, which answers a DateSpan for a DateSpanSet */
+	override endSpan(): DateSpan {
+		return super.endSpan() as DateSpan;
+	}
+
 	/** MEOS: intersection_spanset_date, chosen by the arguments' types */
 	override intersection(d: DateADT | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._intersection_spanset_date(d as DateADT);
@@ -3225,9 +3280,24 @@ export class DateSpanSet extends SpanSet {
 		return wrapSpanSet(F.datespanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
+	/** MEOS: spanset_span, which answers a DateSpan for a DateSpanSet */
+	override span(): DateSpan {
+		return super.span() as DateSpan;
+	}
+
+	/** MEOS: spanset_span_n, which answers a DateSpan for a DateSpanSet */
+	override spanN(i: number): DateSpan | null {
+		return super.spanN(i) as DateSpan | null;
+	}
+
 	/** MEOS: datespanset_start_date */
 	startDate(): DateADT {
 		return F.datespanset_start_date(this.ptr);
+	}
+
+	/** MEOS: spanset_start_span, which answers a DateSpan for a DateSpanSet */
+	override startSpan(): DateSpan {
+		return super.startSpan() as DateSpan;
 	}
 
 	/** MEOS: datespanset_to_tstzspanset */
@@ -3459,6 +3529,16 @@ export class FloatSet extends Set {
 	/** MEOS: floatset_to_intset */
 	toIntset(): Set {
 		return wrapSet(F.floatset_to_intset(this.ptr)) as Set;
+	}
+
+	/** MEOS: set_to_span, which answers a FloatSpan for a FloatSet */
+	override toSpan(): FloatSpan {
+		return super.toSpan() as FloatSpan;
+	}
+
+	/** MEOS: set_to_spanset, which answers a FloatSpanSet for a FloatSet */
+	override toSpanset(): FloatSpanSet {
+		return super.toSpanset() as FloatSpanSet;
 	}
 
 	/** MEOS: union_set_float, chosen by the arguments' types */
@@ -3769,6 +3849,11 @@ export class FloatSpan extends Span {
 		return wrapSpan(F.floatspan_to_intspan(this.ptr)) as Span;
 	}
 
+	/** MEOS: span_to_spanset, which answers a FloatSpanSet for a FloatSpan */
+	override toSpanset(): FloatSpanSet {
+		return super.toSpanset() as FloatSpanSet;
+	}
+
 	/** MEOS: union_span_float, chosen by the arguments' types */
 	override union(d: number | Span | SpanSet): SpanSet | null {
 		if (typeof d === 'number') return this._union_span_float(d as number);
@@ -3936,6 +4021,11 @@ export class FloatSpanSet extends SpanSet {
 		throw new TypeError(`FloatSpanSet.distance: no overload takes these arguments`);
 	}
 
+	/** MEOS: spanset_end_span, which answers a FloatSpan for a FloatSpanSet */
+	override endSpan(): FloatSpan {
+		return super.endSpan() as FloatSpan;
+	}
+
 	/** MEOS: floatspanset_floor */
 	floor(): this {
 		return wrapSpanSet(F.floatspanset_floor(this.ptr)) as this;
@@ -4045,6 +4135,21 @@ export class FloatSpanSet extends SpanSet {
 	/** MEOS: floatspanset_shift_scale */
 	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
 		return wrapSpanSet(F.floatspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
+	/** MEOS: spanset_span, which answers a FloatSpan for a FloatSpanSet */
+	override span(): FloatSpan {
+		return super.span() as FloatSpan;
+	}
+
+	/** MEOS: spanset_span_n, which answers a FloatSpan for a FloatSpanSet */
+	override spanN(i: number): FloatSpan | null {
+		return super.spanN(i) as FloatSpan | null;
+	}
+
+	/** MEOS: spanset_start_span, which answers a FloatSpan for a FloatSpanSet */
+	override startSpan(): FloatSpan {
+		return super.startSpan() as FloatSpan;
 	}
 
 	/** MEOS: floatspanset_to_intspanset */
@@ -4775,6 +4880,26 @@ export class GeogSet extends GeoSet {
 		return this.asText(15);
 	}
 
+	/** MEOS: geoset_end_value, which answers a Geography for a GeogSet */
+	override endValue(): Geography {
+		return super.endValue() as Geography;
+	}
+
+	/** MEOS: geoset_start_value, which answers a Geography for a GeogSet */
+	override startValue(): Geography {
+		return super.startValue() as Geography;
+	}
+
+	/** MEOS: geoset_to_geo, which answers a Geography for a GeogSet */
+	override toGeo(): Geography {
+		return super.toGeo() as Geography;
+	}
+
+	/** MEOS: geoset_value_n, which answers a Geography for a GeogSet */
+	override valueN(n: number): Geography | null {
+		return super.valueN(n) as Geography | null;
+	}
+
 	/** MEOS: set_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Set {
 		return Set.fromWKB(wkb);
@@ -4831,6 +4956,11 @@ export class Geography extends Geo {
 		return F.geog_dwithin(this.ptr, g2.ptr, tolerance, use_spheroid);
 	}
 
+	/** MEOS: intersection_geo_set, which answers a GeogSet for a Geography */
+	override intersection(s: GeoSet): GeogSet | null {
+		return super.intersection(s) as GeogSet | null;
+	}
+
 	/** MEOS: geog_intersects */
 	intersects(gs2: Geo, use_spheroid: boolean): boolean {
 		return F.geog_intersects(this.ptr, gs2.ptr, use_spheroid);
@@ -4841,14 +4971,59 @@ export class Geography extends Geo {
 		return F.geog_length(this.ptr, use_spheroid);
 	}
 
+	/** MEOS: minus_geo_set, which answers a GeogSet for a Geography */
+	override minus(s: GeoSet): GeogSet | null {
+		return super.minus(s) as GeogSet | null;
+	}
+
 	/** MEOS: geog_perimeter */
 	override perimeter(use_spheroid: boolean): number {
 		return F.geog_perimeter(this.ptr, use_spheroid);
 	}
 
+	/** MEOS: tdisjoint_geo_tgeo, which answers a TBool for a Geography */
+	override tdisjoint(temp: TGeo): TBool | null {
+		return super.tdisjoint(temp) as TBool | null;
+	}
+
+	/** MEOS: tdwithin_geo_tgeo, which answers a TBool for a Geography */
+	override tdwithin(temp: TGeo, dist: number, spheroid: boolean): TBool | null {
+		return super.tdwithin(temp, dist, spheroid) as TBool | null;
+	}
+
+	/** MEOS: teq_geo_tgeo, which answers a TBool for a Geography */
+	override teq(temp: TGeo): TBool | null {
+		return super.teq(temp) as TBool | null;
+	}
+
+	/** MEOS: tintersects_geo_tgeo, which answers a TBool for a Geography */
+	override tintersects(temp: TGeo): TBool | null {
+		return super.tintersects(temp) as TBool | null;
+	}
+
+	/** MEOS: tne_geo_tgeo, which answers a TBool for a Geography */
+	override tne(temp: TGeo): TBool | null {
+		return super.tne(temp) as TBool | null;
+	}
+
 	/** MEOS: geog_to_geom */
 	toGeom(): Geo {
 		return wrapGeo(F.geog_to_geom(this.ptr)) as Geo;
+	}
+
+	/** MEOS: geo_to_s2cell_set, which answers a S2CellSet for a Geography */
+	override toS2cellSet(level: number): S2CellSet | null {
+		return super.toS2cellSet(level) as S2CellSet | null;
+	}
+
+	/** MEOS: geo_to_set, which answers a GeogSet for a Geography */
+	override toSet(): GeogSet {
+		return super.toSet() as GeogSet;
+	}
+
+	/** MEOS: union_geo_set, which answers a GeogSet for a Geography */
+	override union(s: GeoSet): GeogSet | null {
+		return super.union(s) as GeogSet | null;
 	}
 
 	/** MEOS: geog_array_union */
@@ -4890,6 +5065,26 @@ export class GeomSet extends GeoSet {
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
 		return this.asText(15);
+	}
+
+	/** MEOS: geoset_end_value, which answers a Geometry for a GeomSet */
+	override endValue(): Geometry {
+		return super.endValue() as Geometry;
+	}
+
+	/** MEOS: geoset_start_value, which answers a Geometry for a GeomSet */
+	override startValue(): Geometry {
+		return super.startValue() as Geometry;
+	}
+
+	/** MEOS: geoset_to_geo, which answers a Geometry for a GeomSet */
+	override toGeo(): Geometry {
+		return super.toGeo() as Geometry;
+	}
+
+	/** MEOS: geoset_value_n, which answers a Geometry for a GeomSet */
+	override valueN(n: number): Geometry | null {
+		return super.valueN(n) as Geometry | null;
 	}
 
 	/** MEOS: set_from_wkb */
@@ -5322,6 +5517,11 @@ export class Geometry extends Geo {
 		return super.everNe(temp as TGeo);
 	}
 
+	/** MEOS: intersection_geo_set, which answers a GeomSet for a Geometry */
+	override intersection(s: GeoSet): GeomSet | null {
+		return super.intersection(s) as GeomSet | null;
+	}
+
 	/** MEOS: geom_intersection2d */
 	intersection2d(gs2: Geo): this | null {
 		return wrapGeoOrNull(F.geom_intersection2d(this.ptr, gs2.ptr)) as this | null;
@@ -5370,6 +5570,11 @@ export class Geometry extends Geo {
 	/** MEOS: geom_max_distance3d */
 	maxDistance3d(gs2: Geo): number {
 		return F.geom_max_distance3d(this.ptr, gs2.ptr);
+	}
+
+	/** MEOS: minus_geo_set, which answers a GeomSet for a Geometry */
+	override minus(s: GeoSet): GeomSet | null {
+		return super.minus(s) as GeomSet | null;
 	}
 
 	/** MEOS: geom_oriented_envelope */
@@ -5462,9 +5667,24 @@ export class Geometry extends Geo {
 		return wrapGeo(F.geom_to_geog(this.ptr)) as Geo;
 	}
 
+	/** MEOS: geo_to_h3index_set, which answers a H3IndexSet for a Geometry */
+	override toH3indexSet(resolution: number): H3IndexSet | null {
+		return super.toH3indexSet(resolution) as H3IndexSet | null;
+	}
+
 	/** MEOS: geom_to_nsegment */
 	toNsegment(): Nsegment | null {
 		return wrapNsegmentOrNull(F.geom_to_nsegment(this.ptr)) as Nsegment | null;
+	}
+
+	/** MEOS: geo_to_quadbin_set, which answers a QuadbinSet for a Geometry */
+	override toQuadbinSet(resolution: number): QuadbinSet | null {
+		return super.toQuadbinSet(resolution) as QuadbinSet | null;
+	}
+
+	/** MEOS: geo_to_set, which answers a GeomSet for a Geometry */
+	override toSet(): GeomSet {
+		return super.toSet() as GeomSet;
 	}
 
 	/** MEOS: geom_touches */
@@ -5487,6 +5707,11 @@ export class Geometry extends Geo {
 	/** MEOS: geom_unary_union */
 	unaryUnion(): Geo {
 		return wrapGeo(F.geom_unary_union(this.ptr)) as Geo;
+	}
+
+	/** MEOS: union_geo_set, which answers a GeomSet for a Geometry */
+	override union(s: GeoSet): GeomSet | null {
+		return super.union(s) as GeomSet | null;
 	}
 
 	/** MEOS: geom_union2d */
@@ -5885,6 +6110,16 @@ export class IntSet extends Set {
 		return wrapSet(F.intset_to_floatset(this.ptr)) as Set;
 	}
 
+	/** MEOS: set_to_span, which answers a IntSpan for a IntSet */
+	override toSpan(): IntSpan {
+		return super.toSpan() as IntSpan;
+	}
+
+	/** MEOS: set_to_spanset, which answers a IntSpanSet for a IntSet */
+	override toSpanset(): IntSpanSet {
+		return super.toSpanset() as IntSpanSet;
+	}
+
 	/** MEOS: union_set_int, chosen by the arguments' types */
 	override union(i: number | Set): this | null {
 		if (typeof i === 'number') return this._union_set_int(i as number);
@@ -6168,6 +6403,11 @@ export class IntSpan extends Span {
 		return wrapSpan(F.intspan_to_floatspan(this.ptr)) as Span;
 	}
 
+	/** MEOS: span_to_spanset, which answers a IntSpanSet for a IntSpan */
+	override toSpanset(): IntSpanSet {
+		return super.toSpanset() as IntSpanSet;
+	}
+
 	/** MEOS: union_span_int, chosen by the arguments' types */
 	override union(i: number | Span | SpanSet): SpanSet | null {
 		if (typeof i === 'number') return this._union_span_int(i as number);
@@ -6325,6 +6565,11 @@ export class IntSpanSet extends SpanSet {
 		throw new TypeError(`IntSpanSet.distance: no overload takes these arguments`);
 	}
 
+	/** MEOS: spanset_end_span, which answers a IntSpan for a IntSpanSet */
+	override endSpan(): IntSpan {
+		return super.endSpan() as IntSpan;
+	}
+
 	/** MEOS: intersection_spanset_int, chosen by the arguments' types */
 	override intersection(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._intersection_spanset_int(i as number);
@@ -6419,6 +6664,21 @@ export class IntSpanSet extends SpanSet {
 	/** MEOS: intspanset_shift_scale */
 	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
 		return wrapSpanSet(F.intspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	}
+
+	/** MEOS: spanset_span, which answers a IntSpan for a IntSpanSet */
+	override span(): IntSpan {
+		return super.span() as IntSpan;
+	}
+
+	/** MEOS: spanset_span_n, which answers a IntSpan for a IntSpanSet */
+	override spanN(i: number): IntSpan | null {
+		return super.spanN(i) as IntSpan | null;
+	}
+
+	/** MEOS: spanset_start_span, which answers a IntSpan for a IntSpanSet */
+	override startSpan(): IntSpan {
+		return super.startSpan() as IntSpan;
 	}
 
 	/** MEOS: intspanset_to_floatspanset */
@@ -13431,6 +13691,11 @@ export class TBigint extends TNumber {
 		return wrapTemporal(F.tbigint_scale_value(this.ptr, width)) as this;
 	}
 
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TBigint */
+	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
+		return super.segmDuration(duration, atleast, strict) as TBool | null;
+	}
+
 	/** MEOS: tbigint_shift_scale_value */
 	shiftScaleValue(shift: number, width: number): this {
 		return wrapTemporal(F.tbigint_shift_scale_value(this.ptr, shift, width)) as this;
@@ -13468,6 +13733,11 @@ export class TBigint extends TNumber {
 	override tgt(i: number | Temporal): Temporal | null {
 		if (typeof i === 'number') return this._tgt_tbigint_bigint(i as number);
 		return super.tgt(i as Temporal);
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TBigint */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tbigint_time_boxes */
@@ -13510,6 +13780,11 @@ export class TBigint extends TNumber {
 		return super.tne(i as Temporal);
 	}
 
+	/** MEOS: tnumber_to_span, which answers a BigIntSpan for a TBigint */
+	override toSpan(): BigIntSpan {
+		return super.toSpan() as BigIntSpan;
+	}
+
 	/** MEOS: tbigint_to_tfloat */
 	toTfloat(): Temporal {
 		return wrapTemporal(F.tbigint_to_tfloat(this.ptr)) as Temporal;
@@ -13533,6 +13808,21 @@ export class TBigint extends TNumber {
 	/** MEOS: tbigint_to_ts2cell */
 	toTs2cell(): Temporal {
 		return wrapTemporal(F.tbigint_to_ts2cell(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TBigint */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TFloat for a TBigint */
+	override tprecision(duration: Interval, torigin: TimestampTz): TFloat {
+		return super.tprecision(duration, torigin) as TFloat;
+	}
+
+	/** MEOS: tnumber_trend, which answers a TInt for a TBigint */
+	override trend(): TInt | null {
+		return super.trend() as TInt | null;
 	}
 
 	/** MEOS: tbigint_value */
@@ -13614,6 +13904,16 @@ export class TBigint extends TNumber {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a BigIntSet for a TBigint */
+	override valueset(): BigIntSet {
+		return super.valueset() as BigIntSet;
+	}
+
+	/** MEOS: tnumber_valuespans, which answers a BigIntSpanSet for a TBigint */
+	override valuespans(): BigIntSpanSet {
+		return super.valuespans() as BigIntSpanSet;
 	}
 
 	/** MEOS: tbigint_value_time_boxes */
@@ -13846,6 +14146,11 @@ export class TBool extends TAlpha {
 		return wrapTemporal(F.tor_bool_tbool(b, this.ptr)) as this;
 	}
 
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TBool */
+	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
+		return super.segmDuration(duration, atleast, strict) as TBool | null;
+	}
+
 	/** MEOS: tbool_start_value */
 	startValue(): boolean {
 		return F.tbool_start_value(this.ptr);
@@ -13862,6 +14167,11 @@ export class TBool extends TAlpha {
 	override teq(b: boolean | Temporal): Temporal | null {
 		if (typeof b === 'boolean') return this._teq_tbool_bool(b as boolean);
 		return super.teq(b as Temporal);
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TBool */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tne_tbool_bool, chosen by the arguments' types */
@@ -13885,6 +14195,11 @@ export class TBool extends TAlpha {
 	/** MEOS: tbool_to_tint */
 	toTint(): Temporal {
 		return wrapTemporal(F.tbool_to_tint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TBool */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tbool_value */
@@ -15749,6 +16064,11 @@ export class TCbuffer extends TSpatial {
 		return super.teq(cb as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TCbuffer */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tintersects_tcbuffer_geo, tintersects_tcbuffer_cbuffer, tintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
 	tintersects(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._tintersects_tcbuffer_geo(gs as Geometry);
@@ -15771,6 +16091,16 @@ export class TCbuffer extends TSpatial {
 	/** MEOS: tcbuffer_to_tgeompoint */
 	toTgeompoint(): Temporal {
 		return wrapTemporal(F.tcbuffer_to_tgeompoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TCbuffer */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TCbuffer for a TCbuffer */
+	override tprecision(duration: Interval, torigin: TimestampTz): TCbuffer {
+		return super.tprecision(duration, torigin) as TCbuffer;
 	}
 
 	/** MEOS: tcbuffer_translate */
@@ -15819,6 +16149,11 @@ export class TCbuffer extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a CbufferSet for a TCbuffer */
+	override valueset(): CbufferSet {
+		return super.valueset() as CbufferSet;
 	}
 
 	/** MEOS: tcbuffer_from_base_temp */
@@ -16365,6 +16700,11 @@ export class TFloat extends TNumber {
 		return wrapTemporal(F.tfloat_scale_value(this.ptr, width)) as this;
 	}
 
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TFloat */
+	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
+		return super.segmDuration(duration, atleast, strict) as TBool | null;
+	}
+
 	/** MEOS: tfloat_shift_scale_value */
 	shiftScaleValue(shift: number, width: number): this {
 		return wrapTemporal(F.tfloat_shift_scale_value(this.ptr, shift, width)) as this;
@@ -16420,6 +16760,11 @@ export class TFloat extends TNumber {
 		return super.tgt(d as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TFloat */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tfloat_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
@@ -16460,6 +16805,11 @@ export class TFloat extends TNumber {
 		return super.tne(d as Temporal);
 	}
 
+	/** MEOS: tnumber_to_span, which answers a FloatSpan for a TFloat */
+	override toSpan(): FloatSpan {
+		return super.toSpan() as FloatSpan;
+	}
+
 	/** MEOS: tfloat_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.tfloat_to_tbigint(this.ptr)) as Temporal;
@@ -16468,6 +16818,21 @@ export class TFloat extends TNumber {
 	/** MEOS: tfloat_to_tint */
 	toTint(): Temporal {
 		return wrapTemporal(F.tfloat_to_tint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TFloat */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TFloat for a TFloat */
+	override tprecision(duration: Interval, torigin: TimestampTz): TFloat {
+		return super.tprecision(duration, torigin) as TFloat;
+	}
+
+	/** MEOS: tnumber_trend, which answers a TInt for a TFloat */
+	override trend(): TInt | null {
+		return super.trend() as TInt | null;
 	}
 
 	/** MEOS: tfloat_value */
@@ -16549,6 +16914,16 @@ export class TFloat extends TNumber {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a FloatSet for a TFloat */
+	override valueset(): FloatSet {
+		return super.valueset() as FloatSet;
+	}
+
+	/** MEOS: tnumber_valuespans, which answers a FloatSpanSet for a TFloat */
+	override valuespans(): FloatSpanSet {
+		return super.valuespans() as FloatSpanSet;
 	}
 
 	/** MEOS: tfloat_value_time_boxes */
@@ -17375,9 +17750,99 @@ export class TGeogPoint extends TPoint {
 		return this.asText(15);
 	}
 
+	/** MEOS: tpoint_angular_difference, which answers a TFloat for a TGeogPoint */
+	override angularDifference(): TFloat | null {
+		return super.angularDifference() as TFloat | null;
+	}
+
+	/** MEOS: tpoint_azimuth, which answers a TFloat for a TGeogPoint */
+	override azimuth(): TFloat | null {
+		return super.azimuth() as TFloat | null;
+	}
+
+	/** MEOS: bearing_tpoint_point, which answers a TFloat for a TGeogPoint */
+	override bearing(gs: Geo, invert: boolean): TFloat | null {
+		return super.bearing(gs, invert) as TFloat | null;
+	}
+
+	/** MEOS: tpoint_cumulative_length, which answers a TFloat for a TGeogPoint */
+	override cumulativeLength(spheroid: boolean): TFloat {
+		return super.cumulativeLength(spheroid) as TFloat;
+	}
+
+	/** MEOS: tgeo_end_value, which answers a Geography for a TGeogPoint */
+	override endValue(): Geography {
+		return super.endValue() as Geography;
+	}
+
+	/** MEOS: tpoint_get_x, which answers a TFloat for a TGeogPoint */
+	override getX(): TFloat {
+		return super.getX() as TFloat;
+	}
+
+	/** MEOS: tpoint_get_y, which answers a TFloat for a TGeogPoint */
+	override getY(): TFloat {
+		return super.getY() as TFloat;
+	}
+
+	/** MEOS: tpoint_get_z, which answers a TFloat for a TGeogPoint */
+	override getZ(): TFloat {
+		return super.getZ() as TFloat;
+	}
+
 	/** MEOS: tgeogpoint_great_circle_distance */
 	greatCircleDistance(b: Temporal): Temporal {
 		return wrapTemporal(F.tgeogpoint_great_circle_distance(this.ptr, b.ptr)) as Temporal;
+	}
+
+	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geography for a TGeogPoint */
+	override shortestline(gs: Geo | TGeo, spheroid: boolean): Geography | null {
+		return super.shortestline(gs, spheroid) as Geography | null;
+	}
+
+	/** MEOS: tpoint_speed, which answers a TFloat for a TGeogPoint */
+	override speed(spheroid: boolean): TFloat | null {
+		return super.speed(spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tgeo_start_value, which answers a Geography for a TGeogPoint */
+	override startValue(): Geography {
+		return super.startValue() as Geography;
+	}
+
+	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeogPoint */
+	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
+		return super.tdistance(gs, spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_geo, tdwithin_tgeo_tgeo, which answers a TBool for a TGeogPoint */
+	override tdwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): TBool | null {
+		return super.tdwithin(gs, dist, spheroid) as TBool | null;
+	}
+
+	/** MEOS: teq_tgeo_geo, which answers a TBool for a TGeogPoint */
+	override teq(gs: Geo | Temporal): TBool | null {
+		return super.teq(gs) as TBool | null;
+	}
+
+	/** MEOS: tpoint_tfloat_to_geomeas, which answers a Geography for a TGeogPoint */
+	override tfloatToGeomeas(measure: Temporal, segmentize: boolean = false): Geography | null {
+		return super.tfloatToGeomeas(measure, segmentize) as Geography | null;
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeogPoint */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeogPoint */
+	override tne(gs: Geo | Temporal): TBool | null {
+		return super.tne(gs) as TBool | null;
+	}
+
+	/** MEOS: tpoint_to_geomeas, which answers a Geography for a TGeogPoint */
+	override toGeomeas(segmentize: boolean): Geography {
+		return super.toGeomeas(segmentize) as Geography;
 	}
 
 	/** MEOS: tgeogpoint_to_tgeography */
@@ -17403,6 +17868,41 @@ export class TGeogPoint extends TPoint {
 	/** MEOS: tgeogpoint_to_ts2cell */
 	toTs2cell(level: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeogpoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TGeogPoint */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TGeogPoint for a TGeogPoint */
+	override tprecision(duration: Interval, torigin: TimestampTz): TGeogPoint {
+		return super.tprecision(duration, torigin) as TGeogPoint;
+	}
+
+	/** MEOS: tpoint_trajectory, which answers a Geography for a TGeogPoint */
+	override trajectory(unary_union: boolean = false): Geography {
+		return super.trajectory(unary_union) as Geography;
+	}
+
+	/** MEOS: tgeo_value, which answers a Geography for a TGeogPoint */
+	override value(): Geography {
+		return super.value() as Geography;
+	}
+
+	/** MEOS: tgeo_value_at_timestamptz, which answers a Geography for a TGeogPoint */
+	override valueAtTimestamptz(t: TimestampTz, strict: boolean): Geography | null {
+		return super.valueAtTimestamptz(t, strict) as Geography | null;
+	}
+
+	/** MEOS: tgeo_value_n, which answers a Geography for a TGeogPoint */
+	override valueN(n: number): Geography | null {
+		return super.valueN(n) as Geography | null;
+	}
+
+	/** MEOS: temporal_valueset, which answers a GeogSet for a TGeogPoint */
+	override valueset(): GeogSet {
+		return super.valueset() as GeogSet;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -17464,6 +17964,61 @@ export class TGeography extends TGeo {
 		return this.asText(15);
 	}
 
+	/** MEOS: tgeo_centroid, which answers a TGeogPoint for a TGeography */
+	override centroid(spheroid: boolean): TGeogPoint {
+		return super.centroid(spheroid) as TGeogPoint;
+	}
+
+	/** MEOS: tgeo_end_value, which answers a Geography for a TGeography */
+	override endValue(): Geography {
+		return super.endValue() as Geography;
+	}
+
+	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geography for a TGeography */
+	override shortestline(gs: Geo | TGeo, spheroid: boolean): Geography | null {
+		return super.shortestline(gs, spheroid) as Geography | null;
+	}
+
+	/** MEOS: tgeo_start_value, which answers a Geography for a TGeography */
+	override startValue(): Geography {
+		return super.startValue() as Geography;
+	}
+
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, which answers a TBool for a TGeography */
+	override tdisjoint(gs: Geo | TGeo): TBool | null {
+		return super.tdisjoint(gs) as TBool | null;
+	}
+
+	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeography */
+	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
+		return super.tdistance(gs, spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_geo, tdwithin_tgeo_tgeo, which answers a TBool for a TGeography */
+	override tdwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): TBool | null {
+		return super.tdwithin(gs, dist, spheroid) as TBool | null;
+	}
+
+	/** MEOS: teq_tgeo_geo, which answers a TBool for a TGeography */
+	override teq(gs: Geo | Temporal): TBool | null {
+		return super.teq(gs) as TBool | null;
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeography */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, which answers a TBool for a TGeography */
+	override tintersects(gs: Geo | TGeo): TBool | null {
+		return super.tintersects(gs) as TBool | null;
+	}
+
+	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeography */
+	override tne(gs: Geo | Temporal): TBool | null {
+		return super.tne(gs) as TBool | null;
+	}
+
 	/** MEOS: tgeography_to_tgeogpoint */
 	toTgeogpoint(): Temporal {
 		return wrapTemporal(F.tgeography_to_tgeogpoint(this.ptr)) as Temporal;
@@ -17472,6 +18027,41 @@ export class TGeography extends TGeo {
 	/** MEOS: tgeography_to_tgeometry */
 	toTgeometry(): Temporal {
 		return wrapTemporal(F.tgeography_to_tgeometry(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TGeography */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TGeography for a TGeography */
+	override tprecision(duration: Interval, torigin: TimestampTz): TGeography {
+		return super.tprecision(duration, torigin) as TGeography;
+	}
+
+	/** MEOS: tgeo_traversed_area, which answers a Geography for a TGeography */
+	override traversedArea(unary_union: boolean = false): Geography {
+		return super.traversedArea(unary_union) as Geography;
+	}
+
+	/** MEOS: tgeo_value, which answers a Geography for a TGeography */
+	override value(): Geography {
+		return super.value() as Geography;
+	}
+
+	/** MEOS: tgeo_value_at_timestamptz, which answers a Geography for a TGeography */
+	override valueAtTimestamptz(t: TimestampTz, strict: boolean): Geography | null {
+		return super.valueAtTimestamptz(t, strict) as Geography | null;
+	}
+
+	/** MEOS: tgeo_value_n, which answers a Geography for a TGeography */
+	override valueN(n: number): Geography | null {
+		return super.valueN(n) as Geography | null;
+	}
+
+	/** MEOS: temporal_valueset, which answers a GeogSet for a TGeography */
+	override valueset(): GeogSet {
+		return super.valueset() as GeogSet;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -17538,9 +18128,19 @@ export class TGeomPoint extends TPoint {
 		return wrapTemporalOrNull(F.bearing_tpoint_tpoint(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: tpoint_angular_difference, which answers a TFloat for a TGeomPoint */
+	override angularDifference(): TFloat | null {
+		return super.angularDifference() as TFloat | null;
+	}
+
 	/** MEOS: atouches_tpoint_geo */
 	atouches(gs: Geometry): number {
 		return F.atouches_tpoint_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: tpoint_azimuth, which answers a TFloat for a TGeomPoint */
+	override azimuth(): TFloat | null {
+		return super.azimuth() as TFloat | null;
 	}
 
 	/** MEOS: bearing_tpoint_tpoint, chosen by the arguments' types */
@@ -17549,9 +18149,99 @@ export class TGeomPoint extends TPoint {
 		return super.bearing(temp2 as Geo, arg1 as boolean);
 	}
 
+	/** MEOS: tgeo_convex_hull, which answers a Geometry for a TGeomPoint */
+	override convexHull(): Geometry {
+		return super.convexHull() as Geometry;
+	}
+
+	/** MEOS: tpoint_cumulative_length, which answers a TFloat for a TGeomPoint */
+	override cumulativeLength(spheroid: boolean): TFloat {
+		return super.cumulativeLength(spheroid) as TFloat;
+	}
+
+	/** MEOS: tgeo_end_value, which answers a Geometry for a TGeomPoint */
+	override endValue(): Geometry {
+		return super.endValue() as Geometry;
+	}
+
 	/** MEOS: etouches_tpoint_geo */
 	etouches(gs: Geometry): number {
 		return F.etouches_tpoint_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: tpoint_get_x, which answers a TFloat for a TGeomPoint */
+	override getX(): TFloat {
+		return super.getX() as TFloat;
+	}
+
+	/** MEOS: tpoint_get_y, which answers a TFloat for a TGeomPoint */
+	override getY(): TFloat {
+		return super.getY() as TFloat;
+	}
+
+	/** MEOS: tpoint_get_z, which answers a TFloat for a TGeomPoint */
+	override getZ(): TFloat {
+		return super.getZ() as TFloat;
+	}
+
+	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geometry for a TGeomPoint */
+	override shortestline(gs: Geo | TGeo, spheroid: boolean): Geometry | null {
+		return super.shortestline(gs, spheroid) as Geometry | null;
+	}
+
+	/** MEOS: tpoint_speed, which answers a TFloat for a TGeomPoint */
+	override speed(spheroid: boolean): TFloat | null {
+		return super.speed(spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tgeo_start_value, which answers a Geometry for a TGeomPoint */
+	override startValue(): Geometry {
+		return super.startValue() as Geometry;
+	}
+
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, which answers a TBool for a TGeomPoint */
+	override tdisjoint(gs: Geo | TGeo): TBool | null {
+		return super.tdisjoint(gs) as TBool | null;
+	}
+
+	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeomPoint */
+	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
+		return super.tdistance(gs, spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_geo, tdwithin_tgeo_tgeo, which answers a TBool for a TGeomPoint */
+	override tdwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): TBool | null {
+		return super.tdwithin(gs, dist, spheroid) as TBool | null;
+	}
+
+	/** MEOS: teq_tgeo_geo, which answers a TBool for a TGeomPoint */
+	override teq(gs: Geo | Temporal): TBool | null {
+		return super.teq(gs) as TBool | null;
+	}
+
+	/** MEOS: tpoint_tfloat_to_geomeas, which answers a Geometry for a TGeomPoint */
+	override tfloatToGeomeas(measure: Temporal, segmentize: boolean = false): Geometry | null {
+		return super.tfloatToGeomeas(measure, segmentize) as Geometry | null;
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeomPoint */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, which answers a TBool for a TGeomPoint */
+	override tintersects(gs: Geo | TGeo): TBool | null {
+		return super.tintersects(gs) as TBool | null;
+	}
+
+	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeomPoint */
+	override tne(gs: Geo | Temporal): TBool | null {
+		return super.tne(gs) as TBool | null;
+	}
+
+	/** MEOS: tpoint_to_geomeas, which answers a Geometry for a TGeomPoint */
+	override toGeomeas(segmentize: boolean): Geometry {
+		return super.toGeomeas(segmentize) as Geometry;
 	}
 
 	/** MEOS: tgeompoint_to_tgeogpoint */
@@ -17582,6 +18272,51 @@ export class TGeomPoint extends TPoint {
 	/** MEOS: tgeompoint_to_ts2cell */
 	toTs2cell(level: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeompoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TGeomPoint */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TGeomPoint for a TGeomPoint */
+	override tprecision(duration: Interval, torigin: TimestampTz): TGeomPoint {
+		return super.tprecision(duration, torigin) as TGeomPoint;
+	}
+
+	/** MEOS: tpoint_trajectory, which answers a Geometry for a TGeomPoint */
+	override trajectory(unary_union: boolean = false): Geometry {
+		return super.trajectory(unary_union) as Geometry;
+	}
+
+	/** MEOS: ttouches_tgeo_geo, which answers a TBool for a TGeomPoint */
+	override ttouches(gs: Geometry): TBool | null {
+		return super.ttouches(gs) as TBool | null;
+	}
+
+	/** MEOS: tpoint_twcentroid, which answers a Geometry for a TGeomPoint */
+	override twcentroid(): Geometry {
+		return super.twcentroid() as Geometry;
+	}
+
+	/** MEOS: tgeo_value, which answers a Geometry for a TGeomPoint */
+	override value(): Geometry {
+		return super.value() as Geometry;
+	}
+
+	/** MEOS: tgeo_value_at_timestamptz, which answers a Geometry for a TGeomPoint */
+	override valueAtTimestamptz(t: TimestampTz, strict: boolean): Geometry | null {
+		return super.valueAtTimestamptz(t, strict) as Geometry | null;
+	}
+
+	/** MEOS: tgeo_value_n, which answers a Geometry for a TGeomPoint */
+	override valueN(n: number): Geometry | null {
+		return super.valueN(n) as Geometry | null;
+	}
+
+	/** MEOS: temporal_valueset, which answers a GeomSet for a TGeomPoint */
+	override valueset(): GeomSet {
+		return super.valueset() as GeomSet;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -17749,6 +18484,16 @@ export class TGeometry extends TGeo {
 		throw new TypeError(`TGeometry.atouches: no overload takes these arguments`);
 	}
 
+	/** MEOS: tgeo_centroid, which answers a TGeomPoint for a TGeometry */
+	override centroid(spheroid: boolean): TGeomPoint {
+		return super.centroid(spheroid) as TGeomPoint;
+	}
+
+	/** MEOS: tgeo_convex_hull, which answers a Geometry for a TGeometry */
+	override convexHull(): Geometry {
+		return super.convexHull() as Geometry;
+	}
+
 	/** MEOS: econtains_tgeo_geo, econtains_tgeo_tgeo, chosen by the arguments' types */
 	econtains(gs: Geometry | TGeometry): number {
 		if (gs instanceof TGeometry) return this._econtains_tgeo_tgeo(gs as TGeometry);
@@ -17763,11 +18508,26 @@ export class TGeometry extends TGeo {
 		throw new TypeError(`TGeometry.ecovers: no overload takes these arguments`);
 	}
 
+	/** MEOS: tgeo_end_value, which answers a Geometry for a TGeometry */
+	override endValue(): Geometry {
+		return super.endValue() as Geometry;
+	}
+
 	/** MEOS: etouches_tgeo_geo, etouches_tgeo_tgeo, chosen by the arguments' types */
 	etouches(gs: Geometry | TGeometry): number {
 		if (gs instanceof TGeometry) return this._etouches_tgeo_tgeo(gs as TGeometry);
 		if (gs instanceof Geometry) return this._etouches_tgeo_geo(gs as Geometry);
 		throw new TypeError(`TGeometry.etouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geometry for a TGeometry */
+	override shortestline(gs: Geo | TGeo, spheroid: boolean): Geometry | null {
+		return super.shortestline(gs, spheroid) as Geometry | null;
+	}
+
+	/** MEOS: tgeo_start_value, which answers a Geometry for a TGeometry */
+	override startValue(): Geometry {
+		return super.startValue() as Geometry;
 	}
 
 	/** MEOS: tcontains_tgeo_geo, tcontains_tgeo_tgeo, chosen by the arguments' types */
@@ -17782,6 +18542,41 @@ export class TGeometry extends TGeo {
 		if (gs instanceof TGeometry) return this._tcovers_tgeo_tgeo(gs as TGeometry);
 		if (gs instanceof Geometry) return this._tcovers_tgeo_geo(gs as Geometry);
 		throw new TypeError(`TGeometry.tcovers: no overload takes these arguments`);
+	}
+
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, which answers a TBool for a TGeometry */
+	override tdisjoint(gs: Geo | TGeo): TBool | null {
+		return super.tdisjoint(gs) as TBool | null;
+	}
+
+	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeometry */
+	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
+		return super.tdistance(gs, spheroid) as TFloat | null;
+	}
+
+	/** MEOS: tdwithin_tgeo_geo, tdwithin_tgeo_tgeo, which answers a TBool for a TGeometry */
+	override tdwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): TBool | null {
+		return super.tdwithin(gs, dist, spheroid) as TBool | null;
+	}
+
+	/** MEOS: teq_tgeo_geo, which answers a TBool for a TGeometry */
+	override teq(gs: Geo | Temporal): TBool | null {
+		return super.teq(gs) as TBool | null;
+	}
+
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeometry */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, which answers a TBool for a TGeometry */
+	override tintersects(gs: Geo | TGeo): TBool | null {
+		return super.tintersects(gs) as TBool | null;
+	}
+
+	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeometry */
+	override tne(gs: Geo | Temporal): TBool | null {
+		return super.tne(gs) as TBool | null;
 	}
 
 	/** MEOS: tgeometry_to_tcbuffer */
@@ -17799,10 +18594,45 @@ export class TGeometry extends TGeo {
 		return wrapTemporal(F.tgeometry_to_tgeompoint(this.ptr)) as Temporal;
 	}
 
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TGeometry */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TGeometry for a TGeometry */
+	override tprecision(duration: Interval, torigin: TimestampTz): TGeometry {
+		return super.tprecision(duration, torigin) as TGeometry;
+	}
+
+	/** MEOS: tgeo_traversed_area, which answers a Geometry for a TGeometry */
+	override traversedArea(unary_union: boolean = false): Geometry {
+		return super.traversedArea(unary_union) as Geometry;
+	}
+
 	/** MEOS: ttouches_tgeo_tgeo, chosen by the arguments' types */
 	override ttouches(temp2: TGeometry | Geometry): Temporal | null {
 		if (temp2 instanceof TGeometry) return this._ttouches_tgeo_tgeo(temp2 as TGeometry);
 		return super.ttouches(temp2 as Geometry);
+	}
+
+	/** MEOS: tgeo_value, which answers a Geometry for a TGeometry */
+	override value(): Geometry {
+		return super.value() as Geometry;
+	}
+
+	/** MEOS: tgeo_value_at_timestamptz, which answers a Geometry for a TGeometry */
+	override valueAtTimestamptz(t: TimestampTz, strict: boolean): Geometry | null {
+		return super.valueAtTimestamptz(t, strict) as Geometry | null;
+	}
+
+	/** MEOS: tgeo_value_n, which answers a Geometry for a TGeometry */
+	override valueN(n: number): Geometry | null {
+		return super.valueN(n) as Geometry | null;
+	}
+
+	/** MEOS: temporal_valueset, which answers a GeomSet for a TGeometry */
+	override valueset(): GeomSet {
+		return super.valueset() as GeomSet;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -17953,9 +18783,19 @@ export class TH3Index extends TCellIndex {
 		return wrapTemporalOrNull(F.th3index_at_value(this.ptr, cell)) as this | null;
 	}
 
+	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TH3Index */
+	override cellArea(): TFloat {
+		return super.cellArea() as TFloat;
+	}
+
 	/** MEOS: th3index_cells_to_directed_edge */
 	cellsToDirectedEdge(dest: Temporal): this {
 		return wrapTemporal(F.th3index_cells_to_directed_edge(this.ptr, dest.ptr)) as this;
+	}
+
+	/** MEOS: tcellindex_cell_to_boundary, which answers a TGeography for a TH3Index */
+	override cellToBoundary(): TGeography {
+		return super.cellToBoundary() as TGeography;
 	}
 
 	/** MEOS: th3index_cell_to_center_child */
@@ -18038,6 +18878,11 @@ export class TH3Index extends TCellIndex {
 		return wrapTemporal(F.th3index_get_directed_edge_origin(this.ptr)) as this;
 	}
 
+	/** MEOS: tcellindex_get_resolution, which answers a TInt for a TH3Index */
+	override getResolution(): TInt {
+		return super.getResolution() as TInt;
+	}
+
 	/** MEOS: th3index_grid_distance */
 	gridDistance(dest: Temporal): Temporal {
 		return wrapTemporal(F.th3index_grid_distance(this.ptr, dest.ptr)) as Temporal;
@@ -18051,6 +18896,11 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: th3index_is_res_class_iii */
 	isResClassIii(): Temporal {
 		return wrapTemporal(F.th3index_is_res_class_iii(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tcellindex_is_valid_cell, which answers a TBool for a TH3Index */
+	override isValidCell(): TBool {
+		return super.isValidCell() as TBool;
 	}
 
 	/** MEOS: th3index_is_valid_directed_edge */
@@ -18120,6 +18970,11 @@ export class TH3Index extends TCellIndex {
 		return super.teq(cell as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TH3Index */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_th3index_h3index, tne_th3index_th3index, chosen by the arguments' types */
 	override tne(cell: H3Index | TH3Index | Temporal): Temporal | null {
 		if (cell instanceof TH3Index) return this._tne_th3index_th3index(cell as TH3Index);
@@ -18140,6 +18995,16 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: th3index_to_tgeompoint */
 	toTgeompoint(): Temporal {
 		return wrapTemporal(F.th3index_to_tgeompoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TH3Index */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TH3Index for a TH3Index */
+	override tprecision(duration: Interval, torigin: TimestampTz): TH3Index {
+		return super.tprecision(duration, torigin) as TH3Index;
 	}
 
 	/** MEOS: th3index_value */
@@ -18175,6 +19040,11 @@ export class TH3Index extends TCellIndex {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a H3IndexSet for a TH3Index */
+	override valueset(): H3IndexSet {
+		return super.valueset() as H3IndexSet;
 	}
 
 	/** MEOS: th3index_vertex_to_latlng */
@@ -18666,6 +19536,11 @@ export class TInt extends TNumber {
 		return wrapTemporal(F.tint_scale_value(this.ptr, width)) as this;
 	}
 
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TInt */
+	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
+		return super.segmDuration(duration, atleast, strict) as TBool | null;
+	}
+
 	/** MEOS: tint_shift_scale_value */
 	shiftScaleValue(shift: number, width: number): this {
 		return wrapTemporal(F.tint_shift_scale_value(this.ptr, shift, width)) as this;
@@ -18711,6 +19586,11 @@ export class TInt extends TNumber {
 		return super.tgt(i as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TInt */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tint_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
@@ -18751,6 +19631,11 @@ export class TInt extends TNumber {
 		return super.tne(i as Temporal);
 	}
 
+	/** MEOS: tnumber_to_span, which answers a IntSpan for a TInt */
+	override toSpan(): IntSpan {
+		return super.toSpan() as IntSpan;
+	}
+
 	/** MEOS: tint_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.tint_to_tbigint(this.ptr)) as Temporal;
@@ -18759,6 +19644,21 @@ export class TInt extends TNumber {
 	/** MEOS: tint_to_tfloat */
 	toTfloat(): Temporal {
 		return wrapTemporal(F.tint_to_tfloat(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TInt */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TFloat for a TInt */
+	override tprecision(duration: Interval, torigin: TimestampTz): TFloat {
+		return super.tprecision(duration, torigin) as TFloat;
+	}
+
+	/** MEOS: tnumber_trend, which answers a TInt for a TInt */
+	override trend(): TInt | null {
+		return super.trend() as TInt | null;
 	}
 
 	/** MEOS: tint_value */
@@ -18840,6 +19740,16 @@ export class TInt extends TNumber {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a IntSet for a TInt */
+	override valueset(): IntSet {
+		return super.valueset() as IntSet;
+	}
+
+	/** MEOS: tnumber_valuespans, which answers a IntSpanSet for a TInt */
+	override valuespans(): IntSpanSet {
+		return super.valuespans() as IntSpanSet;
 	}
 
 	/** MEOS: tint_value_time_boxes */
@@ -19224,6 +20134,11 @@ export class TJsonb extends TAlpha {
 		return super.teq(jb as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TJsonb */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tjsonb_jsonb, chosen by the arguments' types */
 	override tne(jb: Jsonb | Temporal): Temporal | null {
 		if (jb instanceof Jsonb) return this._tne_tjsonb_jsonb(jb as Jsonb);
@@ -19270,6 +20185,11 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.tjsonb_to_tint(this.ptr, key, null_handle)) as Temporal | null;
 	}
 
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TJsonb */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
 	/** MEOS: tjsonb_to_ttext */
 	toTtext(): Temporal {
 		return wrapTemporal(F.tjsonb_to_ttext(this.ptr)) as Temporal;
@@ -19308,6 +20228,11 @@ export class TJsonb extends TAlpha {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a JsonbSet for a TJsonb */
+	override valueset(): JsonbSet {
+		return super.valueset() as JsonbSet;
 	}
 
 	/** MEOS: tjsonb_from_base_temp */
@@ -19763,6 +20688,11 @@ export class TNpoint extends TSpatial {
 		return super.teq(np as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TNpoint */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tnpoint_npoint, chosen by the arguments' types */
 	override tne(np: Npoint | Temporal): Temporal | null {
 		if (np instanceof Npoint) return this._tne_tnpoint_npoint(np as Npoint);
@@ -19772,6 +20702,11 @@ export class TNpoint extends TSpatial {
 	/** MEOS: tnpoint_to_tgeompoint */
 	toTgeompoint(): Temporal {
 		return wrapTemporal(F.tnpoint_to_tgeompoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TNpoint */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tnpoint_trajectory */
@@ -19812,6 +20747,11 @@ export class TNpoint extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a NpointSet for a TNpoint */
+	override valueset(): NpointSet {
+		return super.valueset() as NpointSet;
 	}
 
 	/** MEOS: tnpoint_from_base_temp */
@@ -20635,6 +21575,11 @@ export class TPcpatch extends TSpatial {
 		return super.teq(pa as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPcpatch */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tpcpatch_pcpatch, chosen by the arguments' types */
 	override tne(pa: Pcpatch | Temporal): Temporal | null {
 		if (pa instanceof Pcpatch) return this._tne_tpcpatch_pcpatch(pa as Pcpatch);
@@ -20644,6 +21589,11 @@ export class TPcpatch extends TSpatial {
 	/** MEOS: tpcpatch_to_tgeometry */
 	toTgeometry(): Temporal | null {
 		return wrapTemporalOrNull(F.tpcpatch_to_tgeometry(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPcpatch */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tpcpatch_value */
@@ -20674,6 +21624,11 @@ export class TPcpatch extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a PcpatchSet for a TPcpatch */
+	override valueset(): PcpatchSet {
+		return super.valueset() as PcpatchSet;
 	}
 
 	/** MEOS: tpcpatch_from_base_temp */
@@ -20884,6 +21839,11 @@ export class TPcpoint extends TSpatial {
 		return super.teq(pt as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPcpoint */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tpcpoint_pcpoint, chosen by the arguments' types */
 	override tne(pt: Pcpoint | Temporal): Temporal | null {
 		if (pt instanceof Pcpoint) return this._tne_tpcpoint_pcpoint(pt as Pcpoint);
@@ -20893,6 +21853,11 @@ export class TPcpoint extends TSpatial {
 	/** MEOS: tpcpoint_to_tgeompoint */
 	toTgeompoint(): Temporal | null {
 		return wrapTemporalOrNull(F.tpcpoint_to_tgeompoint(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPcpoint */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tpcpoint_value */
@@ -20923,6 +21888,11 @@ export class TPcpoint extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a PcpointSet for a TPcpoint */
+	override valueset(): PcpointSet {
+		return super.valueset() as PcpointSet;
 	}
 
 	/** MEOS: tpcpoint_from_base_temp */
@@ -21336,6 +22306,11 @@ export class TPose extends TSpatial {
 		return super.teq(pose as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPose */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tpose_pose, chosen by the arguments' types */
 	override tne(pose: Pose | Temporal): Temporal | null {
 		if (pose instanceof Pose) return this._tne_tpose_pose(pose as Pose);
@@ -21345,6 +22320,16 @@ export class TPose extends TSpatial {
 	/** MEOS: tpose_to_tpoint */
 	toTpoint(): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_to_tpoint(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPose */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TPose for a TPose */
+	override tprecision(duration: Interval, torigin: TimestampTz): TPose {
+		return super.tprecision(duration, torigin) as TPose;
 	}
 
 	/** MEOS: tpose_trajectory */
@@ -21390,6 +22375,11 @@ export class TPose extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a PoseSet for a TPose */
+	override valueset(): PoseSet {
+		return super.valueset() as PoseSet;
 	}
 
 	/** MEOS: tpose_yaw */
@@ -21680,6 +22670,11 @@ export class TPoseChain extends TSpatial {
 		return super.teq(posechain as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPoseChain */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tposechain_posechain, chosen by the arguments' types */
 	override tne(posechain: PoseChain | Temporal): Temporal | null {
 		if (posechain instanceof PoseChain) return this._tne_tposechain_posechain(posechain as PoseChain);
@@ -21689,6 +22684,16 @@ export class TPoseChain extends TSpatial {
 	/** MEOS: tposechain_to_tpose */
 	toTpose(): Temporal | null {
 		return wrapTemporalOrNull(F.tposechain_to_tpose(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPoseChain */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TPoseChain for a TPoseChain */
+	override tprecision(duration: Interval, torigin: TimestampTz): TPoseChain {
+		return super.tprecision(duration, torigin) as TPoseChain;
 	}
 
 	/** MEOS: tposechain_translate */
@@ -21729,6 +22734,11 @@ export class TPoseChain extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a PoseChainSet for a TPoseChain */
+	override valueset(): PoseChainSet {
+		return super.valueset() as PoseChainSet;
 	}
 
 	/** MEOS: tposechain_from_base_temp */
@@ -21942,6 +22952,21 @@ export class TQuadbin extends TCellIndex {
 		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell)) as this | null;
 	}
 
+	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TQuadbin */
+	override cellArea(): TFloat {
+		return super.cellArea() as TFloat;
+	}
+
+	/** MEOS: tcellindex_cell_to_boundary, which answers a TGeometry for a TQuadbin */
+	override cellToBoundary(): TGeometry {
+		return super.cellToBoundary() as TGeometry;
+	}
+
+	/** MEOS: tcellindex_cell_to_point, which answers a TGeomPoint for a TQuadbin */
+	override cellToPoint(): TGeomPoint {
+		return super.cellToPoint() as TGeomPoint;
+	}
+
 	/** MEOS: tquadbin_cell_to_quadkey */
 	cellToQuadkey(): Temporal {
 		return wrapTemporal(F.tquadbin_cell_to_quadkey(this.ptr)) as Temporal;
@@ -21967,9 +22992,19 @@ export class TQuadbin extends TCellIndex {
 		return super.everNe(cell as Temporal);
 	}
 
+	/** MEOS: tcellindex_get_resolution, which answers a TInt for a TQuadbin */
+	override getResolution(): TInt {
+		return super.getResolution() as TInt;
+	}
+
 	/** MEOS: tquadbin_grid_distance */
 	gridDistance(dest: Temporal): Temporal {
 		return wrapTemporal(F.tquadbin_grid_distance(this.ptr, dest.ptr)) as Temporal;
+	}
+
+	/** MEOS: tcellindex_is_valid_cell, which answers a TBool for a TQuadbin */
+	override isValidCell(): TBool {
+		return super.isValidCell() as TBool;
 	}
 
 	/** MEOS: tquadbin_minus_value */
@@ -22024,6 +23059,11 @@ export class TQuadbin extends TCellIndex {
 		return super.teq(cell as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TQuadbin */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_tquadbin_quadbin, tne_tquadbin_tquadbin, chosen by the arguments' types */
 	override tne(cell: Quadbin | TQuadbin | Temporal): Temporal | null {
 		if (cell instanceof TQuadbin) return this._tne_tquadbin_tquadbin(cell as TQuadbin);
@@ -22034,6 +23074,16 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.tquadbin_to_tbigint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TQuadbin */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TQuadbin for a TQuadbin */
+	override tprecision(duration: Interval, torigin: TimestampTz): TQuadbin {
+		return super.tprecision(duration, torigin) as TQuadbin;
 	}
 
 	/** MEOS: tquadbin_value */
@@ -22069,6 +23119,11 @@ export class TQuadbin extends TCellIndex {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a QuadbinSet for a TQuadbin */
+	override valueset(): QuadbinSet {
+		return super.valueset() as QuadbinSet;
 	}
 
 	/** MEOS: tquadbin_from_base_temp */
@@ -22923,6 +23978,11 @@ export class TRGeometry extends TSpatial {
 		return super.teq(gs as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TRGeometry */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: trgeometry_time_boxes */
 	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean = true, border_inc: boolean = true): STBox[] {
 		const _duration = _putInterval(duration);
@@ -22964,6 +24024,16 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_to_tpose */
 	toTpose(): Temporal {
 		return wrapTemporal(F.trgeometry_to_tpose(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TRGeometry */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TRGeometry for a TRGeometry */
+	override tprecision(duration: Interval, torigin: TimestampTz): TRGeometry {
+		return super.tprecision(duration, torigin) as TRGeometry;
 	}
 
 	/** MEOS: trgeometry_translate */
@@ -23014,6 +24084,11 @@ export class TRGeometry extends TSpatial {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a PoseSet for a TRGeometry */
+	override valueset(): PoseSet {
+		return super.valueset() as PoseSet;
 	}
 
 	/** MEOS: trgeometry_yaw */
@@ -23211,6 +24286,21 @@ export class TS2Cell extends TCellIndex {
 		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell)) as this | null;
 	}
 
+	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TS2Cell */
+	override cellArea(): TFloat {
+		return super.cellArea() as TFloat;
+	}
+
+	/** MEOS: tcellindex_cell_to_boundary, which answers a TGeography for a TS2Cell */
+	override cellToBoundary(): TGeography {
+		return super.cellToBoundary() as TGeography;
+	}
+
+	/** MEOS: tcellindex_cell_to_point, which answers a TGeogPoint for a TS2Cell */
+	override cellToPoint(): TGeogPoint {
+		return super.cellToPoint() as TGeogPoint;
+	}
+
 	/** MEOS: ts2cell_cell_to_token */
 	cellToToken(): Temporal {
 		return wrapTemporal(F.ts2cell_cell_to_token(this.ptr)) as Temporal;
@@ -23236,9 +24326,19 @@ export class TS2Cell extends TCellIndex {
 		return super.everNe(cell as Temporal);
 	}
 
+	/** MEOS: tcellindex_get_resolution, which answers a TInt for a TS2Cell */
+	override getResolution(): TInt {
+		return super.getResolution() as TInt;
+	}
+
 	/** MEOS: ts2cell_grid_distance */
 	gridDistance(dest: Temporal): Temporal {
 		return wrapTemporal(F.ts2cell_grid_distance(this.ptr, dest.ptr)) as Temporal;
+	}
+
+	/** MEOS: tcellindex_is_valid_cell, which answers a TBool for a TS2Cell */
+	override isValidCell(): TBool {
+		return super.isValidCell() as TBool;
 	}
 
 	/** MEOS: ts2cell_minus_value */
@@ -23293,6 +24393,11 @@ export class TS2Cell extends TCellIndex {
 		return super.teq(cell as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TS2Cell */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tne_ts2cell_s2cell, tne_ts2cell_ts2cell, chosen by the arguments' types */
 	override tne(cell: S2CellId | TS2Cell | Temporal): Temporal | null {
 		if (cell instanceof TS2Cell) return this._tne_ts2cell_ts2cell(cell as TS2Cell);
@@ -23303,6 +24408,16 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.ts2cell_to_tbigint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TS2Cell */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: temporal_tprecision, which answers a TS2Cell for a TS2Cell */
+	override tprecision(duration: Interval, torigin: TimestampTz): TS2Cell {
+		return super.tprecision(duration, torigin) as TS2Cell;
 	}
 
 	/** MEOS: ts2cell_value */
@@ -23338,6 +24453,11 @@ export class TS2Cell extends TCellIndex {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a S2CellSet for a TS2Cell */
+	override valueset(): S2CellSet {
+		return super.valueset() as S2CellSet;
 	}
 
 	/** MEOS: ts2cell_from_base_temp */
@@ -23690,6 +24810,11 @@ export class TText extends TAlpha {
 		return F.ttext_out(this.ptr);
 	}
 
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TText */
+	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
+		return super.segmDuration(duration, atleast, strict) as TBool | null;
+	}
+
 	/** MEOS: ttext_start_value */
 	startValue(): string {
 		return F.ttext_start_value(this.ptr);
@@ -23720,6 +24845,11 @@ export class TText extends TAlpha {
 		return super.tgt(txt as Temporal);
 	}
 
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TText */
+	override time(): TsTzSpanSet {
+		return super.time() as TsTzSpanSet;
+	}
+
 	/** MEOS: tle_ttext_text, chosen by the arguments' types */
 	override tle(txt: string | Temporal): Temporal | null {
 		if (typeof txt === 'string') return this._tle_ttext_text(txt as string);
@@ -23741,6 +24871,11 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_to_tjsonb */
 	toTjsonb(): Temporal | null {
 		return wrapTemporalOrNull(F.ttext_to_tjsonb(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TText */
+	override toTstzspan(): TsTzSpan {
+		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: ttext_upper */
@@ -23776,6 +24911,11 @@ export class TText extends TAlpha {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_valueset, which answers a TextSet for a TText */
+	override valueset(): TextSet {
+		return super.valueset() as TextSet;
 	}
 
 	/** MEOS: ttext_from_base_temp */
@@ -24264,6 +25404,16 @@ export class TsTzSet extends Set {
 		return wrapSet(F.tstzset_to_dateset(this.ptr)) as Set;
 	}
 
+	/** MEOS: set_to_span, which answers a TsTzSpan for a TsTzSet */
+	override toSpan(): TsTzSpan {
+		return super.toSpan() as TsTzSpan;
+	}
+
+	/** MEOS: set_to_spanset, which answers a TsTzSpanSet for a TsTzSet */
+	override toSpanset(): TsTzSpanSet {
+		return super.toSpanset() as TsTzSpanSet;
+	}
+
 	/** MEOS: tstzset_to_stbox */
 	toStbox(): STBox {
 		return wrapSTBox(F.tstzset_to_stbox(this.ptr)) as STBox;
@@ -24719,6 +25869,11 @@ export class TsTzSpan extends Span {
 		return wrapSpan(F.tstzspan_to_datespan(this.ptr)) as Span;
 	}
 
+	/** MEOS: span_to_spanset, which answers a TsTzSpanSet for a TsTzSpan */
+	override toSpanset(): TsTzSpanSet {
+		return super.toSpanset() as TsTzSpanSet;
+	}
+
 	/** MEOS: tstzspan_to_stbox */
 	toStbox(): STBox {
 		return wrapSTBox(F.tstzspan_to_stbox(this.ptr)) as STBox;
@@ -24888,6 +26043,11 @@ export class TsTzSpanSet extends SpanSet {
 		return _takeInterval(F.tstzspanset_duration(this.ptr, boundspan))!;
 	}
 
+	/** MEOS: spanset_end_span, which answers a TsTzSpan for a TsTzSpanSet */
+	override endSpan(): TsTzSpan {
+		return super.endSpan() as TsTzSpan;
+	}
+
 	/** MEOS: tstzspanset_end_timestamptz */
 	endTimestamptz(): TimestampTz {
 		return F.tstzspanset_end_timestamptz(this.ptr);
@@ -25005,6 +26165,21 @@ export class TsTzSpanSet extends SpanSet {
 			_free(_shift);
 			_free(_duration);
 		}
+	}
+
+	/** MEOS: spanset_span, which answers a TsTzSpan for a TsTzSpanSet */
+	override span(): TsTzSpan {
+		return super.span() as TsTzSpan;
+	}
+
+	/** MEOS: spanset_span_n, which answers a TsTzSpan for a TsTzSpanSet */
+	override spanN(i: number): TsTzSpan | null {
+		return super.spanN(i) as TsTzSpan | null;
+	}
+
+	/** MEOS: spanset_start_span, which answers a TsTzSpan for a TsTzSpanSet */
+	override startSpan(): TsTzSpan {
+		return super.startSpan() as TsTzSpan;
 	}
 
 	/** MEOS: tstzspanset_start_timestamptz */

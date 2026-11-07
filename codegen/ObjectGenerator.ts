@@ -66,6 +66,8 @@ interface MethodEntry {
 	otherClass?: string;
 	/** Every SQL signature answers the receiver's own type (`answersReceiver`). */
 	answersReceiver?: boolean;
+	/** The class each receiver class gets back, where the answer is a template. */
+	returnInstantiations?: { receiverClass: string; returnClass: string }[];
 }
 interface LatticeNode {
 	kind: string;
@@ -302,6 +304,8 @@ interface Emitted {
 	helper?: boolean;
 	/** The comment above the method; the MEOS function by default. */
 	doc?: string;
+	/** The class each receiver class gets back (`returnInstantiations`). */
+	returnPairs?: { receiverClass: string; returnClass: string }[];
 }
 
 /** The TypeScript twin of #Generator in MEOS.NET's tools/objectgen.py. */
@@ -543,7 +547,7 @@ class Generator {
 		else
 			body = [...setup, ...body];
 		this.applySqlDefaults(f, decl);
-		return { fn: fname, name: oo, isStatic, params: decl, ret, body };
+		return { fn: fname, name: oo, isStatic, params: decl, ret, body, returnPairs: entry.returnInstantiations };
 	}
 
 	/**
@@ -838,7 +842,9 @@ class Generator {
 
 		own.push(...this.portableMethods(cls, own, functions));
 		own.push(...this.operatorMethods(cls, own));
+		own.push(...this.narrowingOverrides(cls, own));
 		own.sort((a, b) => (Number(a.isStatic) - Number(b.isStatic)) || a.name.localeCompare(b.name));
+		this.publicMembers.set(cls, own.filter(m => !m.isStatic && !m.helper));
 		const ownSigs = new Map<string, string>();
 		const ownStatics = new Map<string, string>();
 		for (const m of own) (m.isStatic ? ownStatics : ownSigs).set(m.name, this.sigKey(m));
@@ -874,6 +880,9 @@ class Generator {
 
 	/** class -> operator name -> what its dispatching method takes and answers. */
 	private readonly operatorSigs = new Map<string, Map<string, { params: string[][]; rets: string[] }>>();
+
+	/** class -> the instance members it declares, which #narrowingOverrides reads. */
+	private readonly publicMembers = new Map<string, Emitted[]>();
 
 	/**
 	 * The operators the model assigns the class (`classes.<C>.operators`, the
@@ -1032,9 +1041,62 @@ class Generator {
 				params: names.map((n, i) => ({ name: n, ts: types[i].join(' | '), optional: optional[i] })),
 				ret: rets.join(' | '), body,
 				doc: `MEOS: ${overloads.map(m => m.fn).join(', ')}, chosen by the arguments' types`,
+				returnPairs: this.agreedPairs(overloads),
 			} as Emitted,
 			sig: { params: types, rets },
 		};
+	}
+
+	/**
+	 * The pairs a dispatching method keeps from its overloads: a receiver class
+	 * keeps its answer only where every overload states one for it and all state
+	 * the same, so the narrowed answer is that of whichever overload is called.
+	 */
+	private agreedPairs(overloads: Emitted[]): { receiverClass: string; returnClass: string }[] | undefined {
+		if (!overloads.every(m => m.returnPairs?.length)) return undefined;
+		const answer = new Map<string, Set<string>>();
+		for (const m of overloads)
+			for (const p of m.returnPairs!)
+				answer.set(p.receiverClass, (answer.get(p.receiverClass) ?? new Set()).add(p.returnClass));
+		const kept = [...answer]
+			.filter(([r, ts]) => ts.size === 1 && overloads.every(m => m.returnPairs!.some(p => p.receiverClass === r)))
+			.map(([r, ts]) => ({ receiverClass: r, returnClass: [...ts][0] }));
+		return kept.length ? kept : undefined;
+	}
+
+	/**
+	 * The overrides narrowing what an inherited member answers in this class,
+	 * from its `returnInstantiations` in the object model: SpanSet.span answers a
+	 * Span, and on an IntSpanSet it answers an IntSpan, which the factory has
+	 * already wrapped it in, so IntSpanSet carries `override span(): IntSpan`
+	 * calling `super`. A pair narrows only where its class is below the one the
+	 * member is declared to answer, and only for a member the class does not
+	 * declare itself; the nearest ancestor declaring the member is the one read.
+	 */
+	private narrowingOverrides(cls: string, own: Emitted[]): Emitted[] {
+		const taken = new Set(own.map(m => m.name));
+		const out: Emitted[] = [];
+		for (const anc of this.m.ancestors(cls)) {
+			for (const m of this.publicMembers.get(anc) ?? []) {
+				if (taken.has(m.name)) continue;
+				taken.add(m.name);
+				const pair = m.returnPairs?.find(p => p.receiverClass === cls);
+				if (!pair) continue;
+				const members = this.members(m.ret);
+				const nullable = members.includes('null');
+				const classes = members.filter(t => t !== 'null');
+				if (classes.length !== 1 || pair.returnClass === classes[0]
+					|| !this.assignable(pair.returnClass, classes[0])) continue;
+				const ret = nullable ? `${pair.returnClass} | null` : pair.returnClass;
+				const args = m.params.map(p => p.name).join(', ');
+				out.push({
+					fn: m.fn, name: m.name, isStatic: false, params: m.params, ret,
+					body: [`return super.${m.name}(${args}) as ${ret};`],
+					doc: `MEOS: ${m.fn}, which answers a ${pair.returnClass} for a ${cls}`,
+				});
+			}
+		}
+		return out;
 	}
 
 	/** Whether a value of type `a` is one of type `b`, by the class chain. */
