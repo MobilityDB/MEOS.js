@@ -718,6 +718,11 @@ export class BigIntSet extends Set {
 		}
 	}
 
+	/** MEOS: bigint_to_set */
+	static fromBigint(i: number): BigIntSet {
+		return wrapSet(F.bigint_to_set(i)) as BigIntSet;
+	}
+
 	/** MEOS: bigintset_in */
 	static fromText(str: string): BigIntSet {
 		return BigIntSet.in(str);
@@ -1250,6 +1255,11 @@ export class BigIntSpan extends Span {
 	/** MEOS: bigintspan_width */
 	width(): number {
 		return F.bigintspan_width(this.ptr);
+	}
+
+	/** MEOS: bigint_to_span */
+	static fromBigint(i: number): BigIntSpan {
+		return wrapSpan(F.bigint_to_span(i)) as BigIntSpan;
 	}
 
 	/** MEOS: bigintspan_in */
@@ -1901,6 +1911,11 @@ export class BigIntSpanSet extends SpanSet {
 	/** MEOS: bigintspanset_width */
 	width(boundspan: boolean): number {
 		return F.bigintspanset_width(this.ptr, boundspan);
+	}
+
+	/** MEOS: bigint_to_spanset */
+	static fromBigint(i: number): BigIntSpanSet {
+		return wrapSpanSet(F.bigint_to_spanset(i)) as BigIntSpanSet;
 	}
 
 	/** MEOS: bigintspanset_in */
@@ -2697,6 +2712,11 @@ export class DateSet extends Set {
 		}
 	}
 
+	/** MEOS: date_to_set */
+	static fromDate(d: DateADT): DateSet {
+		return wrapSet(F.date_to_set(d)) as DateSet;
+	}
+
 	/** MEOS: dateset_in */
 	static fromText(str: string): DateSet {
 		return DateSet.in(str);
@@ -2921,6 +2941,11 @@ export class DateSpan extends Span {
 	/** MEOS: datespan_upper */
 	upper(): DateADT {
 		return F.datespan_upper(this.ptr);
+	}
+
+	/** MEOS: date_to_span */
+	static fromDate(d: DateADT): DateSpan {
+		return wrapSpan(F.date_to_span(d)) as DateSpan;
 	}
 
 	/** MEOS: datespan_in */
@@ -3184,6 +3209,11 @@ export class DateSpanSet extends SpanSet {
 		return F.datespanset_upper(this.ptr);
 	}
 
+	/** MEOS: date_to_spanset */
+	static fromDate(d: DateADT): DateSpanSet {
+		return wrapSpanSet(F.date_to_spanset(d)) as DateSpanSet;
+	}
+
 	/** MEOS: datespanset_in */
 	static fromText(str: string): DateSpanSet {
 		return DateSpanSet.in(str);
@@ -3423,6 +3453,11 @@ export class FloatSet extends Set {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: float_to_set */
+	static fromFloat(d: number): FloatSet {
+		return wrapSet(F.float_to_set(d)) as FloatSet;
 	}
 
 	/** MEOS: floatset_in */
@@ -3713,6 +3748,11 @@ export class FloatSpan extends Span {
 		return F.floatspan_width(this.ptr);
 	}
 
+	/** MEOS: float_to_span */
+	static fromFloat(d: number): FloatSpan {
+		return wrapSpan(F.float_to_span(d)) as FloatSpan;
+	}
+
 	/** MEOS: floatspan_in */
 	static fromText(str: string): FloatSpan {
 		return FloatSpan.in(str);
@@ -3989,6 +4029,11 @@ export class FloatSpanSet extends SpanSet {
 	/** MEOS: floatspanset_width */
 	width(boundspan: boolean): number {
 		return F.floatspanset_width(this.ptr, boundspan);
+	}
+
+	/** MEOS: float_to_spanset */
+	static fromFloat(d: number): FloatSpanSet {
+		return wrapSpanSet(F.float_to_spanset(d)) as FloatSpanSet;
 	}
 
 	/** MEOS: floatspanset_in */
@@ -4799,6 +4844,11 @@ export class Geography extends Geo {
 		return Geo.fromGeoJSON(geojson);
 	}
 
+	/** MEOS: s2cell_cell_to_geog */
+	static fromS2cellCell(cell: S2CellId): Geography | null {
+		return wrapGeoOrNull(F.s2cell_cell_to_geog(cell)) as Geography | null;
+	}
+
 	/** MEOS: geog_in */
 	static in(str: string, typmod: number): Geography {
 		return wrapGeo(F.geog_in(str, typmod)) as Geography;
@@ -5437,6 +5487,16 @@ export class Geometry extends Geo {
 		}
 	}
 
+	/** MEOS: cbufferarr_to_geom */
+	static fromCbufferarr(cbarr: Cbuffer[]): Geometry {
+		const _cbarr = _ptrArray(cbarr.map(x => x.ptr));
+		try {
+			return wrapGeo(F.cbufferarr_to_geom(_cbarr, cbarr.length)) as Geometry;
+		} finally {
+			_free(_cbarr);
+		}
+	}
+
 	/** MEOS: geom_from_hexewkb */
 	static fromHexEWKB(hexwkb: string): Geo {
 		return wrapGeo(F.geom_from_hexewkb(hexwkb)) as Geo;
@@ -5445,6 +5505,11 @@ export class Geometry extends Geo {
 	/** MEOS: geo_from_geojson */
 	static fromMFJSON(geojson: string): Geo {
 		return Geo.fromGeoJSON(geojson);
+	}
+
+	/** MEOS: quadbin_cell_to_geom */
+	static fromQuadbinCell(cell: Quadbin): Geometry {
+		return wrapGeo(F.quadbin_cell_to_geom(cell)) as Geometry;
 	}
 
 	/** MEOS: geom_in */
@@ -5590,6 +5655,11 @@ export class H3IndexSet extends SpatialSet {
 	/** MEOS: h3indexset_in */
 	static fromEWKT(str: string): H3IndexSet {
 		return H3IndexSet.in(str);
+	}
+
+	/** MEOS: h3index_to_set */
+	static fromH3index(cell: H3Index): H3IndexSet {
+		return wrapSet(F.h3index_to_set(cell)) as H3IndexSet;
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -5827,6 +5897,11 @@ export class IntSet extends Set {
 		} finally {
 			_free(_count);
 		}
+	}
+
+	/** MEOS: int_to_set */
+	static fromInt(i: number): IntSet {
+		return wrapSet(F.int_to_set(i)) as IntSet;
 	}
 
 	/** MEOS: intset_in */
@@ -6092,6 +6167,11 @@ export class IntSpan extends Span {
 		return F.intspan_width(this.ptr);
 	}
 
+	/** MEOS: int_to_span */
+	static fromInt(i: number): IntSpan {
+		return wrapSpan(F.int_to_span(i)) as IntSpan;
+	}
+
 	/** MEOS: intspan_in */
 	static fromText(str: string): IntSpan {
 		return IntSpan.in(str);
@@ -6343,6 +6423,11 @@ export class IntSpanSet extends SpanSet {
 	/** MEOS: intspanset_width */
 	width(boundspan: boolean): number {
 		return F.intspanset_width(this.ptr, boundspan);
+	}
+
+	/** MEOS: int_to_spanset */
+	static fromInt(i: number): IntSpanSet {
+		return wrapSpanSet(F.int_to_spanset(i)) as IntSpanSet;
 	}
 
 	/** MEOS: intspanset_in */
@@ -7429,6 +7514,11 @@ export class Npoint extends Value {
 	/** MEOS: npoint_in */
 	static fromEWKT(str: string): Npoint {
 		return Npoint.in(str);
+	}
+
+	/** MEOS: geompoint_to_npoint */
+	static fromGeompoint(gs: Geo, tolerance: number): Npoint | null {
+		return wrapNpointOrNull(F.geompoint_to_npoint(gs.ptr, tolerance)) as Npoint | null;
 	}
 
 	/** MEOS: npoint_from_hexwkb */
@@ -9659,6 +9749,11 @@ export class QuadbinSet extends SpatialSet {
 		return Set.fromHexWKB(hexwkb);
 	}
 
+	/** MEOS: quadbin_to_set */
+	static fromQuadbin(cell: Quadbin): QuadbinSet {
+		return wrapSet(F.quadbin_to_set(cell)) as QuadbinSet;
+	}
+
 	/** MEOS: quadbinset_in */
 	static fromText(str: string): QuadbinSet {
 		return QuadbinSet.in(str);
@@ -10520,6 +10615,11 @@ export class S2CellSet extends SpatialSet {
 	/** MEOS: set_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): Set {
 		return Set.fromHexWKB(hexwkb);
+	}
+
+	/** MEOS: s2cell_to_set */
+	static fromS2cell(cell: S2CellId): S2CellSet {
+		return wrapSet(F.s2cell_to_set(cell)) as S2CellSet;
 	}
 
 	/** MEOS: s2cellset_in */
@@ -11403,9 +11503,34 @@ export class STBox extends Box {
 		return F.stbox_zmin(this.ptr);
 	}
 
+	/** MEOS: box3d_to_stbox */
+	static fromBox3d(box: BOX3D): STBox {
+		const _box = _putBOX3D(box);
+		try {
+			return wrapSTBox(F.box3d_to_stbox(_box)) as STBox;
+		} finally {
+			_free(_box);
+		}
+	}
+
 	/** MEOS: stbox_from_wkb */
 	static fromEWKB(wkb: Uint8Array): STBox {
 		return STBox.fromWKB(wkb);
+	}
+
+	/** MEOS: h3index_to_stbox */
+	static fromH3index(cell: H3Index): STBox {
+		return wrapSTBox(F.h3index_to_stbox(cell)) as STBox;
+	}
+
+	/** MEOS: h3index_timestamptz_to_stbox */
+	static fromH3indexTimestamptz(cell: H3Index, t: TimestampTz): STBox {
+		return wrapSTBox(F.h3index_timestamptz_to_stbox(cell, t)) as STBox;
+	}
+
+	/** MEOS: h3index_tstzspan_to_stbox */
+	static fromH3indexTstzspan(cell: H3Index, s: Span): STBox {
+		return wrapSTBox(F.h3index_tstzspan_to_stbox(cell, s.ptr)) as STBox;
 	}
 
 	/** MEOS: stbox_from_hexwkb */
@@ -11418,9 +11543,44 @@ export class STBox extends Box {
 		return wrapSTBox(F.stbox_from_hexwkb(hexwkb)) as STBox;
 	}
 
+	/** MEOS: quadbin_to_stbox */
+	static fromQuadbin(cell: Quadbin): STBox {
+		return wrapSTBox(F.quadbin_to_stbox(cell)) as STBox;
+	}
+
+	/** MEOS: quadbin_timestamptz_to_stbox */
+	static fromQuadbinTimestamptz(cell: Quadbin, t: TimestampTz): STBox {
+		return wrapSTBox(F.quadbin_timestamptz_to_stbox(cell, t)) as STBox;
+	}
+
+	/** MEOS: quadbin_tstzspan_to_stbox */
+	static fromQuadbinTstzspan(cell: Quadbin, s: Span): STBox {
+		return wrapSTBox(F.quadbin_tstzspan_to_stbox(cell, s.ptr)) as STBox;
+	}
+
+	/** MEOS: s2cell_to_stbox */
+	static fromS2cell(cell: S2CellId): STBox {
+		return wrapSTBox(F.s2cell_to_stbox(cell)) as STBox;
+	}
+
+	/** MEOS: s2cell_timestamptz_to_stbox */
+	static fromS2cellTimestamptz(cell: S2CellId, t: TimestampTz): STBox {
+		return wrapSTBox(F.s2cell_timestamptz_to_stbox(cell, t)) as STBox;
+	}
+
+	/** MEOS: s2cell_tstzspan_to_stbox */
+	static fromS2cellTstzspan(cell: S2CellId, s: Span): STBox {
+		return wrapSTBox(F.s2cell_tstzspan_to_stbox(cell, s.ptr)) as STBox;
+	}
+
 	/** MEOS: stbox_in */
 	static fromText(str: string): STBox {
 		return STBox.in(str);
+	}
+
+	/** MEOS: timestamptz_to_stbox */
+	static fromTimestamptz(t: TimestampTz): STBox {
+		return wrapSTBox(F.timestamptz_to_stbox(t)) as STBox;
 	}
 
 	/** MEOS: stbox_from_wkb */
@@ -14358,14 +14518,69 @@ export class TBox extends Box {
 		return F.tbox_xmin_inc(this.ptr);
 	}
 
+	/** MEOS: bigint_to_tbox */
+	static fromBigint(i: number): TBox {
+		return wrapTBox(F.bigint_to_tbox(i)) as TBox;
+	}
+
+	/** MEOS: bigint_timestamptz_to_tbox */
+	static fromBigintTimestamptz(i: number, t: TimestampTz): TBox {
+		return wrapTBox(F.bigint_timestamptz_to_tbox(i, t)) as TBox;
+	}
+
+	/** MEOS: bigint_tstzspan_to_tbox */
+	static fromBigintTstzspan(i: number, s: Span): TBox {
+		return wrapTBox(F.bigint_tstzspan_to_tbox(i, s.ptr)) as TBox;
+	}
+
+	/** MEOS: float_to_tbox */
+	static fromFloat(d: number): TBox {
+		return wrapTBox(F.float_to_tbox(d)) as TBox;
+	}
+
+	/** MEOS: float_timestamptz_to_tbox */
+	static fromFloatTimestamptz(d: number, t: TimestampTz): TBox {
+		return wrapTBox(F.float_timestamptz_to_tbox(d, t)) as TBox;
+	}
+
+	/** MEOS: float_tstzspan_to_tbox */
+	static fromFloatTstzspan(d: number, s: Span): TBox {
+		return wrapTBox(F.float_tstzspan_to_tbox(d, s.ptr)) as TBox;
+	}
+
 	/** MEOS: tbox_from_hexwkb */
 	static fromHexWKB(hexwkb: string): TBox {
 		return wrapTBox(F.tbox_from_hexwkb(hexwkb)) as TBox;
 	}
 
+	/** MEOS: int_to_tbox */
+	static fromInt(i: number): TBox {
+		return wrapTBox(F.int_to_tbox(i)) as TBox;
+	}
+
+	/** MEOS: int_timestamptz_to_tbox */
+	static fromIntTimestamptz(i: number, t: TimestampTz): TBox {
+		return wrapTBox(F.int_timestamptz_to_tbox(i, t)) as TBox;
+	}
+
+	/** MEOS: int_tstzspan_to_tbox */
+	static fromIntTstzspan(i: number, s: Span): TBox {
+		return wrapTBox(F.int_tstzspan_to_tbox(i, s.ptr)) as TBox;
+	}
+
+	/** MEOS: numspan_timestamptz_to_tbox */
+	static fromNumspanTimestamptz(span: Span, t: TimestampTz): TBox {
+		return wrapTBox(F.numspan_timestamptz_to_tbox(span.ptr, t)) as TBox;
+	}
+
 	/** MEOS: tbox_in */
 	static fromText(str: string): TBox {
 		return TBox.in(str);
+	}
+
+	/** MEOS: timestamptz_to_tbox */
+	static fromTimestamptz(t: TimestampTz): TBox {
+		return wrapTBox(F.timestamptz_to_tbox(t)) as TBox;
 	}
 
 	/** MEOS: tbox_from_wkb */
@@ -17125,6 +17340,11 @@ export class TPoint extends TGeo {
 	/** MEOS: tpoint_from_base_temp */
 	static fromBaseTemp(gs: Geo, temp: Temporal): TPoint {
 		return wrapTemporal(F.tpoint_from_base_temp(gs.ptr, temp.ptr)) as TPoint;
+	}
+
+	/** MEOS: geomeas_to_tpoint */
+	static fromGeomeas(gs: Geo): TPoint {
+		return wrapTemporal(F.geomeas_to_tpoint(gs.ptr)) as TPoint;
 	}
 }
 
@@ -20221,6 +20441,11 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_in */
 	static fromText(str: string): TPCBox {
 		return TPCBox.in(str);
+	}
+
+	/** MEOS: tpointcloud_to_tpcbox */
+	static fromTpointcloud(temp: Temporal): TPCBox {
+		return wrapTPCBox(F.tpointcloud_to_tpcbox(temp.ptr)) as TPCBox;
 	}
 
 	/** MEOS: tpcbox_from_wkb */
@@ -23595,6 +23820,11 @@ export class TTextSeqSet extends TText {
  */
 export class Text extends Value {
 
+	/** MEOS: bool_to_text */
+	static fromBool(b: boolean): string {
+		return F.bool_to_text(b);
+	}
+
 	/** MEOS: text_hash */
 	static hash(txt: string, collid: number): number {
 		return F.text_hash(txt, collid);
@@ -24038,6 +24268,11 @@ export class TsTzSet extends Set {
 		return TsTzSet.in(str);
 	}
 
+	/** MEOS: timestamptz_to_set */
+	static fromTimestamptz(t: TimestampTz): TsTzSet {
+		return wrapSet(F.timestamptz_to_set(t)) as TsTzSet;
+	}
+
 	/** MEOS: tstzset_in */
 	static in(str: string): TsTzSet {
 		return wrapSet(F.tstzset_in(str)) as TsTzSet;
@@ -24458,6 +24693,11 @@ export class TsTzSpan extends Span {
 		return TsTzSpan.in(str);
 	}
 
+	/** MEOS: timestamptz_to_span */
+	static fromTimestamptz(t: TimestampTz): TsTzSpan {
+		return wrapSpan(F.timestamptz_to_span(t)) as TsTzSpan;
+	}
+
 	/** MEOS: tstzspan_get_bin */
 	static getBin(t: TimestampTz, duration: Interval, torigin: TimestampTz): Span {
 		const _duration = _putInterval(duration);
@@ -24729,6 +24969,11 @@ export class TsTzSpanSet extends SpanSet {
 	/** MEOS: tstzspanset_in */
 	static fromText(str: string): TsTzSpanSet {
 		return TsTzSpanSet.in(str);
+	}
+
+	/** MEOS: timestamptz_to_spanset */
+	static fromTimestamptz(t: TimestampTz): TsTzSpanSet {
+		return wrapSpanSet(F.timestamptz_to_spanset(t)) as TsTzSpanSet;
 	}
 
 	/** MEOS: tstzspanset_in */
