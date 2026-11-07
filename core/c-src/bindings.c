@@ -143,26 +143,6 @@ EMSCRIPTEN_KEEPALIVE
 void meos_free(void *ptr) { free(ptr); }
 
 /* --- Hand-written wrappers (special logic) --- */
-
-EMSCRIPTEN_KEEPALIVE
-char *temporal_as_hexwkb_w(const Temporal *temp, uint8_t variant, size_t *size_out) {
-    return temporal_as_hexwkb(temp, variant, size_out);
-}
-
-/* temporal_as_mfjson: srs "" is treated as NULL. */
-EMSCRIPTEN_KEEPALIVE
-char *temporal_as_mfjson_w(Temporal *temp, int with_bbox, int flags,
-                            int precision, const char *srs, size_t *size_out) {
-  return temporal_as_mfjson(temp, (bool) with_bbox, flags, precision,
-                             (srs && srs[0]) ? srs : NULL, size_out);
-}
-
-/* n is 0-based from JS; MEOS expects 1-based. */
-EMSCRIPTEN_KEEPALIVE
-Temporal *temporal_instant_n_w(Temporal *temp, int n) {
-  return (Temporal *) temporal_instant_n(temp, n + 1);
-}
-
 /*
  * temporal_duration returns a PostgreSQL Interval*.
  * Converted to total microseconds so JS receives a plain number.
@@ -195,96 +175,7 @@ double interval_us_free_w(Interval *iv) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * span_as_hexwkb_w(const Span * s, uint8_t variant, size_t *size_out) {
-  return span_as_hexwkb(s, variant, size_out);
-}
-
-/*
- * tstzspan_lower / tstzspan_upper - WASM32 Datum workaround.
- *
- * In WASM32 builds without USE_FLOAT8_BYVAL, TimestampTz (int64) is stored
- * in Datum as a malloc'd pointer (Datum = uintptr_t = 32 bits, too small
- * for int64).  The public tstzspan_lower() calls TimestampTzGetDatum(s->lower)
- * which in turn calls Int64GetDatum on an already-Datum value, producing a
- * double-wrapped pointer.
- *
- * We bypass the public API and directly dereference s->lower (the Datum
- * storing the pointer to the int64 timestamp) using DatumGetTimestampTz.
- * The Span struct fields lower/upper are declared in the public meos.h.
- */
-EMSCRIPTEN_KEEPALIVE
-long long tstzspan_lower_w(const Span * s) {
-  return (long long) DatumGetTimestampTz(s->lower);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long tstzspan_upper_w(const Span * s) {
-  return (long long) DatumGetTimestampTz(s->upper);
-}
-
-/*
- * span_eq / span_ne - WASM32 Datum workaround.
- *
- * span_eq() compares s1->lower != s2->lower directly (Datum equality).
- * In WASM32 this is a pointer comparison; two spans with identical timestamps
- * but separately allocated will always be unequal.  span_cmp() correctly
- * dereferences the Datum via datum_cmp(), so we delegate to it.
- */
-EMSCRIPTEN_KEEPALIVE
-int span_eq_w(const Span * s1, const Span * s2) {
-  return (span_cmp(s1, s2) == 0) ? 1 : 0;
-}
-
-EMSCRIPTEN_KEEPALIVE
-int span_ne_w(const Span * s1, const Span * s2) {
-  return (span_cmp(s1, s2) != 0) ? 1 : 0;
-}
-
-/*
- * adjacent_span_span - WASM32 Datum workaround.
- *
- * The MEOS implementation uses datum_eq() which for T_TIMESTAMPTZ does
- * `l == r` (Datum pointer equality).  In WASM32 that is always false for
- * separately created spans even if the timestamps are identical.
- *
- * We replicate the adjacency logic by directly dereferencing the Datum
- * fields of the Span structs (accessible via the public meos.h declaration).
- */
-EMSCRIPTEN_KEEPALIVE
-int adjacent_span_span_w(const Span * s1, const Span * s2) {
-  long long s1_upper = (long long) DatumGetTimestampTz(s1->upper);
-  long long s2_lower = (long long) DatumGetTimestampTz(s2->lower);
-  long long s2_upper = (long long) DatumGetTimestampTz(s2->upper);
-  long long s1_lower = (long long) DatumGetTimestampTz(s1->lower);
-
-  return (
-    (s1_upper == s2_lower && s1->upper_inc != s2->lower_inc) ||
-    (s2_upper == s1_lower && s2->upper_inc != s1->lower_inc)
-  ) ? 1 : 0;
-}
-
-EMSCRIPTEN_KEEPALIVE
 int meos_pointer_size() { return (int) sizeof(void *); }
-
-/*
- * tstzspanset_lower / tstzspanset_upper — Datum workaround (same as tstzspan).
- * ss->elems[i].lower/upper are Datums storing pointers to int64 timestamps.
- * We dereference directly via DatumGetTimestampTz to get the actual int64.
- */
-EMSCRIPTEN_KEEPALIVE
-long long tstzspanset_lower_w(const SpanSet *ss) {
-    return (long long) DatumGetTimestampTz(ss->elems[0].lower);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long tstzspanset_upper_w(const SpanSet *ss) {
-    return (long long) DatumGetTimestampTz(ss->elems[ss->count - 1].upper);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char *spanset_as_hexwkb_w(const SpanSet *ss, uint8_t variant, size_t *size_out) {
-    return spanset_as_hexwkb(ss, variant, size_out);
-}
 
 /*
  * tstzspanset_duration_us: converts the Interval* returned by
@@ -301,70 +192,6 @@ double tstzspanset_duration_us_w(const SpanSet *ss, int bound_span) {
               + (double) iv->month * 30.0 * 86400000000.0;
     free(iv);
     return us;
-}
-
-/*
- * tstzspanset_timestamptz_n — bool+result with int64.
- * The auto-generator would use 'number' for the ccall return type, truncating
- * the 64-bit timestamp. We return long long and expose it as 'bigint' in JS.
- * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
- */
-EMSCRIPTEN_KEEPALIVE
-long long tstzspanset_timestamptz_n_w(const SpanSet *ss, int n) {
-    TimestampTz r;
-    if (!tstzspanset_timestamptz_n(ss, n, &r)) return 0;
-    return (long long) r;
-}
-
-EMSCRIPTEN_KEEPALIVE
-char *set_as_hexwkb_w(const Set *s, uint8_t variant, size_t *size_out) {
-    return set_as_hexwkb(s, variant, size_out);
-}
-
-/*
- * tstzset_start_value / tstzset_end_value — return TimestampTz (int64).
- * The auto-generator would use 'number' (truncates 64-bit). We use long long
- * so the JS side can use 'bigint'.
- */
-EMSCRIPTEN_KEEPALIVE
-long long tstzset_start_value_w(const Set *s) {
-    return (long long) tstzset_start_value(s);
-}
-
-EMSCRIPTEN_KEEPALIVE
-long long tstzset_end_value_w(const Set *s) {
-    return (long long) tstzset_end_value(s);
-}
-
-/*
- * tstzset_value_n — bool+result with TimestampTz*.
- * Returns 0 if n is out of range; JS callers must bounds-check.
- * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
- */
-EMSCRIPTEN_KEEPALIVE
-long long tstzset_value_n_w(const Set *s, int n) {
-    TimestampTz r;
-    if (!tstzset_value_n(s, n, &r)) return 0;
-    return (long long) r;
-}
-
-/*
- * textset_value_n — bool+result with text*.
- * Converts the varlena text* to a plain C string so JS receives a string.
- * Returns NULL if n is out of range. n is 1-based (MEOS convention).
- */
-EMSCRIPTEN_KEEPALIVE
-char * textset_value_n_w(const Set *s, int n) {
-    text *r;
-    if (!textset_value_n(s, n, &r)) return NULL;
-    return text_to_cstring(r);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * ttext_value_n_w(const Temporal *temp, int n) {
-    text *r;
-    if (!ttext_value_n(temp, n, &r)) return NULL;
-    return text_to_cstring(r);
 }
 
 /* --- Generated wrappers --- */
@@ -438,6 +265,13 @@ long long timestamptz_in_w(const char * str, int32 typmod) {
 EMSCRIPTEN_KEEPALIVE
 char * timestamptz_out_w(long long tstz, size_t * size_out) {
   return timestamptz_out((TimestampTz) tstz, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * cstring_to_text_w(const char * str) {
+  text *_t = cstring_to_text(str);
+  if (!_t) return NULL;
+  return text_to_cstring(_t);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -991,6 +825,11 @@ char * intspanset_out_w(const SpanSet * ss, size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * set_as_hexwkb_w(const Set * s, uint8_t variant, size_t * size_out) {
+  return set_as_hexwkb(s, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * set_as_wkb_w(const Set * s, uint8_t variant, size_t * size_out) {
   return set_as_wkb(s, variant, size_out);
 }
@@ -1006,6 +845,11 @@ Set * set_from_wkb_w(const uint8_t * wkb, size_t size) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * span_as_hexwkb_w(const Span * s, uint8_t variant, size_t * size_out) {
+  return span_as_hexwkb(s, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * span_as_wkb_w(const Span * s, uint8_t variant, size_t * size_out) {
   return span_as_wkb(s, variant, size_out);
 }
@@ -1018,6 +862,11 @@ Span * span_from_hexwkb_w(const char * hexwkb) {
 EMSCRIPTEN_KEEPALIVE
 Span * span_from_wkb_w(const uint8_t * wkb, size_t size) {
   return span_from_wkb(wkb, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * spanset_as_hexwkb_w(const SpanSet * ss, uint8_t variant, size_t * size_out) {
+  return spanset_as_hexwkb(ss, variant, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1670,8 +1519,32 @@ char * textset_start_value_w(const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * textset_value_n_w(const Set * s, int n) {
+  text * r;
+  if (!textset_value_n(s, n, &r)) return NULL;
+  return text_to_cstring(r);
+}
+
+EMSCRIPTEN_KEEPALIVE
 text ** textset_values_w(const Set * s, int * count) {
   return textset_values(s, count);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_end_value_w(const Set * s) {
+  return tstzset_end_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_start_value_w(const Set * s) {
+  return tstzset_start_value(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzset_value_n_w(const Set * s, int n) {
+  TimestampTz r;
+  if (!tstzset_value_n(s, n, &r)) return 0;
+  return (long long) r;
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1685,13 +1558,55 @@ Interval * tstzspan_duration_w(const Span * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+long long tstzspan_lower_w(const Span * s) {
+  return tstzspan_lower(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspan_upper_w(const Span * s) {
+  return tstzspan_upper(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Interval * tstzspanset_duration_w(const SpanSet * ss, int boundspan) {
+  return tstzspanset_duration(ss, (bool) boundspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_end_timestamptz_w(const SpanSet * ss) {
+  return tstzspanset_end_timestamptz(ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_lower_w(const SpanSet * ss) {
+  return tstzspanset_lower(ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int tstzspanset_num_timestamps_w(const SpanSet * ss) {
   return tstzspanset_num_timestamps(ss);
 }
 
 EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_start_timestamptz_w(const SpanSet * ss) {
+  return tstzspanset_start_timestamptz(ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Set * tstzspanset_timestamps_w(const SpanSet * ss) {
   return tstzspanset_timestamps(ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_timestamptz_n_w(const SpanSet * ss, int n) {
+  TimestampTz r;
+  if (!tstzspanset_timestamptz_n(ss, n, &r)) return 0;
+  return (long long) r;
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long tstzspanset_upper_w(const SpanSet * ss) {
+  return tstzspanset_upper(ss);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1970,6 +1885,11 @@ int span_cmp_w(const Span * s1, const Span * s2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int span_eq_w(const Span * s1, const Span * s2) {
+  return (int) span_eq(s1, s2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int span_ge_w(const Span * s1, const Span * s2) {
   return (int) span_ge(s1, s2);
 }
@@ -1987,6 +1907,11 @@ int span_le_w(const Span * s1, const Span * s2) {
 EMSCRIPTEN_KEEPALIVE
 int span_lt_w(const Span * s1, const Span * s2) {
   return (int) span_lt(s1, s2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int span_ne_w(const Span * s1, const Span * s2) {
+  return (int) span_ne(s1, s2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -2082,6 +2007,11 @@ int adjacent_span_float_w(const Span * s, double d) {
 EMSCRIPTEN_KEEPALIVE
 int adjacent_span_int_w(const Span * s, int i) {
   return (int) adjacent_span_int(s, i);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int adjacent_span_span_w(const Span * s1, const Span * s2) {
+  return (int) adjacent_span_span(s1, s2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4733,6 +4663,16 @@ char * tbool_out_w(const Temporal * temp, size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char * temporal_as_hexwkb_w(const Temporal * temp, uint8_t variant, size_t * size_out) {
+  return temporal_as_hexwkb(temp, variant, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * temporal_as_mfjson_w(const Temporal * temp, int option, int flags, int precision, const char * srs, size_t * size_out) {
+  return temporal_as_mfjson(temp, option, flags, precision, srs, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * temporal_as_wkb_w(const Temporal * temp, uint8_t variant, size_t * size_out) {
   return temporal_as_wkb(temp, variant, size_out);
 }
@@ -5050,6 +4990,11 @@ SpanSet ** tbool_unnest_w(const Temporal * temp, bool ** values, int * count) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Interval * temporal_duration_w(const Temporal * temp, int boundspan) {
+  return temporal_duration(temp, (bool) boundspan);
+}
+
+EMSCRIPTEN_KEEPALIVE
 TInstant * temporal_end_instant_w(const Temporal * temp) {
   return temporal_end_instant(temp);
 }
@@ -5072,6 +5017,11 @@ uint32_t temporal_hash_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 uint64_t temporal_hash_extended_w(const Temporal * temp, uint64_t seed) {
   return temporal_hash_extended(temp, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TInstant * temporal_instant_n_w(const Temporal * temp, int n) {
+  return temporal_instant_n(temp, n);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5400,6 +5350,13 @@ char * ttext_value_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 int ttext_value_at_timestamptz_w(const Temporal * temp, long long t, int strict, text ** value) {
   return (int) ttext_value_at_timestamptz(temp, (TimestampTz) t, (bool) strict, value);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * ttext_value_n_w(const Temporal * temp, int n) {
+  text * r;
+  if (!ttext_value_n(temp, n, &r)) return NULL;
+  return text_to_cstring(r);
 }
 
 EMSCRIPTEN_KEEPALIVE

@@ -277,6 +277,11 @@ export class Collection extends MeosObject {
  */
 export class Set extends Collection {
 
+	/** MEOS: set_as_hexwkb */
+	asHexWKB(variant: number): string {
+		return F.set_as_hexwkb(this.ptr, variant);
+	}
+
 	/** MEOS: set_as_wkb */
 	asWKB(variant: number): Uint8Array {
 		return readWkb(_sizeOut => F.set_as_wkb(this.ptr, variant, _sizeOut));
@@ -750,6 +755,16 @@ export class BigIntSet extends Set {
  */
 export class Span extends Collection {
 
+	/** MEOS: adjacent_span_span */
+	private _adjacent_span_span(s2: Span): boolean {
+		return F.adjacent_span_span(this.ptr, s2.ptr);
+	}
+
+	/** MEOS: adjacent_span_spanset */
+	private _adjacent_span_spanset(ss: SpanSet): boolean {
+		return F.adjacent_span_spanset(this.ptr, ss.ptr);
+	}
+
 	/** MEOS: contained_span_span */
 	private _contained_span_span(s2: Span): boolean {
 		return F.contained_span_span(this.ptr, s2.ptr);
@@ -850,9 +865,16 @@ export class Span extends Collection {
 		return wrapSpanSetOrNull(F.union_span_spanset(this.ptr, ss.ptr)) as SpanSet | null;
 	}
 
-	/** MEOS: adjacent_span_spanset */
-	adjacent(ss: SpanSet): boolean {
-		return F.adjacent_span_spanset(this.ptr, ss.ptr);
+	/** MEOS: adjacent_span_span, adjacent_span_spanset, chosen by the arguments' types */
+	adjacent(s2: Span | SpanSet): boolean {
+		if (s2 instanceof Span) return this._adjacent_span_span(s2 as Span);
+		if (s2 instanceof SpanSet) return this._adjacent_span_spanset(s2 as SpanSet);
+		throw new TypeError(`Span.adjacent: no overload takes these arguments`);
+	}
+
+	/** MEOS: span_as_hexwkb */
+	asHexWKB(variant: number): string {
+		return F.span_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: span_as_wkb */
@@ -882,6 +904,11 @@ export class Span extends Collection {
 	/** MEOS: span_copy */
 	copy(): Span {
 		return wrapSpan(F.span_copy(this.ptr)) as Span;
+	}
+
+	/** MEOS: span_eq */
+	eq(s2: Span): boolean {
+		return F.span_eq(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: span_ge */
@@ -938,6 +965,11 @@ export class Span extends Collection {
 		if (s2 instanceof Span) return this._minus_span_span(s2 as Span);
 		if (s2 instanceof SpanSet) return this._minus_span_spanset(s2 as SpanSet);
 		throw new TypeError(`Span.minus: no overload takes these arguments`);
+	}
+
+	/** MEOS: span_ne */
+	ne(s2: Span): boolean {
+		return F.span_ne(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: overlaps_span_span, overlaps_span_spanset, chosen by the arguments' types */
@@ -1082,9 +1114,9 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: adjacent_span_bigint, chosen by the arguments' types */
-	override adjacent(i: number | SpanSet): boolean {
+	override adjacent(i: number | Span | SpanSet): boolean {
 		if (typeof i === 'number') return this._adjacent_span_bigint(i as number);
-		return super.adjacent(i as SpanSet);
+		return super.adjacent(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_out */
@@ -1403,6 +1435,11 @@ export class SpanSet extends Collection {
 		if (s instanceof Span) return this._adjacent_spanset_span(s as Span);
 		if (s instanceof SpanSet) return this._adjacent_spanset_spanset(s as SpanSet);
 		throw new TypeError(`SpanSet.adjacent: no overload takes these arguments`);
+	}
+
+	/** MEOS: spanset_as_hexwkb */
+	asHexWKB(variant: number): string {
+		return F.spanset_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: spanset_as_wkb */
@@ -2785,9 +2822,9 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: adjacent_span_date, chosen by the arguments' types */
-	override adjacent(d: DateADT | SpanSet): boolean {
+	override adjacent(d: DateADT | Span | SpanSet): boolean {
 		if (typeof d === 'number') return this._adjacent_span_date(d as DateADT);
-		return super.adjacent(d as SpanSet);
+		return super.adjacent(d as Span | SpanSet);
 	}
 
 	/** MEOS: after_span_date */
@@ -3548,9 +3585,9 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: adjacent_span_float, chosen by the arguments' types */
-	override adjacent(d: number | SpanSet): boolean {
+	override adjacent(d: number | Span | SpanSet): boolean {
 		if (typeof d === 'number') return this._adjacent_span_float(d as number);
-		return super.adjacent(d as SpanSet);
+		return super.adjacent(d as Span | SpanSet);
 	}
 
 	/** MEOS: floatspan_out */
@@ -4088,7 +4125,7 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_as_ewkb */
-	asEWKB(endian: string): Uint8Array {
+	asEWKB(endian: string | null): Uint8Array {
 		return readWkb(_sizeOut => F.geo_as_ewkb(this.ptr, endian, _sizeOut));
 	}
 
@@ -4098,12 +4135,12 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asGeoJSON(option: number, precision: number, srs: string): string {
+	asGeoJSON(option: number, precision: number, srs: string | null): string {
 		return F.geo_as_geojson(this.ptr, option, precision, srs);
 	}
 
 	/** MEOS: geo_as_hexewkb */
-	asHexEWKB(endian: string): string {
+	asHexEWKB(endian: string | null): string {
 		return F.geo_as_hexewkb(this.ptr, endian);
 	}
 
@@ -4775,7 +4812,7 @@ export class Geography extends Geo {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number, precision: number, srs: string): string {
+	asMFJSON(option: number, precision: number, srs: string | null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -5154,7 +5191,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number, precision: number, srs: string): string {
+	asMFJSON(option: number, precision: number, srs: string | null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -5992,9 +6029,9 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: adjacent_span_int, chosen by the arguments' types */
-	override adjacent(i: number | SpanSet): boolean {
+	override adjacent(i: number | Span | SpanSet): boolean {
 		if (typeof i === 'number') return this._adjacent_span_int(i as number);
-		return super.adjacent(i as SpanSet);
+		return super.adjacent(i as Span | SpanSet);
 	}
 
 	/** MEOS: intspan_out */
@@ -10194,7 +10231,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_map_algebra */
-	mapAlgebra(band: number, stat: string, pixeltype: string, extenttype: string, customextent: Raster, distancex: number, distancey: number): Raster | null {
+	mapAlgebra(band: number, stat: string, pixeltype: string | null, extenttype: string | null, customextent: Raster, distancex: number, distancey: number): Raster | null {
 		return wrapRasterOrNull(F.raster_map_algebra(this.ptr, band, stat, pixeltype, extenttype, customextent.ptr, distancex, distancey)) as Raster | null;
 	}
 
@@ -11694,6 +11731,16 @@ export class Temporal extends MeosObject {
 		return wrapTemporal(F.temporal_append_tsequence(this.ptr, seq.ptr, expand)) as Temporal;
 	}
 
+	/** MEOS: temporal_as_hexwkb */
+	asHexWKB(variant: number): string {
+		return F.temporal_as_hexwkb(this.ptr, variant);
+	}
+
+	/** MEOS: temporal_as_mfjson */
+	asMFJSON(option: number, flags: number, precision: number, srs: string | null): string {
+		return F.temporal_as_mfjson(this.ptr, option, flags, precision, srs);
+	}
+
 	/** MEOS: temporal_as_tinstant */
 	asTinstant(): Temporal {
 		return wrapTemporal(F.temporal_as_tinstant(this.ptr)) as Temporal;
@@ -11812,6 +11859,11 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_derivative */
 	derivative(): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_derivative(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: temporal_duration */
+	duration(boundspan: boolean): Interval {
+		return _takeInterval(F.temporal_duration(this.ptr, boundspan))!;
 	}
 
 	/** MEOS: temporal_dyntimewarp_distance */
@@ -11947,6 +11999,11 @@ export class Temporal extends MeosObject {
 	/** MEOS: temporal_insert */
 	insert(temp2: Temporal, connect: boolean): Temporal {
 		return wrapTemporal(F.temporal_insert(this.ptr, temp2.ptr, connect)) as Temporal;
+	}
+
+	/** MEOS: temporal_instant_n */
+	instantN(n: number): Temporal | null {
+		return wrapTemporalOrNull(F.temporal_instant_n(this.ptr, n)) as Temporal | null;
 	}
 
 	/** MEOS: temporal_instants */
@@ -22569,7 +22626,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_instant_n */
-	instantN(n: number): Temporal | null {
+	override instantN(n: number): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_instant_n(this.ptr, n)) as Temporal | null;
 	}
 
@@ -23736,6 +23793,11 @@ export class TText extends TAlpha {
 		return F.ttext_value(this.ptr);
 	}
 
+	/** MEOS: ttext_value_n */
+	valueN(n: number): string | null {
+		return F.ttext_value_n(this.ptr, n);
+	}
+
 	/** MEOS: ttext_values */
 	values(): Text[] {
 		const _count = _alloc(4);
@@ -23823,6 +23885,11 @@ export class Text extends Value {
 	/** MEOS: bool_to_text */
 	static fromBool(b: boolean): string {
 		return F.bool_to_text(b);
+	}
+
+	/** MEOS: cstring_to_text */
+	static fromCstring(str: string): string {
+		return F.cstring_to_text(str);
 	}
 
 	/** MEOS: text_hash */
@@ -24009,6 +24076,11 @@ export class TextSet extends Set {
 		return wrapSet(F.textset_upper(this.ptr)) as Set;
 	}
 
+	/** MEOS: textset_value_n */
+	valueN(n: number): string | null {
+		return F.textset_value_n(this.ptr, n);
+	}
+
 	/** MEOS: textset_values */
 	values(): Text[] {
 		const _count = _alloc(4);
@@ -24118,6 +24190,11 @@ export class TsTzSet extends Set {
 		throw new TypeError(`TsTzSet.distance: no overload takes these arguments`);
 	}
 
+	/** MEOS: tstzset_end_value */
+	endValue(): TimestampTz {
+		return F.tstzset_end_value(this.ptr);
+	}
+
 	/** MEOS: intersection_set_timestamptz, chosen by the arguments' types */
 	override intersection(t: TimestampTz | Set): Set | null {
 		if (typeof t === 'number') return this._intersection_set_timestamptz(t as TimestampTz);
@@ -24217,6 +24294,11 @@ export class TsTzSet extends Set {
 		}
 	}
 
+	/** MEOS: tstzset_start_value */
+	startValue(): TimestampTz {
+		return F.tstzset_start_value(this.ptr);
+	}
+
 	/** MEOS: tstzset_to_dateset */
 	toDateset(): Set {
 		return wrapSet(F.tstzset_to_dateset(this.ptr)) as Set;
@@ -24241,6 +24323,11 @@ export class TsTzSet extends Set {
 	override union(t: TimestampTz | Set): Set | null {
 		if (typeof t === 'number') return this._union_set_timestamptz(t as TimestampTz);
 		return super.union(t as Set);
+	}
+
+	/** MEOS: tstzset_value_n */
+	valueN(n: number): TimestampTz {
+		return F.tstzset_value_n(this.ptr, n);
 	}
 
 	/** MEOS: tstzset_values */
@@ -24446,11 +24533,11 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: adjacent_span_timestamptz, adjacent_tstzspan_tbox, adjacent_tstzspan_temporal, chosen by the arguments' types */
-	override adjacent(t: TimestampTz | TBox | Temporal | SpanSet): boolean {
+	override adjacent(t: TimestampTz | TBox | Temporal | Span | SpanSet): boolean {
 		if (t instanceof TBox) return this._adjacent_tstzspan_tbox(t as TBox);
 		if (t instanceof Temporal) return this._adjacent_tstzspan_temporal(t as Temporal);
 		if (typeof t === 'number') return this._adjacent_span_timestamptz(t as TimestampTz);
-		return super.adjacent(t as SpanSet);
+		return super.adjacent(t as Span | SpanSet);
 	}
 
 	/** MEOS: after_span_timestamptz, after_tstzspan_tbox, after_tstzspan_temporal, chosen by the arguments' types */
@@ -24537,6 +24624,11 @@ export class TsTzSpan extends Span {
 	override intersection(t: TimestampTz | Span | SpanSet): Span | null | SpanSet {
 		if (typeof t === 'number') return this._intersection_span_timestamptz(t as TimestampTz);
 		return super.intersection(t as Span | SpanSet);
+	}
+
+	/** MEOS: tstzspan_lower */
+	lower(): TimestampTz {
+		return F.tstzspan_lower(this.ptr);
 	}
 
 	/** MEOS: minus_span_timestamptz, chosen by the arguments' types */
@@ -24688,6 +24780,11 @@ export class TsTzSpan extends Span {
 		return super.union(t as Span | SpanSet);
 	}
 
+	/** MEOS: tstzspan_upper */
+	upper(): TimestampTz {
+		return F.tstzspan_upper(this.ptr);
+	}
+
 	/** MEOS: tstzspan_in */
 	static fromText(str: string): TsTzSpan {
 		return TsTzSpan.in(str);
@@ -24826,10 +24923,25 @@ export class TsTzSpanSet extends SpanSet {
 		throw new TypeError(`TsTzSpanSet.distance: no overload takes these arguments`);
 	}
 
+	/** MEOS: tstzspanset_duration */
+	duration(boundspan: boolean): Interval {
+		return _takeInterval(F.tstzspanset_duration(this.ptr, boundspan))!;
+	}
+
+	/** MEOS: tstzspanset_end_timestamptz */
+	endTimestamptz(): TimestampTz {
+		return F.tstzspanset_end_timestamptz(this.ptr);
+	}
+
 	/** MEOS: intersection_spanset_timestamptz, chosen by the arguments' types */
 	override intersection(t: TimestampTz | Span | SpanSet): SpanSet | null {
 		if (typeof t === 'number') return this._intersection_spanset_timestamptz(t as TimestampTz);
 		return super.intersection(t as Span | SpanSet);
+	}
+
+	/** MEOS: tstzspanset_lower */
+	lower(): TimestampTz {
+		return F.tstzspanset_lower(this.ptr);
 	}
 
 	/** MEOS: minus_spanset_timestamptz, chosen by the arguments' types */
@@ -24935,9 +25047,19 @@ export class TsTzSpanSet extends SpanSet {
 		}
 	}
 
+	/** MEOS: tstzspanset_start_timestamptz */
+	startTimestamptz(): TimestampTz {
+		return F.tstzspanset_start_timestamptz(this.ptr);
+	}
+
 	/** MEOS: tstzspanset_timestamps */
 	timestamps(): Set {
 		return wrapSet(F.tstzspanset_timestamps(this.ptr)) as Set;
+	}
+
+	/** MEOS: tstzspanset_timestamptz_n */
+	timestamptzN(n: number): TimestampTz {
+		return F.tstzspanset_timestamptz_n(this.ptr, n);
 	}
 
 	/** MEOS: tstzspanset_to_datespanset */
@@ -24964,6 +25086,11 @@ export class TsTzSpanSet extends SpanSet {
 	override union(t: TimestampTz | Span | SpanSet): SpanSet | null {
 		if (typeof t === 'number') return this._union_spanset_timestamptz(t as TimestampTz);
 		return super.union(t as Span | SpanSet);
+	}
+
+	/** MEOS: tstzspanset_upper */
+	upper(): TimestampTz {
+		return F.tstzspanset_upper(this.ptr);
 	}
 
 	/** MEOS: tstzspanset_in */

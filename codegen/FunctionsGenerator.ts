@@ -51,7 +51,7 @@ interface IdlFunction {
 	family: string;
 	returnType: ReturnType;
 	params: Param[];
-	shape?: { outParams?: string[] };
+	shape?: { outParams?: string[]; nullable?: string[] };
 }
 interface IdlEnum {
 	name: string;
@@ -90,16 +90,13 @@ interface Idl {
  *     meos_initialize_error_handler take C function-pointer arguments that
  *     Emscripten cannot marshal automatically.
  *
- *   - Special-logic wrappers: functions whose JS-facing behaviour differs
- *     non-trivially from the raw C signature:
- *       temporal_as_hexwkb  hides size_out
- *       temporal_as_mfjson  converts an empty srs string to a C NULL pointer
- *       temporal_instant_n  adjusts from 0-based JS indexing to 1-based MEOS
- *       temporal_duration   returns Interval* — re-exposed as
- *                           temporal_duration_us (total microseconds) instead
  *
- *   - PostgreSQL text utilities: cstring_to_text / text_to_cstring are used
- *     internally by the generated C wrappers and have no meaningful JS surface.
+ * Every other public function is generated: a `char *` with its size is read
+ * for that size, a NULL a string parameter accepts comes from the catalog's
+ * `shape.nullable`, a `text *` MEOS writes beside a `bool` is a string or null,
+ * and an index is MEOS's own, 1-based. The template keeps only helpers that are
+ * no MEOS function (temporal_duration_us, interval_us_free,
+ * tstzspanset_duration_us), which the classes of core/types call.
  */
 const MANUAL_FUNCTIONS = new Set([
 	'meos_initialize',
@@ -110,49 +107,6 @@ const MANUAL_FUNCTIONS = new Set([
 	'meos_finalize_ways',
 	'meos_error',
 	'meos_initialize_error_handler',
-	'temporal_as_hexwkb',
-	'temporal_as_mfjson',
-	'temporal_instant_n',
-	'temporal_duration',
-	'cstring_to_text',
-	'text_to_cstring',
-	// WASM32 Datum workarounds: int64 is stored by-reference in WASM32
-	// (no USE_FLOAT8_BYVAL), so these need custom C wrappers that
-	// dereference the Datum pointer to get the actual int64 value.
-	'tstzspan_lower',
-	'tstzspan_upper',
-	'span_eq',
-	'span_ne',
-	'adjacent_span_span',
-	// span_as_hexwkb requires a valid size_t* — custom wrapper collapses it.
-	'span_as_hexwkb',
-	// SpanSet Datum workarounds: same int64-by-reference issue as tstzspan.
-	'tstzspanset_lower',
-	'tstzspanset_upper',
-	// spanset_as_hexwkb requires a valid size_t* — custom wrapper collapses it.
-	'spanset_as_hexwkb',
-	// tstzspanset_duration returns Interval*; custom wrapper converts to microseconds.
-	'tstzspanset_duration',
-	// tstzspanset_timestamptz_n uses bool+result pattern with int64; custom wrapper.
-	'tstzspanset_timestamptz_n',
-	// tstzspanset_start/end_timestamptz return TimestampTz (int64); suppress to avoid
-	// truncation — callers use tstzspanset_lower/upper instead.
-	'tstzspanset_start_timestamptz',
-	'tstzspanset_end_timestamptz',
-	// set_as_hexwkb has int* size_out — the auto-generated 3-arg C wrapper is used;
-	// the TS wrapper allocates size_out via _malloc and calls the 3-arg C function.
-	'set_as_hexwkb',
-	// tstzset start/end value return TimestampTz (int64); suppress to avoid truncation.
-	'tstzset_start_value',
-	'tstzset_end_value',
-	// tstzset_value_n uses bool+result pattern with int64; custom wrapper.
-	'tstzset_value_n',
-	// textset_value_n / ttext_value_n return text* (PostgreSQL varlena); custom wrapper converts to cstring.
-	'textset_value_n',
-	'ttext_value_n',
-	// Declared in MEOS headers but not implemented in libmeos.a.
-	'tfloat_avg_value',
-	'geog_from_binary',
 ]);
 
 /**
@@ -422,10 +376,16 @@ function detectBoolResult(fn: IdlFunction): BoolResultInfo | null {
 	// Double-pointer case: bool fn(..., T **result) -> wrapper returns T*
 	if (clean(rp.canonical).includes('**')) {
 		const ptrType = clean(rp.cType).replace(/\*$/, '').trim();
+		const result = types.mapPointee(rp, where);
+		// A `text *` MEOS writes is a string to the caller, converted by the C
+		// wrapper as a `text *` return is, and absent where MEOS answers false.
+		if (result.kind === 'text') {
+			return { resultParam: rp, resultBaseType: ptrType, result, cWrapRet: 'char *', tsWrapRet: 'string | null' };
+		}
 		return {
 			resultParam: rp,
 			resultBaseType: ptrType,
-			result: types.mapPointee(rp, where),
+			result,
 			cWrapRet: ptrType,
 			tsWrapRet: 'Ptr',
 		};
@@ -605,7 +565,8 @@ function generateCWrapper(fn: IdlFunction): string {
 			.join(', ');
 		const zeroVal = cWrapRet === 'double' ? '0.0' : cWrapRet.endsWith('*') ? 'NULL' : '0';
 		let castRet = 'r';
-		if (cWrapRet === 'long long') castRet = '(long long) r';
+		if (result.kind === 'text') castRet = 'text_to_cstring(r)';
+		else if (cWrapRet === 'long long') castRet = '(long long) r';
 		else if (result.kind === 'bool') castRet = '(int) r';
 		const lines = [
 			'EMSCRIPTEN_KEEPALIVE',
@@ -660,7 +621,7 @@ function generateCWrapper(fn: IdlFunction): string {
 function generateSizedStringWrapper(fn: IdlFunction, sizeOut: string): string {
 	const params = fn.params
 		.filter(p => p.name !== sizeOut)
-		.map(p => `${safeName(p.name)}: ${tsType(argOf(fn, p))}`)
+		.map(p => `${safeName(p.name)}: ${paramTs(fn, p)}`)
 		.join(', ');
 	const argTypes = fn.params
 		.map(p => {
@@ -727,6 +688,17 @@ function emRetType(m: Mapped): EmType {
  *   a slot `typedef`   -> that name    (alias for bigint over 64 bits, e.g. H3Index)
  *   every other scalar -> number
  */
+/**
+ * The TypeScript type of a parameter: its slot's, admitting null for a string
+ * the catalog states MEOS accepts as NULL (`shape.nullable`, the `srs` of
+ * temporal_as_mfjson). ccall passes a null string as a NULL pointer.
+ */
+function paramTs(fn: IdlFunction, p: Param): string {
+	const m = argOf(fn, p);
+	const nullable = (m.kind === 'string' || m.kind === 'text') && (fn.shape?.nullable ?? []).includes(p.name);
+	return nullable ? `${tsType(m)} | null` : tsType(m);
+}
+
 function tsType(m: Mapped): string {
 	return m.ts;
 }
@@ -843,7 +815,7 @@ function generateTsWrapper(fn: IdlFunction): string {
 		p => p !== resultParam && !OUTPUT_SIZE_PARAMS.has(p.name)
 	);
 	const params = visible
-		.map(p => `${safeName(p.name)}: ${tsType(argOf(fn, p))}`)
+		.map(p => `${safeName(p.name)}: ${paramTs(fn, p)}`)
 		.join(', ');
 	const argTypes = `[${visible
 		.map(p => {
@@ -862,7 +834,14 @@ function generateTsWrapper(fn: IdlFunction): string {
 	if (boolResult) {
 		const { result, tsWrapRet } = boolResult;
 		const lines = [`export function ${fn.name}(${params}): ${tsWrapRet} {`];
-		if (tsWrapRet === 'Ptr') {
+		if (tsWrapRet === 'string | null') {
+			// The string the C wrapper allocates is read and freed; NULL is absent.
+			lines.push(`\tconst _p = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
+			lines.push(`\tcheckMeosError();`);
+			lines.push(`\treturn takeString(_p);`);
+			lines.push('}');
+			return lines.join('\n');
+		} else if (tsWrapRet === 'Ptr') {
 			lines.push(`\tconst _r = callPtr('${fn.name}_w', ${argTypes}, ${argVals});`);
 		} else if (tsWrapRet === 'boolean') {
 			lines.push(
@@ -1006,7 +985,7 @@ export function emittedSignatures(idl: Idl): Map<string, WrapperSignature> {
 		);
 		const params = visible.map(p => {
 			const m = argOf(fn, p);
-			return { name: p.name, tsName: safeName(p.name), ts: m.ts, canonical: p.canonical, kind: m.kind };
+			return { name: p.name, tsName: safeName(p.name), ts: paramTs(fn, p), canonical: p.canonical, kind: m.kind };
 		});
 		if (boolResult) {
 			out.set(fn.name, {

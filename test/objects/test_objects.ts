@@ -5,6 +5,8 @@ import {
 	FloatSpan,
 	IntSet,
 	TBox,
+	TextSet,
+	TsTzSpan,
 	IntSpan,
 	IntSpanSet,
 	Temporal,
@@ -193,5 +195,41 @@ describe('generated object layer: constructors from base values', () => {
 		assert.equal(s.toString(), '{3}');
 		using f = FloatSpan.fromFloat(2.5);
 		assert.equal(f.toString(), '[2.5, 2.5]');
+	});
+});
+
+describe('generated object layer: the wrappers the flat surface no longer writes by hand', () => {
+	it('reads the bounds of a timestamptz span', () => {
+		using s = TsTzSpan.in(`[${T0}, ${T2})`);
+		using t = TFloat.in(`1@${T0}`);
+		assert.equal(s.lower(), t.startTimestamptz());
+		assert.ok(s.upper() > s.lower());
+	});
+
+	it('compares and tells the adjacency of spans by their bounds', () => {
+		using a = TsTzSpan.in(`[${T0}, ${T1})`);
+		using b = TsTzSpan.in(`[${T0}, ${T1})`);
+		using c = TsTzSpan.in(`[${T1}, ${T2})`);
+		assert.equal(a.eq(b), true);
+		assert.equal(a.adjacent(c), true);
+	});
+
+	it('answers the n-th text of a set, or null past its end', () => {
+		using s = TextSet.in('{"a", "b"}');
+		assert.equal(s.valueN(1), 'a');
+		assert.equal(s.valueN(3), null);
+	});
+
+	it('writes hex WKB and MF-JSON, with no SRS for a null one', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using back = Temporal.fromHexWKB(t.asHexWKB(0));
+		assert.equal(back.toString(), t.toString());
+		assert.ok(t.asMFJSON(0, 3, 6, null).includes('"MovingFloat"'));
+	});
+
+	it('answers the n-th instant at the index MEOS counts from 1', () => {
+		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using second = t.instantN(2);
+		assert.equal(second!.toString(), `3@${T2}`);
 	});
 });

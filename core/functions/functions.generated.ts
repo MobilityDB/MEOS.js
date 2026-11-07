@@ -119,32 +119,6 @@ export function readString(write: (sizeOut: Ptr) => Ptr): string {
 	}
 }
 
-/** Hex WKB of the given variant. */
-export function temporal_as_hexwkb(temp: Ptr, variant: number): string {
-	return readString(_sizeOut => callPtr(
-		'temporal_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()],
-		[ptrArgVal(temp), variant, ptrArgVal(_sizeOut)]
-	));
-}
-
-/** Pass empty string for srs to use NULL. */
-export function temporal_as_mfjson(
-	temp: Ptr, withBbox: boolean, flags: number, precision: number, srs: string
-): string {
-	return readString(_sizeOut => callPtr(
-		'temporal_as_mfjson_w',
-		[ptrArgType(), 'number', 'number', 'number', 'string', ptrArgType()],
-		[ptrArgVal(temp), withBbox ? 1 : 0, flags, precision, srs, ptrArgVal(_sizeOut)]
-	));
-}
-
-/** 0-based index (MEOS is 1-based internally). */
-export function temporal_instant_n(temp: Ptr, n: number): Ptr {
-	const _r = callPtr('temporal_instant_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
-	checkMeosError();
-	return _r;
-}
-
 /** Duration as total microseconds (month ≈ 30 days). */
 export function temporal_duration_us(temp: Ptr, ignoreGaps: boolean): number {
 	const _r = call<number>(
@@ -163,82 +137,6 @@ export function interval_us_free(iv: Ptr): number {
 	return _r;
 }
 
-/** Serialise a Span to hex-encoded WKB. */
-export function span_as_hexwkb(s: Ptr, variant: number): string {
-	return readString(_sizeOut => callPtr(
-		'span_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]
-	));
-}
-
-/*
- * tstzspan_lower / tstzspan_upper - Datum workaround.
- * The C wrappers dereference the Int64GetDatum pointer and return the
- * actual microsecond timestamp as long long (i64).
- * ccall returns i64 as BigInt; we convert to JS number (safe for dates
- * within ~285 years of the 2000-01-01 epoch).
- */
-export function tstzspan_lower(s: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzspan_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-export function tstzspan_upper(s: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzspan_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-/*
- * span_eq / span_ne - Datum workaround.
- * The C wrappers use span_cmp() which correctly dereferences Datum.
- */
-export function span_eq(s1: Ptr, s2: Ptr): boolean {
-	const _r = call<number>('span_eq_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
-	checkMeosError();
-	return _r !== 0;
-}
-
-export function span_ne(s1: Ptr, s2: Ptr): boolean {
-	const _r = call<number>('span_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
-	checkMeosError();
-	return _r !== 0;
-}
-
-/*
- * adjacent_span_span - Datum workaround.
- * The C wrapper uses dereferenced timestamp values instead of datum_eq().
- */
-export function adjacent_span_span(s1: Ptr, s2: Ptr): boolean {
-	const _r = call<number>('adjacent_span_span_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]);
-	checkMeosError();
-	return _r !== 0;
-}
-
-/*
- * tstzspanset_lower / tstzspanset_upper - Datum workaround (same as tstzspan).
- * ss->elems[i].lower/upper are Datums storing pointers to int64 timestamps.
- * We dereference directly via DatumGetTimestampTz.
- */
-export function tstzspanset_lower(ss: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzspanset_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-export function tstzspanset_upper(ss: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzspanset_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-/** Serialise a SpanSet to hex-encoded WKB. */
-export function spanset_as_hexwkb(ss: Ptr, variant: number): string {
-	return readString(_sizeOut => callPtr(
-		'spanset_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ss), variant, ptrArgVal(_sizeOut)]
-	));
-}
-
 /** Duration of a TsTzSpanSet as total microseconds (month ≈ 30 days). */
 export function tstzspanset_duration_us(ss: Ptr, boundSpan: boolean): number {
 	const _r = call<number>(
@@ -250,67 +148,20 @@ export function tstzspanset_duration_us(ss: Ptr, boundSpan: boolean): number {
 	return _r;
 }
 
-/*
- * tstzspanset_timestamptz_n - bool+result with int64.
- * Returns 0 if n is out of range; JS callers must bounds-check.
- * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
+/**
+ * The C string a wrapper allocates, read and freed: what MEOS answers through
+ * a `text **` beside a `bool`, which the C wrapper converts with text_to_cstring.
+ * A NULL pointer is the answer MEOS did not find, so it answers null where
+ * ccall's 'string' return would answer ''.
  */
-export function tstzspanset_timestamptz_n(ss: Ptr, n: number): TimestampTz {
-	const _r = call<bigint>('tstzspanset_timestamptz_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(ss), n]);
-	checkMeosError();
-	return Number(_r);
-}
-
-/** Serialise a Set to hex-encoded WKB. */
-export function set_as_hexwkb(s: Ptr, variant: number): string {
-	return readString(_sizeOut => callPtr(
-		'set_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]
-	));
-}
-
-export function tstzset_start_value(s: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-export function tstzset_end_value(s: Ptr): TimestampTz {
-	const _r = call<bigint>('tstzset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]);
-	checkMeosError();
-	return Number(_r);
-}
-
-/*
- * tstzset_value_n — bool+result with TimestampTz (int64).
- * n is 1-based (MEOS convention); the TypeScript class converts from 0-based.
- * Returns 0 if n is out of range; callers must bounds-check.
- */
-export function tstzset_value_n(s: Ptr, n: number): TimestampTz {
-	const _r = call<bigint>('tstzset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
-	checkMeosError();
-	return Number(_r);
-}
-
-/*
- * textset_value_n — bool+result with text* (varlena).
- * The C wrapper converts text* to cstring, so JS receives a plain string.
- * Returns null if n is out of range. n is 1-based (MEOS convention).
- */
-export function textset_value_n(s: Ptr, n: number): string | null {
-	const _r = call<string>('textset_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
-	checkMeosError();
-	return _r ?? null;
-}
-
-/*
- * ttext_value_n — bool+result with text* (varlena).
- * The C wrapper converts text* to cstring, so JS receives a plain string.
- * Returns null if n is out of range. n is 1-based (MEOS convention).
- */
-export function ttext_value_n(temp: Ptr, n: number): string | null {
-	const _r = call<string>('ttext_value_n_w', 'string', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
-	checkMeosError();
-	return _r ?? null;
+export function takeString(ptr: Ptr): string | null {
+	if (!ptr) return null;
+	const mod = getModule();
+	try {
+		return mod.UTF8ToString(ptr);
+	} finally {
+		(mod._meos_free as (p: bigint) => void)(BigInt(ptr));
+	}
 }
 
 // --- Generated wrappers ---
@@ -391,6 +242,12 @@ export function timestamptz_in(str: string, typmod: number): TimestampTz {
 
 export function timestamptz_out(tstz: TimestampTz): string {
 	return readString(_sizeOut => callPtr('timestamptz_out_w', ['bigint', ptrArgType()], [BigInt(tstz), ptrArgVal(_sizeOut)]));
+}
+
+export function cstring_to_text(str: string): string {
+	const _r = call<string>('cstring_to_text_w', 'string', ['string'], [str]);
+	checkMeosError();
+	return _r;
 }
 
 export function text_in(str: string): string {
@@ -986,6 +843,10 @@ export function intspanset_out(ss: Ptr): string {
 	return readString(_sizeOut => callPtr('intspanset_out_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ss), ptrArgVal(_sizeOut)]));
 }
 
+export function set_as_hexwkb(s: Ptr, variant: number): string {
+	return readString(_sizeOut => callPtr('set_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]));
+}
+
 export function set_as_wkb(s: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('set_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -1004,6 +865,10 @@ export function set_from_wkb(wkb: Ptr, size: number): Ptr {
 	return _r;
 }
 
+export function span_as_hexwkb(s: Ptr, variant: number): string {
+	return readString(_sizeOut => callPtr('span_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(_sizeOut)]));
+}
+
 export function span_as_wkb(s: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('span_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(s), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -1020,6 +885,10 @@ export function span_from_wkb(wkb: Ptr, size: number): Ptr {
 	const _r = callPtr('span_from_wkb_w', [ptrArgType(), 'bigint'], [ptrArgVal(wkb), BigInt(size)]);
 	checkMeosError();
 	return _r;
+}
+
+export function spanset_as_hexwkb(ss: Ptr, variant: number): string {
+	return readString(_sizeOut => callPtr('spanset_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(ss), variant, ptrArgVal(_sizeOut)]));
 }
 
 export function spanset_as_wkb(ss: Ptr, variant: number, size_out: Ptr): Ptr {
@@ -1776,8 +1645,32 @@ export function textset_start_value(s: Ptr): string {
 	return _r;
 }
 
+export function textset_value_n(s: Ptr, n: number): string | null {
+	const _p = callPtr('textset_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(s), n]);
+	checkMeosError();
+	return takeString(_p);
+}
+
 export function textset_values(s: Ptr, count: Ptr): Ptr {
 	const _r = callPtr('textset_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(count)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzset_end_value(s: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzset_end_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzset_start_value(s: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzset_start_value_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzset_value_n(s: Ptr, n: number): TimestampTz {
+	const _r = Number(call<bigint>('tstzset_value_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(s), n]));
 	checkMeosError();
 	return _r;
 }
@@ -1794,14 +1687,62 @@ export function tstzspan_duration(s: Ptr): Ptr {
 	return _r;
 }
 
+export function tstzspan_lower(s: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspan_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspan_upper(s: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspan_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(s)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_duration(ss: Ptr, boundspan: boolean): Ptr {
+	const _r = callPtr('tstzspanset_duration_w', [ptrArgType(), 'number'], [ptrArgVal(ss), boundspan ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_end_timestamptz(ss: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspanset_end_timestamptz_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_lower(ss: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspanset_lower_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
+	checkMeosError();
+	return _r;
+}
+
 export function tstzspanset_num_timestamps(ss: Ptr): number {
 	const _r = call<number>('tstzspanset_num_timestamps_w', 'number', [ptrArgType()], [ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
 
+export function tstzspanset_start_timestamptz(ss: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspanset_start_timestamptz_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
+	checkMeosError();
+	return _r;
+}
+
 export function tstzspanset_timestamps(ss: Ptr): Ptr {
 	const _r = callPtr('tstzspanset_timestamps_w', [ptrArgType()], [ptrArgVal(ss)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_timestamptz_n(ss: Ptr, n: number): TimestampTz {
+	const _r = Number(call<bigint>('tstzspanset_timestamptz_n_w', 'bigint', [ptrArgType(), 'number'], [ptrArgVal(ss), n]));
+	checkMeosError();
+	return _r;
+}
+
+export function tstzspanset_upper(ss: Ptr): TimestampTz {
+	const _r = Number(call<bigint>('tstzspanset_upper_w', 'bigint', [ptrArgType()], [ptrArgVal(ss)]));
 	checkMeosError();
 	return _r;
 }
@@ -2136,6 +2077,12 @@ export function span_cmp(s1: Ptr, s2: Ptr): number {
 	return _r;
 }
 
+export function span_eq(s1: Ptr, s2: Ptr): boolean {
+	const _r = call<number>('span_eq_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
 export function span_ge(s1: Ptr, s2: Ptr): boolean {
 	const _r = call<number>('span_ge_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
 	checkMeosError();
@@ -2156,6 +2103,12 @@ export function span_le(s1: Ptr, s2: Ptr): boolean {
 
 export function span_lt(s1: Ptr, s2: Ptr): boolean {
 	const _r = call<number>('span_lt_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function span_ne(s1: Ptr, s2: Ptr): boolean {
+	const _r = call<number>('span_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -2270,6 +2223,12 @@ export function adjacent_span_float(s: Ptr, d: number): boolean {
 
 export function adjacent_span_int(s: Ptr, i: number): boolean {
 	const _r = call<number>('adjacent_span_int_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(s), i]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function adjacent_span_span(s1: Ptr, s2: Ptr): boolean {
+	const _r = call<number>('adjacent_span_span_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s1), ptrArgVal(s2)]) !== 0;
 	checkMeosError();
 	return _r;
 }
@@ -5412,13 +5371,21 @@ export function tbool_out(temp: Ptr): string {
 	return readString(_sizeOut => callPtr('tbool_out_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(_sizeOut)]));
 }
 
+export function temporal_as_hexwkb(temp: Ptr, variant: number): string {
+	return readString(_sizeOut => callPtr('temporal_as_hexwkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), variant, ptrArgVal(_sizeOut)]));
+}
+
+export function temporal_as_mfjson(temp: Ptr, option: number, flags: number, precision: number, srs: string | null): string {
+	return readString(_sizeOut => callPtr('temporal_as_mfjson_w', [ptrArgType(), 'number', 'number', 'number', 'string', ptrArgType()], [ptrArgVal(temp), option, flags, precision, srs, ptrArgVal(_sizeOut)]));
+}
+
 export function temporal_as_wkb(temp: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('temporal_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), variant, ptrArgVal(size_out)]);
 	checkMeosError();
 	return _r;
 }
 
-export function wkb_variant_from_endian(endian: string): number {
+export function wkb_variant_from_endian(endian: string | null): number {
 	const _r = call<number>('wkb_variant_from_endian_w', 'number', ['string'], [endian]);
 	checkMeosError();
 	return _r;
@@ -5782,6 +5749,12 @@ export function tbool_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
+export function temporal_duration(temp: Ptr, boundspan: boolean): Ptr {
+	const _r = callPtr('temporal_duration_w', [ptrArgType(), 'number'], [ptrArgVal(temp), boundspan ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
 export function temporal_end_instant(temp: Ptr): Ptr {
 	const _r = callPtr('temporal_end_instant_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -5808,6 +5781,12 @@ export function temporal_hash(temp: Ptr): number {
 
 export function temporal_hash_extended(temp: Ptr, seed: number): number {
 	const _r = Number(BigInt.asUintN(64, call<bigint>('temporal_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(seed)])));
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_instant_n(temp: Ptr, n: number): Ptr {
+	const _r = callPtr('temporal_instant_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
 	checkMeosError();
 	return _r;
 }
@@ -6182,6 +6161,12 @@ export function ttext_value_at_timestamptz(temp: Ptr, t: TimestampTz, strict: bo
 	const _r = call<number>('ttext_value_at_timestamptz_w', 'number', [ptrArgType(), 'bigint', 'number', ptrArgType()], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0, ptrArgVal(value)]) !== 0;
 	checkMeosError();
 	return _r;
+}
+
+export function ttext_value_n(temp: Ptr, n: number): string | null {
+	const _p = callPtr('ttext_value_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
+	checkMeosError();
+	return takeString(_p);
 }
 
 export function ttext_values(temp: Ptr, count: Ptr): Ptr {
@@ -9297,7 +9282,7 @@ export function gbox_out(box: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('gbox_out_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), maxdd, ptrArgVal(_sizeOut)]));
 }
 
-export function geo_as_ewkb(gs: Ptr, endian: string, size: Ptr): Ptr {
+export function geo_as_ewkb(gs: Ptr, endian: string | null, size: Ptr): Ptr {
 	const _r = callPtr('geo_as_ewkb_w', [ptrArgType(), 'string', ptrArgType()], [ptrArgVal(gs), endian, ptrArgVal(size)]);
 	checkMeosError();
 	return _r;
@@ -9307,11 +9292,11 @@ export function geo_as_ewkt(gs: Ptr, precision: number): string {
 	return readString(_sizeOut => callPtr('geo_as_ewkt_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(gs), precision, ptrArgVal(_sizeOut)]));
 }
 
-export function geo_as_geojson(gs: Ptr, option: number, precision: number, srs: string): string {
+export function geo_as_geojson(gs: Ptr, option: number, precision: number, srs: string | null): string {
 	return readString(_sizeOut => callPtr('geo_as_geojson_w', [ptrArgType(), 'number', 'number', 'string', ptrArgType()], [ptrArgVal(gs), option, precision, srs, ptrArgVal(_sizeOut)]));
 }
 
-export function geo_as_hexewkb(gs: Ptr, endian: string): string {
+export function geo_as_hexewkb(gs: Ptr, endian: string | null): string {
 	return readString(_sizeOut => callPtr('geo_as_hexewkb_w', [ptrArgType(), 'string', ptrArgType()], [ptrArgVal(gs), endian, ptrArgVal(_sizeOut)]));
 }
 
@@ -16725,7 +16710,7 @@ export function meos_pc_schema_ndims(pcid: number): number {
 	return _r;
 }
 
-export function meos_set_pointcloud_schemas_xml(path: string): void {
+export function meos_set_pointcloud_schemas_xml(path: string | null): void {
 	call<void>('meos_set_pointcloud_schemas_xml_w', null, ['string'], [path]);
 	checkMeosError();
 }
@@ -20966,7 +20951,7 @@ export function raster_tri(rast: Ptr, band: number, customextent: Ptr, pixeltype
 	return _r;
 }
 
-export function raster_map_algebra(rast: Ptr, band: number, stat: string, pixeltype: string, extenttype: string, customextent: Ptr, distancex: number, distancey: number): Ptr {
+export function raster_map_algebra(rast: Ptr, band: number, stat: string, pixeltype: string | null, extenttype: string | null, customextent: Ptr, distancex: number, distancey: number): Ptr {
 	const _r = callPtr('raster_map_algebra_w', [ptrArgType(), 'number', 'string', 'string', 'string', ptrArgType(), 'number', 'number'], [ptrArgVal(rast), band, stat, pixeltype, extenttype, ptrArgVal(customextent), distancex, distancey]);
 	checkMeosError();
 	return _r;
@@ -21112,7 +21097,7 @@ export function raster_union_finalfn(state: Ptr): Ptr {
 	return _r;
 }
 
-export function raster_union_transfn(state: Ptr, rast: Ptr, band: number, uniontype: string): Ptr {
+export function raster_union_transfn(state: Ptr, rast: Ptr, band: number, uniontype: string | null): Ptr {
 	const _r = callPtr('raster_union_transfn_w', [ptrArgType(), ptrArgType(), 'number', 'string'], [ptrArgVal(state), ptrArgVal(rast), band, uniontype]);
 	checkMeosError();
 	return _r;
@@ -21679,13 +21664,13 @@ export function trgeometry_as_tinstant(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function trgeometry_as_tsequence(temp: Ptr, interp_str: string): Ptr {
+export function trgeometry_as_tsequence(temp: Ptr, interp_str: string | null): Ptr {
 	const _r = callPtr('trgeometry_as_tsequence_w', [ptrArgType(), 'string'], [ptrArgVal(temp), interp_str]);
 	checkMeosError();
 	return _r;
 }
 
-export function trgeometry_as_tsequenceset(temp: Ptr, interp_str: string): Ptr {
+export function trgeometry_as_tsequenceset(temp: Ptr, interp_str: string | null): Ptr {
 	const _r = callPtr('trgeometry_as_tsequenceset_w', [ptrArgType(), 'string'], [ptrArgVal(temp), interp_str]);
 	checkMeosError();
 	return _r;
