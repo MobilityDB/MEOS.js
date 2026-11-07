@@ -233,3 +233,13 @@ describe('generated object layer: the wrappers the flat surface no longer writes
 		assert.equal(second!.toString(), `3@${T2}`);
 	});
 });
+
+describe('generated object layer: SQL defaults', () => {
+	it('takes the default the SQL signature states for a trailing argument', () => {
+		// intspan(integer, integer, boolean DEFAULT true, boolean DEFAULT false)
+		using s = IntSpan.make(1, 5);
+		assert.equal(s.toString(), '[1, 5)');
+		using closed = IntSpan.make(1, 5, true, true);
+		assert.equal(closed.toString(), '[1, 6)');
+	});
+});

@@ -393,7 +393,7 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: set_round */
-	round(maxdd: number): Set {
+	round(maxdd: number = 0): Set {
 		return wrapSet(F.set_round(this.ptr, maxdd)) as Set;
 	}
 
@@ -1125,7 +1125,7 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.bigintspan_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -1300,7 +1300,7 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_get_bin */
-	static getBin(value: number, vsize: number, vorigin: number): Span {
+	static getBin(value: number, vsize: number, vorigin: number = 0): Span {
 		return wrapSpan(F.bigintspan_get_bin(value, vsize, vorigin)) as Span;
 	}
 
@@ -1310,7 +1310,7 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_make */
-	static make(lower: number, upper: number, lower_inc: boolean, upper_inc: boolean): BigIntSpan {
+	static make(lower: number, upper: number, lower_inc: boolean = true, upper_inc: boolean = false): BigIntSpan {
 		return wrapSpan(F.bigintspan_make(lower, upper, lower_inc, upper_inc)) as BigIntSpan;
 	}
 }
@@ -1805,7 +1805,7 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: bigintspanset_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.bigintspanset_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -1946,7 +1946,7 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: bigintspanset_width */
-	width(boundspan: boolean): number {
+	width(boundspan: boolean = false): number {
 		return F.bigintspanset_width(this.ptr, boundspan);
 	}
 
@@ -2044,7 +2044,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.cbuffer_as_ewkt(this.ptr, maxdd);
 	}
 
@@ -2059,7 +2059,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.cbuffer_as_text(this.ptr, maxdd);
 	}
 
@@ -2237,7 +2237,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_round */
-	round(maxdd: number): Cbuffer {
+	round(maxdd: number = 0): Cbuffer {
 		return wrapCbuffer(F.cbuffer_round(this.ptr, maxdd)) as Cbuffer;
 	}
 
@@ -2317,7 +2317,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): Cbuffer {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Cbuffer {
 		return wrapCbuffer(F.cbuffer_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Cbuffer;
 	}
 
@@ -2433,7 +2433,7 @@ export class SpatialSet extends Set {
 	}
 
 	/** MEOS: spatialset_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): Set | null {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Set | null {
 		return wrapSetOrNull(F.spatialset_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Set | null;
 	}
 }
@@ -2843,7 +2843,7 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: datespan_bins */
-	bins(duration: Interval, torigin: DateADT, border_inc: boolean): Span[] {
+	bins(duration: Interval, torigin: DateADT, border_inc: boolean = true): Span[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -3006,7 +3006,7 @@ export class DateSpan extends Span {
 	}
 
 	/** MEOS: datespan_make */
-	static make(lower: DateADT, upper: DateADT, lower_inc: boolean, upper_inc: boolean): DateSpan {
+	static make(lower: DateADT, upper: DateADT, lower_inc: boolean = true, upper_inc: boolean = false): DateSpan {
 		return wrapSpan(F.datespan_make(lower, upper, lower_inc, upper_inc)) as DateSpan;
 	}
 }
@@ -3083,7 +3083,7 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: datespanset_bins */
-	bins(duration: Interval, torigin: DateADT, border_inc: boolean): Span[] {
+	bins(duration: Interval, torigin: DateADT, border_inc: boolean = true): Span[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -3129,7 +3129,7 @@ export class DateSpanSet extends SpanSet {
 	}
 
 	/** MEOS: datespanset_duration */
-	duration(boundspan: boolean): Interval {
+	duration(boundspan: boolean = false): Interval {
 		return _takeInterval(F.datespanset_duration(this.ptr, boundspan))!;
 	}
 
@@ -3339,7 +3339,7 @@ export class FloatSet extends Set {
 	}
 
 	/** MEOS: floatset_degrees */
-	degrees(normalize: boolean): Set {
+	degrees(normalize: boolean = false): Set {
 		return wrapSet(F.floatset_degrees(this.ptr, normalize)) as Set;
 	}
 
@@ -3596,7 +3596,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.floatspan_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -3627,7 +3627,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_degrees */
-	degrees(normalize: boolean): Span {
+	degrees(normalize: boolean = false): Span {
 		return wrapSpan(F.floatspan_degrees(this.ptr, normalize)) as Span;
 	}
 
@@ -3730,7 +3730,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_round */
-	round(maxdd: number): Span {
+	round(maxdd: number = 0): Span {
 		return wrapSpan(F.floatspan_round(this.ptr, maxdd)) as Span;
 	}
 
@@ -3796,7 +3796,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_get_bin */
-	static getBin(value: number, vsize: number, vorigin: number): Span {
+	static getBin(value: number, vsize: number, vorigin: number = 0.0): Span {
 		return wrapSpan(F.floatspan_get_bin(value, vsize, vorigin)) as Span;
 	}
 
@@ -3806,7 +3806,7 @@ export class FloatSpan extends Span {
 	}
 
 	/** MEOS: floatspan_make */
-	static make(lower: number, upper: number, lower_inc: boolean, upper_inc: boolean): FloatSpan {
+	static make(lower: number, upper: number, lower_inc: boolean = true, upper_inc: boolean = false): FloatSpan {
 		return wrapSpan(F.floatspan_make(lower, upper, lower_inc, upper_inc)) as FloatSpan;
 	}
 }
@@ -3893,7 +3893,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.floatspanset_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -3924,7 +3924,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_degrees */
-	degrees(normalize: boolean): SpanSet {
+	degrees(normalize: boolean = false): SpanSet {
 		return wrapSpanSet(F.floatspanset_degrees(this.ptr, normalize)) as SpanSet;
 	}
 
@@ -4018,7 +4018,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_round */
-	round(maxdd: number): SpanSet {
+	round(maxdd: number = 0): SpanSet {
 		return wrapSpanSet(F.floatspanset_round(this.ptr, maxdd)) as SpanSet;
 	}
 
@@ -4064,7 +4064,7 @@ export class FloatSpanSet extends SpanSet {
 	}
 
 	/** MEOS: floatspanset_width */
-	width(boundspan: boolean): number {
+	width(boundspan: boolean = false): number {
 		return F.floatspanset_width(this.ptr, boundspan);
 	}
 
@@ -4310,7 +4310,7 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_round */
-	round(maxdd: number): Geo {
+	round(maxdd: number = 0): Geo {
 		return wrapGeo(F.geo_round(this.ptr, maxdd)) as Geo;
 	}
 
@@ -4490,7 +4490,7 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): Geo {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Geo {
 		return wrapGeo(F.geo_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Geo;
 	}
 
@@ -4832,7 +4832,7 @@ export class Geography extends Geo {
 	}
 
 	/** MEOS: geog_dwithin */
-	dwithin(g2: Geo, tolerance: number, use_spheroid: boolean): boolean {
+	dwithin(g2: Geo, tolerance: number, use_spheroid: boolean = true): boolean {
 		return F.geog_dwithin(this.ptr, g2.ptr, tolerance, use_spheroid);
 	}
 
@@ -6040,7 +6040,7 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intspan_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.intspan_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -6215,7 +6215,7 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intspan_get_bin */
-	static getBin(value: number, vsize: number, vorigin: number): Span {
+	static getBin(value: number, vsize: number, vorigin: number = 0): Span {
 		return wrapSpan(F.intspan_get_bin(value, vsize, vorigin)) as Span;
 	}
 
@@ -6225,7 +6225,7 @@ export class IntSpan extends Span {
 	}
 
 	/** MEOS: intspan_make */
-	static make(lower: number, upper: number, lower_inc: boolean, upper_inc: boolean): IntSpan {
+	static make(lower: number, upper: number, lower_inc: boolean = true, upper_inc: boolean = false): IntSpan {
 		return wrapSpan(F.intspan_make(lower, upper, lower_inc, upper_inc)) as IntSpan;
 	}
 }
@@ -6312,7 +6312,7 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intspanset_bins */
-	bins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.intspanset_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -6458,7 +6458,7 @@ export class IntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intspanset_width */
-	width(boundspan: boolean): number {
+	width(boundspan: boolean = false): number {
 		return F.intspanset_width(this.ptr, boundspan);
 	}
 
@@ -6865,7 +6865,7 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_strip_nulls */
-	stripNulls(strip_in_arrays: boolean): Jsonb {
+	stripNulls(strip_in_arrays: boolean = false): Jsonb {
 		return wrapJsonb(F.jsonb_strip_nulls(this.ptr, strip_in_arrays)) as Jsonb;
 	}
 
@@ -7216,7 +7216,7 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_strip_nulls */
-	stripNulls(strip_in_arrays: boolean): Set {
+	stripNulls(strip_in_arrays: boolean = false): Set {
 		return wrapSet(F.jsonbset_strip_nulls(this.ptr, strip_in_arrays)) as Set;
 	}
 
@@ -7374,7 +7374,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.npoint_as_ewkt(this.ptr, maxdd);
 	}
 
@@ -7389,7 +7389,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.npoint_as_text(this.ptr, maxdd);
 	}
 
@@ -7489,7 +7489,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_round */
-	round(maxdd: number): Npoint {
+	round(maxdd: number = 0): Npoint {
 		return wrapNpoint(F.npoint_round(this.ptr, maxdd)) as Npoint;
 	}
 
@@ -7750,7 +7750,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.nsegment_as_ewkt(this.ptr, maxdd);
 	}
 
@@ -7765,7 +7765,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.nsegment_as_text(this.ptr, maxdd);
 	}
 
@@ -7825,7 +7825,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_round */
-	round(maxdd: number): Nsegment {
+	round(maxdd: number = 0): Nsegment {
 		return wrapNsegment(F.nsegment_round(this.ptr, maxdd)) as Nsegment;
 	}
 
@@ -7895,7 +7895,7 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_make */
-	static make(rid: number, pos1: number, pos2: number): Nsegment {
+	static make(rid: number, pos1: number = 0, pos2: number = 1): Nsegment {
 		return wrapNsegment(F.nsegment_make(rid, pos1, pos2)) as Nsegment;
 	}
 }
@@ -8690,12 +8690,12 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.pose_as_ewkt(this.ptr, maxdd);
 	}
 
 	/** MEOS: pose_as_geopose */
-	asGeopose(conformance: number, precision: number): string {
+	asGeopose(conformance: number = 0, precision: number = -1): string {
 		return F.pose_as_geopose(this.ptr, conformance, precision);
 	}
 
@@ -8710,7 +8710,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.pose_as_text(this.ptr, maxdd);
 	}
 
@@ -8863,7 +8863,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_round */
-	round(maxdd: number): Pose {
+	round(maxdd: number = 0): Pose {
 		return wrapPose(F.pose_round(this.ptr, maxdd)) as Pose;
 	}
 
@@ -8923,7 +8923,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): Pose {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Pose {
 		return wrapPose(F.pose_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Pose;
 	}
 
@@ -9079,7 +9079,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_as_ewkt */
-	asEWKT(maxdd: number): string {
+	asEWKT(maxdd: number = 15): string {
 		return F.posechain_as_ewkt(this.ptr, maxdd);
 	}
 
@@ -9094,7 +9094,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.posechain_as_text(this.ptr, maxdd);
 	}
 
@@ -9237,7 +9237,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_round */
-	round(maxdd: number): PoseChain {
+	round(maxdd: number = 0): PoseChain {
 		return wrapPoseChain(F.posechain_round(this.ptr, maxdd)) as PoseChain;
 	}
 
@@ -9297,7 +9297,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): PoseChain | null {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): PoseChain | null {
 		return wrapPoseChainOrNull(F.posechain_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as PoseChain | null;
 	}
 
@@ -10180,22 +10180,22 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_band_has_nodata_value */
-	bandHasNodataValue(band: number): boolean {
+	bandHasNodataValue(band: number = 1): boolean {
 		return F.raster_band_has_nodata_value(this.ptr, band);
 	}
 
 	/** MEOS: raster_band_nodata_value */
-	bandNodataValue(band: number): number {
+	bandNodataValue(band: number = 1): number {
 		return F.raster_band_nodata_value(this.ptr, band);
 	}
 
 	/** MEOS: raster_band_pixels */
-	bandPixels(band: number): Uint8Array {
+	bandPixels(band: number = 1): Uint8Array {
 		return readWkb(_sizeOut => F.raster_band_pixels(this.ptr, band, _sizeOut));
 	}
 
 	/** MEOS: raster_band_pixel_type */
-	bandPixelType(band: number): string {
+	bandPixelType(band: number = 1): string {
 		return F.raster_band_pixel_type(this.ptr, band);
 	}
 
@@ -10231,7 +10231,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_map_algebra */
-	mapAlgebra(band: number, stat: string, pixeltype: string | null, extenttype: string | null, customextent: Raster, distancex: number, distancey: number): Raster | null {
+	mapAlgebra(band: number, stat: string, pixeltype: string | null, extenttype: string | null, customextent: Raster, distancex: number = 0, distancey: number = 0): Raster | null {
 		return wrapRasterOrNull(F.raster_map_algebra(this.ptr, band, stat, pixeltype, extenttype, customextent.ptr, distancex, distancey)) as Raster | null;
 	}
 
@@ -10273,7 +10273,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_rescale */
-	rescale(scale_x: number, scale_y: number, algorithm: string, max_err: number): Raster | null {
+	rescale(scale_x: number, scale_y: number, algorithm: string, max_err: number = 0.125): Raster | null {
 		return wrapRasterOrNull(F.raster_rescale(this.ptr, scale_x, scale_y, algorithm, max_err)) as Raster | null;
 	}
 
@@ -10347,7 +10347,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_summary_stats */
-	summaryStats(band: number, exclude_nodata: boolean): BandStats {
+	summaryStats(band: number = 1, exclude_nodata: boolean = true): BandStats {
 		return _takeBandStats(F.raster_summary_stats(this.ptr, band, exclude_nodata))!;
 	}
 
@@ -10362,17 +10362,17 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_transform */
-	transform(srid: number, algorithm: string, max_err: number, scale_x: number, scale_y: number): Raster | null {
+	transform(srid: number, algorithm: string, max_err: number = 0.125, scale_x: number = 0, scale_y: number = 0): Raster | null {
 		return wrapRasterOrNull(F.raster_transform(this.ptr, srid, algorithm, max_err, scale_x, scale_y)) as Raster | null;
 	}
 
 	/** MEOS: raster_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean, algorithm: string, max_err: number, scale_x: number, scale_y: number): Raster | null {
+	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean, algorithm: string, max_err: number = 0.125, scale_x: number = 0, scale_y: number = 0): Raster | null {
 		return wrapRasterOrNull(F.raster_transform_pipeline(this.ptr, pipelinestr, srid, is_forward, algorithm, max_err, scale_x, scale_y)) as Raster | null;
 	}
 
 	/** MEOS: raster_transform_raster */
-	transformRaster(alignto: Raster, algorithm: string, max_err: number): Raster | null {
+	transformRaster(alignto: Raster, algorithm: string, max_err: number = 0.125): Raster | null {
 		return wrapRasterOrNull(F.raster_transform_raster(this.ptr, alignto.ptr, algorithm, max_err)) as Raster | null;
 	}
 
@@ -10455,7 +10455,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_make_empty */
-	static makeEmpty(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number): Raster | null {
+	static makeEmpty(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number = 0): Raster | null {
 		return wrapRasterOrNull(F.raster_make_empty(width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid)) as Raster | null;
 	}
 
@@ -10500,7 +10500,7 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_value_gdal */
-	static valueGdal(traj: Temporal, path: string, band: number): Temporal | null {
+	static valueGdal(traj: Temporal, path: string, band: number = 1): Temporal | null {
 		return wrapTemporalOrNull(F.raster_value_gdal(traj.ptr, path, band)) as Temporal | null;
 	}
 }
@@ -10905,7 +10905,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: nad_stbox_stbox */
-	private _nad_stbox_stbox(box2: STBox, spheroid: boolean): number {
+	private _nad_stbox_stbox(box2: STBox, spheroid: boolean = true): number {
 		return F.nad_stbox_stbox(this.ptr, box2.ptr, spheroid);
 	}
 
@@ -11046,7 +11046,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_area */
-	area(spheroid: boolean): number {
+	area(spheroid: boolean = true): number {
 		return F.stbox_area(this.ptr, spheroid);
 	}
 
@@ -11296,7 +11296,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_perimeter */
-	perimeter(spheroid: boolean): number {
+	perimeter(spheroid: boolean = true): number {
 		return F.stbox_perimeter(this.ptr, spheroid);
 	}
 
@@ -11328,7 +11328,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_round */
-	round(maxdd: number): STBox {
+	round(maxdd: number = 0): STBox {
 		return wrapSTBox(F.stbox_round(this.ptr, maxdd)) as STBox;
 	}
 
@@ -11434,7 +11434,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_time_tiles */
-	timeTiles(duration: Interval, torigin: TimestampTz, border_inc: boolean): STBox[] {
+	timeTiles(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): STBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -11496,7 +11496,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): STBox {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): STBox {
 		return wrapSTBox(F.stbox_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as STBox;
 	}
 
@@ -11682,7 +11682,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_after_timestamptz */
-	afterTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
+	afterTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
 	}
 
@@ -11812,7 +11812,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_before_timestamptz */
-	beforeTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
+	beforeTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_before_timestamptz(this.ptr, t, strict)) as Temporal | null;
 	}
 
@@ -11837,22 +11837,22 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_delete_timestamptz */
-	deleteTimestamptz(t: TimestampTz, connect: boolean): Temporal | null {
+	deleteTimestamptz(t: TimestampTz, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_delete_timestamptz(this.ptr, t, connect)) as Temporal | null;
 	}
 
 	/** MEOS: temporal_delete_tstzset */
-	deleteTstzset(s: Set, connect: boolean): Temporal | null {
+	deleteTstzset(s: Set, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_delete_tstzset(this.ptr, s.ptr, connect)) as Temporal | null;
 	}
 
 	/** MEOS: temporal_delete_tstzspan */
-	deleteTstzspan(s: Span, connect: boolean): Temporal | null {
+	deleteTstzspan(s: Span, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_delete_tstzspan(this.ptr, s.ptr, connect)) as Temporal | null;
 	}
 
 	/** MEOS: temporal_delete_tstzspanset */
-	deleteTstzspanset(ss: SpanSet, connect: boolean): Temporal | null {
+	deleteTstzspanset(ss: SpanSet, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.temporal_delete_tstzspanset(this.ptr, ss.ptr, connect)) as Temporal | null;
 	}
 
@@ -11862,7 +11862,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_duration */
-	duration(boundspan: boolean): Interval {
+	duration(boundspan: boolean = false): Interval {
 		return _takeInterval(F.temporal_duration(this.ptr, boundspan))!;
 	}
 
@@ -11942,7 +11942,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_ext_kalman_filter */
-	extKalmanFilter(gate: number, q: number, variance: number, to_drop: boolean): Temporal {
+	extKalmanFilter(gate: number, q: number, variance: number, to_drop: boolean = true): Temporal {
 		return wrapTemporal(F.temporal_ext_kalman_filter(this.ptr, gate, q, variance, to_drop)) as Temporal;
 	}
 
@@ -11997,7 +11997,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_insert */
-	insert(temp2: Temporal, connect: boolean): Temporal {
+	insert(temp2: Temporal, connect: boolean = true): Temporal {
 		return wrapTemporal(F.temporal_insert(this.ptr, temp2.ptr, connect)) as Temporal;
 	}
 
@@ -12142,7 +12142,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_round */
-	round(maxdd: number): Temporal {
+	round(maxdd: number = 0): Temporal {
 		return wrapTemporal(F.temporal_round(this.ptr, maxdd)) as Temporal;
 	}
 
@@ -12244,12 +12244,12 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_simplify_dp */
-	simplifyDp(dist: number, synchronized: boolean): Temporal {
+	simplifyDp(dist: number, synchronized: boolean = true): Temporal {
 		return wrapTemporal(F.temporal_simplify_dp(this.ptr, dist, synchronized)) as Temporal;
 	}
 
 	/** MEOS: temporal_simplify_max_dist */
-	simplifyMaxDist(dist: number, synchronized: boolean): Temporal {
+	simplifyMaxDist(dist: number, synchronized: boolean = true): Temporal {
 		return wrapTemporal(F.temporal_simplify_max_dist(this.ptr, dist, synchronized)) as Temporal;
 	}
 
@@ -12384,7 +12384,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_time_bins */
-	timeBins(duration: Interval, torigin: TimestampTz, border_inc: boolean): Span[] {
+	timeBins(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): Span[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -12471,7 +12471,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_update */
-	update(temp2: Temporal, connect: boolean): Temporal {
+	update(temp2: Temporal, connect: boolean = true): Temporal {
 		return wrapTemporal(F.temporal_update(this.ptr, temp2.ptr, connect)) as Temporal;
 	}
 
@@ -13491,7 +13491,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_time_boxes */
-	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -13572,7 +13572,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_bins */
-	valueBins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	valueBins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigint_value_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -13592,7 +13592,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_boxes */
-	valueBoxes(vsize: number, vorigin: number, border_inc: boolean): TBox[] {
+	valueBoxes(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigint_value_boxes(this.ptr, vsize, vorigin, border_inc, _count);
@@ -13637,7 +13637,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_time_boxes */
-	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -14438,7 +14438,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_round */
-	round(maxdd: number): TBox {
+	round(maxdd: number = 0): TBox {
 		return wrapTBox(F.tbox_round(this.ptr, maxdd)) as TBox;
 	}
 
@@ -14489,7 +14489,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_time_tiles */
-	timeTiles(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	timeTiles(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -14661,7 +14661,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_get_value_tile */
-	static getValueTile(value: number, vsize: number, vorigin: number): TBox {
+	static getValueTile(value: number, vsize: number, vorigin: number = 0.0): TBox {
 		return wrapTBox(F.tbox_get_value_tile(value, vsize, vorigin)) as TBox;
 	}
 
@@ -14938,7 +14938,7 @@ export class TSpatial extends Temporal {
 	}
 
 	/** MEOS: tspatial_as_text */
-	asText(maxdd: number): string {
+	asText(maxdd: number = 15): string {
 		return F.tspatial_as_text(this.ptr, maxdd);
 	}
 
@@ -15094,7 +15094,7 @@ export class TSpatial extends Temporal {
 	}
 
 	/** MEOS: tspatial_transform_pipeline */
-	transformPipeline(pipelinestr: string, srid: number, is_forward: boolean): Temporal {
+	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): Temporal {
 		return wrapTemporal(F.tspatial_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as Temporal;
 	}
 }
@@ -15567,7 +15567,7 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_at_stbox */
-	atStbox(box: STBox, border_inc: boolean): Temporal | null {
+	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tcbuffer_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -15669,7 +15669,7 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
+	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tcbuffer_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -15799,7 +15799,7 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_traversed_area */
-	traversedArea(unary_union: boolean): Geo {
+	traversedArea(unary_union: boolean = false): Geo {
 		return wrapGeo(F.tcbuffer_traversed_area(this.ptr, unary_union)) as Geo;
 	}
 
@@ -16159,7 +16159,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_degrees */
-	degrees(normalize: boolean): Temporal {
+	degrees(normalize: boolean = false): Temporal {
 		return wrapTemporal(F.tfloat_degrees(this.ptr, normalize)) as Temporal;
 	}
 
@@ -16441,7 +16441,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_time_boxes */
-	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -16507,7 +16507,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_value_bins */
-	valueBins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	valueBins(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tfloat_value_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -16527,7 +16527,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_value_boxes */
-	valueBoxes(vsize: number, vorigin: number, border_inc: boolean): TBox[] {
+	valueBoxes(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): TBox[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tfloat_value_boxes(this.ptr, vsize, vorigin, border_inc, _count);
@@ -16572,7 +16572,7 @@ export class TFloat extends TNumber {
 	}
 
 	/** MEOS: tfloat_value_time_boxes */
-	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -16888,7 +16888,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_at_stbox */
-	atStbox(box: STBox, border_inc: boolean): Temporal | null {
+	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tgeo_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -16953,7 +16953,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_force3d */
-	force3d(zvalue: number): Temporal {
+	force3d(zvalue: number = 0.0): Temporal {
 		return wrapTemporal(F.tgeo_force3d(this.ptr, zvalue)) as Temporal;
 	}
 
@@ -16963,7 +16963,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
+	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tgeo_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -17169,7 +17169,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_time_boxes */
-	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): STBox[] {
+	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean = true, border_inc: boolean = true): STBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -17214,7 +17214,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: tgeo_traversed_area */
-	traversedArea(unary_union: boolean): Geo {
+	traversedArea(unary_union: boolean = false): Geo {
 		return wrapGeo(F.tgeo_traversed_area(this.ptr, unary_union)) as Geo;
 	}
 
@@ -17375,7 +17375,7 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: tpoint_tfloat_to_geomeas */
-	tfloatToGeomeas(measure: Temporal, segmentize: boolean): Geo | null {
+	tfloatToGeomeas(measure: Temporal, segmentize: boolean = false): Geo | null {
 		return wrapGeoOrNull(F.tpoint_tfloat_to_geomeas(this.ptr, measure.ptr, segmentize)) as Geo | null;
 	}
 
@@ -17385,7 +17385,7 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: tpoint_trajectory */
-	trajectory(unary_union: boolean): Geo {
+	trajectory(unary_union: boolean = false): Geo {
 		return wrapGeo(F.tpoint_trajectory(this.ptr, unary_union)) as Geo;
 	}
 
@@ -17431,17 +17431,17 @@ export class TGeogPoint extends TPoint {
 	}
 
 	/** MEOS: tgeogpoint_to_th3index */
-	toTh3index(resolution: number, border_inc: boolean): Temporal {
+	toTh3index(resolution: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeogpoint_to_th3index(this.ptr, resolution, border_inc)) as Temporal;
 	}
 
 	/** MEOS: tgeogpoint_to_tquadbin */
-	toTquadbin(resolution: number, border_inc: boolean): Temporal {
+	toTquadbin(resolution: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeogpoint_to_tquadbin(this.ptr, resolution, border_inc)) as Temporal;
 	}
 
 	/** MEOS: tgeogpoint_to_ts2cell */
-	toTs2cell(level: number, border_inc: boolean): Temporal {
+	toTs2cell(level: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeogpoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
 	}
 
@@ -17605,7 +17605,7 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: tgeompoint_to_th3index */
-	toTh3index(resolution: number, border_inc: boolean): Temporal {
+	toTh3index(resolution: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeompoint_to_th3index(this.ptr, resolution, border_inc)) as Temporal;
 	}
 
@@ -17615,12 +17615,12 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: tgeompoint_to_tquadbin */
-	toTquadbin(resolution: number, border_inc: boolean): Temporal {
+	toTquadbin(resolution: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeompoint_to_tquadbin(this.ptr, resolution, border_inc)) as Temporal;
 	}
 
 	/** MEOS: tgeompoint_to_ts2cell */
-	toTs2cell(level: number, border_inc: boolean): Temporal {
+	toTs2cell(level: number, border_inc: boolean = true): Temporal {
 		return wrapTemporal(F.tgeompoint_to_ts2cell(this.ptr, level, border_inc)) as Temporal;
 	}
 
@@ -18752,7 +18752,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_time_boxes */
-	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	timeBoxes(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -18818,7 +18818,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_value_bins */
-	valueBins(vsize: number, vorigin: number, border_inc: boolean): Span[] {
+	valueBins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tint_value_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -18838,7 +18838,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_value_boxes */
-	valueBoxes(vsize: number, vorigin: number, border_inc: boolean): TBox[] {
+	valueBoxes(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tint_value_boxes(this.ptr, vsize, vorigin, border_inc, _count);
@@ -18883,7 +18883,7 @@ export class TInt extends TNumber {
 	}
 
 	/** MEOS: tint_value_time_boxes */
-	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean): TBox[] {
+	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -19254,7 +19254,7 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_strip_nulls */
-	stripNulls(strip_in_arrays: boolean): Temporal {
+	stripNulls(strip_in_arrays: boolean = false): Temporal {
 		return wrapTemporal(F.tjsonb_strip_nulls(this.ptr, strip_in_arrays)) as Temporal;
 	}
 
@@ -19624,7 +19624,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_at_stbox */
-	atStbox(box: STBox, border_inc: boolean): Temporal | null {
+	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tnpoint_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -19689,7 +19689,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
+	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tnpoint_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -20394,7 +20394,7 @@ export class TPCBox extends Box {
 	}
 
 	/** MEOS: tpcbox_round */
-	round(maxdd: number): TPCBox | null {
+	round(maxdd: number = 0): TPCBox | null {
 		return wrapTPCBoxOrNull(F.tpcbox_round(this.ptr, maxdd)) as TPCBox | null;
 	}
 
@@ -21189,22 +21189,22 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_as_geopose */
-	asGeopose(conformance: number, precision: number): string {
+	asGeopose(conformance: number = 0, precision: number = -1): string {
 		return F.tpose_as_geopose(this.ptr, conformance, precision);
 	}
 
 	/** MEOS: tpose_as_geopose_stream */
-	asGeoposeStream(precision: number): string {
+	asGeoposeStream(precision: number = -1): string {
 		return F.tpose_as_geopose_stream(this.ptr, precision);
 	}
 
 	/** MEOS: tpose_as_geopose_stream_element */
-	asGeoposeStreamElement(inst: Temporal, precision: number): string {
+	asGeoposeStreamElement(inst: Temporal, precision: number = -1): string {
 		return F.tpose_as_geopose_stream_element(this.ptr, inst.ptr, precision);
 	}
 
 	/** MEOS: tpose_as_geopose_stream_header */
-	asGeoposeStreamHeader(precision: number): string {
+	asGeoposeStreamHeader(precision: number = -1): string {
 		return F.tpose_as_geopose_stream_header(this.ptr, precision);
 	}
 
@@ -21224,7 +21224,7 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_at_stbox */
-	atStbox(box: STBox, border_inc: boolean): Temporal | null {
+	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -21288,7 +21288,7 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
+	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -21393,7 +21393,7 @@ export class TPose extends TSpatial {
 	}
 
 	/** MEOS: tpose_translate */
-	translate(deltax: number, deltay: number, deltaz: number): Temporal {
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
 		return wrapTemporal(F.tpose_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
 	}
 
@@ -21618,7 +21618,7 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_as_geopose */
-	asGeopose(precision: number): string {
+	asGeopose(precision: number = -1): string {
 		return F.tposechain_as_geopose(this.ptr, precision);
 	}
 
@@ -21732,7 +21732,7 @@ export class TPoseChain extends TSpatial {
 	}
 
 	/** MEOS: tposechain_translate */
-	translate(deltax: number, deltay: number, deltaz: number): Temporal {
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
 		return wrapTemporal(F.tposechain_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
 	}
 
@@ -22405,7 +22405,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_after_timestamptz */
-	override afterTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
+	override afterTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_after_timestamptz(this.ptr, t, strict)) as Temporal | null;
 	}
 
@@ -22451,12 +22451,12 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_as_ewkt */
-	override asEWKT(maxdd: number): string {
+	override asEWKT(maxdd: number = 15): string {
 		return F.trgeometry_as_ewkt(this.ptr, maxdd);
 	}
 
 	/** MEOS: trgeometry_as_text */
-	override asText(maxdd: number): string {
+	override asText(maxdd: number = 15): string {
 		return F.trgeometry_as_text(this.ptr, maxdd);
 	}
 
@@ -22476,7 +22476,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_at_stbox */
-	atStbox(box: STBox, border_inc: boolean): Temporal | null {
+	atStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_at_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -22511,7 +22511,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_before_timestamptz */
-	override beforeTimestamptz(t: TimestampTz, strict: boolean): Temporal | null {
+	override beforeTimestamptz(t: TimestampTz, strict: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_before_timestamptz(this.ptr, t, strict)) as Temporal | null;
 	}
 
@@ -22536,22 +22536,22 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_delete_timestamptz */
-	override deleteTimestamptz(t: TimestampTz, connect: boolean): Temporal | null {
+	override deleteTimestamptz(t: TimestampTz, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_delete_timestamptz(this.ptr, t, connect)) as Temporal | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzset */
-	override deleteTstzset(s: Set, connect: boolean): Temporal | null {
+	override deleteTstzset(s: Set, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_delete_tstzset(this.ptr, s.ptr, connect)) as Temporal | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzspan */
-	override deleteTstzspan(s: Span, connect: boolean): Temporal | null {
+	override deleteTstzspan(s: Span, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_delete_tstzspan(this.ptr, s.ptr, connect)) as Temporal | null;
 	}
 
 	/** MEOS: trgeometry_delete_tstzspanset */
-	override deleteTstzspanset(ss: SpanSet, connect: boolean): Temporal | null {
+	override deleteTstzspanset(ss: SpanSet, connect: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_delete_tstzspanset(this.ptr, ss.ptr, connect)) as Temporal | null;
 	}
 
@@ -22666,7 +22666,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_minus_stbox */
-	minusStbox(box: STBox, border_inc: boolean): Temporal | null {
+	minusStbox(box: STBox, border_inc: boolean = true): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_minus_stbox(this.ptr, box.ptr, border_inc)) as Temporal | null;
 	}
 
@@ -22758,7 +22758,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_round */
-	override round(maxdd: number): Temporal {
+	override round(maxdd: number = 0): Temporal {
 		return wrapTemporal(F.trgeometry_round(this.ptr, maxdd)) as Temporal;
 	}
 
@@ -22964,7 +22964,7 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_time_boxes */
-	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): STBox[] {
+	timeBoxes(duration: Interval, torigin: TimestampTz, bitmatrix: boolean = true, border_inc: boolean = true): STBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -23007,12 +23007,12 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_translate */
-	translate(deltax: number, deltay: number, deltaz: number): Temporal {
+	translate(deltax: number, deltay: number, deltaz: number = 0.0): Temporal {
 		return wrapTemporal(F.trgeometry_translate(this.ptr, deltax, deltay, deltaz)) as Temporal;
 	}
 
 	/** MEOS: trgeometry_traversed_area */
-	traversedArea(unary_union: boolean): Geo | null {
+	traversedArea(unary_union: boolean = false): Geo | null {
 		return wrapGeoOrNull(F.trgeometry_traversed_area(this.ptr, unary_union)) as Geo | null;
 	}
 
@@ -24562,7 +24562,7 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: tstzspan_bins */
-	bins(duration: Interval, torigin: TimestampTz, border_inc: boolean): Span[] {
+	bins(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): Span[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -24811,7 +24811,7 @@ export class TsTzSpan extends Span {
 	}
 
 	/** MEOS: tstzspan_make */
-	static make(lower: TimestampTz, upper: TimestampTz, lower_inc: boolean, upper_inc: boolean): TsTzSpan {
+	static make(lower: TimestampTz, upper: TimestampTz, lower_inc: boolean = true, upper_inc: boolean = false): TsTzSpan {
 		return wrapSpan(F.tstzspan_make(lower, upper, lower_inc, upper_inc)) as TsTzSpan;
 	}
 }
@@ -24888,7 +24888,7 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: tstzspanset_bins */
-	bins(duration: Interval, torigin: TimestampTz, border_inc: boolean): Span[] {
+	bins(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): Span[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -24924,7 +24924,7 @@ export class TsTzSpanSet extends SpanSet {
 	}
 
 	/** MEOS: tstzspanset_duration */
-	duration(boundspan: boolean): Interval {
+	duration(boundspan: boolean = false): Interval {
 		return _takeInterval(F.tstzspanset_duration(this.ptr, boundspan))!;
 	}
 
