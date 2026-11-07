@@ -270,3 +270,19 @@ describe('generated object layer: the defaults a type encoding states', () => {
 		assert.equal(f.out(), f.toString());
 	});
 });
+
+describe('generated object layer: answers narrowed per receiver class', () => {
+	it('answers the instantiation the SQL signature names for this receiver', () => {
+		// spanset_span returns a Span * in C; span(intspanset) answers an intspan,
+		// so IntSpanSet.span answers an IntSpan, whose own members it reaches.
+		using ss = IntSpanSet.in('{[1, 3), [5, 8)}');
+		using bounding = ss.span();
+		assert.ok(bounding instanceof IntSpan);
+		assert.equal(bounding.lower(), 1);
+		assert.equal(bounding.upper(), 8);
+		using s = IntSpan.make(2, 4);
+		using single = s.toSpanset();
+		assert.ok(single instanceof IntSpanSet);
+		assert.equal(single.lower(), 2);
+	});
+});
