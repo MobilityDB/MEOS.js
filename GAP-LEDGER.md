@@ -16,41 +16,9 @@ The flat surface emits no generated wrapper for the function, so the layer has n
 
 The function answers a type no class stands for and no scalar or array rule reads.
 
-## argument needs a class (29)
+## argument needs a class (0)
 
 The function takes a type no class stands for and no marshalling rule reads.
-
-| class | member | what is missing |
-|---|---|---|
-| Text | alwaysEq | always_eq_text_ttext takes its receiver as text *, which no handle holds |
-| Text | alwaysGe | always_ge_text_ttext takes its receiver as text *, which no handle holds |
-| Text | alwaysGt | always_gt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | alwaysLe | always_le_text_ttext takes its receiver as text *, which no handle holds |
-| Text | alwaysLt | always_lt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | alwaysNe | always_ne_text_ttext takes its receiver as text *, which no handle holds |
-| Text | contained | contained_text_set takes its receiver as text *, which no handle holds |
-| Text | everEq | ever_eq_text_ttext takes its receiver as text *, which no handle holds |
-| Text | everGe | ever_ge_text_ttext takes its receiver as text *, which no handle holds |
-| Text | everGt | ever_gt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | everLe | ever_le_text_ttext takes its receiver as text *, which no handle holds |
-| Text | everLt | ever_lt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | everNe | ever_ne_text_ttext takes its receiver as text *, which no handle holds |
-| Text | intersection | intersection_text_set takes its receiver as text *, which no handle holds |
-| Text | left | left_text_set takes its receiver as text *, which no handle holds |
-| Text | minus | minus_text_set takes its receiver as text *, which no handle holds |
-| Text | overleft | overleft_text_set takes its receiver as text *, which no handle holds |
-| Text | overright | overright_text_set takes its receiver as text *, which no handle holds |
-| Text | right | right_text_set takes its receiver as text *, which no handle holds |
-| Text | teq | teq_text_ttext takes its receiver as text *, which no handle holds |
-| Text | textcat | textcat_text_text takes its receiver as text *, which no handle holds |
-| Text | textcat | textcat_text_textset takes its receiver as text *, which no handle holds |
-| Text | textcat | textcat_text_ttext takes its receiver as text *, which no handle holds |
-| Text | tge | tge_text_ttext takes its receiver as text *, which no handle holds |
-| Text | tgt | tgt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | tle | tle_text_ttext takes its receiver as text *, which no handle holds |
-| Text | tlt | tlt_text_ttext takes its receiver as text *, which no handle holds |
-| Text | tne | tne_text_ttext takes its receiver as text *, which no handle holds |
-| Text | union | union_text_set takes its receiver as text *, which no handle holds |
 
 ## out-parameter needs a reader (1)
 

@@ -26708,6 +26708,86 @@ export class TTextSeqSet extends TText {
  */
 export class Text extends Value {
 
+	/** MEOS: textcat_text_text */
+	private static _textcat_text_text(txt1: string, txt2: string): string {
+		return F.textcat_text_text(txt1, txt2);
+	}
+
+	/** MEOS: textcat_text_textset */
+	private static _textcat_text_textset(txt: string, s: TextSet): Set {
+		return wrapSet(F.textcat_text_textset(txt, s.ptr)) as Set;
+	}
+
+	/** MEOS: textcat_text_ttext */
+	private static _textcat_text_ttext(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.textcat_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: always_eq_text_ttext */
+	static alwaysEq(txt: string, temp: TText): number {
+		return F.always_eq_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: always_ge_text_ttext */
+	static alwaysGe(txt: string, temp: TText): number {
+		return F.always_ge_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: always_gt_text_ttext */
+	static alwaysGt(txt: string, temp: TText): number {
+		return F.always_gt_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: always_le_text_ttext */
+	static alwaysLe(txt: string, temp: TText): number {
+		return F.always_le_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: always_lt_text_ttext */
+	static alwaysLt(txt: string, temp: TText): number {
+		return F.always_lt_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: always_ne_text_ttext */
+	static alwaysNe(txt: string, temp: TText): number {
+		return F.always_ne_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: contained_text_set */
+	static contained(txt: string, s: TextSet): boolean {
+		return F.contained_text_set(txt, s.ptr);
+	}
+
+	/** MEOS: ever_eq_text_ttext */
+	static everEq(txt: string, temp: TText): number {
+		return F.ever_eq_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: ever_ge_text_ttext */
+	static everGe(txt: string, temp: TText): number {
+		return F.ever_ge_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: ever_gt_text_ttext */
+	static everGt(txt: string, temp: TText): number {
+		return F.ever_gt_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: ever_le_text_ttext */
+	static everLe(txt: string, temp: TText): number {
+		return F.ever_le_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: ever_lt_text_ttext */
+	static everLt(txt: string, temp: TText): number {
+		return F.ever_lt_text_ttext(txt, temp.ptr);
+	}
+
+	/** MEOS: ever_ne_text_ttext */
+	static everNe(txt: string, temp: TText): number {
+		return F.ever_ne_text_ttext(txt, temp.ptr);
+	}
+
 	/** MEOS: bool_to_text */
 	static fromBool(b: boolean): string {
 		return F.bool_to_text(b);
@@ -26738,9 +26818,24 @@ export class Text extends Value {
 		return F.text_initcap(txt);
 	}
 
+	/** MEOS: intersection_text_set */
+	static intersection(txt: string, s: TextSet): Set | null {
+		return wrapSetOrNull(F.intersection_text_set(txt, s.ptr)) as Set | null;
+	}
+
+	/** MEOS: left_text_set */
+	static left(txt: string, s: TextSet): boolean {
+		return F.left_text_set(txt, s.ptr);
+	}
+
 	/** MEOS: text_lower */
 	static lower(txt: string): string {
 		return F.text_lower(txt);
+	}
+
+	/** MEOS: minus_text_set */
+	static minus(txt: string, s: TextSet): Set | null {
+		return wrapSetOrNull(F.minus_text_set(txt, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: text_out */
@@ -26748,9 +26843,67 @@ export class Text extends Value {
 		return F.text_out(txt);
 	}
 
+	/** MEOS: overleft_text_set */
+	static overleft(txt: string, s: TextSet): boolean {
+		return F.overleft_text_set(txt, s.ptr);
+	}
+
+	/** MEOS: overright_text_set */
+	static overright(txt: string, s: TextSet): boolean {
+		return F.overright_text_set(txt, s.ptr);
+	}
+
+	/** MEOS: right_text_set */
+	static right(txt: string, s: TextSet): boolean {
+		return F.right_text_set(txt, s.ptr);
+	}
+
+	/** MEOS: teq_text_ttext */
+	static teq(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.teq_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: textcat_text_text, textcat_text_textset, textcat_text_ttext, chosen by the arguments' types */
+	static textcat(txt1: string, txt2: string | TextSet | TText): string | Set | Temporal {
+		if (typeof txt1 === 'string' && txt2 instanceof TextSet) return this._textcat_text_textset(txt1 as string, txt2 as TextSet);
+		if (typeof txt1 === 'string' && txt2 instanceof TText) return this._textcat_text_ttext(txt1 as string, txt2 as TText);
+		if (typeof txt1 === 'string' && typeof txt2 === 'string') return this._textcat_text_text(txt1 as string, txt2 as string);
+		throw new TypeError(`Text.textcat: no overload takes these arguments`);
+	}
+
+	/** MEOS: tge_text_ttext */
+	static tge(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.tge_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: tgt_text_ttext */
+	static tgt(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.tgt_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: tle_text_ttext */
+	static tle(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.tle_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: tlt_text_ttext */
+	static tlt(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.tlt_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: tne_text_ttext */
+	static tne(txt: string, temp: TText): Temporal {
+		return wrapTemporal(F.tne_text_ttext(txt, temp.ptr)) as Temporal;
+	}
+
 	/** MEOS: text_to_set */
 	static toSet(txt: string): Set {
 		return wrapSet(F.text_to_set(txt)) as Set;
+	}
+
+	/** MEOS: union_text_set */
+	static union(txt: string, s: TextSet): Set | null {
+		return wrapSetOrNull(F.union_text_set(txt, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: text_upper */
