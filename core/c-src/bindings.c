@@ -380,6 +380,16 @@ void meos_array_destroy_free_w(MeosArray * array) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+const char * indexsearchop_name_w(IndexSearchOp op) {
+  return indexsearchop_name(op);
+}
+
+EMSCRIPTEN_KEEPALIVE
+IndexSearchOp indexsearchop_from_string_w(const char * str) {
+  return indexsearchop_from_string(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
 MeosArray * index_result_create_w() {
   return index_result_create();
 }
@@ -497,6 +507,16 @@ int rtree_nn_cursor_next_w(RTreeNNCursor * cursor, int64_t * id_out, double * di
 EMSCRIPTEN_KEEPALIVE
 void rtree_nn_cursor_close_w(RTreeNNCursor * cursor) {
   rtree_nn_cursor_close(cursor);
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char * sptreekind_name_w(SPTreeKind kind) {
+  return sptreekind_name(kind);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SPTreeKind sptreekind_from_string_w(const char * str) {
+  return sptreekind_from_string(str);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4680,6 +4700,11 @@ uint8_t * temporal_as_wkb_w(const Temporal * temp, uint8_t variant, size_t * siz
 EMSCRIPTEN_KEEPALIVE
 uint8_t wkb_variant_from_endian_w(const char * endian) {
   return wkb_variant_from_endian(endian);
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char * interptype_name_w(interpType interp) {
+  return interptype_name(interp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13118,8 +13143,13 @@ Temporal * contains_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * tem
 }
 
 EMSCRIPTEN_KEEPALIVE
-nullHandleType null_handle_type_from_string_w(const char * str) {
-  return null_handle_type_from_string(str);
+const char * nullhandletype_name_w(nullHandleType type) {
+  return nullhandletype_name(type);
+}
+
+EMSCRIPTEN_KEEPALIVE
+nullHandleType nullhandletype_from_string_w(const char * str) {
+  return nullhandletype_from_string(str);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -17728,8 +17758,13 @@ size_t raquet_pixtype_size_w(MeosPixType pixtype) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-MeosPixType raquet_pixtype_from_string_w(const char * str) {
-  return raquet_pixtype_from_string(str);
+const char * meospixtype_name_w(MeosPixType pixtype) {
+  return meospixtype_name(pixtype);
+}
+
+EMSCRIPTEN_KEEPALIVE
+MeosPixType meospixtype_from_string_w(const char * str) {
+  return meospixtype_from_string(str);
 }
 
 EMSCRIPTEN_KEEPALIVE

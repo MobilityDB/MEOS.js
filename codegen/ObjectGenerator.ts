@@ -105,10 +105,19 @@ interface Encoding {
 	writers?: Record<string, Record<string, string>>;
 	readers?: Record<string, Record<string, string>>;
 }
+/**
+ * The two functions MEOS names from an enumeration that write and read its
+ * values as text (`interptype_name`, `interptype_from_string`), as the catalog
+ * states them in `enums[].text`.
+ */
+interface EnumText {
+	name: string;
+	fromString: string;
+}
 interface FullIdl extends Idl {
 	objectModel: ObjectModel;
 	structs: { name: string; sizeBytes?: number; fields: { name: string; canonical?: string; offset_bits: number }[] }[];
-	enums: { name: string; values?: { name: string; value: number }[] }[];
+	enums: { name: string; values?: { name: string; value: number }[]; text?: EnumText }[];
 	macros?: { name: string; value: unknown }[];
 	typeEncodings?: Record<string, Encoding>;
 	sourceCommit?: string;
@@ -240,6 +249,17 @@ class Model {
 		return f.offset_bits / 8;
 	}
 
+	/**
+	 * The text pair of the enumeration a slot's C type names, so a member takes
+	 * and answers its values as the SQL functions do, as text, through MEOS's
+	 * own functions, and the binding names no value on its own; the lookup
+	 * #enumValue makes for one value.
+	 */
+	enumText(cType: string): EnumText | undefined {
+		const c = clean(cType).replace(/^enum\s+/, '');
+		return this.idl.enums.find(e => e.name === c)?.text;
+	}
+
 	enumValue(enumName: string, valueName: string): number | undefined {
 		return this.idl.enums.find(e => e.name === enumName)?.values?.find(v => v.name === valueName)?.value;
 	}
@@ -339,6 +359,16 @@ class Generator {
 
 	/** Takes the model and the flat signatures, as #Generator's __init__ takes the model. */
 	constructor(private readonly m: Model, private readonly sigs: Map<string, WrapperSignature>) {}
+
+	/**
+	 * The text pair of an enumeration slot whose two functions the flat surface
+	 * emits, as #classForCtype names the class of a pointer slot: a pair the
+	 * flat layer lacks leaves the slot a number.
+	 */
+	private flatText(cType: string): EnumText | undefined {
+		const text = this.m.enumText(cType);
+		return text && this.sigs.has(text.name) && this.sigs.has(text.fromString) ? text : undefined;
+	}
 
 	private defer(cls: string, member: string, kind: string, detail: string): undefined {
 		this.deferred.push({ cls, member, kind, detail });
@@ -702,7 +732,10 @@ class Generator {
 	 * written into a buffer of its catalog size for the call.
 	 */
 	private param(p: WrapperParam): { ts: string; arg: string; setup?: string; teardown?: string } | undefined {
-		if (p.ts !== 'Ptr') return { ts: p.ts, arg: p.tsName };
+		if (p.ts !== 'Ptr') {
+			const text = this.flatText(p.canonical);
+			return text ? { ts: 'string', arg: `F.${text.fromString}(${p.tsName})` } : { ts: p.ts, arg: p.tsName };
+		}
 		const cls = this.m.classForCtype(p.canonical);
 		if (cls) return { ts: cls, arg: `${p.tsName}.ptr` };
 		const vs = this.valueStruct(p.canonical);
@@ -719,7 +752,10 @@ class Generator {
 
 	/** The return: #map_return of MEOS.NET. A value struct is read and its buffer freed. */
 	private returned(sig: WrapperSignature, nullable: boolean): { ts: string; wrap: string } | undefined {
-		if (sig.ret !== 'Ptr') return { ts: sig.ret, wrap: '$' };
+		if (sig.ret !== 'Ptr') {
+			const text = this.flatText(sig.retCanonical);
+			return text ? { ts: 'string', wrap: `F.${text.name}($)!` } : { ts: sig.ret, wrap: '$' };
+		}
 		const cls = this.m.classForCtype(sig.retCanonical);
 		const root = cls && this.rootOf(cls);
 		if (cls && nullable) return { ts: `${cls} | null`, wrap: `wrap${root}OrNull($) as ${cls} | null` };

@@ -73,8 +73,9 @@ describe('generated object layer: arrays', () => {
 	it('takes an array of MEOS values for a counted array argument', () => {
 		const a = TFloat.in(`1@${T0}`);
 		const b = TFloat.in(`3@${T2}`);
-		// interp 3 is LINEAR in interpType; normalize as the SQL constructor does
-		const seq = TSequence.make([a, b], true, true, 3, true);
+		// the interpolation is passed as text, as the SQL constructor takes it, and
+		// MEOS reads it (interptype_from_string); normalize as the SQL constructor does
+		const seq = TSequence.make([a, b], true, true, 'linear', true);
 		assert.ok(seq instanceof TFloatSeq);
 		assert.equal(seq.toString(), `[1@${T0}, 3@${T2}]`);
 		const merged = Temporal.mergeArray([a, b]);
