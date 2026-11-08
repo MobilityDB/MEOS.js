@@ -715,14 +715,14 @@ class Generator {
 	}
 
 	/**
-	 * The size of a class's struct where it lies inline in an array (no varlena
-	 * header), the stride #gen_exposed_functions of MEOS.NET's codegen.py walks
-	 * an answered array of such values at.
+	 * The size of a class's struct where it lies inline in an array, the size
+	 * the catalog states for it, as #struct_stride of MEOS.NET's objectgen.py
+	 * reads it. A struct of a fixed size with a varlena header lies inline at
+	 * that size too: `cbufferset_make` reads `values[i]` at `sizeof(Cbuffer)`
+	 * and sets the header of each copy it keeps.
 	 */
 	private inlineSize(struct: string): number | undefined {
-		const s = this.m.idl.structs.find(x => x.name === struct);
-		if (!s?.sizeBytes || s.fields.some(f => f.name === 'vl_len_')) return undefined;
-		return s.sizeBytes;
+		return this.m.idl.structs.find(x => x.name === struct)?.sizeBytes;
 	}
 
 	/**

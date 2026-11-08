@@ -22,13 +22,12 @@ The function answers a type no class stands for and no scalar or array rule read
 | Raster | pixelAsPoints | array of Pixel needs a reader |
 | STBox | toGbox | return GBOX * needs wrapping |
 
-## argument needs a class (33)
+## argument needs a class (32)
 
 The function takes a type no class stands for and no marshalling rule reads.
 
 | class | member | what is missing |
 |---|---|---|
-| CBufferSet | make | argument values is an array of Cbuffer, which has no class |
 | Pcschema | fromDims | argument dims is an array of PCDimensionSpec, which has no class |
 | Pcschema | registerDims | argument dims is an array of PCDimensionSpec, which has no class |
 | STBox | fromGbox | argument box of type GBOX * needs marshalling |
