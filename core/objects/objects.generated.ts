@@ -44,6 +44,11 @@ function _bytes(bytes: Uint8Array): Ptr {
 	return out;
 }
 
+/** A NUL-terminated UTF-8 copy of a string in the heap, or NULL for null; freed with _free. */
+function _cstring(s: string | null): Ptr {
+	return s === null ? (0 as Ptr) : _bytes(new TextEncoder().encode(s + '\0'));
+}
+
 /** A copy of `size` bytes at `ptr` in a buffer of its own, freed with _free. */
 function _copy(ptr: Ptr, size: number): Ptr {
 	const out = _alloc(size);
@@ -167,6 +172,58 @@ function _takeBOX3D(ptr: Ptr): BOX3D | null {
 	}
 }
 
+/** The MEOS GBOX struct, carried as a value. */
+export interface GBOX {
+	flags: number;
+	xmin: number;
+	xmax: number;
+	ymin: number;
+	ymax: number;
+	zmin: number;
+	zmax: number;
+	mmin: number;
+	mmax: number;
+}
+
+function _readGBOX(ptr: Ptr): GBOX {
+	const _v = _view(ptr, 72);
+	return {
+		flags: _v.getUint16(0, true),
+		xmin: _v.getFloat64(8, true),
+		xmax: _v.getFloat64(16, true),
+		ymin: _v.getFloat64(24, true),
+		ymax: _v.getFloat64(32, true),
+		zmin: _v.getFloat64(40, true),
+		zmax: _v.getFloat64(48, true),
+		mmin: _v.getFloat64(56, true),
+		mmax: _v.getFloat64(64, true),
+	};
+}
+
+function _putGBOX(value: GBOX): Ptr {
+	const ptr = _alloc(72);
+	const _v = _view(ptr, 72);
+	_v.setUint16(0, value.flags, true);
+	_v.setFloat64(8, value.xmin, true);
+	_v.setFloat64(16, value.xmax, true);
+	_v.setFloat64(24, value.ymin, true);
+	_v.setFloat64(32, value.ymax, true);
+	_v.setFloat64(40, value.zmin, true);
+	_v.setFloat64(48, value.zmax, true);
+	_v.setFloat64(56, value.mmin, true);
+	_v.setFloat64(64, value.mmax, true);
+	return ptr;
+}
+
+function _takeGBOX(ptr: Ptr): GBOX | null {
+	if (!ptr) return null;
+	try {
+		return _readGBOX(ptr);
+	} finally {
+		_free(ptr);
+	}
+}
+
 /** The MEOS Interval struct, carried as a value. */
 export interface Interval {
 	time: number;
@@ -264,6 +321,80 @@ function _takeValueCount(ptr: Ptr): ValueCount | null {
 	} finally {
 		_free(ptr);
 	}
+}
+
+/** The MEOS GeomVal struct, read with copies of the MEOS values it holds. */
+export interface GeomVal {
+	geom: Geo | null;
+	val: number;
+}
+
+function _heldGeomVal(ptr: Ptr): GeomVal {
+	const _v = _view(ptr, 16);
+	const _geom = Number(_v.getBigUint64(0, true));
+	const _val = _v.getFloat64(8, true);
+	return {
+		geom: _geom ? wrapGeo(F.geo_copy(_geom)) as Geo : null,
+		val: _val,
+	};
+}
+
+/** The MEOS Pixel struct, read with copies of the MEOS values it holds. */
+export interface Pixel {
+	x: number;
+	y: number;
+	nodata: boolean;
+	value: number;
+	geom: Geo | null;
+}
+
+function _heldPixel(ptr: Ptr): Pixel {
+	const _v = _view(ptr, 32);
+	const _x = _v.getInt32(0, true);
+	const _y = _v.getInt32(4, true);
+	const _nodata = _v.getUint8(8) !== 0;
+	const _value = _v.getFloat64(16, true);
+	const _geom = Number(_v.getBigUint64(24, true));
+	return {
+		x: _x,
+		y: _y,
+		nodata: _nodata,
+		value: _value,
+		geom: _geom ? wrapGeo(F.geo_copy(_geom)) as Geo : null,
+	};
+}
+
+/** The MEOS PCDimensionSpec struct, written in place for the call that reads it. */
+export interface PCDimensionSpec {
+	name: string | null;
+	description: string | null;
+	position: number;
+	interpretation: string | null;
+	scale: number;
+	offset: number;
+	active: boolean;
+}
+
+/** The values one after another at 56 bytes each; the strings go to `strs`, freed with the block. */
+function _writePCDimensionSpecArray(values: PCDimensionSpec[], strs: Ptr[]): Ptr {
+	const ptr = _alloc(Math.max(values.length, 1) * 56);
+	values.forEach((value, _i) => {
+		const _name = _cstring(value.name);
+		if (_name) strs.push(_name);
+		const _description = _cstring(value.description);
+		if (_description) strs.push(_description);
+		const _interpretation = _cstring(value.interpretation);
+		if (_interpretation) strs.push(_interpretation);
+		const _v = _view(ptr + _i * 56, 56);
+		_v.setBigUint64(0, BigInt(_name), true);
+		_v.setBigUint64(8, BigInt(_description), true);
+		_v.setInt32(16, value.position, true);
+		_v.setBigUint64(24, BigInt(_interpretation), true);
+		_v.setFloat64(32, value.scale, true);
+		_v.setFloat64(40, value.offset, true);
+		_v.setUint8(48, value.active ? 1 : 0);
+	});
+	return ptr;
 }
 
 /**
@@ -4219,6 +4350,11 @@ export class Geo extends Value {
 		return F.adisjoint_geo_tgeo(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: adwithin_geo_tgeo */
+	adwithin(temp: TGeo, dist: number, spheroid: boolean): number {
+		return F.adwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
+	}
+
 	/** MEOS: geo_affine */
 	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): this {
 		return wrapGeo(F.geo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as this;
@@ -5183,11 +5319,6 @@ export class Geometry extends Geo {
 		return F.adwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
-	/** MEOS: adwithin_geo_tgeo */
-	private _adwithin_geo_tgeo(temp: TGeo, dist: number, spheroid: boolean): number {
-		return F.adwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
-	}
-
 	/** MEOS: aintersects_geo_tcbuffer */
 	private _aintersects_geo_tcbuffer(temp: TCBuffer): number {
 		return F.aintersects_geo_tcbuffer(this.ptr, temp.ptr);
@@ -5313,6 +5444,11 @@ export class Geometry extends Geo {
 		return wrapTemporalOrNull(F.tdisjoint_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: tdisjoint_geo_trgeometry */
+	private _tdisjoint_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tdwithin_geo_tcbuffer */
 	private _tdwithin_geo_tcbuffer(temp: TCBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_geo_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
@@ -5331,6 +5467,11 @@ export class Geometry extends Geo {
 	/** MEOS: tintersects_geo_tcbuffer */
 	private _tintersects_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_geo_trgeometry */
+	private _tintersects_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_geo_trgeometry */
@@ -5370,11 +5511,10 @@ export class Geometry extends Geo {
 		return super.adisjoint(temp as TGeo);
 	}
 
-	/** MEOS: adwithin_geo_tgeo, adwithin_geo_tcbuffer, chosen by the arguments' types */
-	adwithin(temp: TGeo | TCBuffer, dist: number, spheroid?: boolean): number {
-		if (temp instanceof TCBuffer && typeof dist === 'number' && spheroid === undefined) return this._adwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
-		if (temp instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_geo_tgeo(temp as TGeo, dist as number, spheroid as boolean);
-		throw new TypeError(`Geometry.adwithin: no overload takes these arguments`);
+	/** MEOS: adwithin_geo_tcbuffer, chosen by the arguments' types */
+	override adwithin(temp: TCBuffer | TGeo, dist: number, arg2?: boolean): number {
+		if (temp instanceof TCBuffer && typeof dist === 'number' && arg2 === undefined) return this._adwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
+		return super.adwithin(temp as TGeo, dist as number, arg2 as boolean);
 	}
 
 	/** MEOS: aintersects_geo_tcbuffer, chosen by the arguments' types */
@@ -5651,9 +5791,10 @@ export class Geometry extends Geo {
 		throw new TypeError(`Geometry.tcovers: no overload takes these arguments`);
 	}
 
-	/** MEOS: tdisjoint_geo_tcbuffer, chosen by the arguments' types */
-	override tdisjoint(temp: TCBuffer | TGeo): Temporal | null {
+	/** MEOS: tdisjoint_geo_tcbuffer, tdisjoint_geo_trgeometry, chosen by the arguments' types */
+	override tdisjoint(temp: TCBuffer | TRGeometry | TGeo): Temporal | null {
 		if (temp instanceof TCBuffer) return this._tdisjoint_geo_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TRGeometry) return this._tdisjoint_geo_trgeometry(temp as TRGeometry);
 		return super.tdisjoint(temp as TGeo);
 	}
 
@@ -5670,9 +5811,10 @@ export class Geometry extends Geo {
 		return super.teq(temp as TGeo);
 	}
 
-	/** MEOS: tintersects_geo_tcbuffer, chosen by the arguments' types */
-	override tintersects(temp: TCBuffer | TGeo): Temporal | null {
+	/** MEOS: tintersects_geo_tcbuffer, tintersects_geo_trgeometry, chosen by the arguments' types */
+	override tintersects(temp: TCBuffer | TRGeometry | TGeo): Temporal | null {
 		if (temp instanceof TCBuffer) return this._tintersects_geo_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TRGeometry) return this._tintersects_geo_trgeometry(temp as TRGeometry);
 		return super.tintersects(temp as TGeo);
 	}
 
@@ -8936,6 +9078,18 @@ export class Pcschema extends Value {
 		return F.meos_pc_schema_compression(pcid);
 	}
 
+	/** MEOS: meos_pc_schema_from_dims */
+	static fromDims(pcid: number, srid: number, compression: string, dims: PCDimensionSpec[]): Pcschema {
+		const _dimsStrs: Ptr[] = [];
+		const _dims = _writePCDimensionSpecArray(dims, _dimsStrs);
+		try {
+			return wrapPcschema(F.meos_pc_schema_from_dims(pcid, srid, compression, _dims, dims.length)) as Pcschema;
+		} finally {
+			_dimsStrs.forEach(_free);
+			_free(_dims);
+		}
+	}
+
 	/** MEOS: meos_pc_schema */
 	static get(pcid: number): Pcschema {
 		return wrapPcschema(F.meos_pc_schema(pcid)) as Pcschema;
@@ -8949,6 +9103,18 @@ export class Pcschema extends Value {
 	/** MEOS: meos_pc_schema_register */
 	static register(pcid: number, schema: Pcschema): void {
 		F.meos_pc_schema_register(pcid, schema.ptr);
+	}
+
+	/** MEOS: meos_pc_schema_register_dims */
+	static registerDims(pcid: number, srid: number, compression: string, dims: PCDimensionSpec[]): boolean {
+		const _dimsStrs: Ptr[] = [];
+		const _dims = _writePCDimensionSpecArray(dims, _dimsStrs);
+		try {
+			return F.meos_pc_schema_register_dims(pcid, srid, compression, _dims, dims.length);
+		} finally {
+			_dimsStrs.forEach(_free);
+			_free(_dims);
+		}
 	}
 
 	/** MEOS: meos_pc_schema_register_xml */
@@ -10558,6 +10724,25 @@ export class Raster extends Value {
 		throw new TypeError(`Raster.div: no overload takes these arguments`);
 	}
 
+	/** MEOS: raster_dump_as_polygons */
+	dumpAsPolygons(band: number = 1, exclude_nodata: boolean = true): GeomVal[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.raster_dump_as_polygons(this.ptr, band, exclude_nodata, _count);
+			if (!_arr) return [];
+			const _n = _view(_count, 4).getInt32(0, true);
+			try {
+				const _out: GeomVal[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_heldGeomVal(_arr + _i * 16));
+				return _out;
+			} finally {
+				F.geomval_arr_free(_arr, _n);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
 	/** MEOS: raster_height */
 	height(): number {
 		return F.raster_height(this.ptr);
@@ -10588,6 +10773,25 @@ export class Raster extends Value {
 	/** MEOS: raster_num_bands */
 	numBands(): number {
 		return F.raster_num_bands(this.ptr);
+	}
+
+	/** MEOS: raster_pixel_as_points */
+	pixelAsPoints(band: number = 1, exclude_nodata: boolean = true): Pixel[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.raster_pixel_as_points(this.ptr, band, exclude_nodata, _count);
+			if (!_arr) return [];
+			const _n = _view(_count, 4).getInt32(0, true);
+			try {
+				const _out: Pixel[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_heldPixel(_arr + _i * 32));
+				return _out;
+			} finally {
+				F.pixel_arr_free(_arr, _n);
+			}
+		} finally {
+			_free(_count);
+		}
 	}
 
 	/** MEOS: add_float_raster */
@@ -11813,6 +12017,11 @@ export class STBox extends Box {
 		return _takeBOX3D(F.stbox_to_box3d(this.ptr))!;
 	}
 
+	/** MEOS: stbox_to_gbox */
+	toGbox(): GBOX {
+		return _takeGBOX(F.stbox_to_gbox(this.ptr))!;
+	}
+
 	/** MEOS: stbox_to_geo */
 	toGeo(): Geo {
 		return wrapGeo(F.stbox_to_geo(this.ptr)) as Geo;
@@ -11896,6 +12105,16 @@ export class STBox extends Box {
 	/** MEOS: stbox_from_wkb */
 	static fromEWKB(wkb: Uint8Array): STBox {
 		return STBox.fromWKB(wkb);
+	}
+
+	/** MEOS: gbox_to_stbox */
+	static fromGbox(box: GBOX): STBox {
+		const _box = _putGBOX(box);
+		try {
+			return wrapSTBox(F.gbox_to_stbox(_box)) as STBox;
+		} finally {
+			_free(_box);
+		}
 	}
 
 	/** MEOS: h3index_to_stbox */
@@ -17384,7 +17603,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: adwithin_tgeo_geo */
-	private _adwithin_tgeo_geo(gs: Geometry, dist: number, spheroid: boolean): number {
+	private _adwithin_tgeo_geo(gs: Geo, dist: number, spheroid: boolean): number {
 		return F.adwithin_tgeo_geo(this.ptr, gs.ptr, dist, spheroid);
 	}
 
@@ -17566,9 +17785,9 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: adwithin_tgeo_geo, adwithin_tgeo_tgeo, chosen by the arguments' types */
-	adwithin(gs: Geometry | TGeo, dist: number, spheroid: boolean): number {
-		if (gs instanceof Geometry && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_geo(gs as Geometry, dist as number, spheroid as boolean);
+	adwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): number {
 		if (gs instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_tgeo(gs as TGeo, dist as number, spheroid as boolean);
+		if (gs instanceof Geo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_geo(gs as Geo, dist as number, spheroid as boolean);
 		throw new TypeError(`TGeo.adwithin: no overload takes these arguments`);
 	}
 
@@ -18171,6 +18390,11 @@ export class TGeogPoint extends TPoint {
 		return super.startValue() as Geography;
 	}
 
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, which answers a TBool for a TGeogPoint */
+	override tdisjoint(gs: Geo | TGeo): TBool | null {
+		return super.tdisjoint(gs) as TBool | null;
+	}
+
 	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeogPoint */
 	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
 		return super.tdistance(gs, spheroid) as TFloat | null;
@@ -18194,6 +18418,11 @@ export class TGeogPoint extends TPoint {
 	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeogPoint */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, which answers a TBool for a TGeogPoint */
+	override tintersects(gs: Geo | TGeo): TBool | null {
+		return super.tintersects(gs) as TBool | null;
 	}
 
 	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeogPoint */
@@ -23766,6 +23995,16 @@ export class TRGeometry extends TSpatial {
 		return wrapGeoOrNull(F.shortestline_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Geo | null;
 	}
 
+	/** MEOS: tdisjoint_trgeometry_geo */
+	private _tdisjoint_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_trgeometry_trgeometry */
+	private _tdisjoint_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tdistance_trgeometry_geo */
 	private _tdistance_trgeometry_geo(gs: Geometry): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
@@ -23794,6 +24033,16 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: teq_trgeometry_geo */
 	private _teq_trgeometry_geo(gs: Geometry): Temporal | null {
 		return wrapTemporalOrNull(F.teq_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_trgeometry_geo */
+	private _tintersects_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_trgeometry_trgeometry */
+	private _tintersects_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_trgeometry_geo */
@@ -24358,6 +24607,13 @@ export class TRGeometry extends TSpatial {
 		}
 	}
 
+	/** MEOS: tdisjoint_trgeometry_geo, tdisjoint_trgeometry_trgeometry, chosen by the arguments' types */
+	tdisjoint(gs: Geometry | TRGeometry): Temporal | null {
+		if (gs instanceof Geometry) return this._tdisjoint_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._tdisjoint_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.tdisjoint: no overload takes these arguments`);
+	}
+
 	/** MEOS: tdistance_trgeometry_geo, tdistance_trgeometry_tpoint, tdistance_trgeometry_trgeometry, chosen by the arguments' types */
 	tdistance(gs: Geometry | TGeomPoint | TRGeometry): Temporal | null {
 		if (gs instanceof TGeomPoint) return this._tdistance_trgeometry_tpoint(gs as TGeomPoint);
@@ -24404,6 +24660,13 @@ export class TRGeometry extends TSpatial {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tintersects_trgeometry_geo, tintersects_trgeometry_trgeometry, chosen by the arguments' types */
+	tintersects(gs: Geometry | TRGeometry): Temporal | null {
+		if (gs instanceof Geometry) return this._tintersects_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._tintersects_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.tintersects: no overload takes these arguments`);
 	}
 
 	/** MEOS: tne_trgeometry_geo, chosen by the arguments' types */

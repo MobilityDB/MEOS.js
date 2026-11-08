@@ -88,7 +88,12 @@ interface ObjectModel {
 }
 interface Shape {
 	outParams?: string[];
-	arrayReturn?: { lengthFrom: { kind: string; name: string }; element: { canonical: string } };
+	arrayReturn?: {
+		lengthFrom: { kind: string; name: string };
+		element: { canonical: string };
+		/** The function that releases the answered array, and what it holds with it. */
+		releasedBy?: { function: string; param: string };
+	};
 	inputArrays?: { param: string; lengthFrom: { kind: string; name: string }; element: { canonical: string } }[];
 	outputArrays?: { param: string }[];
 	nullableResult?: string;
@@ -257,6 +262,7 @@ const ELEMENT_READERS: Record<string, { ts: string; width: number; read: string;
 	'int': { ts: 'number', width: 4, read: '_v.getInt32({o}, true)', write: '_v.setInt32({o}, {x}, true)' },
 	'int32_t': { ts: 'number', width: 4, read: '_v.getInt32({o}, true)', write: '_v.setInt32({o}, {x}, true)' },
 	'int16_t': { ts: 'number', width: 2, read: '_v.getInt16({o}, true)', write: '_v.setInt16({o}, {x}, true)' },
+	'uint16_t': { ts: 'number', width: 2, read: '_v.getUint16({o}, true)', write: '_v.setUint16({o}, {x}, true)' },
 	'uint32_t': { ts: 'number', width: 4, read: '_v.getUint32({o}, true)', write: '_v.setUint32({o}, {x}, true)' },
 	'int64_t': { ts: 'number', width: 8, read: 'Number(_v.getBigInt64({o}, true))', write: '_v.setBigInt64({o}, BigInt({x}), true)' },
 	'uint64_t': { ts: 'bigint', width: 8, read: '_v.getBigUint64({o}, true)', write: '_v.setBigUint64({o}, {x}, true)' },
@@ -291,6 +297,16 @@ const DEFERRAL_KINDS: Record<string, string> = {
 interface ValueStruct {
 	size: number;
 	fields: { name: string; offset: number; r: { ts: string; width: number; read: string; write: string } }[];
+}
+/** A struct read off an answered array, its MEOS values copied ({x} is the field's raw read). */
+interface HeldStruct {
+	size: number;
+	fields: { name: string; ts: string; offset: number; read: string; value: string }[];
+}
+/** A struct written in place for a call; a field with no `write` is a string. */
+interface WrittenStruct {
+	size: number;
+	fields: { name: string; ts: string; offset: number; write: string | undefined }[];
 }
 
 interface Emitted {
@@ -445,6 +461,19 @@ class Generator {
 					args.set(p.name, tmp);
 					continue;
 				}
+				// An array of structs of scalars and strings no class stands for, laid
+				// out in place for the call (#written_struct of MEOS.NET); the block
+				// and every string in it are freed after the call.
+				const written = elem ? undefined : clean(arr.element.canonical);
+				if (written && this.writtenStruct(written)) {
+					this.usedWritten.add(written);
+					decl.push({ name: p.tsName, ts: `${written}[]` });
+					const tmp = temp(p.name);
+					setup.push(`const ${tmp}Strs: Ptr[] = [];`, `const ${tmp} = _write${written}Array(${p.tsName}, ${tmp}Strs);`);
+					teardown.push(`${tmp}Strs.forEach(_free);`, `_free(${tmp});`);
+					args.set(p.name, tmp);
+					continue;
+				}
 				if (!elem)
 					return this.defer(cls, oo, 'argument needs a class',
 						`argument ${p.name} is an array of ${clean(arr.element.canonical)}, which has no class`);
@@ -488,6 +517,32 @@ class Generator {
 					`${outReads.length} value(s) answered beside a ${sig.retCanonical} return`);
 			ret = `${outReads[0].ts} | null`;
 			body = [`if (!${call}) return null;`, `return ${outReads[0].expr};`];
+		} else if (arrayReturn && countOut && args.get(countOut) === '_count'
+			&& this.heldStruct(clean(arrayReturn.element.canonical))) {
+			// An array of structs holding MEOS values: each element is read with
+			// copies of what it holds, then the array is released, values with it,
+			// by the function the catalog names (`releasedBy`), as
+			// #held_struct_array of MEOS.NET's tools/objectgen.py does.
+			const name = clean(arrayReturn.element.canonical);
+			const s = this.heldStruct(name)!;
+			const release = arrayReturn.releasedBy?.function;
+			if (!release || this.sigs.get(release)?.params.length !== 2)
+				return this.defer(cls, oo, 'return needs a class',
+					`array of ${name} holds MEOS values and the catalog names no function releasing it`);
+			this.usedHeld.add(name);
+			ret = `${name}[]`;
+			body = [
+				`const _arr = ${call};`,
+				`if (!_arr) return [];`,
+				`const _n = _view(_count, 4).getInt32(0, true);`,
+				`try {`,
+				`\tconst _out: ${name}[] = [];`,
+				`\tfor (let _i = 0; _i < _n; _i++) _out.push(_held${name}(_arr + _i * ${s.size}));`,
+				`\treturn _out;`,
+				`} finally {`,
+				`\tF.${release}(_arr, _n);`,
+				`}`,
+			];
 		} else if (arrayReturn && countOut && args.get(countOut) === '_count') {
 			const read = this.arrayElement(arrayReturn.element.canonical);
 			if (!read)
@@ -712,6 +767,124 @@ class Generator {
 		}
 		this.valueStructCache = out;
 		return out;
+	}
+
+	/** The held and written structs a method of the layer reads or writes, so only those are emitted. */
+	readonly usedHeld = new Set<string>();
+	readonly usedWritten = new Set<string>();
+
+	/**
+	 * The function the model states copies a value of the class or of an
+	 * ancestor (its member `copy`), taking that one value: #copy_function of
+	 * MEOS.NET's tools/objectgen.py.
+	 */
+	private copyFunction(cls: string): string | undefined {
+		for (const owner of [cls, ...this.m.ancestors(cls)])
+			for (const e of this.m.om.classes[owner]?.methods ?? [])
+				if (e.ooName === 'copy' && !e.ooExclude && this.sigs.get(e.function)?.params.length === 1)
+					return e.function;
+		return undefined;
+	}
+
+	/**
+	 * A struct no class stands for whose fields are scalars or pointers to a
+	 * class the model can copy, read off an answered array: #held_struct of
+	 * MEOS.NET's tools/objectgen.py. Each field is read at the offset the catalog
+	 * states, a scalar as its TypeScript type and a MEOS value as a copy of the
+	 * one the element points at (null where it points at nothing), so what the
+	 * caller holds outlives the release of the array. A struct of scalars alone
+	 * is a value struct (#valueStructs) and is not one of these.
+	 */
+	heldStruct(name: string): HeldStruct | undefined {
+		if (this.valueStructs().has(name) || new Set(this.m.ctype.values()).has(name)) return undefined;
+		const s = this.m.idl.structs.find(x => x.name === name);
+		if (!s?.sizeBytes || !s.fields?.length) return undefined;
+		const fields: HeldStruct['fields'] = [];
+		for (const f of s.fields) {
+			const offset = f.offset_bits / 8;
+			const canonical = clean(f.canonical ?? '');
+			const cls = this.m.classForCtype(canonical);
+			if (cls) {
+				const copy = this.copyFunction(cls);
+				if (!copy) return undefined;
+				fields.push({ name: f.name, ts: `${cls} | null`, offset, read: 'Number(_v.getBigUint64({o}, true))',
+					value: `{x} ? wrap${this.rootOf(cls)}(F.${copy}({x})) as ${cls} : null` });
+				continue;
+			}
+			const r = ELEMENT_READERS[this.resolve(canonical)];
+			if (!r || !Number.isInteger(offset)) return undefined;
+			fields.push({ name: f.name, ts: r.ts, offset, read: r.read, value: '{x}' });
+		}
+		return fields.some(f => f.value !== '{x}') ? { size: s.sizeBytes, fields } : undefined;
+	}
+
+	/**
+	 * A struct no class stands for whose fields are scalars or strings, which a
+	 * function reads in place from an array of them: #written_struct of
+	 * MEOS.NET's tools/objectgen.py. Each value is laid out at the struct's size
+	 * and each field at the offset the catalog states: a string as a UTF-8 copy
+	 * the call holds and frees after it (a null as NULL), any other scalar at its
+	 * own width.
+	 */
+	writtenStruct(name: string): WrittenStruct | undefined {
+		if (new Set(this.m.ctype.values()).has(name) || this.m.classForCtype(`${name} *`)) return undefined;
+		const s = this.m.idl.structs.find(x => x.name === name);
+		if (!s?.sizeBytes || !s.fields?.length) return undefined;
+		const fields: WrittenStruct['fields'] = [];
+		for (const f of s.fields) {
+			const offset = f.offset_bits / 8;
+			const canonical = clean(f.canonical ?? '');
+			if (!Number.isInteger(offset)) return undefined;
+			if (canonical === 'char *') {
+				fields.push({ name: f.name, ts: 'string | null', offset, write: undefined });
+				continue;
+			}
+			const r = ELEMENT_READERS[this.resolve(canonical)];
+			if (!r) return undefined;
+			fields.push({ name: f.name, ts: r.ts, offset, write: r.write });
+		}
+		return { size: s.sizeBytes, fields };
+	}
+
+	/**
+	 * The interface and reader of every held struct, and the interface and array
+	 * writer of every written struct, the layer used. A reader takes every field
+	 * off the element before it copies a MEOS value, since a copy may grow the
+	 * heap; a writer makes its strings before it takes the view it writes through,
+	 * for the same reason.
+	 */
+	structCode(): string {
+		const lines: string[] = [];
+		for (const name of [...this.usedHeld].sort()) {
+			const s = this.heldStruct(name)!;
+			lines.push(`/** The MEOS ${name} struct, read with copies of the MEOS values it holds. */`, `export interface ${name} {`);
+			for (const f of s.fields) lines.push(`\t${f.name}: ${f.ts};`);
+			lines.push('}', '');
+			lines.push(`function _held${name}(ptr: Ptr): ${name} {`, `\tconst _v = _view(ptr, ${s.size});`);
+			for (const f of s.fields) lines.push(`\tconst _${f.name} = ${f.read.replace('{o}', String(f.offset))};`);
+			lines.push('\treturn {');
+			for (const f of s.fields) lines.push(`\t\t${f.name}: ${f.value.replaceAll('{x}', `_${f.name}`)},`);
+			lines.push('\t};', '}', '');
+		}
+		for (const name of [...this.usedWritten].sort()) {
+			const s = this.writtenStruct(name)!;
+			lines.push(`/** The MEOS ${name} struct, written in place for the call that reads it. */`, `export interface ${name} {`);
+			for (const f of s.fields) lines.push(`\t${f.name}: ${f.ts};`);
+			lines.push('}', '');
+			lines.push(`/** The values one after another at ${s.size} bytes each; the strings go to \`strs\`, freed with the block. */`,
+				`function _write${name}Array(values: ${name}[], strs: Ptr[]): Ptr {`,
+				`\tconst ptr = _alloc(Math.max(values.length, 1) * ${s.size});`,
+				'\tvalues.forEach((value, _i) => {');
+			for (const f of s.fields.filter(f => !f.write))
+				lines.push(`\t\tconst _${f.name} = _cstring(value.${f.name});`, `\t\tif (_${f.name}) strs.push(_${f.name});`);
+			lines.push(`\t\tconst _v = _view(ptr + _i * ${s.size}, ${s.size});`);
+			for (const f of s.fields)
+				lines.push(f.write
+					? `\t\t${f.write.replace('{o}', String(f.offset)).replace('{x}', `value.${f.name}`)};`
+					: `\t\t_v.setBigUint64(${f.offset}, BigInt(_${f.name}), true);`);
+			lines.push('\t});', '\treturn ptr;', '}', '');
+		}
+		return lines.join('\n');
 	}
 
 	/**
@@ -1321,6 +1494,11 @@ function _bytes(bytes: Uint8Array): Ptr {
 	return out;
 }
 
+/** A NUL-terminated UTF-8 copy of a string in the heap, or NULL for null; freed with _free. */
+function _cstring(s: string | null): Ptr {
+	return s === null ? (0 as Ptr) : _bytes(new TextEncoder().encode(s + '\\0'));
+}
+
 /** A copy of \`size\` bytes at \`ptr\` in a buffer of its own, freed with _free. */
 function _copy(ptr: Ptr, size: number): Ptr {
 	const out = _alloc(size);
@@ -1391,7 +1569,7 @@ function main(): void {
 	const BANNER = '/* AUTO-GENERATED - DO NOT ' + 'EDIT. Run: npm run generate */\n';
 	const classes = model.classes();
 	const body = classes.map(c => gen.emitClass(c)).join('\n');
-	const structs = gen.valueStructCode();
+	const structs = gen.valueStructCode() + '\n' + gen.structCode();
 	// The types of their own the flat surface declares over a width (H3Index),
 	// which the signatures name.
 	const own = ownTypeNames().map(n => `, ${n}`).join('');
