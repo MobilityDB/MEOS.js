@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
 import {
+	CBuffer,
+	CBufferSet,
 	FloatSpan,
 	IntSet,
 	TBox,
@@ -86,6 +88,18 @@ describe('generated object layer: arrays', () => {
 		assert.deepEqual(spans.map(s => s.toString()), ['[1, 3)', '[5, 7)']);
 		for (const s of spans) assert.ok(s instanceof IntSpan);
 		spans.forEach(s => s.free());
+	});
+
+	it('passes the inline structs of a counted array argument as values', () => {
+		// cbufferset_make reads its buffers as Cbuffer values one after another,
+		// a varlena header with each, at sizeof(Cbuffer).
+		const a = CBuffer.in('Cbuffer(Point(1 1),0.5)');
+		const b = CBuffer.in('Cbuffer(Point(2 2),1.5)');
+		const set = CBufferSet.make([a, b]);
+		assert.ok(set instanceof CBufferSet);
+		assert.equal(set.numValues(), 2);
+		assert.equal(set.toString(), '{"Cbuffer(POINT(1 1),0.5)", "Cbuffer(POINT(2 2),1.5)"}');
+		[a, b, set].forEach(x => x.free());
 	});
 });
 

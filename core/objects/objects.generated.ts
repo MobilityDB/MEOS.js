@@ -2601,6 +2601,16 @@ export class CBufferSet extends SpatialSet {
 	static in(str: string): CBufferSet {
 		return wrapSet(F.cbufferset_in(str)) as CBufferSet;
 	}
+
+	/** MEOS: cbufferset_make */
+	static make(values: CBuffer[]): CBufferSet {
+		const _values = _structArray(values.map(x => x.ptr), 32);
+		try {
+			return wrapSet(F.cbufferset_make(_values, values.length)) as CBufferSet;
+		} finally {
+			_free(_values);
+		}
+	}
 }
 
 /**
