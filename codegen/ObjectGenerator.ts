@@ -399,7 +399,7 @@ class Generator {
 				if (!reader)
 					return this.defer(cls, oo, 'out-parameter needs a reader',
 						`out-parameter ${p.name} of type ${clean(p.canonical)}`);
-				const tmp = `_${p.name}`;
+				const tmp = temp(p.name);
 				setup.push(`const ${tmp} = _alloc(${reader.width});`);
 				teardown.push(`_free(${tmp});`);
 				args.set(p.name, tmp);
@@ -420,9 +420,10 @@ class Generator {
 				const stride = owner && this.inlineSize(clean(arr.element.canonical));
 				if (!elem && owner && stride) {
 					decl.push({ name: p.tsName, ts: `${owner}[]` });
-					setup.push(`const _${p.name} = _structArray(${p.tsName}.map(x => x.ptr), ${stride});`);
-					teardown.push(`_free(_${p.name});`);
-					args.set(p.name, `_${p.name}`);
+					const tmp = temp(p.name);
+					setup.push(`const ${tmp} = _structArray(${p.tsName}.map(x => x.ptr), ${stride});`);
+					teardown.push(`_free(${tmp});`);
+					args.set(p.name, tmp);
 					continue;
 				}
 				// An array of scalars: WKB bytes are a Uint8Array copied in whole,
@@ -430,7 +431,7 @@ class Generator {
 				// caller's own array of scalars (#call_body there).
 				const scalar = elem ? undefined : ELEMENT_READERS[this.resolve(clean(arr.element.canonical))];
 				if (!elem && scalar) {
-					const tmp = `_${p.name}`;
+					const tmp = temp(p.name);
 					if (scalar.width === 1 && scalar.ts === 'number') {
 						decl.push({ name: p.tsName, ts: 'Uint8Array' });
 						setup.push(`const ${tmp} = _bytes(${p.tsName});`);
@@ -448,9 +449,10 @@ class Generator {
 					return this.defer(cls, oo, 'argument needs a class',
 						`argument ${p.name} is an array of ${clean(arr.element.canonical)}, which has no class`);
 				decl.push({ name: p.tsName, ts: `${elem}[]` });
-				setup.push(`const _${p.name} = _ptrArray(${p.tsName}.map(x => x.ptr));`);
-				teardown.push(`_free(_${p.name});`);
-				args.set(p.name, `_${p.name}`);
+				const tmp = temp(p.name);
+				setup.push(`const ${tmp} = _ptrArray(${p.tsName}.map(x => x.ptr));`);
+				teardown.push(`_free(${tmp});`);
+				args.set(p.name, tmp);
 				continue;
 			}
 			const mapped = this.param(p);
@@ -650,7 +652,7 @@ class Generator {
 		if (cls) return { ts: cls, arg: `${p.tsName}.ptr` };
 		const vs = this.valueStruct(p.canonical);
 		if (vs) {
-			const tmp = `_${p.name}`;
+			const tmp = temp(p.name);
 			this.usedStructs.add(vs);
 			return { ts: vs, arg: tmp, setup: `const ${tmp} = _put${vs}(${p.tsName});`, teardown: `_free(${tmp});` };
 		}
@@ -1243,6 +1245,14 @@ const TS_KEYWORDS = new Set(['break', 'case', 'catch', 'class', 'const', 'contin
 	'public', 'static', 'yield', 'type', 'declare']);
 const safe = (n: string) => (TS_KEYWORDS.has(n) ? `${n}_` : n);
 
+/**
+ * The local holding the marshalled copy of parameter `n` for the call: `_n`, or
+ * `_n_` where `_n` names a helper the module defines, as #safe escapes a
+ * keyword. `const _bytes = _bytes(bytes)` would read the local in its own
+ * initializer, and every call to the helper after it would call the local.
+ */
+const temp = (n: string) => (PRELUDE_HELPERS.has(`_${n}`) ? `_${n}_` : `_${n}`);
+
 // -------------------------------------------------------------------------
 // FILES
 // -------------------------------------------------------------------------
@@ -1331,6 +1341,9 @@ export abstract class MeosObject {
 	}
 }
 `;
+
+/** The helpers PRELUDE defines, which #temp keeps the locals of a call from shadowing. */
+const PRELUDE_HELPERS = new Set([...PRELUDE.matchAll(/^function (_\w+)\(/gm)].map(m => m[1]));
 
 /** GAP-LEDGER.md, as gapledger.Ledger of MEOS.NET writes its object-layer section. */
 function ledger(gen: Generator, commit: string): string {
