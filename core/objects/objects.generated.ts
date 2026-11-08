@@ -5737,6 +5737,17 @@ export class Geometry extends Geo {
 		return F.geom_max_distance3d(this.ptr, gs2.ptr);
 	}
 
+	/** MEOS: geom_minimum_bounding_radius */
+	minimumBoundingRadius(): [Geo, number] {
+		const _radius = _alloc(8);
+		try {
+			const _r = wrapGeo(F.geom_minimum_bounding_radius(this.ptr, _radius)) as Geo;
+			return [_r, ((_v: DataView) => _v.getFloat64(0, true))(_view(_radius, 8))];
+		} finally {
+			_free(_radius);
+		}
+	}
+
 	/** MEOS: minus_geo_set, which answers a GeomSet for a Geometry */
 	override minus(s: GeoSet): GeomSet | null {
 		return super.minus(s) as GeomSet | null;
@@ -7058,6 +7069,56 @@ export class Jsonb extends Value {
 			return wrapJsonb(F.jsonb_delete_path(this.ptr, _path_elems, path_elems.length)) as this;
 		} finally {
 			_free(_path_elems);
+		}
+	}
+
+	/** MEOS: jsonb_each */
+	each(): [Text[], Jsonb[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.jsonb_each(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: Text[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapText(Number(_v.getBigUint64(_i * 8, true))) as Text); }
+				const _o1: Jsonb[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapJsonb(Number(_v.getBigUint64(_i * 8, true))) as Jsonb); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: jsonb_each_text */
+	eachText(): [Text[], Text[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.jsonb_each_text(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: Text[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapText(Number(_v.getBigUint64(_i * 8, true))) as Text); }
+				const _o1: Text[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapText(Number(_v.getBigUint64(_i * 8, true))) as Text); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
 		}
 	}
 
@@ -10342,6 +10403,11 @@ export class RTree extends Value {
 		return F.rtree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
 	}
 
+	/** MEOS: rtree_join */
+	join(rtree2: RTree, op: string, result: MeosArray): number {
+		return F.rtree_join(this.ptr, rtree2.ptr, F.indexsearchop_from_string(op), result.ptr);
+	}
+
 	/** MEOS: rtree_load */
 	load(boxes: Ptr, ids: number[]): boolean {
 		const _ids = _alloc(Math.max(ids.length, 1) * 8);
@@ -10361,6 +10427,21 @@ export class RTree extends Value {
 	/** MEOS: rtree_num_entries */
 	numEntries(): number {
 		return F.rtree_num_entries(this.ptr);
+	}
+
+	/** MEOS: rtree_search */
+	search(op: string, query: Ptr, result: MeosArray): number {
+		return F.rtree_search(this.ptr, F.indexsearchop_from_string(op), query, result.ptr);
+	}
+
+	/** MEOS: rtree_search_temporal */
+	searchTemporal(op: string, temp: Temporal, result: MeosArray): number {
+		return F.rtree_search_temporal(this.ptr, F.indexsearchop_from_string(op), temp.ptr, result.ptr);
+	}
+
+	/** MEOS: rtree_search_temporal_dedup */
+	searchTemporalDedup(op: string, temp: Temporal, maxboxes: number, result: MeosArray): number {
+		return F.rtree_search_temporal_dedup(this.ptr, F.indexsearchop_from_string(op), temp.ptr, maxboxes, result.ptr);
 	}
 
 	/** MEOS: rtree_create_bigintspan */
@@ -10412,6 +10493,19 @@ export class RTreeNNCursor extends Value {
 	/** MEOS: rtree_nn_cursor_close */
 	close(): void {
 		F.rtree_nn_cursor_close(this.ptr);
+	}
+
+	/** MEOS: rtree_nn_cursor_next */
+	next(): [number, number] | null {
+		const _id_out = _alloc(8);
+		const _dist_out = _alloc(8);
+		try {
+			if (!F.rtree_nn_cursor_next(this.ptr, _id_out, _dist_out)) return null;
+			return [((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
+		} finally {
+			_free(_id_out);
+			_free(_dist_out);
+		}
 	}
 
 	/** MEOS: rtree_nn_cursor_open */
@@ -10734,6 +10828,31 @@ export class Raster extends Value {
 				F.geomval_arr_free(_arr, _n);
 			}
 		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: raster_dump_values */
+	dumpValues(band: number, exclude_nodata: boolean = true): [number[], boolean[]] {
+		const _nodata = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.raster_dump_values(this.ptr, band, exclude_nodata, _nodata, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_nodata, 8).getBigUint64(0, true));
+			try {
+				const _o0: number[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(_v.getFloat64(_i * 8, true)); }
+				const _o1: boolean[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 1); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getUint8(_i * 1) !== 0); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_nodata);
 			_free(_count);
 		}
 	}
@@ -11223,6 +11342,19 @@ export class SPNNCursor extends Value {
 		F.sptree_nn_cursor_close(this.ptr);
 	}
 
+	/** MEOS: sptree_nn_cursor_next */
+	next(): [number, number] | null {
+		const _id_out = _alloc(8);
+		const _dist_out = _alloc(8);
+		try {
+			if (!F.sptree_nn_cursor_next(this.ptr, _id_out, _dist_out)) return null;
+			return [((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
+		} finally {
+			_free(_id_out);
+			_free(_dist_out);
+		}
+	}
+
 	/** MEOS: sptree_nn_cursor_open */
 	static open(sptree: SPTree, query: Ptr): SPNNCursor {
 		return wrapSPNNCursor(F.sptree_nn_cursor_open(sptree.ptr, query)) as SPNNCursor;
@@ -11259,6 +11391,11 @@ export class SPTree extends Value {
 		return F.sptree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
 	}
 
+	/** MEOS: sptree_join */
+	join(sptree2: SPTree, op: string, result: MeosArray): number {
+		return F.sptree_join(this.ptr, sptree2.ptr, F.indexsearchop_from_string(op), result.ptr);
+	}
+
 	/** MEOS: sptree_load */
 	load(boxes: Ptr, ids: number[]): boolean {
 		const _ids = _alloc(Math.max(ids.length, 1) * 8);
@@ -11278,6 +11415,21 @@ export class SPTree extends Value {
 	/** MEOS: sptree_num_entries */
 	numEntries(): number {
 		return F.sptree_num_entries(this.ptr);
+	}
+
+	/** MEOS: sptree_search */
+	search(op: string, query: Ptr, result: MeosArray): number {
+		return F.sptree_search(this.ptr, F.indexsearchop_from_string(op), query, result.ptr);
+	}
+
+	/** MEOS: sptree_search_temporal */
+	searchTemporal(op: string, temp: Temporal, result: MeosArray): number {
+		return F.sptree_search_temporal(this.ptr, F.indexsearchop_from_string(op), temp.ptr, result.ptr);
+	}
+
+	/** MEOS: sptree_search_temporal_dedup */
+	searchTemporalDedup(op: string, temp: Temporal, maxboxes: number, result: MeosArray): number {
+		return F.sptree_search_temporal_dedup(this.ptr, F.indexsearchop_from_string(op), temp.ptr, maxboxes, result.ptr);
 	}
 
 	/** MEOS: sptree_create_bigintspan */
@@ -12983,6 +13135,33 @@ export class Temporal extends MeosObject {
 		}
 	}
 
+	/** MEOS: temporal_time_split */
+	timeSplit(duration: Interval, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], TimestampTz[]] {
+		const _duration = _putInterval(duration);
+		const _bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.temporal_time_split(this.ptr, _duration, torigin, border_inc, _bins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: TimestampTz[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_duration);
+			_free(_bins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: temporal_timestamps */
 	timestamps(): TimestampTz[] {
 		const _count = _alloc(4);
@@ -14168,6 +14347,31 @@ export class TBigInt extends TNumber {
 		return super.trend() as TInt | null;
 	}
 
+	/** MEOS: tbigint_unnest */
+	unnest(): [SpanSet[], number[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tbigint_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tbigint_value */
 	value(): number {
 		return F.tbigint_value(this.ptr);
@@ -14259,6 +14463,31 @@ export class TBigInt extends TNumber {
 		return super.valuespans() as BigIntSpanSet;
 	}
 
+	/** MEOS: tbigint_value_split */
+	valueSplit(vsize: number, vorigin: number = 0, border_inc: boolean = true): [Temporal[], number[]] {
+		const _bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tbigint_value_split(this.ptr, vsize, vorigin, border_inc, _bins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_bins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tbigint_value_time_boxes */
 	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
@@ -14277,6 +14506,39 @@ export class TBigInt extends TNumber {
 			}
 		} finally {
 			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tbigint_value_time_split */
+	valueTimeSplit(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], number[], TimestampTz[]] {
+		const _duration = _putInterval(duration);
+		const _value_bins = _alloc(8);
+		const _time_bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tbigint_value_time_split(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _value_bins, _time_bins, _count);
+			if (!_a0) return [[], [], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_value_bins, 8).getBigUint64(0, true));
+			const _a2 = Number(_view(_time_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				const _o2: TimestampTz[] = [];
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1, _o2];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+				if (_a2) _free(_a2);
+			}
+		} finally {
+			_free(_duration);
+			_free(_value_bins);
+			_free(_time_bins);
 			_free(_count);
 		}
 	}
@@ -14543,6 +14805,31 @@ export class TBool extends TAlpha {
 	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TBool */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
+	}
+
+	/** MEOS: tbool_unnest */
+	unnest(): [SpanSet[], boolean[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tbool_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: boolean[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 1); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getUint8(_i * 1) !== 0); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tbool_value */
@@ -16696,9 +16983,45 @@ export class TCBuffer extends TSpatial {
 		throw new TypeError(`TCBuffer.ttouches: no overload takes these arguments`);
 	}
 
+	/** MEOS: tcbuffer_unnest */
+	unnest(): [SpanSet[], CBuffer[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tcbuffer_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: CBuffer[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapCBuffer(Number(_v.getBigUint64(_i * 8, true))) as CBuffer); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tcbuffer_value */
 	value(): CBuffer {
 		return wrapCBuffer(F.tcbuffer_value(this.ptr)) as CBuffer;
+	}
+
+	/** MEOS: tcbuffer_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): CBuffer | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tcbuffer_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapCBuffer(Number(_view(_value, 8).getBigUint64(0, true))) as CBuffer;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tcbuffer_value_n */
@@ -17410,6 +17733,31 @@ export class TFloat extends TNumber {
 		return super.trend() as TInt | null;
 	}
 
+	/** MEOS: tfloat_unnest */
+	unnest(): [SpanSet[], number[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tfloat_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getFloat64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tfloat_value */
 	value(): number {
 		return F.tfloat_value(this.ptr);
@@ -17501,6 +17849,31 @@ export class TFloat extends TNumber {
 		return super.valuespans() as FloatSpanSet;
 	}
 
+	/** MEOS: tfloat_value_split */
+	valueSplit(vsize: number, vorigin: number = 0.0, border_inc: boolean = true): [Temporal[], number[]] {
+		const _bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tfloat_value_split(this.ptr, vsize, vorigin, border_inc, _bins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getFloat64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_bins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tfloat_value_time_boxes */
 	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
@@ -17519,6 +17892,39 @@ export class TFloat extends TNumber {
 			}
 		} finally {
 			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tfloat_value_time_split */
+	valueTimeSplit(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], number[], TimestampTz[]] {
+		const _duration = _putInterval(duration);
+		const _value_bins = _alloc(8);
+		const _time_bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tfloat_value_time_split(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _value_bins, _time_bins, _count);
+			if (!_a0) return [[], [], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_value_bins, 8).getBigUint64(0, true));
+			const _a2 = Number(_view(_time_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getFloat64(_i * 8, true)); }
+				const _o2: TimestampTz[] = [];
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1, _o2];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+				if (_a2) _free(_a2);
+			}
+		} finally {
+			_free(_duration);
+			_free(_value_bins);
+			_free(_time_bins);
 			_free(_count);
 		}
 	}
@@ -17984,6 +18390,31 @@ export class TGeo extends TSpatial {
 		}
 	}
 
+	/** MEOS: tgeo_space_split */
+	spaceSplit(xsize: number, ysize: number, zsize: number, sorigin: Geo, bitmatrix: boolean, border_inc: boolean): [Temporal[], Geo[]] {
+		const _space_bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeo_space_split(this.ptr, xsize, ysize, zsize, sorigin.ptr, bitmatrix, border_inc, _space_bins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_space_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: Geo[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapGeo(Number(_v.getBigUint64(_i * 8, true))) as Geo); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_space_bins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tgeo_space_time_boxes */
 	spaceTimeBoxes(xsize: number, ysize: number, zsize: number, duration: Interval, sorigin: Geo, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): STBox[] {
 		const _duration = _putInterval(duration);
@@ -18002,6 +18433,39 @@ export class TGeo extends TSpatial {
 			}
 		} finally {
 			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeo_space_time_split */
+	spaceTimeSplit(xsize: number, ysize: number, zsize: number, duration: Interval, sorigin: Geo, torigin: TimestampTz, bitmatrix: boolean, border_inc: boolean): [Temporal[], Geo[], TimestampTz[]] {
+		const _duration = _putInterval(duration);
+		const _space_bins = _alloc(8);
+		const _time_bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeo_space_time_split(this.ptr, xsize, ysize, zsize, _duration, sorigin.ptr, torigin, bitmatrix, border_inc, _space_bins, _time_bins, _count);
+			if (!_a0) return [[], [], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_space_bins, 8).getBigUint64(0, true));
+			const _a2 = Number(_view(_time_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: Geo[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapGeo(Number(_v.getBigUint64(_i * 8, true))) as Geo); }
+				const _o2: TimestampTz[] = [];
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1, _o2];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+				if (_a2) _free(_a2);
+			}
+		} finally {
+			_free(_duration);
+			_free(_space_bins);
+			_free(_time_bins);
 			_free(_count);
 		}
 	}
@@ -18151,6 +18615,31 @@ export class TGeo extends TSpatial {
 	/** MEOS: ttouches_tgeo_geo */
 	ttouches(gs: Geometry): Temporal | null {
 		return wrapTemporalOrNull(F.ttouches_tgeo_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tgeo_unnest */
+	unnest(): [SpanSet[], Geo[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeo_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: Geo[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapGeo(Number(_v.getBigUint64(_i * 8, true))) as Geo); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tgeo_value */
@@ -18368,6 +18857,81 @@ export class TGeogPoint extends TPoint {
 	/** MEOS: tgeogpoint_great_circle_distance */
 	greatCircleDistance(b: Temporal): Temporal {
 		return wrapTemporal(F.tgeogpoint_great_circle_distance(this.ptr, b.ptr)) as Temporal;
+	}
+
+	/** MEOS: tgeogpoint_h3index_split */
+	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeogpoint_h3index_split(this.ptr, resolution, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeogpoint_quadbin_split */
+	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeogpoint_quadbin_split(this.ptr, resolution, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeogpoint_s2cell_split */
+	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeogpoint_s2cell_split(this.ptr, level, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geography for a TGeogPoint */
@@ -18767,6 +19331,81 @@ export class TGeomPoint extends TPoint {
 	/** MEOS: tpoint_get_z, which answers a TFloat for a TGeomPoint */
 	override getZ(): TFloat {
 		return super.getZ() as TFloat;
+	}
+
+	/** MEOS: tgeompoint_h3index_split */
+	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeompoint_h3index_split(this.ptr, resolution, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeompoint_quadbin_split */
+	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeompoint_quadbin_split(this.ptr, resolution, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeompoint_s2cell_split */
+	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+		const _cells = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tgeompoint_s2cell_split(this.ptr, level, border_inc, _cells, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_cells, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_cells);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geometry for a TGeomPoint */
@@ -19592,6 +20231,31 @@ export class TH3Index extends TCellIndex {
 		return super.tprecision(duration, torigin) as TH3Index;
 	}
 
+	/** MEOS: th3index_unnest */
+	unnest(): [SpanSet[], bigint[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.th3index_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: th3index_value */
 	value(): H3Index {
 		return F.th3index_value(this.ptr);
@@ -20246,6 +20910,31 @@ export class TInt extends TNumber {
 		return super.trend() as TInt | null;
 	}
 
+	/** MEOS: tint_unnest */
+	unnest(): [SpanSet[], number[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tint_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 4); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getInt32(_i * 4, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tint_value */
 	value(): number {
 		return F.tint_value(this.ptr);
@@ -20337,6 +21026,31 @@ export class TInt extends TNumber {
 		return super.valuespans() as IntSpanSet;
 	}
 
+	/** MEOS: tint_value_split */
+	valueSplit(vsize: number, vorigin: number = 0, border_inc: boolean = true): [Temporal[], number[]] {
+		const _bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tint_value_split(this.ptr, vsize, vorigin, border_inc, _bins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 4); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getInt32(_i * 4, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_bins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tint_value_time_boxes */
 	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
@@ -20355,6 +21069,39 @@ export class TInt extends TNumber {
 			}
 		} finally {
 			_free(_duration);
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tint_value_time_split */
+	valueTimeSplit(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], number[], TimestampTz[]] {
+		const _duration = _putInterval(duration);
+		const _value_bins = _alloc(8);
+		const _time_bins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tint_value_time_split(this.ptr, vsize, _duration, vorigin, torigin, border_inc, _value_bins, _time_bins, _count);
+			if (!_a0) return [[], [], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_value_bins, 8).getBigUint64(0, true));
+			const _a2 = Number(_view(_time_bins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 4); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getInt32(_i * 4, true)); }
+				const _o2: TimestampTz[] = [];
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [_o0, _o1, _o2];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+				if (_a2) _free(_a2);
+			}
+		} finally {
+			_free(_duration);
+			_free(_value_bins);
+			_free(_time_bins);
 			_free(_count);
 		}
 	}
@@ -20785,9 +21532,45 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.tjsonb_to_ttext_key(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
+	/** MEOS: tjsonb_unnest */
+	unnest(): [SpanSet[], Jsonb[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tjsonb_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: Jsonb[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapJsonb(Number(_v.getBigUint64(_i * 8, true))) as Jsonb); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tjsonb_value */
 	value(): Jsonb {
 		return wrapJsonb(F.tjsonb_value(this.ptr)) as Jsonb;
+	}
+
+	/** MEOS: tjsonb_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): Jsonb | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tjsonb_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapJsonb(Number(_view(_value, 8).getBigUint64(0, true))) as Jsonb;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tjsonb_value_n */
@@ -21309,9 +22092,45 @@ export class TNPoint extends TSpatial {
 		return wrapGeo(F.tnpoint_twcentroid(this.ptr)) as Geo;
 	}
 
+	/** MEOS: tnpoint_unnest */
+	unnest(): [SpanSet[], NPoint[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tnpoint_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: NPoint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapNPoint(Number(_v.getBigUint64(_i * 8, true))) as NPoint); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tnpoint_value */
 	value(): NPoint {
 		return wrapNPoint(F.tnpoint_value(this.ptr)) as NPoint;
+	}
+
+	/** MEOS: tnpoint_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): NPoint | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tnpoint_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapNPoint(Number(_view(_value, 8).getBigUint64(0, true))) as NPoint;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tnpoint_value_n */
@@ -22191,9 +23010,45 @@ export class TPCPatch extends TSpatial {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
+	/** MEOS: tpcpatch_unnest */
+	unnest(): [SpanSet[], PCPatch[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tpcpatch_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: PCPatch[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapPCPatch(Number(_v.getBigUint64(_i * 8, true))) as PCPatch); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tpcpatch_value */
 	value(): PCPatch {
 		return wrapPCPatch(F.tpcpatch_value(this.ptr)) as PCPatch;
+	}
+
+	/** MEOS: tpcpatch_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): PCPatch | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tpcpatch_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapPCPatch(Number(_view(_value, 8).getBigUint64(0, true))) as PCPatch;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tpcpatch_value_n */
@@ -22460,9 +23315,45 @@ export class TPCPoint extends TSpatial {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
+	/** MEOS: tpcpoint_unnest */
+	unnest(): [SpanSet[], PCPoint[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tpcpoint_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: PCPoint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapPCPoint(Number(_v.getBigUint64(_i * 8, true))) as PCPoint); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tpcpoint_value */
 	value(): PCPoint {
 		return wrapPCPoint(F.tpcpoint_value(this.ptr)) as PCPoint;
+	}
+
+	/** MEOS: tpcpoint_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): PCPoint | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.tpcpoint_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapPCPoint(Number(_view(_value, 8).getBigUint64(0, true))) as PCPoint;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: tpcpoint_value_n */
@@ -22952,6 +23843,31 @@ export class TPose extends TSpatial {
 		return wrapTemporal(F.tpose_translate(this.ptr, deltax, deltay, deltaz)) as this;
 	}
 
+	/** MEOS: tpose_unnest */
+	unnest(): [SpanSet[], Pose[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tpose_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: Pose[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapPose(Number(_v.getBigUint64(_i * 8, true))) as Pose); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tpose_value */
 	value(): Pose {
 		return wrapPose(F.tpose_value(this.ptr)) as Pose;
@@ -23319,6 +24235,31 @@ export class TPoseChain extends TSpatial {
 	/** MEOS: tposechain_translate */
 	translate(deltax: number, deltay: number, deltaz: number = 0.0): this {
 		return wrapTemporal(F.tposechain_translate(this.ptr, deltax, deltay, deltaz)) as this;
+	}
+
+	/** MEOS: tposechain_unnest */
+	unnest(): [SpanSet[], PoseChain[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tposechain_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: PoseChain[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapPoseChain(Number(_v.getBigUint64(_i * 8, true))) as PoseChain); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tposechain_value */
@@ -23709,6 +24650,31 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: temporal_tprecision, which answers a TQuadbin for a TQuadbin */
 	override tprecision(duration: Interval, torigin: TimestampTz): TQuadbin {
 		return super.tprecision(duration, torigin) as TQuadbin;
+	}
+
+	/** MEOS: tquadbin_unnest */
+	unnest(): [SpanSet[], bigint[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tquadbin_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tquadbin_value */
@@ -24720,6 +25686,31 @@ export class TRGeometry extends TSpatial {
 		return wrapGeo(F.trgeometry_twcentroid(this.ptr)) as Geo;
 	}
 
+	/** MEOS: trgeometry_unnest */
+	unnest(): [SpanSet[], Geo[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.trgeometry_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: Geo[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapGeo(Number(_v.getBigUint64(_i * 8, true))) as Geo); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: trgeometry_value */
 	value(): Pose {
 		return wrapPose(F.trgeometry_value(this.ptr)) as Pose;
@@ -25092,6 +26083,31 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: temporal_tprecision, which answers a TS2Cell for a TS2Cell */
 	override tprecision(duration: Interval, torigin: TimestampTz): TS2Cell {
 		return super.tprecision(duration, torigin) as TS2Cell;
+	}
+
+	/** MEOS: ts2cell_unnest */
+	unnest(): [SpanSet[], bigint[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.ts2cell_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
 	}
 
 	/** MEOS: ts2cell_value */
@@ -25552,6 +26568,31 @@ export class TText extends TAlpha {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
+	/** MEOS: ttext_unnest */
+	unnest(): [SpanSet[], Text[]] {
+		const _values = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.ttext_unnest(this.ptr, _values, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_values, 8).getBigUint64(0, true));
+			try {
+				const _o0: SpanSet[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
+				const _o1: Text[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapText(Number(_v.getBigUint64(_i * 8, true))) as Text); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_values);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: ttext_upper */
 	upper(): this {
 		return wrapTemporal(F.ttext_upper(this.ptr)) as this;
@@ -25560,6 +26601,17 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_value */
 	value(): string {
 		return F.ttext_value(this.ptr);
+	}
+
+	/** MEOS: ttext_value_at_timestamptz */
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): Text | null {
+		const _value = _alloc(8);
+		try {
+			if (!F.ttext_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
+			return wrapText(Number(_view(_value, 8).getBigUint64(0, true))) as Text;
+		} finally {
+			_free(_value);
+		}
 	}
 
 	/** MEOS: ttext_value_n */

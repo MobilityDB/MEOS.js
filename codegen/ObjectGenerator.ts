@@ -423,6 +423,9 @@ class Generator {
 		const countOut = arrayReturn?.lengthFrom.kind === 'param' ? arrayReturn.lengthFrom.name : undefined;
 		// The length of a byte buffer MEOS answers, written through `size_t *`.
 		const outs = new Set(shape.outParams ?? []);
+		// The arrays MEOS fills beside the answered one, read with it.
+		const outputArrays = new Set((shape.outputArrays ?? []).map(a => a.param));
+		const outArrays: { slot: string; read: { ts: string; width: number; expr: string } }[] = [];
 		const sizeOut = params.find(p => outs.has(p.name) && clean(p.canonical) === 'size_t *'
 			&& clean(sig.retCanonical) === 'uint8_t *');
 
@@ -437,20 +440,49 @@ class Generator {
 				args.set(p.name, '_sizeOut');
 				continue;
 			}
-			if (outs.has(p.name)) {
-				// A scalar MEOS writes through a single pointer, read back after the
-				// call as OUT_PARAM_READERS of MEOS.NET's tools/objectgen.py reads it.
-				const pointee = clean(p.canonical).replace(/\*$/, '').trim();
-				const reader = clean(p.canonical).endsWith('**') ? undefined : ELEMENT_READERS[this.resolve(pointee)];
-				if (!reader)
+			if (outputArrays.has(p.name) && countOut) {
+				// An array MEOS fills beside the one it answers, as many values as the
+				// count states (`outputArrays`): MEOS writes the array's address into
+				// the slot, and the method reads it as it reads the answered array.
+				// `int64_t **values` points at the slot of an array of `int64_t`, and
+				// `Jsonb ***values` at the slot of an array of `Jsonb *`.
+				const elem = clean(p.canonical).replace(/\s*\*\s*\*$/, '').trim();
+				const read = this.arrayElement(elem);
+				if (!read)
 					return this.defer(cls, oo, 'out-parameter needs a reader',
 						`out-parameter ${p.name} of type ${clean(p.canonical)}`);
 				const tmp = temp(p.name);
-				setup.push(`const ${tmp} = _alloc(${reader.width});`);
+				setup.push(`const ${tmp} = _alloc(8);`);
 				teardown.push(`_free(${tmp});`);
 				args.set(p.name, tmp);
-				const kept = pointee === 'TimestampTz' || pointee === 'DateADT' ? pointee : reader.ts;
-				outReads.push({ ts: kept, expr: `((_v: DataView) => ${reader.read.replace('{o}', '0')})(_view(${tmp}, ${reader.width}))` });
+				outArrays.push({ slot: tmp, read });
+				continue;
+			}
+			// A pointer to a MEOS value is the value itself, handed over for the call
+			// to fill (`rtree_search(..., MeosArray *result)`), so it stays an
+			// ordinary argument, as #answer of MEOS.NET's tools/objectgen.py reads it.
+			if (outs.has(p.name) && !this.m.classForCtype(p.canonical)) {
+				// A scalar MEOS writes through a single pointer, read back after the
+				// call as OUT_PARAM_READERS of MEOS.NET's tools/objectgen.py reads it,
+				// or a MEOS value whose address it writes (`T **`), wrapped in its
+				// class as #wrapped_out_reader there wraps it.
+				const pointee = clean(p.canonical).replace(/\*$/, '').trim();
+				const handle = clean(p.canonical).endsWith('**') ? this.m.classForCtype(pointee) : undefined;
+				const reader = clean(p.canonical).endsWith('**') ? undefined : ELEMENT_READERS[this.resolve(pointee)];
+				if (!reader && !handle)
+					return this.defer(cls, oo, 'out-parameter needs a reader',
+						`out-parameter ${p.name} of type ${clean(p.canonical)}`);
+				const tmp = temp(p.name);
+				const width = reader ? reader.width : 8;
+				setup.push(`const ${tmp} = _alloc(${width});`);
+				teardown.push(`_free(${tmp});`);
+				args.set(p.name, tmp);
+				if (handle) {
+					outReads.push({ ts: handle, expr: `wrap${this.rootOf(handle)}(Number(_view(${tmp}, 8).getBigUint64(0, true))) as ${handle}` });
+					continue;
+				}
+				const kept = pointee === 'TimestampTz' || pointee === 'DateADT' ? pointee : reader!.ts;
+				outReads.push({ ts: kept, expr: `((_v: DataView) => ${reader!.read.replace('{o}', '0')})(_view(${tmp}, ${reader!.width}))` });
 				continue;
 			}
 			if (lengthOf.has(p.name)) {
@@ -539,14 +571,51 @@ class Generator {
 		let ret: string;
 		let body: string[];
 
-		if (outReads.length) {
-			// A `bool` beside the values MEOS writes says whether they exist, so
-			// the method answers the value or null, as MEOS.NET's #answer does.
-			if (outReads.length !== 1 || sig.ret !== 'boolean' || sig.folded || arrayReturn || sizeOut)
+		if (outReads.length && sig.ret !== 'boolean' && !sig.folded && !arrayReturn && !sizeOut) {
+			// A return that is an answer of its own, with the values MEOS writes
+			// beside it: the method answers them together, in the order MEOS
+			// declares them, as MEOS.NET's #answer does.
+			const r = this.returned(sig, nullable);
+			if (!r || nullable)
 				return this.defer(cls, oo, 'out-parameter needs a reader',
 					`${outReads.length} value(s) answered beside a ${sig.retCanonical} return`);
-			ret = `${outReads[0].ts} | null`;
-			body = [`if (!${call}) return null;`, `return ${outReads[0].expr};`];
+			ret = `[${[r.ts, ...outReads.map(o => o.ts)].join(', ')}]`;
+			body = [`const _r = ${r.wrap.replace('$', call)};`, `return [_r, ${outReads.map(o => o.expr).join(', ')}];`];
+		} else if (outReads.length) {
+			// A `bool` beside the values MEOS writes says whether they exist, so
+			// the method answers the value, or the values together, or null, as
+			// MEOS.NET's #answer does.
+			if (sig.ret !== 'boolean' || sig.folded || arrayReturn || sizeOut)
+				return this.defer(cls, oo, 'out-parameter needs a reader',
+					`${outReads.length} value(s) answered beside a ${sig.retCanonical} return`);
+			const one = outReads.length === 1;
+			ret = `${one ? outReads[0].ts : `[${outReads.map(o => o.ts).join(', ')}]`} | null`;
+			body = [`if (!${call}) return null;`,
+				`return ${one ? outReads[0].expr : `[${outReads.map(o => o.expr).join(', ')}]`};`];
+		} else if (outArrays.length && arrayReturn && countOut && args.get(countOut) === '_count') {
+			// The answered array with the arrays MEOS fills beside it, all of the
+			// count MEOS writes, answered together in the order MEOS declares them;
+			// MEOS allocates each, and the method frees each after reading it.
+			const read = this.arrayElement(arrayReturn.element.canonical);
+			if (!read)
+				return this.defer(cls, oo, 'return needs a class',
+					`array of ${clean(arrayReturn.element.canonical)} needs a reader`);
+			const all = [{ ptr: '_a0', read }, ...outArrays.map((o, k) => ({ ptr: `_a${k + 1}`, read: o.read, slot: o.slot }))];
+			ret = `[${all.map(a => `${a.read.ts}[]`).join(', ')}]`;
+			body = [
+				`const _a0 = ${call};`,
+				`if (!_a0) return [${all.map(() => '[]').join(', ')}];`,
+				`const _n = _view(_count, 4).getInt32(0, true);`,
+				...all.slice(1).map(a => `const ${a.ptr} = Number(_view(${(a as { slot: string }).slot}, 8).getBigUint64(0, true));`),
+				`try {`,
+			];
+			all.forEach((a, k) => {
+				body.push(`\tconst _o${k}: ${a.read.ts}[] = [];`,
+					`\tif (${a.ptr}) { const _arr = ${a.ptr}; const _v = _view(_arr, _n * ${a.read.width}); `
+					+ `for (let _i = 0; _i < _n; _i++) _o${k}.push(${a.read.expr.replace('{o}', `_i * ${a.read.width}`)}); }`);
+			});
+			body.push(`\treturn [${all.map((_a, k) => `_o${k}`).join(', ')}];`, `} finally {`,
+				...all.map(a => `\tif (${a.ptr}) _free(${a.ptr});`), `}`);
 		} else if (arrayReturn && countOut && args.get(countOut) === '_count'
 			&& this.heldStruct(clean(arrayReturn.element.canonical))) {
 			// An array of structs holding MEOS values: each element is read with
