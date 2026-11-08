@@ -357,6 +357,18 @@ export function meos_array_destroy_free(array: Ptr): void {
 	checkMeosError();
 }
 
+export function indexsearchop_name(op: number): string {
+	const _r = call<string>('indexsearchop_name_w', 'string', ['number'], [op]);
+	checkMeosError();
+	return _r;
+}
+
+export function indexsearchop_from_string(str: string): number {
+	const _r = call<number>('indexsearchop_from_string_w', 'number', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
 export function index_result_create(): Ptr {
 	const _r = callPtr('index_result_create_w', [], []);
 	checkMeosError();
@@ -497,6 +509,18 @@ export function rtree_nn_cursor_next(cursor: Ptr, id_out: Ptr, dist_out: Ptr): b
 export function rtree_nn_cursor_close(cursor: Ptr): void {
 	call<void>('rtree_nn_cursor_close_w', null, [ptrArgType()], [ptrArgVal(cursor)]);
 	checkMeosError();
+}
+
+export function sptreekind_name(kind: number): string {
+	const _r = call<string>('sptreekind_name_w', 'string', ['number'], [kind]);
+	checkMeosError();
+	return _r;
+}
+
+export function sptreekind_from_string(str: string): number {
+	const _r = call<number>('sptreekind_from_string_w', 'number', ['string'], [str]);
+	checkMeosError();
+	return _r;
 }
 
 export function sptree_create_intspan(kind: number): Ptr {
@@ -5387,6 +5411,12 @@ export function temporal_as_wkb(temp: Ptr, variant: number, size_out: Ptr): Ptr 
 
 export function wkb_variant_from_endian(endian: string | null): number {
 	const _r = call<number>('wkb_variant_from_endian_w', 'number', ['string'], [endian]);
+	checkMeosError();
+	return _r;
+}
+
+export function interptype_name(interp: number): string {
+	const _r = call<string>('interptype_name_w', 'string', ['number'], [interp]);
 	checkMeosError();
 	return _r;
 }
@@ -15307,8 +15337,14 @@ export function contains_tjsonb_tjsonb(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
-export function null_handle_type_from_string(str: string): number {
-	const _r = call<number>('null_handle_type_from_string_w', 'number', ['string'], [str]);
+export function nullhandletype_name(type_: number): string {
+	const _r = call<string>('nullhandletype_name_w', 'string', ['number'], [type_]);
+	checkMeosError();
+	return _r;
+}
+
+export function nullhandletype_from_string(str: string): number {
+	const _r = call<number>('nullhandletype_from_string_w', 'number', ['string'], [str]);
 	checkMeosError();
 	return _r;
 }
@@ -20673,8 +20709,14 @@ export function raquet_pixtype_size(pixtype: number): number {
 	return _r;
 }
 
-export function raquet_pixtype_from_string(str: string): number {
-	const _r = call<number>('raquet_pixtype_from_string_w', 'number', ['string'], [str]);
+export function meospixtype_name(pixtype: number): string {
+	const _r = call<string>('meospixtype_name_w', 'string', ['number'], [pixtype]);
+	checkMeosError();
+	return _r;
+}
+
+export function meospixtype_from_string(str: string): number {
+	const _r = call<number>('meospixtype_from_string_w', 'number', ['string'], [str]);
 	checkMeosError();
 	return _r;
 }

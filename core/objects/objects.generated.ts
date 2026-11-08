@@ -7405,13 +7405,13 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_array_element */
-	arrayElement(idx: number, null_handle: number): this | null {
-		return wrapSetOrNull(F.jsonbset_array_element(this.ptr, idx, null_handle)) as this | null;
+	arrayElement(idx: number, null_handle: string): this | null {
+		return wrapSetOrNull(F.jsonbset_array_element(this.ptr, idx, F.nullhandletype_from_string(null_handle))) as this | null;
 	}
 
 	/** MEOS: jsonbset_array_element_text */
-	arrayElementText(idx: number, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_array_element_text(this.ptr, idx, null_handle)) as Set | null;
+	arrayElementText(idx: number, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_array_element_text(this.ptr, idx, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: jsonbset_array_length */
@@ -7513,20 +7513,20 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_extract_path */
-	extractPath(path_elems: Text[], null_handle: number): this | null {
+	extractPath(path_elems: Text[], null_handle: string): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as this | null;
+			return wrapSetOrNull(F.jsonbset_extract_path(this.ptr, _path_elems, path_elems.length, F.nullhandletype_from_string(null_handle))) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
 	}
 
 	/** MEOS: jsonbset_extract_path_text */
-	extractPathText(path_elems: Text[], null_handle: number): Set | null {
+	extractPathText(path_elems: Text[], null_handle: string): Set | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapSetOrNull(F.jsonbset_extract_path_text(this.ptr, _path_elems, path_elems.length, null_handle)) as Set | null;
+			return wrapSetOrNull(F.jsonbset_extract_path_text(this.ptr, _path_elems, path_elems.length, F.nullhandletype_from_string(null_handle))) as Set | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -7555,13 +7555,13 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_object_field */
-	objectField(key: string, null_handle: number): this | null {
-		return wrapSetOrNull(F.jsonbset_object_field(this.ptr, key, null_handle)) as this | null;
+	objectField(key: string, null_handle: string): this | null {
+		return wrapSetOrNull(F.jsonbset_object_field(this.ptr, key, F.nullhandletype_from_string(null_handle))) as this | null;
 	}
 
 	/** MEOS: jsonbset_object_field_text */
-	objectFieldText(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_object_field_text(this.ptr, key, null_handle)) as Set | null;
+	objectFieldText(key: string, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_object_field_text(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: jsonbset_out */
@@ -7655,23 +7655,23 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_to_alphanumset */
-	toAlphanumset(key: string, settype: number, null_handle: number): Set {
-		return wrapSet(F.jsonbset_to_alphanumset(this.ptr, key, settype, null_handle)) as Set;
+	toAlphanumset(key: string, settype: number, null_handle: string): Set {
+		return wrapSet(F.jsonbset_to_alphanumset(this.ptr, key, settype, F.nullhandletype_from_string(null_handle))) as Set;
 	}
 
 	/** MEOS: jsonbset_to_bigintset */
-	toBigintset(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_to_bigintset(this.ptr, key, null_handle)) as Set | null;
+	toBigintset(key: string, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_to_bigintset(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: jsonbset_to_floatset */
-	toFloatset(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_to_floatset(this.ptr, key, null_handle)) as Set | null;
+	toFloatset(key: string, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_to_floatset(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: jsonbset_to_intset */
-	toIntset(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_to_intset(this.ptr, key, null_handle)) as Set | null;
+	toIntset(key: string, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_to_intset(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: jsonbset_to_textset */
@@ -7680,8 +7680,8 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: jsonbset_to_textset_key */
-	toTextsetKey(key: string, null_handle: number): Set | null {
-		return wrapSetOrNull(F.jsonbset_to_textset_key(this.ptr, key, null_handle)) as Set | null;
+	toTextsetKey(key: string, null_handle: string): Set | null {
+		return wrapSetOrNull(F.jsonbset_to_textset_key(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
 	}
 
 	/** MEOS: union_set_jsonb, chosen by the arguments' types */
@@ -10571,23 +10571,18 @@ export class RaQuet extends Value {
 	}
 
 	/** MEOS: raquet_make */
-	static make(quadbin: Quadbin, width: number, height: number, pixtype: number, nodata: number, has_nodata: boolean, pixels: Uint8Array): RaQuet {
+	static make(quadbin: Quadbin, width: number, height: number, pixtype: string, nodata: number, has_nodata: boolean, pixels: Uint8Array): RaQuet {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapRaQuet(F.raquet_make(quadbin, width, height, pixtype, nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
+			return wrapRaQuet(F.raquet_make(quadbin, width, height, F.meospixtype_from_string(pixtype), nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
 		} finally {
 			_free(_pixels);
 		}
 	}
 
-	/** MEOS: raquet_pixtype_from_string */
-	static pixtypeFromString(str: string): number {
-		return F.raquet_pixtype_from_string(str);
-	}
-
 	/** MEOS: raquet_pixtype_size */
-	static pixtypeSize(pixtype: number): number {
-		return F.raquet_pixtype_size(pixtype);
+	static pixtypeSize(pixtype: string): number {
+		return F.raquet_pixtype_size(F.meospixtype_from_string(pixtype));
 	}
 
 	/** MEOS: raquet_read */
@@ -11022,10 +11017,10 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_tile_value_quadbin */
-	static tileValueQuadbin(traj: Temporal, pixels: Uint8Array, width: number, height: number, quadbin: Quadbin, pixtype: number, nodata: number, has_nodata: boolean): Temporal | null {
+	static tileValueQuadbin(traj: Temporal, pixels: Uint8Array, width: number, height: number, quadbin: Quadbin, pixtype: string, nodata: number, has_nodata: boolean): Temporal | null {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin, pixtype, nodata, has_nodata)) as Temporal | null;
+			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin, F.meospixtype_from_string(pixtype), nodata, has_nodata)) as Temporal | null;
 		} finally {
 			_free(_pixels);
 		}
@@ -11286,43 +11281,43 @@ export class SPTree extends Value {
 	}
 
 	/** MEOS: sptree_create_bigintspan */
-	static createBigintspan(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_bigintspan(kind)) as SPTree;
+	static createBigintspan(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_bigintspan(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_datespan */
-	static createDatespan(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_datespan(kind)) as SPTree;
+	static createDatespan(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_datespan(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_floatspan */
-	static createFloatspan(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_floatspan(kind)) as SPTree;
+	static createFloatspan(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_floatspan(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_intspan */
-	static createIntspan(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_intspan(kind)) as SPTree;
+	static createIntspan(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_intspan(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_stbox */
-	static createStbox(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_stbox(kind)) as SPTree;
+	static createStbox(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_stbox(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_tbox */
-	static createTbox(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_tbox(kind)) as SPTree;
+	static createTbox(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_tbox(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_tpcbox */
-	static createTpcbox(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_tpcbox(kind)) as SPTree;
+	static createTpcbox(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_tpcbox(F.sptreekind_from_string(kind))) as SPTree;
 	}
 
 	/** MEOS: sptree_create_tstzspan */
-	static createTstzspan(kind: number): SPTree {
-		return wrapSPTree(F.sptree_create_tstzspan(kind)) as SPTree;
+	static createTstzspan(kind: string): SPTree {
+		return wrapSPTree(F.sptree_create_tstzspan(F.sptreekind_from_string(kind))) as SPTree;
 	}
 }
 
@@ -12300,10 +12295,10 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_append_tinstant */
-	appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): this {
+	appendTinstant(inst: Temporal, interp: string, maxdist: number, maxt: Interval, expand: boolean): this {
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.temporal_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as this;
+			return wrapTemporal(F.temporal_append_tinstant(this.ptr, inst.ptr, F.interptype_from_string(interp), maxdist, _maxt, expand)) as this;
 		} finally {
 			_free(_maxt);
 		}
@@ -12330,13 +12325,13 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_as_tsequence */
-	asTsequence(interp: number): this {
-		return wrapTemporal(F.temporal_as_tsequence(this.ptr, interp)) as this;
+	asTsequence(interp: string): this {
+		return wrapTemporal(F.temporal_as_tsequence(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: temporal_as_tsequenceset */
-	asTsequenceset(interp: number): this {
-		return wrapTemporal(F.temporal_as_tsequenceset(this.ptr, interp)) as this;
+	asTsequenceset(interp: string): this {
+		return wrapTemporal(F.temporal_as_tsequenceset(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: temporal_as_wkb */
@@ -12800,8 +12795,8 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_set_interp */
-	setInterp(interp: number): this {
-		return wrapTemporal(F.temporal_set_interp(this.ptr, interp)) as this;
+	setInterp(interp: string): this {
+		return wrapTemporal(F.temporal_set_interp(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: temporal_shift_scale_time */
@@ -13049,10 +13044,10 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_tsample */
-	tsample(duration: Interval, torigin: TimestampTz, interp: number): this | null {
+	tsample(duration: Interval, torigin: TimestampTz, interp: string): this | null {
 		const _duration = _putInterval(duration);
 		try {
-			return wrapTemporalOrNull(F.temporal_tsample(this.ptr, _duration, torigin, interp)) as this | null;
+			return wrapTemporalOrNull(F.temporal_tsample(this.ptr, _duration, torigin, F.interptype_from_string(interp))) as this | null;
 		} finally {
 			_free(_duration);
 		}
@@ -16794,8 +16789,8 @@ export class TCBufferSeq extends TCBuffer {
 	}
 
 	/** MEOS: tcbufferseq_from_base_tstzspan */
-	static fromBaseTstzspan(cb: CBuffer, s: Span, interp: number): TCBufferSeq {
-		return wrapTemporal(F.tcbufferseq_from_base_tstzspan(cb.ptr, s.ptr, interp)) as TCBufferSeq;
+	static fromBaseTstzspan(cb: CBuffer, s: Span, interp: string): TCBufferSeq {
+		return wrapTemporal(F.tcbufferseq_from_base_tstzspan(cb.ptr, s.ptr, F.interptype_from_string(interp))) as TCBufferSeq;
 	}
 }
 
@@ -16805,8 +16800,8 @@ export class TCBufferSeq extends TCBuffer {
 export class TCBufferSeqSet extends TCBuffer {
 
 	/** MEOS: tcbufferseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(cb: CBuffer, ss: SpanSet, interp: number): TCBufferSeqSet {
-		return wrapTemporal(F.tcbufferseqset_from_base_tstzspanset(cb.ptr, ss.ptr, interp)) as TCBufferSeqSet;
+	static fromBaseTstzspanset(cb: CBuffer, ss: SpanSet, interp: string): TCBufferSeqSet {
+		return wrapTemporal(F.tcbufferseqset_from_base_tstzspanset(cb.ptr, ss.ptr, F.interptype_from_string(interp))) as TCBufferSeqSet;
 	}
 }
 
@@ -17571,8 +17566,8 @@ export class TFloatSeq extends TFloat {
 	}
 
 	/** MEOS: tfloatseq_from_base_tstzspan */
-	static fromBaseTstzspan(d: number, s: Span, interp: number): TFloatSeq {
-		return wrapTemporal(F.tfloatseq_from_base_tstzspan(d, s.ptr, interp)) as TFloatSeq;
+	static fromBaseTstzspan(d: number, s: Span, interp: string): TFloatSeq {
+		return wrapTemporal(F.tfloatseq_from_base_tstzspan(d, s.ptr, F.interptype_from_string(interp))) as TFloatSeq;
 	}
 }
 
@@ -17582,8 +17577,8 @@ export class TFloatSeq extends TFloat {
 export class TFloatSeqSet extends TFloat {
 
 	/** MEOS: tfloatseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(d: number, ss: SpanSet, interp: number): TFloatSeqSet {
-		return wrapTemporal(F.tfloatseqset_from_base_tstzspanset(d, ss.ptr, interp)) as TFloatSeqSet;
+	static fromBaseTstzspanset(d: number, ss: SpanSet, interp: string): TFloatSeqSet {
+		return wrapTemporal(F.tfloatseqset_from_base_tstzspanset(d, ss.ptr, F.interptype_from_string(interp))) as TFloatSeqSet;
 	}
 }
 
@@ -20508,13 +20503,13 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_array_element */
-	arrayElement(idx: number, null_handle: number): this | null {
-		return wrapTemporalOrNull(F.tjsonb_array_element(this.ptr, idx, null_handle)) as this | null;
+	arrayElement(idx: number, null_handle: string): this | null {
+		return wrapTemporalOrNull(F.tjsonb_array_element(this.ptr, idx, F.nullhandletype_from_string(null_handle))) as this | null;
 	}
 
 	/** MEOS: tjsonb_array_element_text */
-	arrayElementText(idx: number, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_array_element_text(this.ptr, idx, null_handle)) as Temporal | null;
+	arrayElementText(idx: number, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_array_element_text(this.ptr, idx, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_array_length */
@@ -20624,20 +20619,20 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_extract_path */
-	extractPath(path_elems: Text[], null_handle: number): this | null {
+	extractPath(path_elems: Text[], null_handle: string): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_extract_path(this.ptr, _path_elems, path_elems.length, null_handle)) as this | null;
+			return wrapTemporalOrNull(F.tjsonb_extract_path(this.ptr, _path_elems, path_elems.length, F.nullhandletype_from_string(null_handle))) as this | null;
 		} finally {
 			_free(_path_elems);
 		}
 	}
 
 	/** MEOS: tjsonb_extract_path_text */
-	extractPathText(path_elems: Text[], null_handle: number): Temporal | null {
+	extractPathText(path_elems: Text[], null_handle: string): Temporal | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
 		try {
-			return wrapTemporalOrNull(F.tjsonb_extract_path_text(this.ptr, _path_elems, path_elems.length, null_handle)) as Temporal | null;
+			return wrapTemporalOrNull(F.tjsonb_extract_path_text(this.ptr, _path_elems, path_elems.length, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 		} finally {
 			_free(_path_elems);
 		}
@@ -20649,13 +20644,13 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_object_field */
-	objectField(key: string, null_handle: number): this | null {
-		return wrapTemporalOrNull(F.tjsonb_object_field(this.ptr, key, null_handle)) as this | null;
+	objectField(key: string, null_handle: string): this | null {
+		return wrapTemporalOrNull(F.tjsonb_object_field(this.ptr, key, F.nullhandletype_from_string(null_handle))) as this | null;
 	}
 
 	/** MEOS: tjsonb_object_field_text */
-	objectFieldText(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_object_field_text(this.ptr, key, null_handle)) as Temporal | null;
+	objectFieldText(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_object_field_text(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_out */
@@ -20736,43 +20731,43 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_to_tbigint */
-	toTbigint(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tbigint(this.ptr, key, null_handle)) as Temporal | null;
+	toTbigint(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tbigint(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tbool */
-	toTbool(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tbool(this.ptr, key, null_handle)) as Temporal | null;
+	toTbool(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tbool(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tfloat */
-	toTfloat(key: string, interp: number, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tfloat(this.ptr, key, interp, null_handle)) as Temporal | null;
+	toTfloat(key: string, interp: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tfloat(this.ptr, key, F.interptype_from_string(interp), F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tgeogpoint */
-	toTgeogpoint(key: string, interp: number, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tgeogpoint(this.ptr, key, interp, null_handle)) as Temporal | null;
+	toTgeogpoint(key: string, interp: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tgeogpoint(this.ptr, key, F.interptype_from_string(interp), F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tgeography */
-	toTgeography(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tgeography(this.ptr, key, null_handle)) as Temporal | null;
+	toTgeography(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tgeography(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tgeometry */
-	toTgeometry(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tgeometry(this.ptr, key, null_handle)) as Temporal | null;
+	toTgeometry(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tgeometry(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tgeompoint */
-	toTgeompoint(key: string, interp: number, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tgeompoint(this.ptr, key, interp, null_handle)) as Temporal | null;
+	toTgeompoint(key: string, interp: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tgeompoint(this.ptr, key, F.interptype_from_string(interp), F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_to_tint */
-	toTint(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_tint(this.ptr, key, null_handle)) as Temporal | null;
+	toTint(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_tint(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TJsonb */
@@ -20786,8 +20781,8 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: tjsonb_to_ttext_key */
-	toTtextKey(key: string, null_handle: number): Temporal | null {
-		return wrapTemporalOrNull(F.tjsonb_to_ttext_key(this.ptr, key, null_handle)) as Temporal | null;
+	toTtextKey(key: string, null_handle: string): Temporal | null {
+		return wrapTemporalOrNull(F.tjsonb_to_ttext_key(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
 	/** MEOS: tjsonb_value */
@@ -21407,8 +21402,8 @@ export class TNPointSeq extends TNPoint {
 	}
 
 	/** MEOS: tnpointseq_from_base_tstzspan */
-	static fromBaseTstzspan(np: NPoint, s: Span, interp: number): TNPointSeq {
-		return wrapTemporal(F.tnpointseq_from_base_tstzspan(np.ptr, s.ptr, interp)) as TNPointSeq;
+	static fromBaseTstzspan(np: NPoint, s: Span, interp: string): TNPointSeq {
+		return wrapTemporal(F.tnpointseq_from_base_tstzspan(np.ptr, s.ptr, F.interptype_from_string(interp))) as TNPointSeq;
 	}
 }
 
@@ -21418,8 +21413,8 @@ export class TNPointSeq extends TNPoint {
 export class TNPointSeqSet extends TNPoint {
 
 	/** MEOS: tnpointseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(np: NPoint, ss: SpanSet, interp: number): TNPointSeqSet {
-		return wrapTemporal(F.tnpointseqset_from_base_tstzspanset(np.ptr, ss.ptr, interp)) as TNPointSeqSet;
+	static fromBaseTstzspanset(np: NPoint, ss: SpanSet, interp: string): TNPointSeqSet {
+		return wrapTemporal(F.tnpointseqset_from_base_tstzspanset(np.ptr, ss.ptr, F.interptype_from_string(interp))) as TNPointSeqSet;
 	}
 }
 
@@ -23429,8 +23424,8 @@ export class TPoseChainSeq extends TPoseChain {
 	}
 
 	/** MEOS: tposechainseq_from_base_tstzspan */
-	static fromBaseTstzspan(pc: PoseChain, s: Span, interp: number): TPoseChainSeq {
-		return wrapTemporal(F.tposechainseq_from_base_tstzspan(pc.ptr, s.ptr, interp)) as TPoseChainSeq;
+	static fromBaseTstzspan(pc: PoseChain, s: Span, interp: string): TPoseChainSeq {
+		return wrapTemporal(F.tposechainseq_from_base_tstzspan(pc.ptr, s.ptr, F.interptype_from_string(interp))) as TPoseChainSeq;
 	}
 }
 
@@ -23440,8 +23435,8 @@ export class TPoseChainSeq extends TPoseChain {
 export class TPoseChainSeqSet extends TPoseChain {
 
 	/** MEOS: tposechainseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(pc: PoseChain, ss: SpanSet, interp: number): TPoseChainSeqSet {
-		return wrapTemporal(F.tposechainseqset_from_base_tstzspanset(pc.ptr, ss.ptr, interp)) as TPoseChainSeqSet;
+	static fromBaseTstzspanset(pc: PoseChain, ss: SpanSet, interp: string): TPoseChainSeqSet {
+		return wrapTemporal(F.tposechainseqset_from_base_tstzspanset(pc.ptr, ss.ptr, F.interptype_from_string(interp))) as TPoseChainSeqSet;
 	}
 }
 
@@ -23467,8 +23462,8 @@ export class TPoseSeq extends TPose {
 	}
 
 	/** MEOS: tposeseq_from_base_tstzspan */
-	static fromBaseTstzspan(pose: Pose, s: Span, interp: number): TPoseSeq {
-		return wrapTemporal(F.tposeseq_from_base_tstzspan(pose.ptr, s.ptr, interp)) as TPoseSeq;
+	static fromBaseTstzspan(pose: Pose, s: Span, interp: string): TPoseSeq {
+		return wrapTemporal(F.tposeseq_from_base_tstzspan(pose.ptr, s.ptr, F.interptype_from_string(interp))) as TPoseSeq;
 	}
 }
 
@@ -23478,8 +23473,8 @@ export class TPoseSeq extends TPose {
 export class TPoseSeqSet extends TPose {
 
 	/** MEOS: tposeseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(pose: Pose, ss: SpanSet, interp: number): TPoseSeqSet {
-		return wrapTemporal(F.tposeseqset_from_base_tstzspanset(pose.ptr, ss.ptr, interp)) as TPoseSeqSet;
+	static fromBaseTstzspanset(pose: Pose, ss: SpanSet, interp: string): TPoseSeqSet {
+		return wrapTemporal(F.tposeseqset_from_base_tstzspanset(pose.ptr, ss.ptr, F.interptype_from_string(interp))) as TPoseSeqSet;
 	}
 }
 
@@ -24101,10 +24096,10 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_append_tinstant */
-	override appendTinstant(inst: Temporal, interp: number, maxdist: number, maxt: Interval, expand: boolean): this {
+	override appendTinstant(inst: Temporal, interp: string, maxdist: number, maxt: Interval, expand: boolean): this {
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.trgeometry_append_tinstant(this.ptr, inst.ptr, interp, maxdist, _maxt, expand)) as this;
+			return wrapTemporal(F.trgeometry_append_tinstant(this.ptr, inst.ptr, F.interptype_from_string(interp), maxdist, _maxt, expand)) as this;
 		} finally {
 			_free(_maxt);
 		}
@@ -24473,8 +24468,8 @@ export class TRGeometry extends TSpatial {
 	}
 
 	/** MEOS: trgeometry_set_interp */
-	override setInterp(interp: number): this {
-		return wrapTemporal(F.trgeometry_set_interp(this.ptr, interp)) as this;
+	override setInterp(interp: string): this {
+		return wrapTemporal(F.trgeometry_set_interp(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: shortestline_trgeometry_geo, shortestline_trgeometry_tpoint, shortestline_trgeometry_trgeometry, chosen by the arguments' types */
@@ -24828,10 +24823,10 @@ export class TRGeometryInst extends TRGeometry {
 export class TRGeometrySeq extends TRGeometry {
 
 	/** MEOS: trgeometryseq_make */
-	static make(geom: Geo, instants: Temporal[], lower_inc: boolean, upper_inc: boolean, interp: number, normalize: boolean): TRGeometrySeq {
+	static make(geom: Geo, instants: Temporal[], lower_inc: boolean, upper_inc: boolean, interp: string, normalize: boolean): TRGeometrySeq {
 		const _instants = _ptrArray(instants.map(x => x.ptr));
 		try {
-			return wrapTemporal(F.trgeometryseq_make(geom.ptr, _instants, instants.length, lower_inc, upper_inc, interp, normalize)) as TRGeometrySeq;
+			return wrapTemporal(F.trgeometryseq_make(geom.ptr, _instants, instants.length, lower_inc, upper_inc, F.interptype_from_string(interp), normalize)) as TRGeometrySeq;
 		} finally {
 			_free(_instants);
 		}
@@ -24854,11 +24849,11 @@ export class TRGeometrySeqSet extends TRGeometry {
 	}
 
 	/** MEOS: trgeometryseqset_make_gaps */
-	static makeGaps(geom: Geo, instants: Temporal[], interp: number, maxt: Interval, maxdist: number): Temporal {
+	static makeGaps(geom: Geo, instants: Temporal[], interp: string, maxt: Interval, maxdist: number): Temporal {
 		const _instants = _ptrArray(instants.map(x => x.ptr));
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.trgeometryseqset_make_gaps(geom.ptr, _instants, instants.length, interp, _maxt, maxdist)) as Temporal;
+			return wrapTemporal(F.trgeometryseqset_make_gaps(geom.ptr, _instants, instants.length, F.interptype_from_string(interp), _maxt, maxdist)) as Temporal;
 		} finally {
 			_free(_instants);
 			_free(_maxt);
@@ -25224,10 +25219,10 @@ export class TS2CellSeqSet extends TS2Cell {
 export class TSequence extends Temporal {
 
 	/** MEOS: tsequence_make */
-	static make(instants: Temporal[], lower_inc: boolean, upper_inc: boolean, interp: number, normalize: boolean): Temporal {
+	static make(instants: Temporal[], lower_inc: boolean, upper_inc: boolean, interp: string, normalize: boolean): Temporal {
 		const _instants = _ptrArray(instants.map(x => x.ptr));
 		try {
-			return wrapTemporal(F.tsequence_make(_instants, instants.length, lower_inc, upper_inc, interp, normalize)) as Temporal;
+			return wrapTemporal(F.tsequence_make(_instants, instants.length, lower_inc, upper_inc, F.interptype_from_string(interp), normalize)) as Temporal;
 		} finally {
 			_free(_instants);
 		}
@@ -25250,11 +25245,11 @@ export class TSequenceSet extends Temporal {
 	}
 
 	/** MEOS: tsequenceset_make_gaps */
-	static makeGaps(instants: Temporal[], interp: number, maxt: Interval, maxdist: number): Temporal {
+	static makeGaps(instants: Temporal[], interp: string, maxt: Interval, maxdist: number): Temporal {
 		const _instants = _ptrArray(instants.map(x => x.ptr));
 		const _maxt = _putInterval(maxt);
 		try {
-			return wrapTemporal(F.tsequenceset_make_gaps(_instants, instants.length, interp, _maxt, maxdist)) as Temporal;
+			return wrapTemporal(F.tsequenceset_make_gaps(_instants, instants.length, F.interptype_from_string(interp), _maxt, maxdist)) as Temporal;
 		} finally {
 			_free(_instants);
 			_free(_maxt);
