@@ -12,25 +12,16 @@ The model assigns a method to a function the catalog's own function list does no
 
 The flat surface emits no generated wrapper for the function, so the layer has no signature to build on.
 
-## return needs a class (3)
+## return needs a class (0)
 
 The function answers a type no class stands for and no scalar or array rule reads.
 
-| class | member | what is missing |
-|---|---|---|
-| Raster | dumpAsPolygons | array of GeomVal needs a reader |
-| Raster | pixelAsPoints | array of Pixel needs a reader |
-| STBox | toGbox | return GBOX * needs wrapping |
-
-## argument needs a class (32)
+## argument needs a class (29)
 
 The function takes a type no class stands for and no marshalling rule reads.
 
 | class | member | what is missing |
 |---|---|---|
-| Pcschema | fromDims | argument dims is an array of PCDimensionSpec, which has no class |
-| Pcschema | registerDims | argument dims is an array of PCDimensionSpec, which has no class |
-| STBox | fromGbox | argument box of type GBOX * needs marshalling |
 | Text | alwaysEq | always_eq_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGe | always_ge_text_ttext takes its receiver as text *, which no handle holds |
 | Text | alwaysGt | always_gt_text_ttext takes its receiver as text *, which no handle holds |
