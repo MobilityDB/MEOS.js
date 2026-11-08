@@ -21988,6 +21988,42 @@ export function shortestline_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): Ptr 
 	return _r;
 }
 
+export function tdisjoint_geo_trgeometry(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_geo_trgeometry_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdisjoint_trgeometry_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_trgeometry_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tdisjoint_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tdisjoint_trgeometry_trgeometry_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintersects_geo_trgeometry(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('tintersects_geo_trgeometry_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintersects_trgeometry_geo(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('tintersects_trgeometry_geo_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintersects_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('tintersects_trgeometry_trgeometry_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function tdwithin_geo_trgeometry(gs: Ptr, temp: Ptr, dist: number): Ptr {
 	const _r = callPtr('tdwithin_geo_trgeometry_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(gs), ptrArgVal(temp), dist]);
 	checkMeosError();

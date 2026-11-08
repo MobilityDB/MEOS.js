@@ -18859,6 +18859,36 @@ GSERIALIZED * shortestline_trgeometry_trgeometry_w(const Temporal * temp1, const
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tdisjoint_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return tdisjoint_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tdisjoint_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tdisjoint_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tdisjoint_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return tdisjoint_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tintersects_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return tintersects_geo_trgeometry(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tintersects_trgeometry_geo_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return tintersects_trgeometry_geo(temp, gs);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tintersects_trgeometry_trgeometry_w(const Temporal * temp1, const Temporal * temp2) {
+  return tintersects_trgeometry_trgeometry(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tdwithin_geo_trgeometry_w(const GSERIALIZED * gs, const Temporal * temp, double dist) {
   return tdwithin_geo_trgeometry(gs, temp, dist);
 }

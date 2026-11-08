@@ -4219,6 +4219,11 @@ export class Geo extends Value {
 		return F.adisjoint_geo_tgeo(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: adwithin_geo_tgeo */
+	adwithin(temp: TGeo, dist: number, spheroid: boolean): number {
+		return F.adwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
+	}
+
 	/** MEOS: geo_affine */
 	affine(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, xoff: number, yoff: number, zoff: number): this {
 		return wrapGeo(F.geo_affine(this.ptr, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff)) as this;
@@ -5183,11 +5188,6 @@ export class Geometry extends Geo {
 		return F.adwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
-	/** MEOS: adwithin_geo_tgeo */
-	private _adwithin_geo_tgeo(temp: TGeo, dist: number, spheroid: boolean): number {
-		return F.adwithin_geo_tgeo(this.ptr, temp.ptr, dist, spheroid);
-	}
-
 	/** MEOS: aintersects_geo_tcbuffer */
 	private _aintersects_geo_tcbuffer(temp: TCBuffer): number {
 		return F.aintersects_geo_tcbuffer(this.ptr, temp.ptr);
@@ -5313,6 +5313,11 @@ export class Geometry extends Geo {
 		return wrapTemporalOrNull(F.tdisjoint_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: tdisjoint_geo_trgeometry */
+	private _tdisjoint_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tdwithin_geo_tcbuffer */
 	private _tdwithin_geo_tcbuffer(temp: TCBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_geo_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
@@ -5331,6 +5336,11 @@ export class Geometry extends Geo {
 	/** MEOS: tintersects_geo_tcbuffer */
 	private _tintersects_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_geo_trgeometry */
+	private _tintersects_geo_trgeometry(temp: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_geo_trgeometry(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_geo_trgeometry */
@@ -5370,11 +5380,10 @@ export class Geometry extends Geo {
 		return super.adisjoint(temp as TGeo);
 	}
 
-	/** MEOS: adwithin_geo_tgeo, adwithin_geo_tcbuffer, chosen by the arguments' types */
-	adwithin(temp: TGeo | TCBuffer, dist: number, spheroid?: boolean): number {
-		if (temp instanceof TCBuffer && typeof dist === 'number' && spheroid === undefined) return this._adwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
-		if (temp instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_geo_tgeo(temp as TGeo, dist as number, spheroid as boolean);
-		throw new TypeError(`Geometry.adwithin: no overload takes these arguments`);
+	/** MEOS: adwithin_geo_tcbuffer, chosen by the arguments' types */
+	override adwithin(temp: TCBuffer | TGeo, dist: number, arg2?: boolean): number {
+		if (temp instanceof TCBuffer && typeof dist === 'number' && arg2 === undefined) return this._adwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
+		return super.adwithin(temp as TGeo, dist as number, arg2 as boolean);
 	}
 
 	/** MEOS: aintersects_geo_tcbuffer, chosen by the arguments' types */
@@ -5651,9 +5660,10 @@ export class Geometry extends Geo {
 		throw new TypeError(`Geometry.tcovers: no overload takes these arguments`);
 	}
 
-	/** MEOS: tdisjoint_geo_tcbuffer, chosen by the arguments' types */
-	override tdisjoint(temp: TCBuffer | TGeo): Temporal | null {
+	/** MEOS: tdisjoint_geo_tcbuffer, tdisjoint_geo_trgeometry, chosen by the arguments' types */
+	override tdisjoint(temp: TCBuffer | TRGeometry | TGeo): Temporal | null {
 		if (temp instanceof TCBuffer) return this._tdisjoint_geo_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TRGeometry) return this._tdisjoint_geo_trgeometry(temp as TRGeometry);
 		return super.tdisjoint(temp as TGeo);
 	}
 
@@ -5670,9 +5680,10 @@ export class Geometry extends Geo {
 		return super.teq(temp as TGeo);
 	}
 
-	/** MEOS: tintersects_geo_tcbuffer, chosen by the arguments' types */
-	override tintersects(temp: TCBuffer | TGeo): Temporal | null {
+	/** MEOS: tintersects_geo_tcbuffer, tintersects_geo_trgeometry, chosen by the arguments' types */
+	override tintersects(temp: TCBuffer | TRGeometry | TGeo): Temporal | null {
 		if (temp instanceof TCBuffer) return this._tintersects_geo_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TRGeometry) return this._tintersects_geo_trgeometry(temp as TRGeometry);
 		return super.tintersects(temp as TGeo);
 	}
 
@@ -17384,7 +17395,7 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: adwithin_tgeo_geo */
-	private _adwithin_tgeo_geo(gs: Geometry, dist: number, spheroid: boolean): number {
+	private _adwithin_tgeo_geo(gs: Geo, dist: number, spheroid: boolean): number {
 		return F.adwithin_tgeo_geo(this.ptr, gs.ptr, dist, spheroid);
 	}
 
@@ -17566,9 +17577,9 @@ export class TGeo extends TSpatial {
 	}
 
 	/** MEOS: adwithin_tgeo_geo, adwithin_tgeo_tgeo, chosen by the arguments' types */
-	adwithin(gs: Geometry | TGeo, dist: number, spheroid: boolean): number {
-		if (gs instanceof Geometry && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_geo(gs as Geometry, dist as number, spheroid as boolean);
+	adwithin(gs: Geo | TGeo, dist: number, spheroid: boolean): number {
 		if (gs instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_tgeo(gs as TGeo, dist as number, spheroid as boolean);
+		if (gs instanceof Geo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_tgeo_geo(gs as Geo, dist as number, spheroid as boolean);
 		throw new TypeError(`TGeo.adwithin: no overload takes these arguments`);
 	}
 
@@ -18171,6 +18182,11 @@ export class TGeogPoint extends TPoint {
 		return super.startValue() as Geography;
 	}
 
+	/** MEOS: tdisjoint_tgeo_geo, tdisjoint_tgeo_tgeo, which answers a TBool for a TGeogPoint */
+	override tdisjoint(gs: Geo | TGeo): TBool | null {
+		return super.tdisjoint(gs) as TBool | null;
+	}
+
 	/** MEOS: tdistance_tgeo_geo, tdistance_tgeo_tgeo, which answers a TFloat for a TGeogPoint */
 	override tdistance(gs: Geo | TGeo, spheroid: boolean): TFloat | null {
 		return super.tdistance(gs, spheroid) as TFloat | null;
@@ -18194,6 +18210,11 @@ export class TGeogPoint extends TPoint {
 	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TGeogPoint */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: tintersects_tgeo_geo, tintersects_tgeo_tgeo, which answers a TBool for a TGeogPoint */
+	override tintersects(gs: Geo | TGeo): TBool | null {
+		return super.tintersects(gs) as TBool | null;
 	}
 
 	/** MEOS: tne_tgeo_geo, which answers a TBool for a TGeogPoint */
@@ -23766,6 +23787,16 @@ export class TRGeometry extends TSpatial {
 		return wrapGeoOrNull(F.shortestline_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Geo | null;
 	}
 
+	/** MEOS: tdisjoint_trgeometry_geo */
+	private _tdisjoint_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tdisjoint_trgeometry_trgeometry */
+	private _tdisjoint_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tdisjoint_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: tdistance_trgeometry_geo */
 	private _tdistance_trgeometry_geo(gs: Geometry): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
@@ -23794,6 +23825,16 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: teq_trgeometry_geo */
 	private _teq_trgeometry_geo(gs: Geometry): Temporal | null {
 		return wrapTemporalOrNull(F.teq_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_trgeometry_geo */
+	private _tintersects_trgeometry_geo(gs: Geometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_trgeometry_geo(this.ptr, gs.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tintersects_trgeometry_trgeometry */
+	private _tintersects_trgeometry_trgeometry(temp2: TRGeometry): Temporal | null {
+		return wrapTemporalOrNull(F.tintersects_trgeometry_trgeometry(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_trgeometry_geo */
@@ -24358,6 +24399,13 @@ export class TRGeometry extends TSpatial {
 		}
 	}
 
+	/** MEOS: tdisjoint_trgeometry_geo, tdisjoint_trgeometry_trgeometry, chosen by the arguments' types */
+	tdisjoint(gs: Geometry | TRGeometry): Temporal | null {
+		if (gs instanceof Geometry) return this._tdisjoint_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._tdisjoint_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.tdisjoint: no overload takes these arguments`);
+	}
+
 	/** MEOS: tdistance_trgeometry_geo, tdistance_trgeometry_tpoint, tdistance_trgeometry_trgeometry, chosen by the arguments' types */
 	tdistance(gs: Geometry | TGeomPoint | TRGeometry): Temporal | null {
 		if (gs instanceof TGeomPoint) return this._tdistance_trgeometry_tpoint(gs as TGeomPoint);
@@ -24404,6 +24452,13 @@ export class TRGeometry extends TSpatial {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: tintersects_trgeometry_geo, tintersects_trgeometry_trgeometry, chosen by the arguments' types */
+	tintersects(gs: Geometry | TRGeometry): Temporal | null {
+		if (gs instanceof Geometry) return this._tintersects_trgeometry_geo(gs as Geometry);
+		if (gs instanceof TRGeometry) return this._tintersects_trgeometry_trgeometry(gs as TRGeometry);
+		throw new TypeError(`TRGeometry.tintersects: no overload takes these arguments`);
 	}
 
 	/** MEOS: tne_trgeometry_geo, chosen by the arguments' types */
