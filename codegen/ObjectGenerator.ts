@@ -400,6 +400,13 @@ class Generator {
 			isStatic = false;
 			args.set(r.name, 'this.ptr');
 			params = params.filter((_p, i) => i !== at);
+		} else if (entry.role === 'operator' && at === 0 && r?.ts === 'string' && clean(r.canonical) === 'text *') {
+			// A `text *` receiver the flat surface takes as a JavaScript string
+			// (`ever_eq_text_ttext`): the class's members on a text are statics
+			// taking it as one (`Text.hash(txt, ...)`, #method), and an operator on
+			// a text is one too, its text the first argument, as MEOS.NET's
+			// `Text.EverEq(TText)` calls the same function on its own handle.
+			isStatic = true;
 		} else if (entry.role === 'operator') {
 			return this.defer(cls, oo, 'argument needs a class',
 				`${fname} takes its receiver as ${r ? clean(r.canonical) : 'nothing'}, which no handle holds`);
@@ -1331,7 +1338,9 @@ class Generator {
 			: `throw new TypeError(\`${cls}.${name}: no overload takes these arguments\`);`);
 		return {
 			method: {
-				fn: overloads.map(m => m.fn).join(', '), name, isStatic: false,
+				// Overloads that are all statics (an operator on a text) are chosen
+				// among by a static, whose `this` is the class holding them.
+				fn: overloads.map(m => m.fn).join(', '), name, isStatic: overloads.every(m => m.isStatic),
 				params: names.map((n, i) => ({ name: n, ts: types[i].join(' | '), optional: optional[i] })),
 				ret: rets.join(' | '), body,
 				doc: `MEOS: ${overloads.map(m => m.fn).join(', ')}, chosen by the arguments' types`,
