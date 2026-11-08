@@ -1023,14 +1023,28 @@ class Generator {
 					`${m.fn} answers ${m.ret}, which the inherited ${name} (${inherited.rets.join(' | ')}) does not`);
 			return undefined;
 		}
-		const optional = names.map((_n, i) => overloads.some(m => m.params.length <= i)
+		// An overload may be called without the arguments its SQL signature
+		// defaults (#applySqlDefaults), where no other overload takes exactly the
+		// arguments before them: there an omitted argument would reach both.
+		const keys = new Set(overloads.map(m => this.testKey(m)));
+		const omittable = (m: Emitted, i: number): boolean => {
+			const p = m.params[i];
+			if (!p || (p.default === undefined && !p.optional)) return false;
+			const before = m.params.slice(0, i).map(q => this.argumentTest(q.ts, 'x').key).join(',');
+			return !keys.has(before);
+		};
+		const optional = names.map((_n, i) => overloads.some(m => m.params.length <= i || omittable(m, i))
 			|| (inherited !== undefined && inherited.params.length <= i));
 		const ordered = [...overloads].sort((a, b) =>
 			b.params.reduce((s, p) => s + this.depth(p.ts), 0) - a.params.reduce((s, p) => s + this.depth(p.ts), 0)
 			|| b.params.length - a.params.length);
 		const body: string[] = [];
 		for (const m of ordered) {
-			const conds = names.map((n, i) => (m.params[i] ? this.argumentTest(m.params[i].ts, n).test : `${n} === undefined`));
+			const conds = names.map((n, i) => {
+				if (!m.params[i]) return `${n} === undefined`;
+				const test = this.argumentTest(m.params[i].ts, n).test;
+				return omittable(m, i) ? `(${n} === undefined || ${test})` : test;
+			});
 			const args = m.params.map((p, i) => `${names[i]} as ${p.ts}`).join(', ');
 			body.push(`if (${conds.join(' && ') || 'true'}) return this.${this.helperName(m.fn)}(${args});`);
 		}

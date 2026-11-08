@@ -9,6 +9,7 @@ import {
 	TsTzSpan,
 	IntSpan,
 	IntSpanSet,
+	STBox,
 	Temporal,
 	TFloat,
 	TFloatInst,
@@ -241,6 +242,18 @@ describe('generated object layer: SQL defaults', () => {
 		assert.equal(s.toString(), '[1, 5)');
 		using closed = IntSpan.make(1, 5, true, true);
 		assert.equal(closed.toString(), '[1, 6)');
+	});
+
+	it('takes the default through a method choosing among overloads', () => {
+		// nearestApproachDistance(stbox, stbox, boolean DEFAULT true) is one of
+		// the overloads STBox.nad chooses among by the arguments' types
+		using a = STBox.in('STBOX X((1,1),(2,2))');
+		using b = STBox.in('STBOX X((5,5),(6,6))');
+		assert.ok(Math.abs(a.nad(b) - Math.sqrt(18)) < 1e-9);
+		assert.equal(a.nad(b), a.nad(b, true));
+		using c = STBox.in('STBOX X((1,1),(3,3))');
+		using d = STBox.in('STBOX X((2,2),(4,4))');
+		assert.equal(c.nad(d), 0);
 	});
 });
 
