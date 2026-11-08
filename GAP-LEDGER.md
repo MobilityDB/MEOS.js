@@ -52,65 +52,13 @@ The function takes a type no class stands for and no marshalling rule reads.
 | Text | tne | tne_text_ttext takes its receiver as text *, which no handle holds |
 | Text | union | union_text_set takes its receiver as text *, which no handle holds |
 
-## out-parameter needs a reader (53)
+## out-parameter needs a reader (1)
 
 The function answers a value through a pointer no reader in this generator reads.
 
 | class | member | what is missing |
 |---|---|---|
-| Geometry | minimumBoundingRadius | 1 value(s) answered beside a GSERIALIZED * return |
-| Jsonb | each | out-parameter values of type Jsonb *** |
-| Jsonb | eachText | out-parameter values of type text *** |
-| Raster | dumpValues | out-parameter nodata of type bool ** |
-| RTree | join | out-parameter result of type MeosArray * |
-| RTree | search | out-parameter result of type MeosArray * |
-| RTree | searchTemporal | out-parameter result of type MeosArray * |
-| RTree | searchTemporalDedup | out-parameter result of type MeosArray * |
-| RTreeNNCursor | next | 2 value(s) answered beside a bool return |
-| SPNNCursor | next | 2 value(s) answered beside a bool return |
-| SPTree | join | out-parameter result of type MeosArray * |
-| SPTree | search | out-parameter result of type MeosArray * |
-| SPTree | searchTemporal | out-parameter result of type MeosArray * |
-| SPTree | searchTemporalDedup | out-parameter result of type MeosArray * |
-| TBigInt | unnest | out-parameter values of type int64_t ** |
-| TBigInt | valueSplit | out-parameter bins of type int64_t ** |
-| TBigInt | valueTimeSplit | out-parameter value_bins of type int64_t ** |
-| TBool | unnest | out-parameter values of type bool ** |
-| TCBuffer | unnest | out-parameter values of type Cbuffer *** |
-| TCBuffer | valueAtTimestamptz | out-parameter value of type Cbuffer ** |
-| Temporal | timeSplit | out-parameter bins of type TimestampTz ** |
-| TFloat | unnest | out-parameter values of type double ** |
-| TFloat | valueSplit | out-parameter bins of type double ** |
-| TFloat | valueTimeSplit | out-parameter value_bins of type double ** |
-| TGeo | spaceSplit | out-parameter space_bins of type GSERIALIZED *** |
-| TGeo | spaceTimeSplit | out-parameter space_bins of type GSERIALIZED *** |
-| TGeo | unnest | out-parameter values of type GSERIALIZED *** |
-| TGeogPoint | h3indexSplit | out-parameter cells of type uint64_t ** |
-| TGeogPoint | quadbinSplit | out-parameter cells of type uint64_t ** |
-| TGeogPoint | s2cellSplit | out-parameter cells of type uint64_t ** |
-| TGeomPoint | h3indexSplit | out-parameter cells of type uint64_t ** |
-| TGeomPoint | quadbinSplit | out-parameter cells of type uint64_t ** |
-| TGeomPoint | s2cellSplit | out-parameter cells of type uint64_t ** |
-| TH3Index | unnest | out-parameter values of type uint64_t ** |
-| TInt | unnest | out-parameter values of type int ** |
-| TInt | valueSplit | out-parameter bins of type int ** |
-| TInt | valueTimeSplit | out-parameter value_bins of type int ** |
-| TJsonb | unnest | out-parameter values of type Jsonb *** |
-| TJsonb | valueAtTimestamptz | out-parameter value of type Jsonb ** |
-| TNPoint | unnest | out-parameter values of type Npoint *** |
-| TNPoint | valueAtTimestamptz | out-parameter value of type Npoint ** |
-| TPCPatch | unnest | out-parameter values of type Pcpatch *** |
-| TPCPatch | valueAtTimestamptz | out-parameter value of type Pcpatch ** |
-| TPCPoint | unnest | out-parameter values of type Pcpoint *** |
-| TPCPoint | valueAtTimestamptz | out-parameter value of type Pcpoint ** |
-| TPoint | asMVTGeom | out-parameter gsarr of type GSERIALIZED ** |
-| TPose | unnest | out-parameter values of type Pose *** |
-| TPoseChain | unnest | out-parameter values of type PoseChain *** |
-| TQuadbin | unnest | out-parameter values of type uint64_t ** |
-| TRGeometry | unnest | out-parameter values of type GSERIALIZED *** |
-| TS2Cell | unnest | out-parameter values of type uint64_t ** |
-| TText | unnest | out-parameter values of type text *** |
-| TText | valueAtTimestamptz | out-parameter value of type text ** |
+| TPoint | asMVTGeom | out-parameter timesarr of type int64_t ** |
 
 ## overloads no argument test tells apart (0)
 
