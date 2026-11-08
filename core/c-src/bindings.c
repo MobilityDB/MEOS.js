@@ -8585,6 +8585,16 @@ GSERIALIZED * geoset_to_geo_w(const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Set * geomset_to_geogset_w(const Set * s) {
+  return geomset_to_geogset(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * geogset_to_geomset_w(const Set * s) {
+  return geogset_to_geomset(s);
+}
+
+EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * geoset_end_value_w(const Set * s) {
   return geoset_end_value(s);
 }
@@ -8764,6 +8774,16 @@ GBOX * stbox_to_gbox_w(const STBox * box) {
 EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * stbox_to_geo_w(const STBox * box) {
   return stbox_to_geo(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * stbox_to_geom_w(const STBox * box) {
+  return stbox_to_geom(box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * stbox_to_geog_w(const STBox * box) {
+  return stbox_to_geog(box);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10600,6 +10620,11 @@ GSERIALIZED * cbuffer_to_geom_w(const Cbuffer * cb) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * cbuffer_to_geog_w(const Cbuffer * cb) {
+  return cbuffer_to_geog(cb);
+}
+
+EMSCRIPTEN_KEEPALIVE
 STBox * cbuffer_to_stbox_w(const Cbuffer * cb) {
   return cbuffer_to_stbox(cb);
 }
@@ -10961,6 +10986,11 @@ Temporal * tcbuffer_to_tfloat_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tcbuffer_to_tgeompoint_w(const Temporal * temp) {
   return tcbuffer_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcbuffer_to_tgeogpoint_w(const Temporal * temp) {
+  return tcbuffer_to_tgeogpoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13511,6 +13541,11 @@ GSERIALIZED * npoint_to_geompoint_w(const Npoint * np) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * npoint_to_geog_w(const Npoint * np) {
+  return npoint_to_geog(np);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Nsegment * npoint_to_nsegment_w(const Npoint * np) {
   return npoint_to_nsegment(np);
 }
@@ -13523,6 +13558,11 @@ STBox * npoint_to_stbox_w(const Npoint * np) {
 EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * nsegment_to_geom_w(const Nsegment * ns) {
   return nsegment_to_geom(ns);
+}
+
+EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * nsegment_to_geog_w(const Nsegment * ns) {
+  return nsegment_to_geog(ns);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13830,6 +13870,11 @@ Temporal * tgeompoint_to_tnpoint_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tnpoint_to_tgeompoint_w(const Temporal * temp) {
   return tnpoint_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tnpoint_to_tgeogpoint_w(const Temporal * temp) {
+  return tnpoint_to_tgeogpoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -14448,6 +14493,11 @@ GSERIALIZED * pcpatch_to_geom_w(const Pcpatch * pa) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * pcpatch_to_geog_w(const Pcpatch * pa) {
+  return pcpatch_to_geog(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int pcpatch_cmp_w(const Pcpatch * pa1, const Pcpatch * pa2) {
   return pcpatch_cmp(pa1, pa2);
 }
@@ -15022,8 +15072,18 @@ Temporal * tpcpoint_to_tgeompoint_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_to_tgeogpoint_w(const Temporal * temp) {
+  return tpcpoint_to_tgeogpoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tpcpatch_to_tgeometry_w(const Temporal * temp) {
   return tpcpatch_to_tgeometry(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_to_tgeography_w(const Temporal * temp) {
+  return tpcpatch_to_tgeography(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -16231,6 +16291,16 @@ Temporal * tpose_to_tpoint_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_to_tgeompoint_w(const Temporal * temp) {
+  return tpose_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpose_to_tgeogpoint_w(const Temporal * temp) {
+  return tpose_to_tgeogpoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Pose * tpose_end_value_w(const Temporal * temp) {
   return tpose_end_value(temp);
 }
@@ -16575,6 +16645,11 @@ GSERIALIZED * posechain_to_point_w(const PoseChain * pc) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+GSERIALIZED * posechain_to_geog_w(const PoseChain * pc) {
+  return posechain_to_geog(pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
 STBox * posechain_to_stbox_w(const PoseChain * pc) {
   return posechain_to_stbox(pc);
 }
@@ -16849,6 +16924,16 @@ TSequenceSet * tposechainseqset_from_base_tstzspanset_w(const PoseChain * pc, co
 EMSCRIPTEN_KEEPALIVE
 Temporal * tposechain_to_tpose_w(const Temporal * temp) {
   return tposechain_to_tpose(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_to_tgeompoint_w(const Temporal * temp) {
+  return tposechain_to_tgeompoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_to_tgeogpoint_w(const Temporal * temp) {
+  return tposechain_to_tgeogpoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -17497,6 +17582,11 @@ Temporal * tbigint_to_tquadbin_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tquadbin_to_tbigint_w(const Temporal * temp) {
   return tquadbin_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tquadbin_to_tgeogpoint_w(const Temporal * temp) {
+  return tquadbin_to_tgeogpoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -18315,8 +18405,18 @@ Temporal * trgeometry_to_tgeompoint_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * trgeometry_to_tgeogpoint_w(const Temporal * temp) {
+  return trgeometry_to_tgeogpoint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * trgeometry_to_tgeometry_w(const Temporal * temp) {
   return trgeometry_to_tgeometry(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * trgeometry_to_tgeography_w(const Temporal * temp) {
+  return trgeometry_to_tgeography(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -19380,6 +19480,11 @@ Temporal * tbigint_to_ts2cell_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * ts2cell_to_tbigint_w(const Temporal * temp) {
   return ts2cell_to_tbigint(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * ts2cell_to_tgeompoint_w(const Temporal * temp) {
+  return ts2cell_to_tgeompoint(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE

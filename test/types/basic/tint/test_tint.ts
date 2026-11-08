@@ -5,8 +5,14 @@ import { TInt } from '../../../../core/types/basic/tint/TInt.js';
 import { TBool } from '../../../../core/types/basic/tbool/TBool.js';
 import { TInterpolation } from '../../../../core/types/temporal/Temporal.js';
 import { TFloat } from '../../../../core/types/basic/tfloat/TFloat.js';
-import { TBox } from '../../../../core/types/boxes/TBox.js';
-import { IntSpan, IntSpanSet, TsTzSet, TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generated.js';
+import {
+	IntSpan,
+	IntSpanSet,
+	TBox,
+	TsTzSet,
+	TsTzSpan,
+	TsTzSpanSet,
+} from '../../../../core/objects/objects.generated.js';
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 00:01:00+00'; // +1 min
@@ -518,7 +524,7 @@ describe('TNumber - atTBox / minusTBox', () => {
 	it('atTBox restricts to instants within the box', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
 		const box = TBox.fromInt(3);
-		const r = t.atTBox(box.inner);
+		const r = t.atTBox(box.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); box.free(); r.free();
 	});
@@ -526,7 +532,7 @@ describe('TNumber - atTBox / minusTBox', () => {
 	it('minusTBox excludes instants within the box', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
 		const box = TBox.fromInt(3);
-		const r = t.minusTBox(box.inner);
+		const r = t.minusTBox(box.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 2);
 		t.free(); box.free(); r.free();
@@ -537,7 +543,7 @@ describe('TNumber - nadTBox', () => {
 	it('nadTBox returns a number', () => {
 		const t = TInt.fromString(`{1@${T1}, 5@${T2}}`);
 		const box = TBox.fromInt(10);
-		assert.equal(typeof t.nadTBox(box.inner), 'number');
+		assert.equal(typeof t.nadTBox(box.ptr), 'number');
 		t.free(); box.free();
 	});
 });

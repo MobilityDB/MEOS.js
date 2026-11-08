@@ -564,7 +564,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: contained_rid_bigintset_tnpoint */
-	containedRid(temp: TNpoint): boolean {
+	containedRid(temp: TNPoint): boolean {
 		return F.contained_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -575,7 +575,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: contains_rid_bigintset_tnpoint */
-	containsRid(temp: TNpoint): boolean {
+	containsRid(temp: TNPoint): boolean {
 		return F.contains_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -615,7 +615,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: overlaps_rid_bigintset_tnpoint */
-	overlapsRid(temp: TNpoint): boolean {
+	overlapsRid(temp: TNPoint): boolean {
 		return F.overlaps_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -678,7 +678,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: same_rid_bigintset_tnpoint */
-	sameRid(temp: TNpoint): boolean {
+	sameRid(temp: TNPoint): boolean {
 		return F.same_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -2014,9 +2014,9 @@ export class Value extends MeosObject {
 }
 
 /**
- * The Cbuffer class of the MEOS object model.
+ * The CBuffer class of the MEOS object model.
  */
-export class Cbuffer extends Value {
+export class CBuffer extends Value {
 
 	/** The text MEOS writes this value as (MEOS: cbuffer_as_text). */
 	override toString(): string {
@@ -2024,7 +2024,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: distance_cbuffer_cbuffer */
-	private _distance_cbuffer_cbuffer(cb2: Cbuffer): number {
+	private _distance_cbuffer_cbuffer(cb2: CBuffer): number {
 		return F.distance_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
@@ -2039,37 +2039,37 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: acontains_cbuffer_tcbuffer */
-	acontains(temp: TCbuffer): number {
+	acontains(temp: TCBuffer): number {
 		return F.acontains_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: acovers_cbuffer_tcbuffer */
-	acovers(temp: TCbuffer): number {
+	acovers(temp: TCBuffer): number {
 		return F.acovers_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: adisjoint_cbuffer_tcbuffer */
-	adisjoint(temp: TCbuffer): number {
+	adisjoint(temp: TCBuffer): number {
 		return F.adisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: adwithin_cbuffer_tcbuffer */
-	adwithin(temp: TCbuffer, dist: number): number {
+	adwithin(temp: TCBuffer, dist: number): number {
 		return F.adwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
 	/** MEOS: aintersects_cbuffer_tcbuffer */
-	aintersects(temp: TCbuffer): number {
+	aintersects(temp: TCBuffer): number {
 		return F.aintersects_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_eq_cbuffer_tcbuffer */
-	alwaysEq(temp: TCbuffer): number {
+	alwaysEq(temp: TCBuffer): number {
 		return F.always_eq_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_ne_cbuffer_tcbuffer */
-	alwaysNe(temp: TCbuffer): number {
+	alwaysNe(temp: TCBuffer): number {
 		return F.always_ne_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -2104,105 +2104,105 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: atouches_cbuffer_tcbuffer */
-	atouches(temp: TCbuffer): number {
+	atouches(temp: TCBuffer): number {
 		return F.atouches_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: cbuffer_cmp */
-	cmp(cb2: Cbuffer): number {
+	cmp(cb2: CBuffer): number {
 		return F.cbuffer_cmp(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: contained_cbuffer_set */
-	contained(s: CbufferSet): boolean {
+	contained(s: CBufferSet): boolean {
 		return F.contained_cbuffer_set(this.ptr, s.ptr);
 	}
 
 	/** MEOS: contains_cbuffer_cbuffer */
-	contains(cb2: Cbuffer): number {
+	contains(cb2: CBuffer): number {
 		return F.contains_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_copy */
-	copy(): Cbuffer {
-		return wrapCbuffer(F.cbuffer_copy(this.ptr)) as Cbuffer;
+	copy(): CBuffer {
+		return wrapCBuffer(F.cbuffer_copy(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: covers_cbuffer_cbuffer */
-	covers(cb2: Cbuffer): number {
+	covers(cb2: CBuffer): number {
 		return F.covers_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: disjoint_cbuffer_cbuffer */
-	disjoint(cb2: Cbuffer): number {
+	disjoint(cb2: CBuffer): number {
 		return F.disjoint_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: distance_cbuffer_cbuffer, distance_cbuffer_geo, distance_cbuffer_stbox, chosen by the arguments' types */
-	distance(cb2: Cbuffer | Geometry | STBox): number {
+	distance(cb2: CBuffer | Geometry | STBox): number {
 		if (cb2 instanceof Geometry) return this._distance_cbuffer_geo(cb2 as Geometry);
-		if (cb2 instanceof Cbuffer) return this._distance_cbuffer_cbuffer(cb2 as Cbuffer);
+		if (cb2 instanceof CBuffer) return this._distance_cbuffer_cbuffer(cb2 as CBuffer);
 		if (cb2 instanceof STBox) return this._distance_cbuffer_stbox(cb2 as STBox);
-		throw new TypeError(`Cbuffer.distance: no overload takes these arguments`);
+		throw new TypeError(`CBuffer.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: dwithin_cbuffer_cbuffer */
-	dwithin(cb2: Cbuffer, dist: number): number {
+	dwithin(cb2: CBuffer, dist: number): number {
 		return F.dwithin_cbuffer_cbuffer(this.ptr, cb2.ptr, dist);
 	}
 
 	/** MEOS: econtains_cbuffer_tcbuffer */
-	econtains(temp: TCbuffer): number {
+	econtains(temp: TCBuffer): number {
 		return F.econtains_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ecovers_cbuffer_tcbuffer */
-	ecovers(temp: TCbuffer): number {
+	ecovers(temp: TCBuffer): number {
 		return F.ecovers_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: edisjoint_cbuffer_tcbuffer */
-	edisjoint(temp: TCbuffer): number {
+	edisjoint(temp: TCBuffer): number {
 		return F.edisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: edwithin_cbuffer_tcbuffer */
-	edwithin(temp: TCbuffer, dist: number): number {
+	edwithin(temp: TCBuffer, dist: number): number {
 		return F.edwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
 	/** MEOS: eintersects_cbuffer_tcbuffer */
-	eintersects(temp: TCbuffer): number {
+	eintersects(temp: TCBuffer): number {
 		return F.eintersects_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: cbuffer_eq */
-	eq(cb2: Cbuffer): boolean {
+	eq(cb2: CBuffer): boolean {
 		return F.cbuffer_eq(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: etouches_cbuffer_tcbuffer */
-	etouches(temp: TCbuffer): number {
+	etouches(temp: TCBuffer): number {
 		return F.etouches_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_eq_cbuffer_tcbuffer */
-	everEq(temp: TCbuffer): number {
+	everEq(temp: TCBuffer): number {
 		return F.ever_eq_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_ne_cbuffer_tcbuffer */
-	everNe(temp: TCbuffer): number {
+	everNe(temp: TCBuffer): number {
 		return F.ever_ne_cbuffer_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: cbuffer_ge */
-	ge(cb2: Cbuffer): boolean {
+	ge(cb2: CBuffer): boolean {
 		return F.cbuffer_ge(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_gt */
-	gt(cb2: Cbuffer): boolean {
+	gt(cb2: CBuffer): boolean {
 		return F.cbuffer_gt(this.ptr, cb2.ptr);
 	}
 
@@ -2217,22 +2217,22 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: intersection_cbuffer_set */
-	intersection(s: CbufferSet): Set | null {
+	intersection(s: CBufferSet): Set | null {
 		return wrapSetOrNull(F.intersection_cbuffer_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: intersects_cbuffer_cbuffer */
-	intersects(cb2: Cbuffer): number {
+	intersects(cb2: CBuffer): number {
 		return F.intersects_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_le */
-	le(cb2: Cbuffer): boolean {
+	le(cb2: CBuffer): boolean {
 		return F.cbuffer_le(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_lt */
-	lt(cb2: Cbuffer): boolean {
+	lt(cb2: CBuffer): boolean {
 		return F.cbuffer_lt(this.ptr, cb2.ptr);
 	}
 
@@ -2242,7 +2242,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: minus_cbuffer_set */
-	minus(s: CbufferSet): Set | null {
+	minus(s: CBufferSet): Set | null {
 		return wrapSetOrNull(F.minus_cbuffer_set(this.ptr, s.ptr)) as Set | null;
 	}
 
@@ -2252,7 +2252,7 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_ne */
-	ne(cb2: Cbuffer): boolean {
+	ne(cb2: CBuffer): boolean {
 		return F.cbuffer_ne(this.ptr, cb2.ptr);
 	}
 
@@ -2273,12 +2273,12 @@ export class Cbuffer extends Value {
 
 	/** MEOS: cbuffer_round */
 	round(maxdd: number = 0): this {
-		return wrapCbuffer(F.cbuffer_round(this.ptr, maxdd)) as this;
+		return wrapCBuffer(F.cbuffer_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: cbuffer_set_srid */
 	setSRID(srid: number): this {
-		return wrapCbuffer(F.cbuffer_set_srid(this.ptr, srid)) as this;
+		return wrapCBuffer(F.cbuffer_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: cbuffer_srid */
@@ -2287,27 +2287,27 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: tcontains_cbuffer_tcbuffer */
-	tcontains(temp: TCbuffer): Temporal | null {
+	tcontains(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcontains_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tcovers_cbuffer_tcbuffer */
-	tcovers(temp: TCbuffer): Temporal | null {
+	tcovers(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcovers_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdisjoint_cbuffer_tcbuffer */
-	tdisjoint(temp: TCbuffer): Temporal | null {
+	tdisjoint(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdisjoint_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdwithin_cbuffer_tcbuffer */
-	tdwithin(temp: TCbuffer, dist: number): Temporal | null {
+	tdwithin(temp: TCBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_cbuffer_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
 	}
 
 	/** MEOS: teq_cbuffer_tcbuffer */
-	teq(temp: TCbuffer): Temporal | null {
+	teq(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.teq_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -2317,13 +2317,18 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: tintersects_cbuffer_tcbuffer */
-	tintersects(temp: TCbuffer): Temporal | null {
+	tintersects(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_cbuffer_tcbuffer */
-	tne(temp: TCbuffer): Temporal | null {
+	tne(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tne_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: cbuffer_to_geog */
+	toGeog(): Geo {
+		return wrapGeo(F.cbuffer_to_geog(this.ptr)) as Geo;
 	}
 
 	/** MEOS: cbuffer_to_geom */
@@ -2342,18 +2347,18 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: touches_cbuffer_cbuffer */
-	touches(cb2: Cbuffer): number {
+	touches(cb2: CBuffer): number {
 		return F.touches_cbuffer_cbuffer(this.ptr, cb2.ptr);
 	}
 
 	/** MEOS: cbuffer_transform */
 	transform(srid: number): this {
-		return wrapCbuffer(F.cbuffer_transform(this.ptr, srid)) as this;
+		return wrapCBuffer(F.cbuffer_transform(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: cbuffer_transform_pipeline */
 	transformPipeline(pipelinestr: string, srid: number = 0, is_forward: boolean = true): this {
-		return wrapCbuffer(F.cbuffer_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
+		return wrapCBuffer(F.cbuffer_transform_pipeline(this.ptr, pipelinestr, srid, is_forward)) as this;
 	}
 
 	/** MEOS: cbuffer_tstzspan_to_stbox */
@@ -2362,58 +2367,58 @@ export class Cbuffer extends Value {
 	}
 
 	/** MEOS: ttouches_cbuffer_tcbuffer */
-	ttouches(temp: TCbuffer): Temporal | null {
+	ttouches(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.ttouches_cbuffer_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: union_cbuffer_set */
-	union(s: CbufferSet): Set | null {
+	union(s: CBufferSet): Set | null {
 		return wrapSetOrNull(F.union_cbuffer_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: cbuffer_from_wkb */
-	static fromEWKB(wkb: Uint8Array): Cbuffer {
-		return Cbuffer.fromWKB(wkb);
+	static fromEWKB(wkb: Uint8Array): CBuffer {
+		return CBuffer.fromWKB(wkb);
 	}
 
 	/** MEOS: cbuffer_in */
-	static fromEWKT(str: string): Cbuffer {
-		return Cbuffer.in(str);
+	static fromEWKT(str: string): CBuffer {
+		return CBuffer.in(str);
 	}
 
 	/** MEOS: cbuffer_from_hexwkb */
-	static fromHexEWKB(hexwkb: string): Cbuffer {
-		return Cbuffer.fromHexWKB(hexwkb);
+	static fromHexEWKB(hexwkb: string): CBuffer {
+		return CBuffer.fromHexWKB(hexwkb);
 	}
 
 	/** MEOS: cbuffer_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Cbuffer {
-		return wrapCbuffer(F.cbuffer_from_hexwkb(hexwkb)) as Cbuffer;
+	static fromHexWKB(hexwkb: string): CBuffer {
+		return wrapCBuffer(F.cbuffer_from_hexwkb(hexwkb)) as CBuffer;
 	}
 
 	/** MEOS: cbuffer_in */
-	static fromText(str: string): Cbuffer {
-		return Cbuffer.in(str);
+	static fromText(str: string): CBuffer {
+		return CBuffer.in(str);
 	}
 
 	/** MEOS: cbuffer_from_wkb */
-	static fromWKB(wkb: Uint8Array): Cbuffer {
+	static fromWKB(wkb: Uint8Array): CBuffer {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapCbuffer(F.cbuffer_from_wkb(_wkb, wkb.length)) as Cbuffer;
+			return wrapCBuffer(F.cbuffer_from_wkb(_wkb, wkb.length)) as CBuffer;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: cbuffer_in */
-	static in(str: string): Cbuffer {
-		return wrapCbuffer(F.cbuffer_in(str)) as Cbuffer;
+	static in(str: string): CBuffer {
+		return wrapCBuffer(F.cbuffer_in(str)) as CBuffer;
 	}
 
 	/** MEOS: cbuffer_make */
-	static make(point: Geo, radius: number): Cbuffer {
-		return wrapCbuffer(F.cbuffer_make(point.ptr, radius)) as Cbuffer;
+	static make(point: Geo, radius: number): CBuffer {
+		return wrapCBuffer(F.cbuffer_make(point.ptr, radius)) as CBuffer;
 	}
 }
 
@@ -2474,9 +2479,9 @@ export class SpatialSet extends Set {
 }
 
 /**
- * The CbufferSet class of the MEOS object model.
+ * The CBufferSet class of the MEOS object model.
  */
-export class CbufferSet extends SpatialSet {
+export class CBufferSet extends SpatialSet {
 
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
@@ -2484,50 +2489,50 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_cbuffer */
-	private _contains_set_cbuffer(cb: Cbuffer): boolean {
+	private _contains_set_cbuffer(cb: CBuffer): boolean {
 		return F.contains_set_cbuffer(this.ptr, cb.ptr);
 	}
 
 	/** MEOS: intersection_set_cbuffer */
-	private _intersection_set_cbuffer(cb: Cbuffer): this | null {
+	private _intersection_set_cbuffer(cb: CBuffer): this | null {
 		return wrapSetOrNull(F.intersection_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_cbuffer */
-	private _minus_set_cbuffer(cb: Cbuffer): this | null {
+	private _minus_set_cbuffer(cb: CBuffer): this | null {
 		return wrapSetOrNull(F.minus_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_cbuffer */
-	private _union_set_cbuffer(cb: Cbuffer): this | null {
+	private _union_set_cbuffer(cb: CBuffer): this | null {
 		return wrapSetOrNull(F.union_set_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_cbuffer, chosen by the arguments' types */
-	override contains(cb: Cbuffer | Set): boolean {
-		if (cb instanceof Cbuffer) return this._contains_set_cbuffer(cb as Cbuffer);
+	override contains(cb: CBuffer | Set): boolean {
+		if (cb instanceof CBuffer) return this._contains_set_cbuffer(cb as CBuffer);
 		return super.contains(cb as Set);
 	}
 
 	/** MEOS: distance_cbufferset_cbufferset */
-	distance(s2: CbufferSet): number {
+	distance(s2: CBufferSet): number {
 		return F.distance_cbufferset_cbufferset(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: cbufferset_end_value */
-	endValue(): Cbuffer {
-		return wrapCbuffer(F.cbufferset_end_value(this.ptr)) as Cbuffer;
+	endValue(): CBuffer {
+		return wrapCBuffer(F.cbufferset_end_value(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: intersection_set_cbuffer, chosen by the arguments' types */
-	override intersection(cb: Cbuffer | Set): this | null {
-		if (cb instanceof Cbuffer) return this._intersection_set_cbuffer(cb as Cbuffer);
+	override intersection(cb: CBuffer | Set): this | null {
+		if (cb instanceof CBuffer) return this._intersection_set_cbuffer(cb as CBuffer);
 		return super.intersection(cb as Set);
 	}
 
 	/** MEOS: minus_set_cbuffer, chosen by the arguments' types */
-	override minus(cb: Cbuffer | Set): this | null {
-		if (cb instanceof Cbuffer) return this._minus_set_cbuffer(cb as Cbuffer);
+	override minus(cb: CBuffer | Set): this | null {
+		if (cb instanceof CBuffer) return this._minus_set_cbuffer(cb as CBuffer);
 		return super.minus(cb as Set);
 	}
 
@@ -2537,23 +2542,23 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: cbufferset_start_value */
-	startValue(): Cbuffer {
-		return wrapCbuffer(F.cbufferset_start_value(this.ptr)) as Cbuffer;
+	startValue(): CBuffer {
+		return wrapCBuffer(F.cbufferset_start_value(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: union_set_cbuffer, chosen by the arguments' types */
-	override union(cb: Cbuffer | Set): this | null {
-		if (cb instanceof Cbuffer) return this._union_set_cbuffer(cb as Cbuffer);
+	override union(cb: CBuffer | Set): this | null {
+		if (cb instanceof CBuffer) return this._union_set_cbuffer(cb as CBuffer);
 		return super.union(cb as Set);
 	}
 
 	/** MEOS: cbufferset_value_n */
-	valueN(n: number): Cbuffer | null {
-		return wrapCbufferOrNull(F.cbufferset_value_n(this.ptr, n)) as Cbuffer | null;
+	valueN(n: number): CBuffer | null {
+		return wrapCBufferOrNull(F.cbufferset_value_n(this.ptr, n)) as CBuffer | null;
 	}
 
 	/** MEOS: cbufferset_values */
-	values(): Cbuffer[] {
+	values(): CBuffer[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.cbufferset_values(this.ptr, _count);
@@ -2561,8 +2566,8 @@ export class CbufferSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Cbuffer[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapCbuffer(Number(_v.getBigUint64(_i * 8, true))) as Cbuffer);
+				const _out: CBuffer[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapCBuffer(Number(_v.getBigUint64(_i * 8, true))) as CBuffer);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -2578,8 +2583,8 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: cbufferset_in */
-	static fromEWKT(str: string): CbufferSet {
-		return CbufferSet.in(str);
+	static fromEWKT(str: string): CBufferSet {
+		return CBufferSet.in(str);
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -2588,13 +2593,13 @@ export class CbufferSet extends SpatialSet {
 	}
 
 	/** MEOS: cbufferset_in */
-	static fromText(str: string): CbufferSet {
-		return CbufferSet.in(str);
+	static fromText(str: string): CBufferSet {
+		return CBufferSet.in(str);
 	}
 
 	/** MEOS: cbufferset_in */
-	static in(str: string): CbufferSet {
-		return wrapSet(F.cbufferset_in(str)) as CbufferSet;
+	static in(str: string): CBufferSet {
+		return wrapSet(F.cbufferset_in(str)) as CBufferSet;
 	}
 }
 
@@ -4895,6 +4900,11 @@ export class GeogSet extends GeoSet {
 		return super.toGeo() as Geography;
 	}
 
+	/** MEOS: geogset_to_geomset */
+	toGeomset(): Set {
+		return wrapSet(F.geogset_to_geomset(this.ptr)) as Set;
+	}
+
 	/** MEOS: geoset_value_n, which answers a Geography for a GeogSet */
 	override valueN(n: number): Geography | null {
 		return super.valueN(n) as Geography | null;
@@ -5082,6 +5092,11 @@ export class GeomSet extends GeoSet {
 		return super.toGeo() as Geometry;
 	}
 
+	/** MEOS: geomset_to_geogset */
+	toGeogset(): Set {
+		return wrapSet(F.geomset_to_geogset(this.ptr)) as Set;
+	}
+
 	/** MEOS: geoset_value_n, which answers a Geometry for a GeomSet */
 	override valueN(n: number): Geometry | null {
 		return super.valueN(n) as Geometry | null;
@@ -5119,7 +5134,7 @@ export class GeomSet extends GeoSet {
 export class Geometry extends Geo {
 
 	/** MEOS: acontains_geo_tcbuffer */
-	private _acontains_geo_tcbuffer(temp: TCbuffer): number {
+	private _acontains_geo_tcbuffer(temp: TCBuffer): number {
 		return F.acontains_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5134,7 +5149,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: acovers_geo_tcbuffer */
-	private _acovers_geo_tcbuffer(temp: TCbuffer): number {
+	private _acovers_geo_tcbuffer(temp: TCBuffer): number {
 		return F.acovers_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5149,12 +5164,12 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: adisjoint_geo_tcbuffer */
-	private _adisjoint_geo_tcbuffer(temp: TCbuffer): number {
+	private _adisjoint_geo_tcbuffer(temp: TCBuffer): number {
 		return F.adisjoint_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: adwithin_geo_tcbuffer */
-	private _adwithin_geo_tcbuffer(temp: TCbuffer, dist: number): number {
+	private _adwithin_geo_tcbuffer(temp: TCBuffer, dist: number): number {
 		return F.adwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
@@ -5164,7 +5179,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: aintersects_geo_tcbuffer */
-	private _aintersects_geo_tcbuffer(temp: TCbuffer): number {
+	private _aintersects_geo_tcbuffer(temp: TCBuffer): number {
 		return F.aintersects_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5179,7 +5194,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: atouches_geo_tcbuffer */
-	private _atouches_geo_tcbuffer(temp: TCbuffer): number {
+	private _atouches_geo_tcbuffer(temp: TCBuffer): number {
 		return F.atouches_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5194,7 +5209,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: econtains_geo_tcbuffer */
-	private _econtains_geo_tcbuffer(temp: TCbuffer): number {
+	private _econtains_geo_tcbuffer(temp: TCBuffer): number {
 		return F.econtains_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5209,7 +5224,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: ecovers_geo_tcbuffer */
-	private _ecovers_geo_tcbuffer(temp: TCbuffer): number {
+	private _ecovers_geo_tcbuffer(temp: TCBuffer): number {
 		return F.ecovers_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5224,22 +5239,22 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: edisjoint_geo_tcbuffer */
-	private _edisjoint_geo_tcbuffer(temp: TCbuffer): number {
+	private _edisjoint_geo_tcbuffer(temp: TCBuffer): number {
 		return F.edisjoint_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: edwithin_geo_tcbuffer */
-	private _edwithin_geo_tcbuffer(temp: TCbuffer, dist: number): number {
+	private _edwithin_geo_tcbuffer(temp: TCBuffer, dist: number): number {
 		return F.edwithin_geo_tcbuffer(this.ptr, temp.ptr, dist);
 	}
 
 	/** MEOS: eintersects_geo_tcbuffer */
-	private _eintersects_geo_tcbuffer(temp: TCbuffer): number {
+	private _eintersects_geo_tcbuffer(temp: TCBuffer): number {
 		return F.eintersects_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: etouches_geo_tcbuffer */
-	private _etouches_geo_tcbuffer(temp: TCbuffer): number {
+	private _etouches_geo_tcbuffer(temp: TCBuffer): number {
 		return F.etouches_geo_tcbuffer(this.ptr, temp.ptr);
 	}
 
@@ -5264,7 +5279,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tcontains_geo_tcbuffer */
-	private _tcontains_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+	private _tcontains_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcontains_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -5274,7 +5289,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tcovers_geo_tcbuffer */
-	private _tcovers_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+	private _tcovers_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcovers_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -5284,12 +5299,12 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tdisjoint_geo_tcbuffer */
-	private _tdisjoint_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+	private _tdisjoint_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdisjoint_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdwithin_geo_tcbuffer */
-	private _tdwithin_geo_tcbuffer(temp: TCbuffer, dist: number): Temporal | null {
+	private _tdwithin_geo_tcbuffer(temp: TCBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_geo_tcbuffer(this.ptr, temp.ptr, dist)) as Temporal | null;
 	}
 
@@ -5304,7 +5319,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tintersects_geo_tcbuffer */
-	private _tintersects_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+	private _tintersects_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -5314,7 +5329,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: ttouches_geo_tcbuffer */
-	private _ttouches_geo_tcbuffer(temp: TCbuffer): Temporal | null {
+	private _ttouches_geo_tcbuffer(temp: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.ttouches_geo_tcbuffer(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -5324,37 +5339,37 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: acontains_geo_tgeo, acontains_geo_tcbuffer, acontains_geo_trgeometry, chosen by the arguments' types */
-	acontains(temp: TGeo | TCbuffer | TRGeometry): number {
+	acontains(temp: TGeo | TCBuffer | TRGeometry): number {
 		if (temp instanceof TGeo) return this._acontains_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._acontains_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._acontains_geo_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TRGeometry) return this._acontains_geo_trgeometry(temp as TRGeometry);
 		throw new TypeError(`Geometry.acontains: no overload takes these arguments`);
 	}
 
 	/** MEOS: acovers_geo_tgeo, acovers_geo_tcbuffer, acovers_geo_trgeometry, chosen by the arguments' types */
-	acovers(temp: TGeo | TCbuffer | TRGeometry): number {
+	acovers(temp: TGeo | TCBuffer | TRGeometry): number {
 		if (temp instanceof TGeo) return this._acovers_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._acovers_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._acovers_geo_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TRGeometry) return this._acovers_geo_trgeometry(temp as TRGeometry);
 		throw new TypeError(`Geometry.acovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: adisjoint_geo_tcbuffer, chosen by the arguments' types */
-	override adisjoint(temp: TCbuffer | TGeo): number {
-		if (temp instanceof TCbuffer) return this._adisjoint_geo_tcbuffer(temp as TCbuffer);
+	override adisjoint(temp: TCBuffer | TGeo): number {
+		if (temp instanceof TCBuffer) return this._adisjoint_geo_tcbuffer(temp as TCBuffer);
 		return super.adisjoint(temp as TGeo);
 	}
 
 	/** MEOS: adwithin_geo_tgeo, adwithin_geo_tcbuffer, chosen by the arguments' types */
-	adwithin(temp: TGeo | TCbuffer, dist: number, spheroid?: boolean): number {
-		if (temp instanceof TCbuffer && typeof dist === 'number' && spheroid === undefined) return this._adwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+	adwithin(temp: TGeo | TCBuffer, dist: number, spheroid?: boolean): number {
+		if (temp instanceof TCBuffer && typeof dist === 'number' && spheroid === undefined) return this._adwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
 		if (temp instanceof TGeo && typeof dist === 'number' && typeof spheroid === 'boolean') return this._adwithin_geo_tgeo(temp as TGeo, dist as number, spheroid as boolean);
 		throw new TypeError(`Geometry.adwithin: no overload takes these arguments`);
 	}
 
 	/** MEOS: aintersects_geo_tcbuffer, chosen by the arguments' types */
-	override aintersects(temp: TCbuffer | TGeo): number {
-		if (temp instanceof TCbuffer) return this._aintersects_geo_tcbuffer(temp as TCbuffer);
+	override aintersects(temp: TCBuffer | TGeo): number {
+		if (temp instanceof TCBuffer) return this._aintersects_geo_tcbuffer(temp as TCBuffer);
 		return super.aintersects(temp as TGeo);
 	}
 
@@ -5381,10 +5396,10 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: atouches_geo_tgeo, atouches_geo_tpoint, atouches_geo_tcbuffer, chosen by the arguments' types */
-	atouches(temp: TGeometry | TGeomPoint | TCbuffer): number {
+	atouches(temp: TGeometry | TGeomPoint | TCBuffer): number {
 		if (temp instanceof TGeomPoint) return this._atouches_geo_tpoint(temp as TGeomPoint);
 		if (temp instanceof TGeometry) return this._atouches_geo_tgeo(temp as TGeometry);
-		if (temp instanceof TCbuffer) return this._atouches_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._atouches_geo_tcbuffer(temp as TCBuffer);
 		throw new TypeError(`Geometry.atouches: no overload takes these arguments`);
 	}
 
@@ -5464,44 +5479,44 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: econtains_geo_tgeo, econtains_geo_tcbuffer, econtains_geo_trgeometry, chosen by the arguments' types */
-	econtains(temp: TGeo | TCbuffer | TRGeometry): number {
+	econtains(temp: TGeo | TCBuffer | TRGeometry): number {
 		if (temp instanceof TGeo) return this._econtains_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._econtains_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._econtains_geo_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TRGeometry) return this._econtains_geo_trgeometry(temp as TRGeometry);
 		throw new TypeError(`Geometry.econtains: no overload takes these arguments`);
 	}
 
 	/** MEOS: ecovers_geo_tgeo, ecovers_geo_tcbuffer, ecovers_geo_trgeometry, chosen by the arguments' types */
-	ecovers(temp: TGeo | TCbuffer | TRGeometry): number {
+	ecovers(temp: TGeo | TCBuffer | TRGeometry): number {
 		if (temp instanceof TGeo) return this._ecovers_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._ecovers_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._ecovers_geo_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TRGeometry) return this._ecovers_geo_trgeometry(temp as TRGeometry);
 		throw new TypeError(`Geometry.ecovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: edisjoint_geo_tcbuffer, chosen by the arguments' types */
-	override edisjoint(temp: TCbuffer | TGeo): number {
-		if (temp instanceof TCbuffer) return this._edisjoint_geo_tcbuffer(temp as TCbuffer);
+	override edisjoint(temp: TCBuffer | TGeo): number {
+		if (temp instanceof TCBuffer) return this._edisjoint_geo_tcbuffer(temp as TCBuffer);
 		return super.edisjoint(temp as TGeo);
 	}
 
 	/** MEOS: edwithin_geo_tcbuffer, chosen by the arguments' types */
-	override edwithin(temp: TCbuffer | TSpatial, dist: number, arg2?: boolean): number {
-		if (temp instanceof TCbuffer && typeof dist === 'number' && arg2 === undefined) return this._edwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+	override edwithin(temp: TCBuffer | TSpatial, dist: number, arg2?: boolean): number {
+		if (temp instanceof TCBuffer && typeof dist === 'number' && arg2 === undefined) return this._edwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
 		return super.edwithin(temp as TSpatial, dist as number, arg2 as boolean);
 	}
 
 	/** MEOS: eintersects_geo_tcbuffer, chosen by the arguments' types */
-	override eintersects(temp: TCbuffer | TSpatial): number {
-		if (temp instanceof TCbuffer) return this._eintersects_geo_tcbuffer(temp as TCbuffer);
+	override eintersects(temp: TCBuffer | TSpatial): number {
+		if (temp instanceof TCBuffer) return this._eintersects_geo_tcbuffer(temp as TCBuffer);
 		return super.eintersects(temp as TSpatial);
 	}
 
 	/** MEOS: etouches_geo_tgeo, etouches_geo_tpoint, etouches_geo_tcbuffer, chosen by the arguments' types */
-	etouches(temp: TGeometry | TGeomPoint | TCbuffer): number {
+	etouches(temp: TGeometry | TGeomPoint | TCBuffer): number {
 		if (temp instanceof TGeomPoint) return this._etouches_geo_tpoint(temp as TGeomPoint);
 		if (temp instanceof TGeometry) return this._etouches_geo_tgeo(temp as TGeometry);
-		if (temp instanceof TCbuffer) return this._etouches_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._etouches_geo_tcbuffer(temp as TCBuffer);
 		throw new TypeError(`Geometry.etouches: no overload takes these arguments`);
 	}
 
@@ -5613,28 +5628,28 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tcontains_geo_tgeo, tcontains_geo_tcbuffer, chosen by the arguments' types */
-	tcontains(temp: TGeo | TCbuffer): Temporal | null {
+	tcontains(temp: TGeo | TCBuffer): Temporal | null {
 		if (temp instanceof TGeo) return this._tcontains_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._tcontains_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._tcontains_geo_tcbuffer(temp as TCBuffer);
 		throw new TypeError(`Geometry.tcontains: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcovers_geo_tgeo, tcovers_geo_tcbuffer, chosen by the arguments' types */
-	tcovers(temp: TGeo | TCbuffer): Temporal | null {
+	tcovers(temp: TGeo | TCBuffer): Temporal | null {
 		if (temp instanceof TGeo) return this._tcovers_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._tcovers_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._tcovers_geo_tcbuffer(temp as TCBuffer);
 		throw new TypeError(`Geometry.tcovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: tdisjoint_geo_tcbuffer, chosen by the arguments' types */
-	override tdisjoint(temp: TCbuffer | TGeo): Temporal | null {
-		if (temp instanceof TCbuffer) return this._tdisjoint_geo_tcbuffer(temp as TCbuffer);
+	override tdisjoint(temp: TCBuffer | TGeo): Temporal | null {
+		if (temp instanceof TCBuffer) return this._tdisjoint_geo_tcbuffer(temp as TCBuffer);
 		return super.tdisjoint(temp as TGeo);
 	}
 
 	/** MEOS: tdwithin_geo_tcbuffer, tdwithin_geo_trgeometry, chosen by the arguments' types */
-	override tdwithin(temp: TCbuffer | TRGeometry | TGeo, dist: number, arg2?: boolean): Temporal | null {
-		if (temp instanceof TCbuffer && typeof dist === 'number' && arg2 === undefined) return this._tdwithin_geo_tcbuffer(temp as TCbuffer, dist as number);
+	override tdwithin(temp: TCBuffer | TRGeometry | TGeo, dist: number, arg2?: boolean): Temporal | null {
+		if (temp instanceof TCBuffer && typeof dist === 'number' && arg2 === undefined) return this._tdwithin_geo_tcbuffer(temp as TCBuffer, dist as number);
 		if (temp instanceof TRGeometry && typeof dist === 'number' && arg2 === undefined) return this._tdwithin_geo_trgeometry(temp as TRGeometry, dist as number);
 		return super.tdwithin(temp as TGeo, dist as number, arg2 as boolean);
 	}
@@ -5646,8 +5661,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: tintersects_geo_tcbuffer, chosen by the arguments' types */
-	override tintersects(temp: TCbuffer | TGeo): Temporal | null {
-		if (temp instanceof TCbuffer) return this._tintersects_geo_tcbuffer(temp as TCbuffer);
+	override tintersects(temp: TCBuffer | TGeo): Temporal | null {
+		if (temp instanceof TCBuffer) return this._tintersects_geo_tcbuffer(temp as TCBuffer);
 		return super.tintersects(temp as TGeo);
 	}
 
@@ -5658,8 +5673,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_to_cbuffer */
-	toCbuffer(): Cbuffer | null {
-		return wrapCbufferOrNull(F.geom_to_cbuffer(this.ptr)) as Cbuffer | null;
+	toCbuffer(): CBuffer | null {
+		return wrapCBufferOrNull(F.geom_to_cbuffer(this.ptr)) as CBuffer | null;
 	}
 
 	/** MEOS: geom_to_geog */
@@ -5673,8 +5688,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_to_nsegment */
-	toNsegment(): Nsegment | null {
-		return wrapNsegmentOrNull(F.geom_to_nsegment(this.ptr)) as Nsegment | null;
+	toNsegment(): NSegment | null {
+		return wrapNSegmentOrNull(F.geom_to_nsegment(this.ptr)) as NSegment | null;
 	}
 
 	/** MEOS: geo_to_quadbin_set, which answers a QuadbinSet for a Geometry */
@@ -5698,9 +5713,9 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: ttouches_geo_tgeo, ttouches_geo_tcbuffer, chosen by the arguments' types */
-	ttouches(temp: TGeo | TCbuffer): Temporal | null {
+	ttouches(temp: TGeo | TCBuffer): Temporal | null {
 		if (temp instanceof TGeo) return this._ttouches_geo_tgeo(temp as TGeo);
-		if (temp instanceof TCbuffer) return this._ttouches_geo_tcbuffer(temp as TCbuffer);
+		if (temp instanceof TCBuffer) return this._ttouches_geo_tcbuffer(temp as TCBuffer);
 		throw new TypeError(`Geometry.ttouches: no overload takes these arguments`);
 	}
 
@@ -5730,7 +5745,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: cbufferarr_to_geom */
-	static fromCbufferarr(cbarr: Cbuffer[]): Geometry {
+	static fromCbufferarr(cbarr: CBuffer[]): Geometry {
 		const _cbarr = _ptrArray(cbarr.map(x => x.ptr));
 		try {
 			return wrapGeo(F.cbufferarr_to_geom(_cbarr, cbarr.length)) as Geometry;
@@ -6719,7 +6734,7 @@ export class IntSpanSet extends SpanSet {
 }
 
 /**
- * A path into a jsonb value. A MeosType no membership predicate admits, as Nsegment and Raquet are; the nine signatures naming it are what need it.
+ * A path into a jsonb value. A MeosType no membership predicate admits, as NSegment and RaQuet are; the nine signatures naming it are what need it.
  */
 export class JsonPath extends Value {
 
@@ -7154,6 +7169,11 @@ export class Jsonb extends Value {
 		return F.jsonb_to_int64(this.ptr);
 	}
 
+	/** MEOS: jsonb_to_numeric */
+	toNumeric(): Numeric {
+		return wrapNumeric(F.jsonb_to_numeric(this.ptr)) as Numeric;
+	}
+
 	/** MEOS: jsonb_to_set */
 	toSet(): Set {
 		return wrapSet(F.jsonb_to_set(this.ptr)) as Set;
@@ -7314,6 +7334,28 @@ export class JsonbSet extends Set {
 				_free(_arr);
 			}
 		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: jsonbset_exists_array */
+	existsArray(keys: Text[], any: boolean): boolean[] {
+		const _keys = _ptrArray(keys.map(x => x.ptr));
+		const _count = _alloc(4);
+		try {
+			const _arr = F.jsonbset_exists_array(this.ptr, _keys, keys.length, any, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 1);
+				const _out: boolean[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getUint8(_i * 1) !== 0);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_keys);
 			_free(_count);
 		}
 	}
@@ -7589,9 +7631,9 @@ export class MeosArray extends Value {
 }
 
 /**
- * The Npoint class of the MEOS object model.
+ * The NPoint class of the MEOS object model.
  */
-export class Npoint extends Value {
+export class NPoint extends Value {
 
 	/** The text MEOS writes this value as (MEOS: npoint_as_text). */
 	override toString(): string {
@@ -7599,12 +7641,12 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: always_eq_npoint_tnpoint */
-	alwaysEq(temp: TNpoint): number {
+	alwaysEq(temp: TNPoint): number {
 		return F.always_eq_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_ne_npoint_tnpoint */
-	alwaysNe(temp: TNpoint): number {
+	alwaysNe(temp: TNPoint): number {
 		return F.always_ne_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -7639,47 +7681,47 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: npoint_cmp */
-	cmp(np2: Npoint): number {
+	cmp(np2: NPoint): number {
 		return F.npoint_cmp(this.ptr, np2.ptr);
 	}
 
 	/** MEOS: contained_npoint_set */
-	contained(s: NpointSet): boolean {
+	contained(s: NPointSet): boolean {
 		return F.contained_npoint_set(this.ptr, s.ptr);
 	}
 
 	/** MEOS: contained_rid_npoint_tnpoint */
-	containedRid(temp: TNpoint): boolean {
+	containedRid(temp: TNPoint): boolean {
 		return F.contained_rid_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: npoint_copy */
-	copy(): Npoint {
-		return wrapNpoint(F.npoint_copy(this.ptr)) as Npoint;
+	copy(): NPoint {
+		return wrapNPoint(F.npoint_copy(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: npoint_eq */
-	eq(np2: Npoint): boolean {
+	eq(np2: NPoint): boolean {
 		return F.npoint_eq(this.ptr, np2.ptr);
 	}
 
 	/** MEOS: ever_eq_npoint_tnpoint */
-	everEq(temp: TNpoint): number {
+	everEq(temp: TNPoint): number {
 		return F.ever_eq_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_ne_npoint_tnpoint */
-	everNe(temp: TNpoint): number {
+	everNe(temp: TNPoint): number {
 		return F.ever_ne_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: npoint_ge */
-	ge(np2: Npoint): boolean {
+	ge(np2: NPoint): boolean {
 		return F.npoint_ge(this.ptr, np2.ptr);
 	}
 
 	/** MEOS: npoint_gt */
-	gt(np2: Npoint): boolean {
+	gt(np2: NPoint): boolean {
 		return F.npoint_gt(this.ptr, np2.ptr);
 	}
 
@@ -7694,27 +7736,27 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: intersection_npoint_set */
-	intersection(s: NpointSet): Set | null {
+	intersection(s: NPointSet): Set | null {
 		return wrapSetOrNull(F.intersection_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: npoint_le */
-	le(np2: Npoint): boolean {
+	le(np2: NPoint): boolean {
 		return F.npoint_le(this.ptr, np2.ptr);
 	}
 
 	/** MEOS: npoint_lt */
-	lt(np2: Npoint): boolean {
+	lt(np2: NPoint): boolean {
 		return F.npoint_lt(this.ptr, np2.ptr);
 	}
 
 	/** MEOS: minus_npoint_set */
-	minus(s: NpointSet): Set | null {
+	minus(s: NPointSet): Set | null {
 		return wrapSetOrNull(F.minus_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: npoint_ne */
-	ne(np2: Npoint): boolean {
+	ne(np2: NPoint): boolean {
 		return F.npoint_ne(this.ptr, np2.ptr);
 	}
 
@@ -7730,7 +7772,7 @@ export class Npoint extends Value {
 
 	/** MEOS: npoint_round */
 	round(maxdd: number = 0): this {
-		return wrapNpoint(F.npoint_round(this.ptr, maxdd)) as this;
+		return wrapNPoint(F.npoint_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: npoint_route */
@@ -7739,7 +7781,7 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: same_rid_npoint_tnpoint */
-	sameRid(temp: TNpoint): boolean {
+	sameRid(temp: TNPoint): boolean {
 		return F.same_rid_npoint_tnpoint(this.ptr, temp.ptr);
 	}
 
@@ -7753,14 +7795,19 @@ export class Npoint extends Value {
 		return wrapSTBox(F.npoint_timestamptz_to_stbox(this.ptr, t)) as STBox;
 	}
 
+	/** MEOS: npoint_to_geog */
+	toGeog(): Geo {
+		return wrapGeo(F.npoint_to_geog(this.ptr)) as Geo;
+	}
+
 	/** MEOS: npoint_to_geompoint */
 	toGeompoint(): Geo {
 		return wrapGeo(F.npoint_to_geompoint(this.ptr)) as Geo;
 	}
 
 	/** MEOS: npoint_to_nsegment */
-	toNsegment(): Nsegment {
-		return wrapNsegment(F.npoint_to_nsegment(this.ptr)) as Nsegment;
+	toNsegment(): NSegment {
+		return wrapNSegment(F.npoint_to_nsegment(this.ptr)) as NSegment;
 	}
 
 	/** MEOS: npoint_to_set */
@@ -7779,65 +7826,65 @@ export class Npoint extends Value {
 	}
 
 	/** MEOS: union_npoint_set */
-	union(s: NpointSet): Set | null {
+	union(s: NPointSet): Set | null {
 		return wrapSetOrNull(F.union_npoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: npoint_from_wkb */
-	static fromEWKB(wkb: Uint8Array): Npoint {
-		return Npoint.fromWKB(wkb);
+	static fromEWKB(wkb: Uint8Array): NPoint {
+		return NPoint.fromWKB(wkb);
 	}
 
 	/** MEOS: npoint_in */
-	static fromEWKT(str: string): Npoint {
-		return Npoint.in(str);
+	static fromEWKT(str: string): NPoint {
+		return NPoint.in(str);
 	}
 
 	/** MEOS: geompoint_to_npoint */
-	static fromGeompoint(gs: Geo, tolerance: number): Npoint | null {
-		return wrapNpointOrNull(F.geompoint_to_npoint(gs.ptr, tolerance)) as Npoint | null;
+	static fromGeompoint(gs: Geo, tolerance: number): NPoint | null {
+		return wrapNPointOrNull(F.geompoint_to_npoint(gs.ptr, tolerance)) as NPoint | null;
 	}
 
 	/** MEOS: npoint_from_hexwkb */
-	static fromHexEWKB(hexwkb: string): Npoint {
-		return Npoint.fromHexWKB(hexwkb);
+	static fromHexEWKB(hexwkb: string): NPoint {
+		return NPoint.fromHexWKB(hexwkb);
 	}
 
 	/** MEOS: npoint_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Npoint {
-		return wrapNpoint(F.npoint_from_hexwkb(hexwkb)) as Npoint;
+	static fromHexWKB(hexwkb: string): NPoint {
+		return wrapNPoint(F.npoint_from_hexwkb(hexwkb)) as NPoint;
 	}
 
 	/** MEOS: npoint_in */
-	static fromText(str: string): Npoint {
-		return Npoint.in(str);
+	static fromText(str: string): NPoint {
+		return NPoint.in(str);
 	}
 
 	/** MEOS: npoint_from_wkb */
-	static fromWKB(wkb: Uint8Array): Npoint {
+	static fromWKB(wkb: Uint8Array): NPoint {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapNpoint(F.npoint_from_wkb(_wkb, wkb.length)) as Npoint;
+			return wrapNPoint(F.npoint_from_wkb(_wkb, wkb.length)) as NPoint;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: npoint_in */
-	static in(str: string): Npoint {
-		return wrapNpoint(F.npoint_in(str)) as Npoint;
+	static in(str: string): NPoint {
+		return wrapNPoint(F.npoint_in(str)) as NPoint;
 	}
 
 	/** MEOS: npoint_make */
-	static make(rid: number, pos: number): Npoint {
-		return wrapNpoint(F.npoint_make(rid, pos)) as Npoint;
+	static make(rid: number, pos: number): NPoint {
+		return wrapNPoint(F.npoint_make(rid, pos)) as NPoint;
 	}
 }
 
 /**
- * The NpointSet class of the MEOS object model.
+ * The NPointSet class of the MEOS object model.
  */
-export class NpointSet extends SpatialSet {
+export class NPointSet extends SpatialSet {
 
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
@@ -7845,50 +7892,50 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_npoint */
-	private _contains_set_npoint(np: Npoint): boolean {
+	private _contains_set_npoint(np: NPoint): boolean {
 		return F.contains_set_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: intersection_set_npoint */
-	private _intersection_set_npoint(np: Npoint): this | null {
+	private _intersection_set_npoint(np: NPoint): this | null {
 		return wrapSetOrNull(F.intersection_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_npoint */
-	private _minus_set_npoint(np: Npoint): this | null {
+	private _minus_set_npoint(np: NPoint): this | null {
 		return wrapSetOrNull(F.minus_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_npoint */
-	private _union_set_npoint(np: Npoint): this | null {
+	private _union_set_npoint(np: NPoint): this | null {
 		return wrapSetOrNull(F.union_set_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_npoint, chosen by the arguments' types */
-	override contains(np: Npoint | Set): boolean {
-		if (np instanceof Npoint) return this._contains_set_npoint(np as Npoint);
+	override contains(np: NPoint | Set): boolean {
+		if (np instanceof NPoint) return this._contains_set_npoint(np as NPoint);
 		return super.contains(np as Set);
 	}
 
 	/** MEOS: distance_npointset_npointset */
-	distance(s2: NpointSet): number {
+	distance(s2: NPointSet): number {
 		return F.distance_npointset_npointset(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: npointset_end_value */
-	endValue(): Npoint {
-		return wrapNpoint(F.npointset_end_value(this.ptr)) as Npoint;
+	endValue(): NPoint {
+		return wrapNPoint(F.npointset_end_value(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: intersection_set_npoint, chosen by the arguments' types */
-	override intersection(np: Npoint | Set): this | null {
-		if (np instanceof Npoint) return this._intersection_set_npoint(np as Npoint);
+	override intersection(np: NPoint | Set): this | null {
+		if (np instanceof NPoint) return this._intersection_set_npoint(np as NPoint);
 		return super.intersection(np as Set);
 	}
 
 	/** MEOS: minus_set_npoint, chosen by the arguments' types */
-	override minus(np: Npoint | Set): this | null {
-		if (np instanceof Npoint) return this._minus_set_npoint(np as Npoint);
+	override minus(np: NPoint | Set): this | null {
+		if (np instanceof NPoint) return this._minus_set_npoint(np as NPoint);
 		return super.minus(np as Set);
 	}
 
@@ -7903,23 +7950,23 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: npointset_start_value */
-	startValue(): Npoint {
-		return wrapNpoint(F.npointset_start_value(this.ptr)) as Npoint;
+	startValue(): NPoint {
+		return wrapNPoint(F.npointset_start_value(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: union_set_npoint, chosen by the arguments' types */
-	override union(np: Npoint | Set): this | null {
-		if (np instanceof Npoint) return this._union_set_npoint(np as Npoint);
+	override union(np: NPoint | Set): this | null {
+		if (np instanceof NPoint) return this._union_set_npoint(np as NPoint);
 		return super.union(np as Set);
 	}
 
 	/** MEOS: npointset_value_n */
-	valueN(n: number): Npoint | null {
-		return wrapNpointOrNull(F.npointset_value_n(this.ptr, n)) as Npoint | null;
+	valueN(n: number): NPoint | null {
+		return wrapNPointOrNull(F.npointset_value_n(this.ptr, n)) as NPoint | null;
 	}
 
 	/** MEOS: npointset_values */
-	values(): Npoint[] {
+	values(): NPoint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.npointset_values(this.ptr, _count);
@@ -7927,8 +7974,8 @@ export class NpointSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Npoint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapNpoint(Number(_v.getBigUint64(_i * 8, true))) as Npoint);
+				const _out: NPoint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapNPoint(Number(_v.getBigUint64(_i * 8, true))) as NPoint);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -7944,8 +7991,8 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: npointset_in */
-	static fromEWKT(str: string): NpointSet {
-		return NpointSet.in(str);
+	static fromEWKT(str: string): NPointSet {
+		return NPointSet.in(str);
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -7954,20 +8001,20 @@ export class NpointSet extends SpatialSet {
 	}
 
 	/** MEOS: npointset_in */
-	static fromText(str: string): NpointSet {
-		return NpointSet.in(str);
+	static fromText(str: string): NPointSet {
+		return NPointSet.in(str);
 	}
 
 	/** MEOS: npointset_in */
-	static in(str: string): NpointSet {
-		return wrapSet(F.npointset_in(str)) as NpointSet;
+	static in(str: string): NPointSet {
+		return wrapSet(F.npointset_in(str)) as NPointSet;
 	}
 
 	/** MEOS: npointset_make */
-	static make(values: Npoint[]): NpointSet {
+	static make(values: NPoint[]): NPointSet {
 		const _values = _structArray(values.map(x => x.ptr), 16);
 		try {
-			return wrapSet(F.npointset_make(_values, values.length)) as NpointSet;
+			return wrapSet(F.npointset_make(_values, values.length)) as NPointSet;
 		} finally {
 			_free(_values);
 		}
@@ -7977,7 +8024,7 @@ export class NpointSet extends SpatialSet {
 /**
  * A segment of a network route. A MeosType no membership predicate admits, so the coverage gate does not demand it; the 20 signatures naming it do.
  */
-export class Nsegment extends Value {
+export class NSegment extends Value {
 
 	/** The text MEOS writes this value as (MEOS: nsegment_as_text). */
 	override toString(): string {
@@ -8015,13 +8062,13 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_cmp */
-	cmp(ns2: Nsegment): number {
+	cmp(ns2: NSegment): number {
 		return F.nsegment_cmp(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_copy */
-	copy(): Nsegment {
-		return wrapNsegment(F.nsegment_copy(this.ptr)) as Nsegment;
+	copy(): NSegment {
+		return wrapNSegment(F.nsegment_copy(this.ptr)) as NSegment;
 	}
 
 	/** MEOS: nsegment_end_position */
@@ -8030,32 +8077,32 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_eq */
-	eq(ns2: Nsegment): boolean {
+	eq(ns2: NSegment): boolean {
 		return F.nsegment_eq(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_ge */
-	ge(ns2: Nsegment): boolean {
+	ge(ns2: NSegment): boolean {
 		return F.nsegment_ge(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_gt */
-	gt(ns2: Nsegment): boolean {
+	gt(ns2: NSegment): boolean {
 		return F.nsegment_gt(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_le */
-	le(ns2: Nsegment): boolean {
+	le(ns2: NSegment): boolean {
 		return F.nsegment_le(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_lt */
-	lt(ns2: Nsegment): boolean {
+	lt(ns2: NSegment): boolean {
 		return F.nsegment_lt(this.ptr, ns2.ptr);
 	}
 
 	/** MEOS: nsegment_ne */
-	ne(ns2: Nsegment): boolean {
+	ne(ns2: NSegment): boolean {
 		return F.nsegment_ne(this.ptr, ns2.ptr);
 	}
 
@@ -8066,7 +8113,7 @@ export class Nsegment extends Value {
 
 	/** MEOS: nsegment_round */
 	round(maxdd: number = 0): this {
-		return wrapNsegment(F.nsegment_round(this.ptr, maxdd)) as this;
+		return wrapNSegment(F.nsegment_round(this.ptr, maxdd)) as this;
 	}
 
 	/** MEOS: nsegment_route */
@@ -8084,6 +8131,11 @@ export class Nsegment extends Value {
 		return F.nsegment_start_position(this.ptr);
 	}
 
+	/** MEOS: nsegment_to_geog */
+	toGeog(): Geo {
+		return wrapGeo(F.nsegment_to_geog(this.ptr)) as Geo;
+	}
+
 	/** MEOS: nsegment_to_geom */
 	toGeom(): Geo {
 		return wrapGeo(F.nsegment_to_geom(this.ptr)) as Geo;
@@ -8095,55 +8147,76 @@ export class Nsegment extends Value {
 	}
 
 	/** MEOS: nsegment_from_wkb */
-	static fromEWKB(wkb: Uint8Array): Nsegment {
-		return Nsegment.fromWKB(wkb);
+	static fromEWKB(wkb: Uint8Array): NSegment {
+		return NSegment.fromWKB(wkb);
 	}
 
 	/** MEOS: nsegment_in */
-	static fromEWKT(str: string): Nsegment {
-		return Nsegment.in(str);
+	static fromEWKT(str: string): NSegment {
+		return NSegment.in(str);
 	}
 
 	/** MEOS: nsegment_from_hexwkb */
-	static fromHexEWKB(hexwkb: string): Nsegment {
-		return Nsegment.fromHexWKB(hexwkb);
+	static fromHexEWKB(hexwkb: string): NSegment {
+		return NSegment.fromHexWKB(hexwkb);
 	}
 
 	/** MEOS: nsegment_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Nsegment {
-		return wrapNsegment(F.nsegment_from_hexwkb(hexwkb)) as Nsegment;
+	static fromHexWKB(hexwkb: string): NSegment {
+		return wrapNSegment(F.nsegment_from_hexwkb(hexwkb)) as NSegment;
 	}
 
 	/** MEOS: nsegment_in */
-	static fromText(str: string): Nsegment {
-		return Nsegment.in(str);
+	static fromText(str: string): NSegment {
+		return NSegment.in(str);
 	}
 
 	/** MEOS: nsegment_from_wkb */
-	static fromWKB(wkb: Uint8Array): Nsegment {
+	static fromWKB(wkb: Uint8Array): NSegment {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapNsegment(F.nsegment_from_wkb(_wkb, wkb.length)) as Nsegment;
+			return wrapNSegment(F.nsegment_from_wkb(_wkb, wkb.length)) as NSegment;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: nsegment_in */
-	static in(str: string): Nsegment {
-		return wrapNsegment(F.nsegment_in(str)) as Nsegment;
+	static in(str: string): NSegment {
+		return wrapNSegment(F.nsegment_in(str)) as NSegment;
 	}
 
 	/** MEOS: nsegment_make */
-	static make(rid: number, pos1: number = 0, pos2: number = 1): Nsegment {
-		return wrapNsegment(F.nsegment_make(rid, pos1, pos2)) as Nsegment;
+	static make(rid: number, pos1: number = 0, pos2: number = 1): NSegment {
+		return wrapNSegment(F.nsegment_make(rid, pos1, pos2)) as NSegment;
 	}
 }
 
 /**
- * The Pcpatch class of the MEOS object model.
+ * PostgreSQL's arbitrary-precision number, the value jsonb_to_numeric and the extract functions of the time types answer and numeric_in and numeric_out read and write. MEOS registers it in no enum, so it names no temptype.
  */
-export class Pcpatch extends Value {
+export class Numeric extends Value {
+
+	/** The text MEOS writes this value as (MEOS: numeric_out). */
+	override toString(): string {
+		return this.out();
+	}
+
+	/** MEOS: numeric_out */
+	out(): string {
+		return F.numeric_out(this.ptr);
+	}
+
+	/** MEOS: numeric_in */
+	static in(str: string, typmod: number): Numeric {
+		return wrapNumeric(F.numeric_in(str, typmod)) as Numeric;
+	}
+}
+
+/**
+ * The PCPatch class of the MEOS object model.
+ */
+export class PCPatch extends Value {
 
 	/** The text MEOS writes this value as (MEOS: pcpatch_hex_out). */
 	override toString(): string {
@@ -8151,12 +8224,12 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: always_eq_pcpatch_tpcpatch */
-	alwaysEq(temp: TPcpatch): number {
+	alwaysEq(temp: TPCPatch): number {
 		return F.always_eq_pcpatch_tpcpatch(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_ne_pcpatch_tpcpatch */
-	alwaysNe(temp: TPcpatch): number {
+	alwaysNe(temp: TPCPatch): number {
 		return F.always_ne_pcpatch_tpcpatch(this.ptr, temp.ptr);
 	}
 
@@ -8171,37 +8244,37 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: pcpatch_cmp */
-	cmp(pa2: Pcpatch): number {
+	cmp(pa2: PCPatch): number {
 		return F.pcpatch_cmp(this.ptr, pa2.ptr);
 	}
 
 	/** MEOS: contained_pcpatch_set */
-	contained(s: PcpatchSet): boolean {
+	contained(s: PCPatchSet): boolean {
 		return F.contained_pcpatch_set(this.ptr, s.ptr);
 	}
 
 	/** MEOS: pcpatch_copy */
-	copy(): Pcpatch {
-		return wrapPcpatch(F.pcpatch_copy(this.ptr)) as Pcpatch;
+	copy(): PCPatch {
+		return wrapPCPatch(F.pcpatch_copy(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: pcpatch_eq */
-	eq(pa2: Pcpatch): boolean {
+	eq(pa2: PCPatch): boolean {
 		return F.pcpatch_eq(this.ptr, pa2.ptr);
 	}
 
 	/** MEOS: ever_eq_pcpatch_tpcpatch */
-	everEq(temp: TPcpatch): number {
+	everEq(temp: TPCPatch): number {
 		return F.ever_eq_pcpatch_tpcpatch(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_ne_pcpatch_tpcpatch */
-	everNe(temp: TPcpatch): number {
+	everNe(temp: TPCPatch): number {
 		return F.ever_ne_pcpatch_tpcpatch(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: pcpatch_ge */
-	ge(pa2: Pcpatch): boolean {
+	ge(pa2: PCPatch): boolean {
 		return F.pcpatch_ge(this.ptr, pa2.ptr);
 	}
 
@@ -8211,7 +8284,7 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: pcpatch_gt */
-	gt(pa2: Pcpatch): boolean {
+	gt(pa2: PCPatch): boolean {
 		return F.pcpatch_gt(this.ptr, pa2.ptr);
 	}
 
@@ -8231,17 +8304,17 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: intersection_pcpatch_set */
-	intersection(s: PcpatchSet): Set | null {
+	intersection(s: PCPatchSet): Set | null {
 		return wrapSetOrNull(F.intersection_pcpatch_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpatch_le */
-	le(pa2: Pcpatch): boolean {
+	le(pa2: PCPatch): boolean {
 		return F.pcpatch_le(this.ptr, pa2.ptr);
 	}
 
 	/** MEOS: pcpatch_lt */
-	lt(pa2: Pcpatch): boolean {
+	lt(pa2: PCPatch): boolean {
 		return F.pcpatch_lt(this.ptr, pa2.ptr);
 	}
 
@@ -8251,12 +8324,12 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: minus_pcpatch_set */
-	minus(s: PcpatchSet): Set | null {
+	minus(s: PCPatchSet): Set | null {
 		return wrapSetOrNull(F.minus_pcpatch_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpatch_ne */
-	ne(pa2: Pcpatch): boolean {
+	ne(pa2: PCPatch): boolean {
 		return F.pcpatch_ne(this.ptr, pa2.ptr);
 	}
 
@@ -8266,12 +8339,12 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: pcpatch_point_n */
-	pointN(n: number): Pcpoint | null {
-		return wrapPcpointOrNull(F.pcpatch_point_n(this.ptr, n)) as Pcpoint | null;
+	pointN(n: number): PCPoint | null {
+		return wrapPCPointOrNull(F.pcpatch_point_n(this.ptr, n)) as PCPoint | null;
 	}
 
 	/** MEOS: pcpatch_points */
-	points(): Pcpoint[] {
+	points(): PCPoint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.pcpatch_points(this.ptr, _count);
@@ -8279,8 +8352,8 @@ export class Pcpatch extends Value {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Pcpoint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapPcpoint(Number(_v.getBigUint64(_i * 8, true))) as Pcpoint);
+				const _out: PCPoint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapPCPoint(Number(_v.getBigUint64(_i * 8, true))) as PCPoint);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -8291,13 +8364,18 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: teq_pcpatch_tpcpatch */
-	teq(temp: TPcpatch): Temporal | null {
+	teq(temp: TPCPatch): Temporal | null {
 		return wrapTemporalOrNull(F.teq_pcpatch_tpcpatch(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_pcpatch_tpcpatch */
-	tne(temp: TPcpatch): Temporal | null {
+	tne(temp: TPCPatch): Temporal | null {
 		return wrapTemporalOrNull(F.tne_pcpatch_tpcpatch(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: pcpatch_to_geog */
+	toGeog(): Geo | null {
+		return wrapGeoOrNull(F.pcpatch_to_geog(this.ptr)) as Geo | null;
 	}
 
 	/** MEOS: pcpatch_to_geom */
@@ -8316,41 +8394,41 @@ export class Pcpatch extends Value {
 	}
 
 	/** MEOS: union_pcpatch_set */
-	union(s: PcpatchSet): Set | null {
+	union(s: PCPatchSet): Set | null {
 		return wrapSetOrNull(F.union_pcpatch_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpatch_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Pcpatch {
-		return wrapPcpatch(F.pcpatch_from_hexwkb(hexwkb)) as Pcpatch;
+	static fromHexWKB(hexwkb: string): PCPatch {
+		return wrapPCPatch(F.pcpatch_from_hexwkb(hexwkb)) as PCPatch;
 	}
 
 	/** MEOS: pcpatch_hex_in */
-	static fromText(str: string): Pcpatch {
-		return Pcpatch.hexIn(str);
+	static fromText(str: string): PCPatch {
+		return PCPatch.hexIn(str);
 	}
 
 	/** MEOS: pcpatch_hex_in */
-	static hexIn(str: string): Pcpatch {
-		return wrapPcpatch(F.pcpatch_hex_in(str)) as Pcpatch;
+	static hexIn(str: string): PCPatch {
+		return wrapPCPatch(F.pcpatch_hex_in(str)) as PCPatch;
 	}
 
 	/** MEOS: pcpatch_make */
-	static make(points: Pcpoint[]): Pcpatch {
+	static make(points: PCPoint[]): PCPatch {
 		const _points = _ptrArray(points.map(x => x.ptr));
 		try {
-			return wrapPcpatch(F.pcpatch_make(_points, points.length)) as Pcpatch;
+			return wrapPCPatch(F.pcpatch_make(_points, points.length)) as PCPatch;
 		} finally {
 			_free(_points);
 		}
 	}
 
 	/** MEOS: pcpatch_make_coords */
-	static makeCoords(pcid: number, values: number[]): Pcpatch {
+	static makeCoords(pcid: number, values: number[]): PCPatch {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
 		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
 		try {
-			return wrapPcpatch(F.pcpatch_make_coords(pcid, _values, values.length)) as Pcpatch;
+			return wrapPCPatch(F.pcpatch_make_coords(pcid, _values, values.length)) as PCPatch;
 		} finally {
 			_free(_values);
 		}
@@ -8358,9 +8436,9 @@ export class Pcpatch extends Value {
 }
 
 /**
- * The PcpatchSet class of the MEOS object model.
+ * The PCPatchSet class of the MEOS object model.
  */
-export class PcpatchSet extends SpatialSet {
+export class PCPatchSet extends SpatialSet {
 
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
@@ -8368,45 +8446,45 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_pcpatch */
-	private _contains_set_pcpatch(pa: Pcpatch): boolean {
+	private _contains_set_pcpatch(pa: PCPatch): boolean {
 		return F.contains_set_pcpatch(this.ptr, pa.ptr);
 	}
 
 	/** MEOS: intersection_set_pcpatch */
-	private _intersection_set_pcpatch(pa: Pcpatch): this | null {
+	private _intersection_set_pcpatch(pa: PCPatch): this | null {
 		return wrapSetOrNull(F.intersection_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_pcpatch */
-	private _minus_set_pcpatch(pa: Pcpatch): this | null {
+	private _minus_set_pcpatch(pa: PCPatch): this | null {
 		return wrapSetOrNull(F.minus_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_pcpatch */
-	private _union_set_pcpatch(pa: Pcpatch): this | null {
+	private _union_set_pcpatch(pa: PCPatch): this | null {
 		return wrapSetOrNull(F.union_set_pcpatch(this.ptr, pa.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_pcpatch, chosen by the arguments' types */
-	override contains(pa: Pcpatch | Set): boolean {
-		if (pa instanceof Pcpatch) return this._contains_set_pcpatch(pa as Pcpatch);
+	override contains(pa: PCPatch | Set): boolean {
+		if (pa instanceof PCPatch) return this._contains_set_pcpatch(pa as PCPatch);
 		return super.contains(pa as Set);
 	}
 
 	/** MEOS: pcpatchset_end_value */
-	endValue(): Pcpatch {
-		return wrapPcpatch(F.pcpatchset_end_value(this.ptr)) as Pcpatch;
+	endValue(): PCPatch {
+		return wrapPCPatch(F.pcpatchset_end_value(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: intersection_set_pcpatch, chosen by the arguments' types */
-	override intersection(pa: Pcpatch | Set): this | null {
-		if (pa instanceof Pcpatch) return this._intersection_set_pcpatch(pa as Pcpatch);
+	override intersection(pa: PCPatch | Set): this | null {
+		if (pa instanceof PCPatch) return this._intersection_set_pcpatch(pa as PCPatch);
 		return super.intersection(pa as Set);
 	}
 
 	/** MEOS: minus_set_pcpatch, chosen by the arguments' types */
-	override minus(pa: Pcpatch | Set): this | null {
-		if (pa instanceof Pcpatch) return this._minus_set_pcpatch(pa as Pcpatch);
+	override minus(pa: PCPatch | Set): this | null {
+		if (pa instanceof PCPatch) return this._minus_set_pcpatch(pa as PCPatch);
 		return super.minus(pa as Set);
 	}
 
@@ -8416,23 +8494,23 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpatchset_start_value */
-	startValue(): Pcpatch {
-		return wrapPcpatch(F.pcpatchset_start_value(this.ptr)) as Pcpatch;
+	startValue(): PCPatch {
+		return wrapPCPatch(F.pcpatchset_start_value(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: union_set_pcpatch, chosen by the arguments' types */
-	override union(pa: Pcpatch | Set): this | null {
-		if (pa instanceof Pcpatch) return this._union_set_pcpatch(pa as Pcpatch);
+	override union(pa: PCPatch | Set): this | null {
+		if (pa instanceof PCPatch) return this._union_set_pcpatch(pa as PCPatch);
 		return super.union(pa as Set);
 	}
 
 	/** MEOS: pcpatchset_value_n */
-	valueN(n: number): Pcpatch | null {
-		return wrapPcpatchOrNull(F.pcpatchset_value_n(this.ptr, n)) as Pcpatch | null;
+	valueN(n: number): PCPatch | null {
+		return wrapPCPatchOrNull(F.pcpatchset_value_n(this.ptr, n)) as PCPatch | null;
 	}
 
 	/** MEOS: pcpatchset_values */
-	values(): Pcpatch[] {
+	values(): PCPatch[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.pcpatchset_values(this.ptr, _count);
@@ -8440,8 +8518,8 @@ export class PcpatchSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Pcpatch[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapPcpatch(Number(_v.getBigUint64(_i * 8, true))) as Pcpatch);
+				const _out: PCPatch[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapPCPatch(Number(_v.getBigUint64(_i * 8, true))) as PCPatch);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -8457,8 +8535,8 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpatchset_in */
-	static fromEWKT(str: string): PcpatchSet {
-		return PcpatchSet.in(str);
+	static fromEWKT(str: string): PCPatchSet {
+		return PCPatchSet.in(str);
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -8467,20 +8545,20 @@ export class PcpatchSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpatchset_in */
-	static fromText(str: string): PcpatchSet {
-		return PcpatchSet.in(str);
+	static fromText(str: string): PCPatchSet {
+		return PCPatchSet.in(str);
 	}
 
 	/** MEOS: pcpatchset_in */
-	static in(str: string): PcpatchSet {
-		return wrapSet(F.pcpatchset_in(str)) as PcpatchSet;
+	static in(str: string): PCPatchSet {
+		return wrapSet(F.pcpatchset_in(str)) as PCPatchSet;
 	}
 
 	/** MEOS: pcpatchset_make */
-	static make(values: Pcpatch[]): PcpatchSet {
+	static make(values: PCPatch[]): PCPatchSet {
 		const _values = _ptrArray(values.map(x => x.ptr));
 		try {
-			return wrapSet(F.pcpatchset_make(_values, values.length)) as PcpatchSet;
+			return wrapSet(F.pcpatchset_make(_values, values.length)) as PCPatchSet;
 		} finally {
 			_free(_values);
 		}
@@ -8488,9 +8566,9 @@ export class PcpatchSet extends SpatialSet {
 }
 
 /**
- * The Pcpoint class of the MEOS object model.
+ * The PCPoint class of the MEOS object model.
  */
-export class Pcpoint extends Value {
+export class PCPoint extends Value {
 
 	/** The text MEOS writes this value as (MEOS: pcpoint_hex_out). */
 	override toString(): string {
@@ -8498,12 +8576,12 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: always_eq_pcpoint_tpcpoint */
-	alwaysEq(temp: TPcpoint): number {
+	alwaysEq(temp: TPCPoint): number {
 		return F.always_eq_pcpoint_tpcpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_ne_pcpoint_tpcpoint */
-	alwaysNe(temp: TPcpoint): number {
+	alwaysNe(temp: TPCPoint): number {
 		return F.always_ne_pcpoint_tpcpoint(this.ptr, temp.ptr);
 	}
 
@@ -8518,37 +8596,37 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: pcpoint_cmp */
-	cmp(pt2: Pcpoint): number {
+	cmp(pt2: PCPoint): number {
 		return F.pcpoint_cmp(this.ptr, pt2.ptr);
 	}
 
 	/** MEOS: contained_pcpoint_set */
-	contained(s: PcpointSet): boolean {
+	contained(s: PCPointSet): boolean {
 		return F.contained_pcpoint_set(this.ptr, s.ptr);
 	}
 
 	/** MEOS: pcpoint_copy */
-	copy(): Pcpoint {
-		return wrapPcpoint(F.pcpoint_copy(this.ptr)) as Pcpoint;
+	copy(): PCPoint {
+		return wrapPCPoint(F.pcpoint_copy(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: pcpoint_eq */
-	eq(pt2: Pcpoint): boolean {
+	eq(pt2: PCPoint): boolean {
 		return F.pcpoint_eq(this.ptr, pt2.ptr);
 	}
 
 	/** MEOS: ever_eq_pcpoint_tpcpoint */
-	everEq(temp: TPcpoint): number {
+	everEq(temp: TPCPoint): number {
 		return F.ever_eq_pcpoint_tpcpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_ne_pcpoint_tpcpoint */
-	everNe(temp: TPcpoint): number {
+	everNe(temp: TPCPoint): number {
 		return F.ever_ne_pcpoint_tpcpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: pcpoint_ge */
-	ge(pt2: Pcpoint): boolean {
+	ge(pt2: PCPoint): boolean {
 		return F.pcpoint_ge(this.ptr, pt2.ptr);
 	}
 
@@ -8602,7 +8680,7 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: pcpoint_gt */
-	gt(pt2: Pcpoint): boolean {
+	gt(pt2: PCPoint): boolean {
 		return F.pcpoint_gt(this.ptr, pt2.ptr);
 	}
 
@@ -8622,17 +8700,17 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: intersection_pcpoint_set */
-	intersection(s: PcpointSet): Set | null {
+	intersection(s: PCPointSet): Set | null {
 		return wrapSetOrNull(F.intersection_pcpoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpoint_le */
-	le(pt2: Pcpoint): boolean {
+	le(pt2: PCPoint): boolean {
 		return F.pcpoint_le(this.ptr, pt2.ptr);
 	}
 
 	/** MEOS: pcpoint_lt */
-	lt(pt2: Pcpoint): boolean {
+	lt(pt2: PCPoint): boolean {
 		return F.pcpoint_lt(this.ptr, pt2.ptr);
 	}
 
@@ -8642,22 +8720,22 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: minus_pcpoint_set */
-	minus(s: PcpointSet): Set | null {
+	minus(s: PCPointSet): Set | null {
 		return wrapSetOrNull(F.minus_pcpoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpoint_ne */
-	ne(pt2: Pcpoint): boolean {
+	ne(pt2: PCPoint): boolean {
 		return F.pcpoint_ne(this.ptr, pt2.ptr);
 	}
 
 	/** MEOS: teq_pcpoint_tpcpoint */
-	teq(temp: TPcpoint): Temporal | null {
+	teq(temp: TPCPoint): Temporal | null {
 		return wrapTemporalOrNull(F.teq_pcpoint_tpcpoint(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_pcpoint_tpcpoint */
-	tne(temp: TPcpoint): Temporal | null {
+	tne(temp: TPCPoint): Temporal | null {
 		return wrapTemporalOrNull(F.tne_pcpoint_tpcpoint(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
@@ -8672,31 +8750,31 @@ export class Pcpoint extends Value {
 	}
 
 	/** MEOS: union_pcpoint_set */
-	union(s: PcpointSet): Set | null {
+	union(s: PCPointSet): Set | null {
 		return wrapSetOrNull(F.union_pcpoint_set(this.ptr, s.ptr)) as Set | null;
 	}
 
 	/** MEOS: pcpoint_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Pcpoint {
-		return wrapPcpoint(F.pcpoint_from_hexwkb(hexwkb)) as Pcpoint;
+	static fromHexWKB(hexwkb: string): PCPoint {
+		return wrapPCPoint(F.pcpoint_from_hexwkb(hexwkb)) as PCPoint;
 	}
 
 	/** MEOS: pcpoint_hex_in */
-	static fromText(str: string): Pcpoint {
-		return Pcpoint.hexIn(str);
+	static fromText(str: string): PCPoint {
+		return PCPoint.hexIn(str);
 	}
 
 	/** MEOS: pcpoint_hex_in */
-	static hexIn(str: string): Pcpoint {
-		return wrapPcpoint(F.pcpoint_hex_in(str)) as Pcpoint;
+	static hexIn(str: string): PCPoint {
+		return wrapPCPoint(F.pcpoint_hex_in(str)) as PCPoint;
 	}
 
 	/** MEOS: pcpoint_make */
-	static make(pcid: number, values: number[]): Pcpoint {
+	static make(pcid: number, values: number[]): PCPoint {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
 		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
 		try {
-			return wrapPcpoint(F.pcpoint_make(pcid, _values, values.length)) as Pcpoint;
+			return wrapPCPoint(F.pcpoint_make(pcid, _values, values.length)) as PCPoint;
 		} finally {
 			_free(_values);
 		}
@@ -8704,9 +8782,9 @@ export class Pcpoint extends Value {
 }
 
 /**
- * The PcpointSet class of the MEOS object model.
+ * The PCPointSet class of the MEOS object model.
  */
-export class PcpointSet extends SpatialSet {
+export class PCPointSet extends SpatialSet {
 
 	/** The text MEOS writes this value as (MEOS: spatialset_as_text). */
 	override toString(): string {
@@ -8714,45 +8792,45 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_pcpoint */
-	private _contains_set_pcpoint(pt: Pcpoint): boolean {
+	private _contains_set_pcpoint(pt: PCPoint): boolean {
 		return F.contains_set_pcpoint(this.ptr, pt.ptr);
 	}
 
 	/** MEOS: intersection_set_pcpoint */
-	private _intersection_set_pcpoint(pt: Pcpoint): this | null {
+	private _intersection_set_pcpoint(pt: PCPoint): this | null {
 		return wrapSetOrNull(F.intersection_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_set_pcpoint */
-	private _minus_set_pcpoint(pt: Pcpoint): this | null {
+	private _minus_set_pcpoint(pt: PCPoint): this | null {
 		return wrapSetOrNull(F.minus_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: union_set_pcpoint */
-	private _union_set_pcpoint(pt: Pcpoint): this | null {
+	private _union_set_pcpoint(pt: PCPoint): this | null {
 		return wrapSetOrNull(F.union_set_pcpoint(this.ptr, pt.ptr)) as this | null;
 	}
 
 	/** MEOS: contains_set_pcpoint, chosen by the arguments' types */
-	override contains(pt: Pcpoint | Set): boolean {
-		if (pt instanceof Pcpoint) return this._contains_set_pcpoint(pt as Pcpoint);
+	override contains(pt: PCPoint | Set): boolean {
+		if (pt instanceof PCPoint) return this._contains_set_pcpoint(pt as PCPoint);
 		return super.contains(pt as Set);
 	}
 
 	/** MEOS: pcpointset_end_value */
-	endValue(): Pcpoint {
-		return wrapPcpoint(F.pcpointset_end_value(this.ptr)) as Pcpoint;
+	endValue(): PCPoint {
+		return wrapPCPoint(F.pcpointset_end_value(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: intersection_set_pcpoint, chosen by the arguments' types */
-	override intersection(pt: Pcpoint | Set): this | null {
-		if (pt instanceof Pcpoint) return this._intersection_set_pcpoint(pt as Pcpoint);
+	override intersection(pt: PCPoint | Set): this | null {
+		if (pt instanceof PCPoint) return this._intersection_set_pcpoint(pt as PCPoint);
 		return super.intersection(pt as Set);
 	}
 
 	/** MEOS: minus_set_pcpoint, chosen by the arguments' types */
-	override minus(pt: Pcpoint | Set): this | null {
-		if (pt instanceof Pcpoint) return this._minus_set_pcpoint(pt as Pcpoint);
+	override minus(pt: PCPoint | Set): this | null {
+		if (pt instanceof PCPoint) return this._minus_set_pcpoint(pt as PCPoint);
 		return super.minus(pt as Set);
 	}
 
@@ -8762,23 +8840,23 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpointset_start_value */
-	startValue(): Pcpoint {
-		return wrapPcpoint(F.pcpointset_start_value(this.ptr)) as Pcpoint;
+	startValue(): PCPoint {
+		return wrapPCPoint(F.pcpointset_start_value(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: union_set_pcpoint, chosen by the arguments' types */
-	override union(pt: Pcpoint | Set): this | null {
-		if (pt instanceof Pcpoint) return this._union_set_pcpoint(pt as Pcpoint);
+	override union(pt: PCPoint | Set): this | null {
+		if (pt instanceof PCPoint) return this._union_set_pcpoint(pt as PCPoint);
 		return super.union(pt as Set);
 	}
 
 	/** MEOS: pcpointset_value_n */
-	valueN(n: number): Pcpoint | null {
-		return wrapPcpointOrNull(F.pcpointset_value_n(this.ptr, n)) as Pcpoint | null;
+	valueN(n: number): PCPoint | null {
+		return wrapPCPointOrNull(F.pcpointset_value_n(this.ptr, n)) as PCPoint | null;
 	}
 
 	/** MEOS: pcpointset_values */
-	values(): Pcpoint[] {
+	values(): PCPoint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.pcpointset_values(this.ptr, _count);
@@ -8786,8 +8864,8 @@ export class PcpointSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Pcpoint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapPcpoint(Number(_v.getBigUint64(_i * 8, true))) as Pcpoint);
+				const _out: PCPoint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapPCPoint(Number(_v.getBigUint64(_i * 8, true))) as PCPoint);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -8803,8 +8881,8 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpointset_in */
-	static fromEWKT(str: string): PcpointSet {
-		return PcpointSet.in(str);
+	static fromEWKT(str: string): PCPointSet {
+		return PCPointSet.in(str);
 	}
 
 	/** MEOS: set_from_hexwkb */
@@ -8813,20 +8891,20 @@ export class PcpointSet extends SpatialSet {
 	}
 
 	/** MEOS: pcpointset_in */
-	static fromText(str: string): PcpointSet {
-		return PcpointSet.in(str);
+	static fromText(str: string): PCPointSet {
+		return PCPointSet.in(str);
 	}
 
 	/** MEOS: pcpointset_in */
-	static in(str: string): PcpointSet {
-		return wrapSet(F.pcpointset_in(str)) as PcpointSet;
+	static in(str: string): PCPointSet {
+		return wrapSet(F.pcpointset_in(str)) as PCPointSet;
 	}
 
 	/** MEOS: pcpointset_make */
-	static make(values: Pcpoint[]): PcpointSet {
+	static make(values: PCPoint[]): PCPointSet {
 		const _values = _ptrArray(values.map(x => x.ptr));
 		try {
-			return wrapSet(F.pcpointset_make(_values, values.length)) as PcpointSet;
+			return wrapSet(F.pcpointset_make(_values, values.length)) as PCPointSet;
 		} finally {
 			_free(_values);
 		}
@@ -9511,6 +9589,11 @@ export class PoseChain extends Value {
 		return wrapTemporalOrNull(F.tne_posechain_tposechain(this.ptr, temp.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: posechain_to_geog */
+	toGeog(): Geo {
+		return wrapGeo(F.posechain_to_geog(this.ptr)) as Geo;
+	}
+
 	/** MEOS: posechain_to_point */
 	toPoint(): Geo {
 		return wrapGeo(F.posechain_to_point(this.ptr)) as Geo;
@@ -10162,9 +10245,9 @@ export class RTreeNNCursor extends Value {
 }
 
 /**
- * A raster tile. A MeosType no membership predicate admits, as Nsegment is.
+ * A raster tile. A MeosType no membership predicate admits, as NSegment is.
  */
-export class Raquet extends Value {
+export class RaQuet extends Value {
 
 	/** The text MEOS writes this value as (MEOS: raquet_out). */
 	override toString(): string {
@@ -10202,27 +10285,27 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_cmp */
-	cmp(rq2: Raquet): number {
+	cmp(rq2: RaQuet): number {
 		return F.raquet_cmp(this.ptr, rq2.ptr);
 	}
 
 	/** MEOS: raquet_copy */
-	copy(): Raquet {
-		return wrapRaquet(F.raquet_copy(this.ptr)) as Raquet;
+	copy(): RaQuet {
+		return wrapRaQuet(F.raquet_copy(this.ptr)) as RaQuet;
 	}
 
 	/** MEOS: raquet_eq */
-	eq(rq2: Raquet): boolean {
+	eq(rq2: RaQuet): boolean {
 		return F.raquet_eq(this.ptr, rq2.ptr);
 	}
 
 	/** MEOS: raquet_ge */
-	ge(rq2: Raquet): boolean {
+	ge(rq2: RaQuet): boolean {
 		return F.raquet_ge(this.ptr, rq2.ptr);
 	}
 
 	/** MEOS: raquet_gt */
-	gt(rq2: Raquet): boolean {
+	gt(rq2: RaQuet): boolean {
 		return F.raquet_gt(this.ptr, rq2.ptr);
 	}
 
@@ -10242,12 +10325,12 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_le */
-	le(rq2: Raquet): boolean {
+	le(rq2: RaQuet): boolean {
 		return F.raquet_le(this.ptr, rq2.ptr);
 	}
 
 	/** MEOS: raquet_lt */
-	lt(rq2: Raquet): boolean {
+	lt(rq2: RaQuet): boolean {
 		return F.raquet_lt(this.ptr, rq2.ptr);
 	}
 
@@ -10257,7 +10340,7 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_ne */
-	ne(rq2: Raquet): boolean {
+	ne(rq2: RaQuet): boolean {
 		return F.raquet_ne(this.ptr, rq2.ptr);
 	}
 
@@ -10287,35 +10370,35 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_from_hexwkb */
-	static fromHexWKB(hexwkb: string): Raquet {
-		return wrapRaquet(F.raquet_from_hexwkb(hexwkb)) as Raquet;
+	static fromHexWKB(hexwkb: string): RaQuet {
+		return wrapRaQuet(F.raquet_from_hexwkb(hexwkb)) as RaQuet;
 	}
 
 	/** MEOS: raquet_in */
-	static fromText(str: string): Raquet {
-		return Raquet.in(str);
+	static fromText(str: string): RaQuet {
+		return RaQuet.in(str);
 	}
 
 	/** MEOS: raquet_from_wkb */
-	static fromWKB(wkb: Uint8Array): Raquet {
+	static fromWKB(wkb: Uint8Array): RaQuet {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapRaquet(F.raquet_from_wkb(_wkb, wkb.length)) as Raquet;
+			return wrapRaQuet(F.raquet_from_wkb(_wkb, wkb.length)) as RaQuet;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: raquet_in */
-	static in(str: string): Raquet {
-		return wrapRaquet(F.raquet_in(str)) as Raquet;
+	static in(str: string): RaQuet {
+		return wrapRaQuet(F.raquet_in(str)) as RaQuet;
 	}
 
 	/** MEOS: raquet_make */
-	static make(quadbin: Quadbin, width: number, height: number, pixtype: number, nodata: number, has_nodata: boolean, pixels: Uint8Array): Raquet {
+	static make(quadbin: Quadbin, width: number, height: number, pixtype: number, nodata: number, has_nodata: boolean, pixels: Uint8Array): RaQuet {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapRaquet(F.raquet_make(quadbin, width, height, pixtype, nodata, has_nodata, _pixels, pixels.length)) as Raquet;
+			return wrapRaQuet(F.raquet_make(quadbin, width, height, pixtype, nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
 		} finally {
 			_free(_pixels);
 		}
@@ -10332,15 +10415,15 @@ export class Raquet extends Value {
 	}
 
 	/** MEOS: raquet_read */
-	static read(path: string, quadbin: Quadbin): Raquet | null {
-		return wrapRaquetOrNull(F.raquet_read(path, quadbin)) as Raquet | null;
+	static read(path: string, quadbin: Quadbin): RaQuet | null {
+		return wrapRaQuetOrNull(F.raquet_read(path, quadbin)) as RaQuet | null;
 	}
 
 	/** MEOS: raquet_read_bytes */
-	static readBytes(data: Uint8Array, quadbin: Quadbin): Raquet | null {
+	static readBytes(data: Uint8Array, quadbin: Quadbin): RaQuet | null {
 		const _data = _bytes(data);
 		try {
-			return wrapRaquetOrNull(F.raquet_read_bytes(_data, data.length, quadbin)) as Raquet | null;
+			return wrapRaQuetOrNull(F.raquet_read_bytes(_data, data.length, quadbin)) as RaQuet | null;
 		} finally {
 			_free(_data);
 		}
@@ -10710,12 +10793,12 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_tile_value */
-	static tileValue(traj: Temporal, rq: Raquet): Temporal | null {
+	static tileValue(traj: Temporal, rq: RaQuet): Temporal | null {
 		return wrapTemporalOrNull(F.raster_tile_value(traj.ptr, rq.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: raster_tile_value_array */
-	static tileValueArray(traj: Temporal, rqarr: Raquet[]): Temporal | null {
+	static tileValueArray(traj: Temporal, rqarr: RaQuet[]): Temporal | null {
 		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
 		try {
 			return wrapTemporalOrNull(F.raster_tile_value_array(traj.ptr, _rqarr, rqarr.length)) as Temporal | null;
@@ -11725,6 +11808,16 @@ export class STBox extends Box {
 		return wrapGeo(F.stbox_to_geo(this.ptr)) as Geo;
 	}
 
+	/** MEOS: stbox_to_geog */
+	toGeog(): Geo {
+		return wrapGeo(F.stbox_to_geog(this.ptr)) as Geo;
+	}
+
+	/** MEOS: stbox_to_geom */
+	toGeom(): Geo {
+		return wrapGeo(F.stbox_to_geom(this.ptr)) as Geo;
+	}
+
 	/** MEOS: stbox_to_tstzspan */
 	toTstzspan(): Span {
 		return wrapSpan(F.stbox_to_tstzspan(this.ptr)) as Span;
@@ -11903,6 +11996,27 @@ export class STBox extends Box {
 	/** MEOS: stbox_make */
 	static make(hasx: boolean, hasz: boolean, geodetic: boolean, srid: number, xmin: number, xmax: number, ymin: number, ymax: number, zmin: number, zmax: number, s: Span): STBox {
 		return wrapSTBox(F.stbox_make(hasx, hasz, geodetic, srid, xmin, xmax, ymin, ymax, zmin, zmax, s.ptr)) as STBox;
+	}
+}
+
+/**
+ * The state of a temporal aggregate, the value every transition and combine function of a temporal aggregate takes and answers and taggstate_serialize and taggstate_deserialize write and read. MEOS registers it in no enum, so it names no temptype.
+ */
+export class SkipList extends Value {
+
+	/** MEOS: taggstate_serialize */
+	serialize(): Uint8Array {
+		return readWkb(_sizeOut => F.taggstate_serialize(this.ptr, _sizeOut));
+	}
+
+	/** MEOS: taggstate_deserialize */
+	static deserialize(bytes: Uint8Array): SkipList {
+		const _bytes_ = _bytes(bytes);
+		try {
+			return wrapSkipList(F.taggstate_deserialize(_bytes_, bytes.length)) as SkipList;
+		} finally {
+			_free(_bytes_);
+		}
 	}
 }
 
@@ -12685,6 +12799,11 @@ export class Temporal extends MeosObject {
 		return wrapTemporalOrNull(F.tne_temporal_temporal(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: temporal_to_taggstate */
+	toTaggstate(): SkipList {
+		return wrapSkipList(F.temporal_to_taggstate(this.ptr)) as SkipList;
+	}
+
 	/** MEOS: temporal_to_tstzspan */
 	toTstzspan(): Span {
 		return wrapSpan(F.temporal_to_tstzspan(this.ptr)) as Span;
@@ -13303,9 +13422,9 @@ export class TNumber extends Temporal {
 }
 
 /**
- * The TBigint class of the MEOS object model.
+ * The TBigInt class of the MEOS object model.
  */
-export class TBigint extends TNumber {
+export class TBigInt extends TNumber {
 
 	/** The text MEOS writes this value as (MEOS: tbigint_out). */
 	override toString(): string {
@@ -13398,7 +13517,7 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: nad_tbigint_tbigint */
-	private _nad_tbigint_tbigint(temp2: TBigint): number {
+	private _nad_tbigint_tbigint(temp2: TBigInt): number {
 		return F.nad_tbigint_tbigint(this.ptr, temp2.ptr);
 	}
 
@@ -13563,12 +13682,12 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: nad_tbigint_bigint, nad_tbigint_bigintspan, nad_tbigint_tbox, nad_tbigint_tbigint, chosen by the arguments' types */
-	nad(i: number | BigIntSpan | TBox | TBigint): number {
+	nad(i: number | BigIntSpan | TBox | TBigInt): number {
 		if (i instanceof BigIntSpan) return this._nad_tbigint_bigintspan(i as BigIntSpan);
-		if (i instanceof TBigint) return this._nad_tbigint_tbigint(i as TBigint);
+		if (i instanceof TBigInt) return this._nad_tbigint_tbigint(i as TBigInt);
 		if (i instanceof TBox) return this._nad_tbigint_tbox(i as TBox);
 		if (typeof i === 'number') return this._nad_tbigint_bigint(i as number);
-		throw new TypeError(`TBigint.nad: no overload takes these arguments`);
+		throw new TypeError(`TBigInt.nad: no overload takes these arguments`);
 	}
 
 	/** MEOS: tbigint_out */
@@ -13691,7 +13810,7 @@ export class TBigint extends TNumber {
 		return wrapTemporal(F.tbigint_scale_value(this.ptr, width)) as this;
 	}
 
-	/** MEOS: temporal_segm_duration, which answers a TBool for a TBigint */
+	/** MEOS: temporal_segm_duration, which answers a TBool for a TBigInt */
 	override segmDuration(duration: Interval, atleast: boolean, strict: boolean): TBool | null {
 		return super.segmDuration(duration, atleast, strict) as TBool | null;
 	}
@@ -13735,7 +13854,7 @@ export class TBigint extends TNumber {
 		return super.tgt(i as Temporal);
 	}
 
-	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TBigint */
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TBigInt */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
 	}
@@ -13780,7 +13899,7 @@ export class TBigint extends TNumber {
 		return super.tne(i as Temporal);
 	}
 
-	/** MEOS: tnumber_to_span, which answers a BigIntSpan for a TBigint */
+	/** MEOS: tnumber_to_span, which answers a BigIntSpan for a TBigInt */
 	override toSpan(): BigIntSpan {
 		return super.toSpan() as BigIntSpan;
 	}
@@ -13810,17 +13929,17 @@ export class TBigint extends TNumber {
 		return wrapTemporal(F.tbigint_to_ts2cell(this.ptr)) as Temporal;
 	}
 
-	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TBigint */
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TBigInt */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
-	/** MEOS: temporal_tprecision, which answers a TFloat for a TBigint */
+	/** MEOS: temporal_tprecision, which answers a TFloat for a TBigInt */
 	override tprecision(duration: Interval, torigin: TimestampTz): TFloat {
 		return super.tprecision(duration, torigin) as TFloat;
 	}
 
-	/** MEOS: tnumber_trend, which answers a TInt for a TBigint */
+	/** MEOS: tnumber_trend, which answers a TInt for a TBigInt */
 	override trend(): TInt | null {
 		return super.trend() as TInt | null;
 	}
@@ -13906,12 +14025,12 @@ export class TBigint extends TNumber {
 		}
 	}
 
-	/** MEOS: temporal_valueset, which answers a BigIntSet for a TBigint */
+	/** MEOS: temporal_valueset, which answers a BigIntSet for a TBigInt */
 	override valueset(): BigIntSet {
 		return super.valueset() as BigIntSet;
 	}
 
-	/** MEOS: tnumber_valuespans, which answers a BigIntSpanSet for a TBigint */
+	/** MEOS: tnumber_valuespans, which answers a BigIntSpanSet for a TBigInt */
 	override valuespans(): BigIntSpanSet {
 		return super.valuespans() as BigIntSpanSet;
 	}
@@ -13939,61 +14058,61 @@ export class TBigint extends TNumber {
 	}
 
 	/** MEOS: tbigint_from_base_temp */
-	static fromBaseTemp(i: number, temp: Temporal): TBigint {
-		return wrapTemporal(F.tbigint_from_base_temp(i, temp.ptr)) as TBigint;
+	static fromBaseTemp(i: number, temp: Temporal): TBigInt {
+		return wrapTemporal(F.tbigint_from_base_temp(i, temp.ptr)) as TBigInt;
 	}
 
 	/** MEOS: tbigint_from_mfjson */
-	static fromMFJSON(str: string): TBigint {
-		return wrapTemporal(F.tbigint_from_mfjson(str)) as TBigint;
+	static fromMFJSON(str: string): TBigInt {
+		return wrapTemporal(F.tbigint_from_mfjson(str)) as TBigInt;
 	}
 
 	/** MEOS: tbigint_in */
-	static fromText(str: string): TBigint {
-		return TBigint.in(str);
+	static fromText(str: string): TBigInt {
+		return TBigInt.in(str);
 	}
 
 	/** MEOS: tbigint_in */
-	static in(str: string): TBigint {
-		return wrapTemporal(F.tbigint_in(str)) as TBigint;
+	static in(str: string): TBigInt {
+		return wrapTemporal(F.tbigint_in(str)) as TBigInt;
 	}
 }
 
 /**
- * A TBigint of subtype TInstant.
+ * A TBigInt of subtype TInstant.
  */
-export class TBigintInst extends TBigint {
+export class TBigIntInst extends TBigInt {
 
 	/** MEOS: tbigintinst_make */
-	static make(i: number, t: TimestampTz): TBigintInst {
-		return wrapTemporal(F.tbigintinst_make(i, t)) as TBigintInst;
+	static make(i: number, t: TimestampTz): TBigIntInst {
+		return wrapTemporal(F.tbigintinst_make(i, t)) as TBigIntInst;
 	}
 }
 
 /**
- * A TBigint of subtype TSequence.
+ * A TBigInt of subtype TSequence.
  */
-export class TBigintSeq extends TBigint {
+export class TBigIntSeq extends TBigInt {
 
 	/** MEOS: tbigintseq_from_base_tstzset */
-	static fromBaseTstzset(i: number, s: Set): TBigintSeq {
-		return wrapTemporal(F.tbigintseq_from_base_tstzset(i, s.ptr)) as TBigintSeq;
+	static fromBaseTstzset(i: number, s: Set): TBigIntSeq {
+		return wrapTemporal(F.tbigintseq_from_base_tstzset(i, s.ptr)) as TBigIntSeq;
 	}
 
 	/** MEOS: tbigintseq_from_base_tstzspan */
-	static fromBaseTstzspan(i: number, s: Span): TBigintSeq {
-		return wrapTemporal(F.tbigintseq_from_base_tstzspan(i, s.ptr)) as TBigintSeq;
+	static fromBaseTstzspan(i: number, s: Span): TBigIntSeq {
+		return wrapTemporal(F.tbigintseq_from_base_tstzspan(i, s.ptr)) as TBigIntSeq;
 	}
 }
 
 /**
- * A TBigint of subtype TSequenceSet.
+ * A TBigInt of subtype TSequenceSet.
  */
-export class TBigintSeqSet extends TBigint {
+export class TBigIntSeqSet extends TBigInt {
 
 	/** MEOS: tbigintseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(i: number, ss: SpanSet): TBigintSeqSet {
-		return wrapTemporal(F.tbigintseqset_from_base_tstzspanset(i, ss.ptr)) as TBigintSeqSet;
+	static fromBaseTstzspanset(i: number, ss: SpanSet): TBigIntSeqSet {
+		return wrapTemporal(F.tbigintseqset_from_base_tstzspanset(i, ss.ptr)) as TBigIntSeqSet;
 	}
 }
 
@@ -15622,9 +15741,9 @@ export class TSpatial extends Temporal {
 }
 
 /**
- * The TCbuffer class of the MEOS object model.
+ * The TCBuffer class of the MEOS object model.
  */
-export class TCbuffer extends TSpatial {
+export class TCBuffer extends TSpatial {
 
 	/** The text MEOS writes this value as (MEOS: tspatial_as_text). */
 	override toString(): string {
@@ -15632,7 +15751,7 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: acontains_tcbuffer_cbuffer */
-	private _acontains_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _acontains_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.acontains_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15642,12 +15761,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: acontains_tcbuffer_tcbuffer */
-	private _acontains_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _acontains_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.acontains_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: acovers_tcbuffer_cbuffer */
-	private _acovers_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _acovers_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.acovers_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15657,12 +15776,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: acovers_tcbuffer_tcbuffer */
-	private _acovers_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _acovers_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.acovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: adisjoint_tcbuffer_cbuffer */
-	private _adisjoint_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _adisjoint_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.adisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15672,12 +15791,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: adisjoint_tcbuffer_tcbuffer */
-	private _adisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _adisjoint_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.adisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: adwithin_tcbuffer_cbuffer */
-	private _adwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): number {
+	private _adwithin_tcbuffer_cbuffer(cb: CBuffer, dist: number): number {
 		return F.adwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist);
 	}
 
@@ -15687,12 +15806,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: adwithin_tcbuffer_tcbuffer */
-	private _adwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): number {
+	private _adwithin_tcbuffer_tcbuffer(temp2: TCBuffer, dist: number): number {
 		return F.adwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist);
 	}
 
 	/** MEOS: aintersects_tcbuffer_cbuffer */
-	private _aintersects_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _aintersects_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.aintersects_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15702,32 +15821,32 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: aintersects_tcbuffer_tcbuffer */
-	private _aintersects_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _aintersects_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.aintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: always_eq_tcbuffer_cbuffer */
-	private _always_eq_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _always_eq_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.always_eq_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
 	/** MEOS: always_eq_tcbuffer_tcbuffer */
-	private _always_eq_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _always_eq_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.always_eq_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: always_ne_tcbuffer_cbuffer */
-	private _always_ne_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _always_ne_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.always_ne_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
 	/** MEOS: always_ne_tcbuffer_tcbuffer */
-	private _always_ne_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _always_ne_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.always_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: atouches_tcbuffer_cbuffer */
-	private _atouches_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _atouches_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.atouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15737,12 +15856,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: atouches_tcbuffer_tcbuffer */
-	private _atouches_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _atouches_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.atouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: econtains_tcbuffer_cbuffer */
-	private _econtains_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _econtains_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.econtains_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15752,12 +15871,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: econtains_tcbuffer_tcbuffer */
-	private _econtains_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _econtains_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.econtains_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ecovers_tcbuffer_cbuffer */
-	private _ecovers_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _ecovers_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.ecovers_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15767,12 +15886,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: ecovers_tcbuffer_tcbuffer */
-	private _ecovers_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _ecovers_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.ecovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: edisjoint_tcbuffer_cbuffer */
-	private _edisjoint_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _edisjoint_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.edisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15782,12 +15901,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: edisjoint_tcbuffer_tcbuffer */
-	private _edisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _edisjoint_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.edisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: edwithin_tcbuffer_cbuffer */
-	private _edwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): number {
+	private _edwithin_tcbuffer_cbuffer(cb: CBuffer, dist: number): number {
 		return F.edwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist);
 	}
 
@@ -15797,12 +15916,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: edwithin_tcbuffer_tcbuffer */
-	private _edwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): number {
+	private _edwithin_tcbuffer_tcbuffer(temp2: TCBuffer, dist: number): number {
 		return F.edwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist);
 	}
 
 	/** MEOS: eintersects_tcbuffer_cbuffer */
-	private _eintersects_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _eintersects_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.eintersects_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15812,12 +15931,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: eintersects_tcbuffer_tcbuffer */
-	private _eintersects_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _eintersects_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.eintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: etouches_tcbuffer_cbuffer */
-	private _etouches_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _etouches_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.etouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15827,32 +15946,32 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: etouches_tcbuffer_tcbuffer */
-	private _etouches_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _etouches_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.etouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_eq_tcbuffer_cbuffer */
-	private _ever_eq_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _ever_eq_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.ever_eq_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
 	/** MEOS: ever_eq_tcbuffer_tcbuffer */
-	private _ever_eq_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _ever_eq_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.ever_eq_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_ne_tcbuffer_cbuffer */
-	private _ever_ne_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _ever_ne_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.ever_ne_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
 	/** MEOS: ever_ne_tcbuffer_tcbuffer */
-	private _ever_ne_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _ever_ne_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.ever_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tcbuffer_cbuffer */
-	private _nad_tcbuffer_cbuffer(cb: Cbuffer): number {
+	private _nad_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.nad_tcbuffer_cbuffer(this.ptr, cb.ptr);
 	}
 
@@ -15867,12 +15986,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: nad_tcbuffer_tcbuffer */
-	private _nad_tcbuffer_tcbuffer(temp2: TCbuffer): number {
+	private _nad_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.nad_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nai_tcbuffer_cbuffer */
-	private _nai_tcbuffer_cbuffer(cb: Cbuffer): this | null {
+	private _nai_tcbuffer_cbuffer(cb: CBuffer): this | null {
 		return wrapTemporalOrNull(F.nai_tcbuffer_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
@@ -15882,12 +16001,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: nai_tcbuffer_tcbuffer */
-	private _nai_tcbuffer_tcbuffer(temp2: TCbuffer): this | null {
+	private _nai_tcbuffer_tcbuffer(temp2: TCBuffer): this | null {
 		return wrapTemporalOrNull(F.nai_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: shortestline_tcbuffer_cbuffer */
-	private _shortestline_tcbuffer_cbuffer(cb: Cbuffer): Geo | null {
+	private _shortestline_tcbuffer_cbuffer(cb: CBuffer): Geo | null {
 		return wrapGeoOrNull(F.shortestline_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Geo | null;
 	}
 
@@ -15897,12 +16016,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: shortestline_tcbuffer_tcbuffer */
-	private _shortestline_tcbuffer_tcbuffer(temp2: TCbuffer): Geo | null {
+	private _shortestline_tcbuffer_tcbuffer(temp2: TCBuffer): Geo | null {
 		return wrapGeoOrNull(F.shortestline_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Geo | null;
 	}
 
 	/** MEOS: tcontains_tcbuffer_cbuffer */
-	private _tcontains_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tcontains_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcontains_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -15912,12 +16031,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcontains_tcbuffer_tcbuffer */
-	private _tcontains_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _tcontains_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcontains_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tcovers_tcbuffer_cbuffer */
-	private _tcovers_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tcovers_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcovers_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -15927,12 +16046,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcovers_tcbuffer_tcbuffer */
-	private _tcovers_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _tcovers_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tcovers_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdisjoint_tcbuffer_cbuffer */
-	private _tdisjoint_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tdisjoint_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdisjoint_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -15942,12 +16061,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tdisjoint_tcbuffer_tcbuffer */
-	private _tdisjoint_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _tdisjoint_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdisjoint_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdistance_tcbuffer_cbuffer */
-	private _tdistance_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tdistance_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -15957,12 +16076,12 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tdistance_tcbuffer_tcbuffer */
-	private _tdistance_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _tdistance_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdwithin_tcbuffer_cbuffer */
-	private _tdwithin_tcbuffer_cbuffer(cb: Cbuffer, dist: number): Temporal | null {
+	private _tdwithin_tcbuffer_cbuffer(cb: CBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_tcbuffer_cbuffer(this.ptr, cb.ptr, dist)) as Temporal | null;
 	}
 
@@ -15972,17 +16091,17 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tdwithin_tcbuffer_tcbuffer */
-	private _tdwithin_tcbuffer_tcbuffer(temp2: TCbuffer, dist: number): Temporal | null {
+	private _tdwithin_tcbuffer_tcbuffer(temp2: TCBuffer, dist: number): Temporal | null {
 		return wrapTemporalOrNull(F.tdwithin_tcbuffer_tcbuffer(this.ptr, temp2.ptr, dist)) as Temporal | null;
 	}
 
 	/** MEOS: teq_tcbuffer_cbuffer */
-	private _teq_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _teq_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.teq_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tintersects_tcbuffer_cbuffer */
-	private _tintersects_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tintersects_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -15992,17 +16111,17 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tintersects_tcbuffer_tcbuffer */
-	private _tintersects_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _tintersects_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tintersects_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_tcbuffer_cbuffer */
-	private _tne_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _tne_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.tne_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: ttouches_tcbuffer_cbuffer */
-	private _ttouches_tcbuffer_cbuffer(cb: Cbuffer): Temporal | null {
+	private _ttouches_tcbuffer_cbuffer(cb: CBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.ttouches_tcbuffer_cbuffer(this.ptr, cb.ptr)) as Temporal | null;
 	}
 
@@ -16012,66 +16131,66 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: ttouches_tcbuffer_tcbuffer */
-	private _ttouches_tcbuffer_tcbuffer(temp2: TCbuffer): Temporal | null {
+	private _ttouches_tcbuffer_tcbuffer(temp2: TCBuffer): Temporal | null {
 		return wrapTemporalOrNull(F.ttouches_tcbuffer_tcbuffer(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: acontains_tcbuffer_cbuffer, acontains_tcbuffer_geo, acontains_tcbuffer_tcbuffer, chosen by the arguments' types */
-	acontains(cb: Cbuffer | Geometry | TCbuffer): number {
+	acontains(cb: CBuffer | Geometry | TCBuffer): number {
 		if (cb instanceof Geometry) return this._acontains_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._acontains_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._acontains_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.acontains: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._acontains_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._acontains_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.acontains: no overload takes these arguments`);
 	}
 
 	/** MEOS: acovers_tcbuffer_cbuffer, acovers_tcbuffer_geo, acovers_tcbuffer_tcbuffer, chosen by the arguments' types */
-	acovers(cb: Cbuffer | Geometry | TCbuffer): number {
+	acovers(cb: CBuffer | Geometry | TCBuffer): number {
 		if (cb instanceof Geometry) return this._acovers_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._acovers_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._acovers_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.acovers: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._acovers_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._acovers_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.acovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: adisjoint_tcbuffer_geo, adisjoint_tcbuffer_cbuffer, adisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
-	adisjoint(gs: Geometry | Cbuffer | TCbuffer): number {
+	adisjoint(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._adisjoint_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._adisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._adisjoint_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.adisjoint: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._adisjoint_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._adisjoint_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.adisjoint: no overload takes these arguments`);
 	}
 
 	/** MEOS: adwithin_tcbuffer_geo, adwithin_tcbuffer_cbuffer, adwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
-	adwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): number {
+	adwithin(gs: Geometry | CBuffer | TCBuffer, dist: number): number {
 		if (gs instanceof Geometry && typeof dist === 'number') return this._adwithin_tcbuffer_geo(gs as Geometry, dist as number);
-		if (gs instanceof TCbuffer && typeof dist === 'number') return this._adwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
-		if (gs instanceof Cbuffer && typeof dist === 'number') return this._adwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
-		throw new TypeError(`TCbuffer.adwithin: no overload takes these arguments`);
+		if (gs instanceof TCBuffer && typeof dist === 'number') return this._adwithin_tcbuffer_tcbuffer(gs as TCBuffer, dist as number);
+		if (gs instanceof CBuffer && typeof dist === 'number') return this._adwithin_tcbuffer_cbuffer(gs as CBuffer, dist as number);
+		throw new TypeError(`TCBuffer.adwithin: no overload takes these arguments`);
 	}
 
 	/** MEOS: aintersects_tcbuffer_geo, aintersects_tcbuffer_cbuffer, aintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
-	aintersects(gs: Geometry | Cbuffer | TCbuffer): number {
+	aintersects(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._aintersects_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._aintersects_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._aintersects_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.aintersects: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._aintersects_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._aintersects_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.aintersects: no overload takes these arguments`);
 	}
 
 	/** MEOS: always_eq_tcbuffer_cbuffer, always_eq_tcbuffer_tcbuffer, chosen by the arguments' types */
-	override alwaysEq(cb: Cbuffer | TCbuffer | Temporal): number {
-		if (cb instanceof TCbuffer) return this._always_eq_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._always_eq_tcbuffer_cbuffer(cb as Cbuffer);
+	override alwaysEq(cb: CBuffer | TCBuffer | Temporal): number {
+		if (cb instanceof TCBuffer) return this._always_eq_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._always_eq_tcbuffer_cbuffer(cb as CBuffer);
 		return super.alwaysEq(cb as Temporal);
 	}
 
 	/** MEOS: always_ne_tcbuffer_cbuffer, always_ne_tcbuffer_tcbuffer, chosen by the arguments' types */
-	override alwaysNe(cb: Cbuffer | TCbuffer | Temporal): number {
-		if (cb instanceof TCbuffer) return this._always_ne_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._always_ne_tcbuffer_cbuffer(cb as Cbuffer);
+	override alwaysNe(cb: CBuffer | TCBuffer | Temporal): number {
+		if (cb instanceof TCBuffer) return this._always_ne_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._always_ne_tcbuffer_cbuffer(cb as CBuffer);
 		return super.alwaysNe(cb as Temporal);
 	}
 
 	/** MEOS: tcbuffer_at_cbuffer */
-	atCbuffer(cb: Cbuffer): this | null {
+	atCbuffer(cb: CBuffer): this | null {
 		return wrapTemporalOrNull(F.tcbuffer_at_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
@@ -16081,11 +16200,11 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: atouches_tcbuffer_geo, atouches_tcbuffer_cbuffer, atouches_tcbuffer_tcbuffer, chosen by the arguments' types */
-	atouches(gs: Geometry | Cbuffer | TCbuffer): number {
+	atouches(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._atouches_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._atouches_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._atouches_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.atouches: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._atouches_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._atouches_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.atouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_at_stbox */
@@ -16099,69 +16218,69 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: econtains_tcbuffer_cbuffer, econtains_tcbuffer_geo, econtains_tcbuffer_tcbuffer, chosen by the arguments' types */
-	econtains(cb: Cbuffer | Geometry | TCbuffer): number {
+	econtains(cb: CBuffer | Geometry | TCBuffer): number {
 		if (cb instanceof Geometry) return this._econtains_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._econtains_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._econtains_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.econtains: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._econtains_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._econtains_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.econtains: no overload takes these arguments`);
 	}
 
 	/** MEOS: ecovers_tcbuffer_cbuffer, ecovers_tcbuffer_geo, ecovers_tcbuffer_tcbuffer, chosen by the arguments' types */
-	ecovers(cb: Cbuffer | Geometry | TCbuffer): number {
+	ecovers(cb: CBuffer | Geometry | TCBuffer): number {
 		if (cb instanceof Geometry) return this._ecovers_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._ecovers_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._ecovers_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.ecovers: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._ecovers_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._ecovers_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.ecovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: edisjoint_tcbuffer_geo, edisjoint_tcbuffer_cbuffer, edisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
-	edisjoint(gs: Geometry | Cbuffer | TCbuffer): number {
+	edisjoint(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._edisjoint_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._edisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._edisjoint_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.edisjoint: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._edisjoint_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._edisjoint_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.edisjoint: no overload takes these arguments`);
 	}
 
 	/** MEOS: edwithin_tcbuffer_geo, edwithin_tcbuffer_cbuffer, edwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
-	edwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): number {
+	edwithin(gs: Geometry | CBuffer | TCBuffer, dist: number): number {
 		if (gs instanceof Geometry && typeof dist === 'number') return this._edwithin_tcbuffer_geo(gs as Geometry, dist as number);
-		if (gs instanceof TCbuffer && typeof dist === 'number') return this._edwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
-		if (gs instanceof Cbuffer && typeof dist === 'number') return this._edwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
-		throw new TypeError(`TCbuffer.edwithin: no overload takes these arguments`);
+		if (gs instanceof TCBuffer && typeof dist === 'number') return this._edwithin_tcbuffer_tcbuffer(gs as TCBuffer, dist as number);
+		if (gs instanceof CBuffer && typeof dist === 'number') return this._edwithin_tcbuffer_cbuffer(gs as CBuffer, dist as number);
+		throw new TypeError(`TCBuffer.edwithin: no overload takes these arguments`);
 	}
 
 	/** MEOS: eintersects_tcbuffer_geo, eintersects_tcbuffer_cbuffer, eintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
-	eintersects(gs: Geometry | Cbuffer | TCbuffer): number {
+	eintersects(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._eintersects_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._eintersects_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._eintersects_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.eintersects: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._eintersects_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._eintersects_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.eintersects: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_end_value */
-	endValue(): Cbuffer {
-		return wrapCbuffer(F.tcbuffer_end_value(this.ptr)) as Cbuffer;
+	endValue(): CBuffer {
+		return wrapCBuffer(F.tcbuffer_end_value(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: etouches_tcbuffer_geo, etouches_tcbuffer_cbuffer, etouches_tcbuffer_tcbuffer, chosen by the arguments' types */
-	etouches(gs: Geometry | Cbuffer | TCbuffer): number {
+	etouches(gs: Geometry | CBuffer | TCBuffer): number {
 		if (gs instanceof Geometry) return this._etouches_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._etouches_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._etouches_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.etouches: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._etouches_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._etouches_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.etouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: ever_eq_tcbuffer_cbuffer, ever_eq_tcbuffer_tcbuffer, chosen by the arguments' types */
-	override everEq(cb: Cbuffer | TCbuffer | Temporal): number {
-		if (cb instanceof TCbuffer) return this._ever_eq_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._ever_eq_tcbuffer_cbuffer(cb as Cbuffer);
+	override everEq(cb: CBuffer | TCBuffer | Temporal): number {
+		if (cb instanceof TCBuffer) return this._ever_eq_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._ever_eq_tcbuffer_cbuffer(cb as CBuffer);
 		return super.everEq(cb as Temporal);
 	}
 
 	/** MEOS: ever_ne_tcbuffer_cbuffer, ever_ne_tcbuffer_tcbuffer, chosen by the arguments' types */
-	override everNe(cb: Cbuffer | TCbuffer | Temporal): number {
-		if (cb instanceof TCbuffer) return this._ever_ne_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._ever_ne_tcbuffer_cbuffer(cb as Cbuffer);
+	override everNe(cb: CBuffer | TCBuffer | Temporal): number {
+		if (cb instanceof TCBuffer) return this._ever_ne_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._ever_ne_tcbuffer_cbuffer(cb as CBuffer);
 		return super.everNe(cb as Temporal);
 	}
 
@@ -16171,17 +16290,17 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_make */
-	make(tfloat: Temporal): TCbuffer | null {
-		return wrapTemporalOrNull(F.tcbuffer_make(this.ptr, tfloat.ptr)) as TCbuffer | null;
+	make(tfloat: Temporal): TCBuffer | null {
+		return wrapTemporalOrNull(F.tcbuffer_make(this.ptr, tfloat.ptr)) as TCBuffer | null;
 	}
 
 	/** MEOS: mindistance_tcbuffer_tcbuffer */
-	mindistance(temp2: TCbuffer, threshold: number): number {
+	mindistance(temp2: TCBuffer, threshold: number): number {
 		return F.mindistance_tcbuffer_tcbuffer(this.ptr, temp2.ptr, threshold);
 	}
 
 	/** MEOS: tcbuffer_minus_cbuffer */
-	minusCbuffer(cb: Cbuffer): this | null {
+	minusCbuffer(cb: CBuffer): this | null {
 		return wrapTemporalOrNull(F.tcbuffer_minus_cbuffer(this.ptr, cb.ptr)) as this | null;
 	}
 
@@ -16196,20 +16315,20 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: nad_tcbuffer_cbuffer, nad_tcbuffer_geo, nad_tcbuffer_stbox, nad_tcbuffer_tcbuffer, chosen by the arguments' types */
-	nad(cb: Cbuffer | Geometry | STBox | TCbuffer): number {
+	nad(cb: CBuffer | Geometry | STBox | TCBuffer): number {
 		if (cb instanceof Geometry) return this._nad_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._nad_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._nad_tcbuffer_cbuffer(cb as Cbuffer);
+		if (cb instanceof TCBuffer) return this._nad_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._nad_tcbuffer_cbuffer(cb as CBuffer);
 		if (cb instanceof STBox) return this._nad_tcbuffer_stbox(cb as STBox);
-		throw new TypeError(`TCbuffer.nad: no overload takes these arguments`);
+		throw new TypeError(`TCBuffer.nad: no overload takes these arguments`);
 	}
 
 	/** MEOS: nai_tcbuffer_cbuffer, nai_tcbuffer_geo, nai_tcbuffer_tcbuffer, chosen by the arguments' types */
-	nai(cb: Cbuffer | Geometry | TCbuffer): this | null {
+	nai(cb: CBuffer | Geometry | TCBuffer): this | null {
 		if (cb instanceof Geometry) return this._nai_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._nai_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._nai_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.nai: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._nai_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._nai_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_points */
@@ -16233,80 +16352,80 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: shortestline_tcbuffer_cbuffer, shortestline_tcbuffer_geo, shortestline_tcbuffer_tcbuffer, chosen by the arguments' types */
-	shortestline(cb: Cbuffer | Geometry | TCbuffer): Geo | null {
+	shortestline(cb: CBuffer | Geometry | TCBuffer): Geo | null {
 		if (cb instanceof Geometry) return this._shortestline_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._shortestline_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._shortestline_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.shortestline: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._shortestline_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._shortestline_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.shortestline: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_start_value */
-	startValue(): Cbuffer {
-		return wrapCbuffer(F.tcbuffer_start_value(this.ptr)) as Cbuffer;
+	startValue(): CBuffer {
+		return wrapCBuffer(F.tcbuffer_start_value(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: tcontains_tcbuffer_geo, tcontains_tcbuffer_cbuffer, tcontains_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tcontains(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+	tcontains(gs: Geometry | CBuffer | TCBuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._tcontains_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._tcontains_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._tcontains_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.tcontains: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._tcontains_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._tcontains_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.tcontains: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcovers_tcbuffer_geo, tcovers_tcbuffer_cbuffer, tcovers_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tcovers(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+	tcovers(gs: Geometry | CBuffer | TCBuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._tcovers_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._tcovers_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._tcovers_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.tcovers: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._tcovers_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._tcovers_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.tcovers: no overload takes these arguments`);
 	}
 
 	/** MEOS: tdisjoint_tcbuffer_geo, tdisjoint_tcbuffer_cbuffer, tdisjoint_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tdisjoint(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+	tdisjoint(gs: Geometry | CBuffer | TCBuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._tdisjoint_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._tdisjoint_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._tdisjoint_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.tdisjoint: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._tdisjoint_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._tdisjoint_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.tdisjoint: no overload takes these arguments`);
 	}
 
 	/** MEOS: tdistance_tcbuffer_cbuffer, tdistance_tcbuffer_geo, tdistance_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tdistance(cb: Cbuffer | Geometry | TCbuffer): Temporal | null {
+	tdistance(cb: CBuffer | Geometry | TCBuffer): Temporal | null {
 		if (cb instanceof Geometry) return this._tdistance_tcbuffer_geo(cb as Geometry);
-		if (cb instanceof TCbuffer) return this._tdistance_tcbuffer_tcbuffer(cb as TCbuffer);
-		if (cb instanceof Cbuffer) return this._tdistance_tcbuffer_cbuffer(cb as Cbuffer);
-		throw new TypeError(`TCbuffer.tdistance: no overload takes these arguments`);
+		if (cb instanceof TCBuffer) return this._tdistance_tcbuffer_tcbuffer(cb as TCBuffer);
+		if (cb instanceof CBuffer) return this._tdistance_tcbuffer_cbuffer(cb as CBuffer);
+		throw new TypeError(`TCBuffer.tdistance: no overload takes these arguments`);
 	}
 
 	/** MEOS: tdwithin_tcbuffer_geo, tdwithin_tcbuffer_cbuffer, tdwithin_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tdwithin(gs: Geometry | Cbuffer | TCbuffer, dist: number): Temporal | null {
+	tdwithin(gs: Geometry | CBuffer | TCBuffer, dist: number): Temporal | null {
 		if (gs instanceof Geometry && typeof dist === 'number') return this._tdwithin_tcbuffer_geo(gs as Geometry, dist as number);
-		if (gs instanceof TCbuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_tcbuffer(gs as TCbuffer, dist as number);
-		if (gs instanceof Cbuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_cbuffer(gs as Cbuffer, dist as number);
-		throw new TypeError(`TCbuffer.tdwithin: no overload takes these arguments`);
+		if (gs instanceof TCBuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_tcbuffer(gs as TCBuffer, dist as number);
+		if (gs instanceof CBuffer && typeof dist === 'number') return this._tdwithin_tcbuffer_cbuffer(gs as CBuffer, dist as number);
+		throw new TypeError(`TCBuffer.tdwithin: no overload takes these arguments`);
 	}
 
 	/** MEOS: teq_tcbuffer_cbuffer, chosen by the arguments' types */
-	override teq(cb: Cbuffer | Temporal): Temporal | null {
-		if (cb instanceof Cbuffer) return this._teq_tcbuffer_cbuffer(cb as Cbuffer);
+	override teq(cb: CBuffer | Temporal): Temporal | null {
+		if (cb instanceof CBuffer) return this._teq_tcbuffer_cbuffer(cb as CBuffer);
 		return super.teq(cb as Temporal);
 	}
 
-	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TCbuffer */
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TCBuffer */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tintersects_tcbuffer_geo, tintersects_tcbuffer_cbuffer, tintersects_tcbuffer_tcbuffer, chosen by the arguments' types */
-	tintersects(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+	tintersects(gs: Geometry | CBuffer | TCBuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._tintersects_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._tintersects_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._tintersects_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.tintersects: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._tintersects_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._tintersects_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.tintersects: no overload takes these arguments`);
 	}
 
 	/** MEOS: tne_tcbuffer_cbuffer, chosen by the arguments' types */
-	override tne(cb: Cbuffer | Temporal): Temporal | null {
-		if (cb instanceof Cbuffer) return this._tne_tcbuffer_cbuffer(cb as Cbuffer);
+	override tne(cb: CBuffer | Temporal): Temporal | null {
+		if (cb instanceof CBuffer) return this._tne_tcbuffer_cbuffer(cb as CBuffer);
 		return super.tne(cb as Temporal);
 	}
 
@@ -16315,19 +16434,24 @@ export class TCbuffer extends TSpatial {
 		return wrapTemporal(F.tcbuffer_to_tfloat(this.ptr)) as Temporal;
 	}
 
+	/** MEOS: tcbuffer_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tcbuffer_to_tgeogpoint(this.ptr)) as Temporal;
+	}
+
 	/** MEOS: tcbuffer_to_tgeompoint */
 	toTgeompoint(): Temporal {
 		return wrapTemporal(F.tcbuffer_to_tgeompoint(this.ptr)) as Temporal;
 	}
 
-	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TCbuffer */
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TCBuffer */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
-	/** MEOS: temporal_tprecision, which answers a TCbuffer for a TCbuffer */
-	override tprecision(duration: Interval, torigin: TimestampTz): TCbuffer {
-		return super.tprecision(duration, torigin) as TCbuffer;
+	/** MEOS: temporal_tprecision, which answers a TCBuffer for a TCBuffer */
+	override tprecision(duration: Interval, torigin: TimestampTz): TCBuffer {
+		return super.tprecision(duration, torigin) as TCBuffer;
 	}
 
 	/** MEOS: tcbuffer_translate */
@@ -16341,25 +16465,25 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: ttouches_tcbuffer_geo, ttouches_tcbuffer_cbuffer, ttouches_tcbuffer_tcbuffer, chosen by the arguments' types */
-	ttouches(gs: Geometry | Cbuffer | TCbuffer): Temporal | null {
+	ttouches(gs: Geometry | CBuffer | TCBuffer): Temporal | null {
 		if (gs instanceof Geometry) return this._ttouches_tcbuffer_geo(gs as Geometry);
-		if (gs instanceof TCbuffer) return this._ttouches_tcbuffer_tcbuffer(gs as TCbuffer);
-		if (gs instanceof Cbuffer) return this._ttouches_tcbuffer_cbuffer(gs as Cbuffer);
-		throw new TypeError(`TCbuffer.ttouches: no overload takes these arguments`);
+		if (gs instanceof TCBuffer) return this._ttouches_tcbuffer_tcbuffer(gs as TCBuffer);
+		if (gs instanceof CBuffer) return this._ttouches_tcbuffer_cbuffer(gs as CBuffer);
+		throw new TypeError(`TCBuffer.ttouches: no overload takes these arguments`);
 	}
 
 	/** MEOS: tcbuffer_value */
-	value(): Cbuffer {
-		return wrapCbuffer(F.tcbuffer_value(this.ptr)) as Cbuffer;
+	value(): CBuffer {
+		return wrapCBuffer(F.tcbuffer_value(this.ptr)) as CBuffer;
 	}
 
 	/** MEOS: tcbuffer_value_n */
-	valueN(n: number): Cbuffer | null {
-		return wrapCbufferOrNull(F.tcbuffer_value_n(this.ptr, n)) as Cbuffer | null;
+	valueN(n: number): CBuffer | null {
+		return wrapCBufferOrNull(F.tcbuffer_value_n(this.ptr, n)) as CBuffer | null;
 	}
 
 	/** MEOS: tcbuffer_values */
-	values(): Cbuffer[] {
+	values(): CBuffer[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tcbuffer_values(this.ptr, _count);
@@ -16367,8 +16491,8 @@ export class TCbuffer extends TSpatial {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Cbuffer[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapCbuffer(Number(_v.getBigUint64(_i * 8, true))) as Cbuffer);
+				const _out: CBuffer[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapCBuffer(Number(_v.getBigUint64(_i * 8, true))) as CBuffer);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -16378,14 +16502,14 @@ export class TCbuffer extends TSpatial {
 		}
 	}
 
-	/** MEOS: temporal_valueset, which answers a CbufferSet for a TCbuffer */
-	override valueset(): CbufferSet {
-		return super.valueset() as CbufferSet;
+	/** MEOS: temporal_valueset, which answers a CBufferSet for a TCBuffer */
+	override valueset(): CBufferSet {
+		return super.valueset() as CBufferSet;
 	}
 
 	/** MEOS: tcbuffer_from_base_temp */
-	static fromBaseTemp(cb: Cbuffer, temp: Temporal): TCbuffer {
-		return wrapTemporal(F.tcbuffer_from_base_temp(cb.ptr, temp.ptr)) as TCbuffer;
+	static fromBaseTemp(cb: CBuffer, temp: Temporal): TCBuffer {
+		return wrapTemporal(F.tcbuffer_from_base_temp(cb.ptr, temp.ptr)) as TCBuffer;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -16394,8 +16518,8 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_in */
-	static fromEWKT(str: string): TCbuffer {
-		return TCbuffer.in(str);
+	static fromEWKT(str: string): TCBuffer {
+		return TCBuffer.in(str);
 	}
 
 	/** MEOS: temporal_from_hexwkb */
@@ -16404,56 +16528,56 @@ export class TCbuffer extends TSpatial {
 	}
 
 	/** MEOS: tcbuffer_from_mfjson */
-	static fromMFJSON(mfjson: string): TCbuffer {
-		return wrapTemporal(F.tcbuffer_from_mfjson(mfjson)) as TCbuffer;
+	static fromMFJSON(mfjson: string): TCBuffer {
+		return wrapTemporal(F.tcbuffer_from_mfjson(mfjson)) as TCBuffer;
 	}
 
 	/** MEOS: tcbuffer_in */
-	static fromText(str: string): TCbuffer {
-		return TCbuffer.in(str);
+	static fromText(str: string): TCBuffer {
+		return TCBuffer.in(str);
 	}
 
 	/** MEOS: tcbuffer_in */
-	static in(str: string): TCbuffer {
-		return wrapTemporal(F.tcbuffer_in(str)) as TCbuffer;
+	static in(str: string): TCBuffer {
+		return wrapTemporal(F.tcbuffer_in(str)) as TCBuffer;
 	}
 }
 
 /**
- * A TCbuffer of subtype TInstant.
+ * A TCBuffer of subtype TInstant.
  */
-export class TCbufferInst extends TCbuffer {
+export class TCBufferInst extends TCBuffer {
 
 	/** MEOS: tcbufferinst_make */
-	static make(cb: Cbuffer, t: TimestampTz): TCbufferInst {
-		return wrapTemporal(F.tcbufferinst_make(cb.ptr, t)) as TCbufferInst;
+	static make(cb: CBuffer, t: TimestampTz): TCBufferInst {
+		return wrapTemporal(F.tcbufferinst_make(cb.ptr, t)) as TCBufferInst;
 	}
 }
 
 /**
- * A TCbuffer of subtype TSequence.
+ * A TCBuffer of subtype TSequence.
  */
-export class TCbufferSeq extends TCbuffer {
+export class TCBufferSeq extends TCBuffer {
 
 	/** MEOS: tcbufferseq_from_base_tstzset */
-	static fromBaseTstzset(cb: Cbuffer, s: Set): TCbufferSeq {
-		return wrapTemporal(F.tcbufferseq_from_base_tstzset(cb.ptr, s.ptr)) as TCbufferSeq;
+	static fromBaseTstzset(cb: CBuffer, s: Set): TCBufferSeq {
+		return wrapTemporal(F.tcbufferseq_from_base_tstzset(cb.ptr, s.ptr)) as TCBufferSeq;
 	}
 
 	/** MEOS: tcbufferseq_from_base_tstzspan */
-	static fromBaseTstzspan(cb: Cbuffer, s: Span, interp: number): TCbufferSeq {
-		return wrapTemporal(F.tcbufferseq_from_base_tstzspan(cb.ptr, s.ptr, interp)) as TCbufferSeq;
+	static fromBaseTstzspan(cb: CBuffer, s: Span, interp: number): TCBufferSeq {
+		return wrapTemporal(F.tcbufferseq_from_base_tstzspan(cb.ptr, s.ptr, interp)) as TCBufferSeq;
 	}
 }
 
 /**
- * A TCbuffer of subtype TSequenceSet.
+ * A TCBuffer of subtype TSequenceSet.
  */
-export class TCbufferSeqSet extends TCbuffer {
+export class TCBufferSeqSet extends TCBuffer {
 
 	/** MEOS: tcbufferseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(cb: Cbuffer, ss: SpanSet, interp: number): TCbufferSeqSet {
-		return wrapTemporal(F.tcbufferseqset_from_base_tstzspanset(cb.ptr, ss.ptr, interp)) as TCbufferSeqSet;
+	static fromBaseTstzspanset(cb: CBuffer, ss: SpanSet, interp: number): TCBufferSeqSet {
+		return wrapTemporal(F.tcbufferseqset_from_base_tstzspanset(cb.ptr, ss.ptr, interp)) as TCBufferSeqSet;
 	}
 }
 
@@ -20522,9 +20646,9 @@ export class TJsonbSeqSet extends TJsonb {
 }
 
 /**
- * The TNpoint class of the MEOS object model.
+ * The TNPoint class of the MEOS object model.
  */
-export class TNpoint extends TSpatial {
+export class TNPoint extends TSpatial {
 
 	/** The text MEOS writes this value as (MEOS: tspatial_as_text). */
 	override toString(): string {
@@ -20532,22 +20656,22 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: always_eq_tnpoint_npoint */
-	private _always_eq_tnpoint_npoint(np: Npoint): number {
+	private _always_eq_tnpoint_npoint(np: NPoint): number {
 		return F.always_eq_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: always_eq_tnpoint_tnpoint */
-	private _always_eq_tnpoint_tnpoint(temp2: TNpoint): number {
+	private _always_eq_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.always_eq_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: always_ne_tnpoint_npoint */
-	private _always_ne_tnpoint_npoint(np: Npoint): number {
+	private _always_ne_tnpoint_npoint(np: NPoint): number {
 		return F.always_ne_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: always_ne_tnpoint_tnpoint */
-	private _always_ne_tnpoint_tnpoint(temp2: TNpoint): number {
+	private _always_ne_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.always_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20557,7 +20681,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: contained_rid_tnpoint_tnpoint */
-	private _contained_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+	private _contained_rid_tnpoint_tnpoint(temp2: TNPoint): boolean {
 		return F.contained_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20572,32 +20696,32 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: contains_rid_tnpoint_npoint */
-	private _contains_rid_tnpoint_npoint(np: Npoint): boolean {
+	private _contains_rid_tnpoint_npoint(np: NPoint): boolean {
 		return F.contains_rid_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: contains_rid_tnpoint_tnpoint */
-	private _contains_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+	private _contains_rid_tnpoint_tnpoint(temp2: TNPoint): boolean {
 		return F.contains_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_eq_tnpoint_npoint */
-	private _ever_eq_tnpoint_npoint(np: Npoint): number {
+	private _ever_eq_tnpoint_npoint(np: NPoint): number {
 		return F.ever_eq_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: ever_eq_tnpoint_tnpoint */
-	private _ever_eq_tnpoint_tnpoint(temp2: TNpoint): number {
+	private _ever_eq_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.ever_eq_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_ne_tnpoint_npoint */
-	private _ever_ne_tnpoint_npoint(np: Npoint): number {
+	private _ever_ne_tnpoint_npoint(np: NPoint): number {
 		return F.ever_ne_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: ever_ne_tnpoint_tnpoint */
-	private _ever_ne_tnpoint_tnpoint(temp2: TNpoint): number {
+	private _ever_ne_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.ever_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20607,7 +20731,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nad_tnpoint_npoint */
-	private _nad_tnpoint_npoint(np: Npoint): number {
+	private _nad_tnpoint_npoint(np: NPoint): number {
 		return F.nad_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
@@ -20617,7 +20741,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nad_tnpoint_tnpoint */
-	private _nad_tnpoint_tnpoint(temp2: TNpoint): number {
+	private _nad_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.nad_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20627,12 +20751,12 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nai_tnpoint_npoint */
-	private _nai_tnpoint_npoint(np: Npoint): this | null {
+	private _nai_tnpoint_npoint(np: NPoint): this | null {
 		return wrapTemporalOrNull(F.nai_tnpoint_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
 	/** MEOS: nai_tnpoint_tnpoint */
-	private _nai_tnpoint_tnpoint(temp2: TNpoint): this | null {
+	private _nai_tnpoint_tnpoint(temp2: TNPoint): this | null {
 		return wrapTemporalOrNull(F.nai_tnpoint_tnpoint(this.ptr, temp2.ptr)) as this | null;
 	}
 
@@ -20642,7 +20766,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: overlaps_rid_tnpoint_tnpoint */
-	private _overlaps_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+	private _overlaps_rid_tnpoint_tnpoint(temp2: TNPoint): boolean {
 		return F.overlaps_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20657,12 +20781,12 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: same_rid_tnpoint_npoint */
-	private _same_rid_tnpoint_npoint(np: Npoint): boolean {
+	private _same_rid_tnpoint_npoint(np: NPoint): boolean {
 		return F.same_rid_tnpoint_npoint(this.ptr, np.ptr);
 	}
 
 	/** MEOS: same_rid_tnpoint_tnpoint */
-	private _same_rid_tnpoint_tnpoint(temp2: TNpoint): boolean {
+	private _same_rid_tnpoint_tnpoint(temp2: TNPoint): boolean {
 		return F.same_rid_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
@@ -20672,12 +20796,12 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: shortestline_tnpoint_npoint */
-	private _shortestline_tnpoint_npoint(np: Npoint): Geo | null {
+	private _shortestline_tnpoint_npoint(np: NPoint): Geo | null {
 		return wrapGeoOrNull(F.shortestline_tnpoint_npoint(this.ptr, np.ptr)) as Geo | null;
 	}
 
 	/** MEOS: shortestline_tnpoint_tnpoint */
-	private _shortestline_tnpoint_tnpoint(temp2: TNpoint): Geo | null {
+	private _shortestline_tnpoint_tnpoint(temp2: TNPoint): Geo | null {
 		return wrapGeoOrNull(F.shortestline_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Geo | null;
 	}
 
@@ -20687,36 +20811,36 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tdistance_tnpoint_npoint */
-	private _tdistance_tnpoint_npoint(np: Npoint): Temporal | null {
+	private _tdistance_tnpoint_npoint(np: NPoint): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tdistance_tnpoint_tnpoint */
-	private _tdistance_tnpoint_tnpoint(temp2: TNpoint): Temporal | null {
+	private _tdistance_tnpoint_tnpoint(temp2: TNPoint): Temporal | null {
 		return wrapTemporalOrNull(F.tdistance_tnpoint_tnpoint(this.ptr, temp2.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: teq_tnpoint_npoint */
-	private _teq_tnpoint_npoint(np: Npoint): Temporal | null {
+	private _teq_tnpoint_npoint(np: NPoint): Temporal | null {
 		return wrapTemporalOrNull(F.teq_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_tnpoint_npoint */
-	private _tne_tnpoint_npoint(np: Npoint): Temporal | null {
+	private _tne_tnpoint_npoint(np: NPoint): Temporal | null {
 		return wrapTemporalOrNull(F.tne_tnpoint_npoint(this.ptr, np.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: always_eq_tnpoint_npoint, always_eq_tnpoint_tnpoint, chosen by the arguments' types */
-	override alwaysEq(np: Npoint | TNpoint | Temporal): number {
-		if (np instanceof TNpoint) return this._always_eq_tnpoint_tnpoint(np as TNpoint);
-		if (np instanceof Npoint) return this._always_eq_tnpoint_npoint(np as Npoint);
+	override alwaysEq(np: NPoint | TNPoint | Temporal): number {
+		if (np instanceof TNPoint) return this._always_eq_tnpoint_tnpoint(np as TNPoint);
+		if (np instanceof NPoint) return this._always_eq_tnpoint_npoint(np as NPoint);
 		return super.alwaysEq(np as Temporal);
 	}
 
 	/** MEOS: always_ne_tnpoint_npoint, always_ne_tnpoint_tnpoint, chosen by the arguments' types */
-	override alwaysNe(np: Npoint | TNpoint | Temporal): number {
-		if (np instanceof TNpoint) return this._always_ne_tnpoint_tnpoint(np as TNpoint);
-		if (np instanceof Npoint) return this._always_ne_tnpoint_npoint(np as Npoint);
+	override alwaysNe(np: NPoint | TNPoint | Temporal): number {
+		if (np instanceof TNPoint) return this._always_ne_tnpoint_tnpoint(np as TNPoint);
+		if (np instanceof NPoint) return this._always_ne_tnpoint_npoint(np as NPoint);
 		return super.alwaysNe(np as Temporal);
 	}
 
@@ -20726,7 +20850,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_at_npoint */
-	atNpoint(np: Npoint): this | null {
+	atNpoint(np: NPoint): this | null {
 		return wrapTemporalOrNull(F.tnpoint_at_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
@@ -20741,19 +20865,19 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: contained_rid_tnpoint_bigintset, contained_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	containedRid(s: BigIntSet | TNpoint): boolean {
+	containedRid(s: BigIntSet | TNPoint): boolean {
 		if (s instanceof BigIntSet) return this._contained_rid_tnpoint_bigintset(s as BigIntSet);
-		if (s instanceof TNpoint) return this._contained_rid_tnpoint_tnpoint(s as TNpoint);
-		throw new TypeError(`TNpoint.containedRid: no overload takes these arguments`);
+		if (s instanceof TNPoint) return this._contained_rid_tnpoint_tnpoint(s as TNPoint);
+		throw new TypeError(`TNPoint.containedRid: no overload takes these arguments`);
 	}
 
 	/** MEOS: contains_rid_tnpoint_bigint, contains_rid_tnpoint_bigintset, contains_rid_tnpoint_npoint, contains_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	containsRid(rid: number | BigIntSet | Npoint | TNpoint): boolean {
+	containsRid(rid: number | BigIntSet | NPoint | TNPoint): boolean {
 		if (rid instanceof BigIntSet) return this._contains_rid_tnpoint_bigintset(rid as BigIntSet);
-		if (rid instanceof TNpoint) return this._contains_rid_tnpoint_tnpoint(rid as TNpoint);
-		if (rid instanceof Npoint) return this._contains_rid_tnpoint_npoint(rid as Npoint);
+		if (rid instanceof TNPoint) return this._contains_rid_tnpoint_tnpoint(rid as TNPoint);
+		if (rid instanceof NPoint) return this._contains_rid_tnpoint_npoint(rid as NPoint);
 		if (typeof rid === 'number') return this._contains_rid_tnpoint_bigint(rid as number);
-		throw new TypeError(`TNpoint.containsRid: no overload takes these arguments`);
+		throw new TypeError(`TNPoint.containsRid: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnpoint_cumulative_length */
@@ -20762,21 +20886,21 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_end_value */
-	endValue(): Npoint {
-		return wrapNpoint(F.tnpoint_end_value(this.ptr)) as Npoint;
+	endValue(): NPoint {
+		return wrapNPoint(F.tnpoint_end_value(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: ever_eq_tnpoint_npoint, ever_eq_tnpoint_tnpoint, chosen by the arguments' types */
-	override everEq(np: Npoint | TNpoint | Temporal): number {
-		if (np instanceof TNpoint) return this._ever_eq_tnpoint_tnpoint(np as TNpoint);
-		if (np instanceof Npoint) return this._ever_eq_tnpoint_npoint(np as Npoint);
+	override everEq(np: NPoint | TNPoint | Temporal): number {
+		if (np instanceof TNPoint) return this._ever_eq_tnpoint_tnpoint(np as TNPoint);
+		if (np instanceof NPoint) return this._ever_eq_tnpoint_npoint(np as NPoint);
 		return super.everEq(np as Temporal);
 	}
 
 	/** MEOS: ever_ne_tnpoint_npoint, ever_ne_tnpoint_tnpoint, chosen by the arguments' types */
-	override everNe(np: Npoint | TNpoint | Temporal): number {
-		if (np instanceof TNpoint) return this._ever_ne_tnpoint_tnpoint(np as TNpoint);
-		if (np instanceof Npoint) return this._ever_ne_tnpoint_npoint(np as Npoint);
+	override everNe(np: NPoint | TNPoint | Temporal): number {
+		if (np instanceof TNPoint) return this._ever_ne_tnpoint_tnpoint(np as TNPoint);
+		if (np instanceof NPoint) return this._ever_ne_tnpoint_npoint(np as NPoint);
 		return super.everNe(np as Temporal);
 	}
 
@@ -20791,7 +20915,7 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_minus_npoint */
-	minusNpoint(np: Npoint): this | null {
+	minusNpoint(np: NPoint): this | null {
 		return wrapTemporalOrNull(F.tnpoint_minus_npoint(this.ptr, np.ptr)) as this | null;
 	}
 
@@ -20806,20 +20930,20 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: nad_tnpoint_geo, nad_tnpoint_npoint, nad_tnpoint_stbox, nad_tnpoint_tnpoint, chosen by the arguments' types */
-	nad(gs: Geometry | Npoint | STBox | TNpoint): number {
+	nad(gs: Geometry | NPoint | STBox | TNPoint): number {
 		if (gs instanceof Geometry) return this._nad_tnpoint_geo(gs as Geometry);
-		if (gs instanceof TNpoint) return this._nad_tnpoint_tnpoint(gs as TNpoint);
-		if (gs instanceof Npoint) return this._nad_tnpoint_npoint(gs as Npoint);
+		if (gs instanceof TNPoint) return this._nad_tnpoint_tnpoint(gs as TNPoint);
+		if (gs instanceof NPoint) return this._nad_tnpoint_npoint(gs as NPoint);
 		if (gs instanceof STBox) return this._nad_tnpoint_stbox(gs as STBox);
-		throw new TypeError(`TNpoint.nad: no overload takes these arguments`);
+		throw new TypeError(`TNPoint.nad: no overload takes these arguments`);
 	}
 
 	/** MEOS: nai_tnpoint_geo, nai_tnpoint_npoint, nai_tnpoint_tnpoint, chosen by the arguments' types */
-	nai(gs: Geometry | Npoint | TNpoint): this | null {
+	nai(gs: Geometry | NPoint | TNPoint): this | null {
 		if (gs instanceof Geometry) return this._nai_tnpoint_geo(gs as Geometry);
-		if (gs instanceof TNpoint) return this._nai_tnpoint_tnpoint(gs as TNpoint);
-		if (gs instanceof Npoint) return this._nai_tnpoint_npoint(gs as Npoint);
-		throw new TypeError(`TNpoint.nai: no overload takes these arguments`);
+		if (gs instanceof TNPoint) return this._nai_tnpoint_tnpoint(gs as TNPoint);
+		if (gs instanceof NPoint) return this._nai_tnpoint_npoint(gs as NPoint);
+		throw new TypeError(`TNPoint.nai: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnpoint_out */
@@ -20828,14 +20952,14 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: overlaps_rid_tnpoint_bigintset, overlaps_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	overlapsRid(s: BigIntSet | TNpoint): boolean {
+	overlapsRid(s: BigIntSet | TNPoint): boolean {
 		if (s instanceof BigIntSet) return this._overlaps_rid_tnpoint_bigintset(s as BigIntSet);
-		if (s instanceof TNpoint) return this._overlaps_rid_tnpoint_tnpoint(s as TNpoint);
-		throw new TypeError(`TNpoint.overlapsRid: no overload takes these arguments`);
+		if (s instanceof TNPoint) return this._overlaps_rid_tnpoint_tnpoint(s as TNPoint);
+		throw new TypeError(`TNPoint.overlapsRid: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnpoint_positions */
-	positions(): Nsegment[] {
+	positions(): NSegment[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tnpoint_positions(this.ptr, _count);
@@ -20843,8 +20967,8 @@ export class TNpoint extends TSpatial {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Nsegment[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapNsegment(Number(_v.getBigUint64(_i * 8, true))) as Nsegment);
+				const _out: NSegment[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapNSegment(Number(_v.getBigUint64(_i * 8, true))) as NSegment);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -20875,20 +20999,20 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: same_rid_tnpoint_bigint, same_rid_tnpoint_bigintset, same_rid_tnpoint_npoint, same_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	sameRid(rid: number | BigIntSet | Npoint | TNpoint): boolean {
+	sameRid(rid: number | BigIntSet | NPoint | TNPoint): boolean {
 		if (rid instanceof BigIntSet) return this._same_rid_tnpoint_bigintset(rid as BigIntSet);
-		if (rid instanceof TNpoint) return this._same_rid_tnpoint_tnpoint(rid as TNpoint);
-		if (rid instanceof Npoint) return this._same_rid_tnpoint_npoint(rid as Npoint);
+		if (rid instanceof TNPoint) return this._same_rid_tnpoint_tnpoint(rid as TNPoint);
+		if (rid instanceof NPoint) return this._same_rid_tnpoint_npoint(rid as NPoint);
 		if (typeof rid === 'number') return this._same_rid_tnpoint_bigint(rid as number);
-		throw new TypeError(`TNpoint.sameRid: no overload takes these arguments`);
+		throw new TypeError(`TNPoint.sameRid: no overload takes these arguments`);
 	}
 
 	/** MEOS: shortestline_tnpoint_geo, shortestline_tnpoint_npoint, shortestline_tnpoint_tnpoint, chosen by the arguments' types */
-	shortestline(gs: Geometry | Npoint | TNpoint): Geo | null {
+	shortestline(gs: Geometry | NPoint | TNPoint): Geo | null {
 		if (gs instanceof Geometry) return this._shortestline_tnpoint_geo(gs as Geometry);
-		if (gs instanceof TNpoint) return this._shortestline_tnpoint_tnpoint(gs as TNpoint);
-		if (gs instanceof Npoint) return this._shortestline_tnpoint_npoint(gs as Npoint);
-		throw new TypeError(`TNpoint.shortestline: no overload takes these arguments`);
+		if (gs instanceof TNPoint) return this._shortestline_tnpoint_tnpoint(gs as TNPoint);
+		if (gs instanceof NPoint) return this._shortestline_tnpoint_npoint(gs as NPoint);
+		throw new TypeError(`TNPoint.shortestline: no overload takes these arguments`);
 	}
 
 	/** MEOS: tnpoint_speed */
@@ -20897,33 +21021,38 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_start_value */
-	startValue(): Npoint {
-		return wrapNpoint(F.tnpoint_start_value(this.ptr)) as Npoint;
+	startValue(): NPoint {
+		return wrapNPoint(F.tnpoint_start_value(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: tdistance_tnpoint_npoint, tdistance_tnpoint_geo, tdistance_tnpoint_tnpoint, chosen by the arguments' types */
-	tdistance(np: Npoint | Geometry | TNpoint): Temporal | null {
+	tdistance(np: NPoint | Geometry | TNPoint): Temporal | null {
 		if (np instanceof Geometry) return this._tdistance_tnpoint_geo(np as Geometry);
-		if (np instanceof TNpoint) return this._tdistance_tnpoint_tnpoint(np as TNpoint);
-		if (np instanceof Npoint) return this._tdistance_tnpoint_npoint(np as Npoint);
-		throw new TypeError(`TNpoint.tdistance: no overload takes these arguments`);
+		if (np instanceof TNPoint) return this._tdistance_tnpoint_tnpoint(np as TNPoint);
+		if (np instanceof NPoint) return this._tdistance_tnpoint_npoint(np as NPoint);
+		throw new TypeError(`TNPoint.tdistance: no overload takes these arguments`);
 	}
 
 	/** MEOS: teq_tnpoint_npoint, chosen by the arguments' types */
-	override teq(np: Npoint | Temporal): Temporal | null {
-		if (np instanceof Npoint) return this._teq_tnpoint_npoint(np as Npoint);
+	override teq(np: NPoint | Temporal): Temporal | null {
+		if (np instanceof NPoint) return this._teq_tnpoint_npoint(np as NPoint);
 		return super.teq(np as Temporal);
 	}
 
-	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TNpoint */
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TNPoint */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tne_tnpoint_npoint, chosen by the arguments' types */
-	override tne(np: Npoint | Temporal): Temporal | null {
-		if (np instanceof Npoint) return this._tne_tnpoint_npoint(np as Npoint);
+	override tne(np: NPoint | Temporal): Temporal | null {
+		if (np instanceof NPoint) return this._tne_tnpoint_npoint(np as NPoint);
 		return super.tne(np as Temporal);
+	}
+
+	/** MEOS: tnpoint_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tnpoint_to_tgeogpoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tnpoint_to_tgeompoint */
@@ -20931,7 +21060,7 @@ export class TNpoint extends TSpatial {
 		return wrapTemporal(F.tnpoint_to_tgeompoint(this.ptr)) as Temporal;
 	}
 
-	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TNpoint */
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TNPoint */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
 	}
@@ -20947,17 +21076,17 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_value */
-	value(): Npoint {
-		return wrapNpoint(F.tnpoint_value(this.ptr)) as Npoint;
+	value(): NPoint {
+		return wrapNPoint(F.tnpoint_value(this.ptr)) as NPoint;
 	}
 
 	/** MEOS: tnpoint_value_n */
-	valueN(n: number): Npoint | null {
-		return wrapNpointOrNull(F.tnpoint_value_n(this.ptr, n)) as Npoint | null;
+	valueN(n: number): NPoint | null {
+		return wrapNPointOrNull(F.tnpoint_value_n(this.ptr, n)) as NPoint | null;
 	}
 
 	/** MEOS: tnpoint_values */
-	values(): Npoint[] {
+	values(): NPoint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tnpoint_values(this.ptr, _count);
@@ -20965,8 +21094,8 @@ export class TNpoint extends TSpatial {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Npoint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapNpoint(Number(_v.getBigUint64(_i * 8, true))) as Npoint);
+				const _out: NPoint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapNPoint(Number(_v.getBigUint64(_i * 8, true))) as NPoint);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -20976,14 +21105,14 @@ export class TNpoint extends TSpatial {
 		}
 	}
 
-	/** MEOS: temporal_valueset, which answers a NpointSet for a TNpoint */
-	override valueset(): NpointSet {
-		return super.valueset() as NpointSet;
+	/** MEOS: temporal_valueset, which answers a NPointSet for a TNPoint */
+	override valueset(): NPointSet {
+		return super.valueset() as NPointSet;
 	}
 
 	/** MEOS: tnpoint_from_base_temp */
-	static fromBaseTemp(np: Npoint, temp: Temporal): TNpoint {
-		return wrapTemporal(F.tnpoint_from_base_temp(np.ptr, temp.ptr)) as TNpoint;
+	static fromBaseTemp(np: NPoint, temp: Temporal): TNPoint {
+		return wrapTemporal(F.tnpoint_from_base_temp(np.ptr, temp.ptr)) as TNPoint;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -20992,8 +21121,8 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_in */
-	static fromEWKT(str: string): TNpoint {
-		return TNpoint.in(str);
+	static fromEWKT(str: string): TNPoint {
+		return TNPoint.in(str);
 	}
 
 	/** MEOS: temporal_from_hexwkb */
@@ -21002,61 +21131,61 @@ export class TNpoint extends TSpatial {
 	}
 
 	/** MEOS: tnpoint_from_mfjson */
-	static fromMFJSON(mfjson: string): TNpoint {
-		return wrapTemporal(F.tnpoint_from_mfjson(mfjson)) as TNpoint;
+	static fromMFJSON(mfjson: string): TNPoint {
+		return wrapTemporal(F.tnpoint_from_mfjson(mfjson)) as TNPoint;
 	}
 
 	/** MEOS: tnpoint_in */
-	static fromText(str: string): TNpoint {
-		return TNpoint.in(str);
+	static fromText(str: string): TNPoint {
+		return TNPoint.in(str);
 	}
 
 	/** MEOS: tnpoint_in */
-	static in(str: string): TNpoint {
-		return wrapTemporal(F.tnpoint_in(str)) as TNpoint;
+	static in(str: string): TNPoint {
+		return wrapTemporal(F.tnpoint_in(str)) as TNPoint;
 	}
 }
 
 /**
- * A TNpoint of subtype TInstant.
+ * A TNPoint of subtype TInstant.
  */
-export class TNpointInst extends TNpoint {
+export class TNPointInst extends TNPoint {
 
 	/** MEOS: tnpointinst_make */
-	static make(np: Npoint, t: TimestampTz): TNpointInst {
-		return wrapTemporal(F.tnpointinst_make(np.ptr, t)) as TNpointInst;
+	static make(np: NPoint, t: TimestampTz): TNPointInst {
+		return wrapTemporal(F.tnpointinst_make(np.ptr, t)) as TNPointInst;
 	}
 }
 
 /**
- * A TNpoint of subtype TSequence.
+ * A TNPoint of subtype TSequence.
  */
-export class TNpointSeq extends TNpoint {
+export class TNPointSeq extends TNPoint {
 
 	/** MEOS: tnpointseq_from_base_tstzset */
-	static fromBaseTstzset(np: Npoint, s: Set): TNpointSeq {
-		return wrapTemporal(F.tnpointseq_from_base_tstzset(np.ptr, s.ptr)) as TNpointSeq;
+	static fromBaseTstzset(np: NPoint, s: Set): TNPointSeq {
+		return wrapTemporal(F.tnpointseq_from_base_tstzset(np.ptr, s.ptr)) as TNPointSeq;
 	}
 
 	/** MEOS: tnpointseq_from_base_tstzspan */
-	static fromBaseTstzspan(np: Npoint, s: Span, interp: number): TNpointSeq {
-		return wrapTemporal(F.tnpointseq_from_base_tstzspan(np.ptr, s.ptr, interp)) as TNpointSeq;
+	static fromBaseTstzspan(np: NPoint, s: Span, interp: number): TNPointSeq {
+		return wrapTemporal(F.tnpointseq_from_base_tstzspan(np.ptr, s.ptr, interp)) as TNPointSeq;
 	}
 }
 
 /**
- * A TNpoint of subtype TSequenceSet.
+ * A TNPoint of subtype TSequenceSet.
  */
-export class TNpointSeqSet extends TNpoint {
+export class TNPointSeqSet extends TNPoint {
 
 	/** MEOS: tnpointseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(np: Npoint, ss: SpanSet, interp: number): TNpointSeqSet {
-		return wrapTemporal(F.tnpointseqset_from_base_tstzspanset(np.ptr, ss.ptr, interp)) as TNpointSeqSet;
+	static fromBaseTstzspanset(np: NPoint, ss: SpanSet, interp: number): TNPointSeqSet {
+		return wrapTemporal(F.tnpointseqset_from_base_tstzspanset(np.ptr, ss.ptr, interp)) as TNPointSeqSet;
 	}
 }
 
 /**
- * Point-cloud x time box (bbox of TPcpoint and TPcpatch).
+ * Point-cloud x time box (bbox of TPCPoint and TPCPatch).
  */
 export class TPCBox extends Box {
 
@@ -21654,9 +21783,9 @@ export class TPCBox extends Box {
 }
 
 /**
- * The TPcpatch class of the MEOS object model.
+ * The TPCPatch class of the MEOS object model.
  */
-export class TPcpatch extends TSpatial {
+export class TPCPatch extends TSpatial {
 
 	/** The text MEOS writes this value as (MEOS: tpcpatch_out). */
 	override toString(): string {
@@ -21664,71 +21793,71 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: always_eq_tpcpatch_pcpatch */
-	private _always_eq_tpcpatch_pcpatch(pa: Pcpatch): number {
+	private _always_eq_tpcpatch_pcpatch(pa: PCPatch): number {
 		return F.always_eq_tpcpatch_pcpatch(this.ptr, pa.ptr);
 	}
 
 	/** MEOS: always_eq_tpcpatch_tpcpatch */
-	private _always_eq_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+	private _always_eq_tpcpatch_tpcpatch(temp2: TPCPatch): number {
 		return F.always_eq_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: always_ne_tpcpatch_pcpatch */
-	private _always_ne_tpcpatch_pcpatch(pa: Pcpatch): number {
+	private _always_ne_tpcpatch_pcpatch(pa: PCPatch): number {
 		return F.always_ne_tpcpatch_pcpatch(this.ptr, pa.ptr);
 	}
 
 	/** MEOS: always_ne_tpcpatch_tpcpatch */
-	private _always_ne_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+	private _always_ne_tpcpatch_tpcpatch(temp2: TPCPatch): number {
 		return F.always_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_eq_tpcpatch_pcpatch */
-	private _ever_eq_tpcpatch_pcpatch(pa: Pcpatch): number {
+	private _ever_eq_tpcpatch_pcpatch(pa: PCPatch): number {
 		return F.ever_eq_tpcpatch_pcpatch(this.ptr, pa.ptr);
 	}
 
 	/** MEOS: ever_eq_tpcpatch_tpcpatch */
-	private _ever_eq_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+	private _ever_eq_tpcpatch_tpcpatch(temp2: TPCPatch): number {
 		return F.ever_eq_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_ne_tpcpatch_pcpatch */
-	private _ever_ne_tpcpatch_pcpatch(pa: Pcpatch): number {
+	private _ever_ne_tpcpatch_pcpatch(pa: PCPatch): number {
 		return F.ever_ne_tpcpatch_pcpatch(this.ptr, pa.ptr);
 	}
 
 	/** MEOS: ever_ne_tpcpatch_tpcpatch */
-	private _ever_ne_tpcpatch_tpcpatch(temp2: TPcpatch): number {
+	private _ever_ne_tpcpatch_tpcpatch(temp2: TPCPatch): number {
 		return F.ever_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: teq_tpcpatch_pcpatch */
-	private _teq_tpcpatch_pcpatch(pa: Pcpatch): Temporal | null {
+	private _teq_tpcpatch_pcpatch(pa: PCPatch): Temporal | null {
 		return wrapTemporalOrNull(F.teq_tpcpatch_pcpatch(this.ptr, pa.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_tpcpatch_pcpatch */
-	private _tne_tpcpatch_pcpatch(pa: Pcpatch): Temporal | null {
+	private _tne_tpcpatch_pcpatch(pa: PCPatch): Temporal | null {
 		return wrapTemporalOrNull(F.tne_tpcpatch_pcpatch(this.ptr, pa.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: always_eq_tpcpatch_pcpatch, always_eq_tpcpatch_tpcpatch, chosen by the arguments' types */
-	override alwaysEq(pa: Pcpatch | TPcpatch | Temporal): number {
-		if (pa instanceof TPcpatch) return this._always_eq_tpcpatch_tpcpatch(pa as TPcpatch);
-		if (pa instanceof Pcpatch) return this._always_eq_tpcpatch_pcpatch(pa as Pcpatch);
+	override alwaysEq(pa: PCPatch | TPCPatch | Temporal): number {
+		if (pa instanceof TPCPatch) return this._always_eq_tpcpatch_tpcpatch(pa as TPCPatch);
+		if (pa instanceof PCPatch) return this._always_eq_tpcpatch_pcpatch(pa as PCPatch);
 		return super.alwaysEq(pa as Temporal);
 	}
 
 	/** MEOS: always_ne_tpcpatch_pcpatch, always_ne_tpcpatch_tpcpatch, chosen by the arguments' types */
-	override alwaysNe(pa: Pcpatch | TPcpatch | Temporal): number {
-		if (pa instanceof TPcpatch) return this._always_ne_tpcpatch_tpcpatch(pa as TPcpatch);
-		if (pa instanceof Pcpatch) return this._always_ne_tpcpatch_pcpatch(pa as Pcpatch);
+	override alwaysNe(pa: PCPatch | TPCPatch | Temporal): number {
+		if (pa instanceof TPCPatch) return this._always_ne_tpcpatch_tpcpatch(pa as TPCPatch);
+		if (pa instanceof PCPatch) return this._always_ne_tpcpatch_pcpatch(pa as PCPatch);
 		return super.alwaysNe(pa as Temporal);
 	}
 
 	/** MEOS: tpcpatch_at_value */
-	atValue(pa: Pcpatch): this | null {
+	atValue(pa: PCPatch): this | null {
 		return wrapTemporalOrNull(F.tpcpatch_at_value(this.ptr, pa.ptr)) as this | null;
 	}
 
@@ -21738,26 +21867,26 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_end_value */
-	endValue(): Pcpatch {
-		return wrapPcpatch(F.tpcpatch_end_value(this.ptr)) as Pcpatch;
+	endValue(): PCPatch {
+		return wrapPCPatch(F.tpcpatch_end_value(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: ever_eq_tpcpatch_pcpatch, ever_eq_tpcpatch_tpcpatch, chosen by the arguments' types */
-	override everEq(pa: Pcpatch | TPcpatch | Temporal): number {
-		if (pa instanceof TPcpatch) return this._ever_eq_tpcpatch_tpcpatch(pa as TPcpatch);
-		if (pa instanceof Pcpatch) return this._ever_eq_tpcpatch_pcpatch(pa as Pcpatch);
+	override everEq(pa: PCPatch | TPCPatch | Temporal): number {
+		if (pa instanceof TPCPatch) return this._ever_eq_tpcpatch_tpcpatch(pa as TPCPatch);
+		if (pa instanceof PCPatch) return this._ever_eq_tpcpatch_pcpatch(pa as PCPatch);
 		return super.everEq(pa as Temporal);
 	}
 
 	/** MEOS: ever_ne_tpcpatch_pcpatch, ever_ne_tpcpatch_tpcpatch, chosen by the arguments' types */
-	override everNe(pa: Pcpatch | TPcpatch | Temporal): number {
-		if (pa instanceof TPcpatch) return this._ever_ne_tpcpatch_tpcpatch(pa as TPcpatch);
-		if (pa instanceof Pcpatch) return this._ever_ne_tpcpatch_pcpatch(pa as Pcpatch);
+	override everNe(pa: PCPatch | TPCPatch | Temporal): number {
+		if (pa instanceof TPCPatch) return this._ever_ne_tpcpatch_tpcpatch(pa as TPCPatch);
+		if (pa instanceof PCPatch) return this._ever_ne_tpcpatch_pcpatch(pa as PCPatch);
 		return super.everNe(pa as Temporal);
 	}
 
 	/** MEOS: tpcpatch_minus_value */
-	minusValue(pa: Pcpatch): this | null {
+	minusValue(pa: PCPatch): this | null {
 		return wrapTemporalOrNull(F.tpcpatch_minus_value(this.ptr, pa.ptr)) as this | null;
 	}
 
@@ -21782,8 +21911,8 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_start_value */
-	startValue(): Pcpatch {
-		return wrapPcpatch(F.tpcpatch_start_value(this.ptr)) as Pcpatch;
+	startValue(): PCPatch {
+		return wrapPCPatch(F.tpcpatch_start_value(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: tpcpatch_swath */
@@ -21797,20 +21926,25 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: teq_tpcpatch_pcpatch, chosen by the arguments' types */
-	override teq(pa: Pcpatch | Temporal): Temporal | null {
-		if (pa instanceof Pcpatch) return this._teq_tpcpatch_pcpatch(pa as Pcpatch);
+	override teq(pa: PCPatch | Temporal): Temporal | null {
+		if (pa instanceof PCPatch) return this._teq_tpcpatch_pcpatch(pa as PCPatch);
 		return super.teq(pa as Temporal);
 	}
 
-	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPcpatch */
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPCPatch */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tne_tpcpatch_pcpatch, chosen by the arguments' types */
-	override tne(pa: Pcpatch | Temporal): Temporal | null {
-		if (pa instanceof Pcpatch) return this._tne_tpcpatch_pcpatch(pa as Pcpatch);
+	override tne(pa: PCPatch | Temporal): Temporal | null {
+		if (pa instanceof PCPatch) return this._tne_tpcpatch_pcpatch(pa as PCPatch);
 		return super.tne(pa as Temporal);
+	}
+
+	/** MEOS: tpcpatch_to_tgeography */
+	toTgeography(): Temporal {
+		return wrapTemporal(F.tpcpatch_to_tgeography(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tpcpatch_to_tgeometry */
@@ -21818,23 +21952,23 @@ export class TPcpatch extends TSpatial {
 		return wrapTemporalOrNull(F.tpcpatch_to_tgeometry(this.ptr)) as Temporal | null;
 	}
 
-	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPcpatch */
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPCPatch */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tpcpatch_value */
-	value(): Pcpatch {
-		return wrapPcpatch(F.tpcpatch_value(this.ptr)) as Pcpatch;
+	value(): PCPatch {
+		return wrapPCPatch(F.tpcpatch_value(this.ptr)) as PCPatch;
 	}
 
 	/** MEOS: tpcpatch_value_n */
-	valueN(n: number): Pcpatch | null {
-		return wrapPcpatchOrNull(F.tpcpatch_value_n(this.ptr, n)) as Pcpatch | null;
+	valueN(n: number): PCPatch | null {
+		return wrapPCPatchOrNull(F.tpcpatch_value_n(this.ptr, n)) as PCPatch | null;
 	}
 
 	/** MEOS: tpcpatch_values */
-	values(): Pcpatch[] {
+	values(): PCPatch[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tpcpatch_values(this.ptr, _count);
@@ -21842,8 +21976,8 @@ export class TPcpatch extends TSpatial {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Pcpatch[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapPcpatch(Number(_v.getBigUint64(_i * 8, true))) as Pcpatch);
+				const _out: PCPatch[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapPCPatch(Number(_v.getBigUint64(_i * 8, true))) as PCPatch);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -21853,14 +21987,14 @@ export class TPcpatch extends TSpatial {
 		}
 	}
 
-	/** MEOS: temporal_valueset, which answers a PcpatchSet for a TPcpatch */
-	override valueset(): PcpatchSet {
-		return super.valueset() as PcpatchSet;
+	/** MEOS: temporal_valueset, which answers a PCPatchSet for a TPCPatch */
+	override valueset(): PCPatchSet {
+		return super.valueset() as PCPatchSet;
 	}
 
 	/** MEOS: tpcpatch_from_base_temp */
-	static fromBaseTemp(pa: Pcpatch, temp: Temporal): TPcpatch {
-		return wrapTemporal(F.tpcpatch_from_base_temp(pa.ptr, temp.ptr)) as TPcpatch;
+	static fromBaseTemp(pa: PCPatch, temp: Temporal): TPCPatch {
+		return wrapTemporal(F.tpcpatch_from_base_temp(pa.ptr, temp.ptr)) as TPCPatch;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -21869,8 +22003,8 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_in */
-	static fromEWKT(str: string): TPcpatch {
-		return TPcpatch.in(str);
+	static fromEWKT(str: string): TPCPatch {
+		return TPCPatch.in(str);
 	}
 
 	/** MEOS: temporal_from_hexwkb */
@@ -21879,63 +22013,63 @@ export class TPcpatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_from_mfjson */
-	static fromMFJSON(mfjson: string): TPcpatch {
-		return wrapTemporal(F.tpcpatch_from_mfjson(mfjson)) as TPcpatch;
+	static fromMFJSON(mfjson: string): TPCPatch {
+		return wrapTemporal(F.tpcpatch_from_mfjson(mfjson)) as TPCPatch;
 	}
 
 	/** MEOS: tpcpatch_in */
-	static fromText(str: string): TPcpatch {
-		return TPcpatch.in(str);
+	static fromText(str: string): TPCPatch {
+		return TPCPatch.in(str);
 	}
 
 	/** MEOS: tpcpatch_in */
-	static in(str: string): TPcpatch {
-		return wrapTemporal(F.tpcpatch_in(str)) as TPcpatch;
+	static in(str: string): TPCPatch {
+		return wrapTemporal(F.tpcpatch_in(str)) as TPCPatch;
 	}
 }
 
 /**
- * A TPcpatch of subtype TInstant.
+ * A TPCPatch of subtype TInstant.
  */
-export class TPcpatchInst extends TPcpatch {
+export class TPCPatchInst extends TPCPatch {
 
 	/** MEOS: tpcpatchinst_make */
-	static make(pa: Pcpatch, t: TimestampTz): TPcpatchInst {
-		return wrapTemporal(F.tpcpatchinst_make(pa.ptr, t)) as TPcpatchInst;
+	static make(pa: PCPatch, t: TimestampTz): TPCPatchInst {
+		return wrapTemporal(F.tpcpatchinst_make(pa.ptr, t)) as TPCPatchInst;
 	}
 }
 
 /**
- * A TPcpatch of subtype TSequence.
+ * A TPCPatch of subtype TSequence.
  */
-export class TPcpatchSeq extends TPcpatch {
+export class TPCPatchSeq extends TPCPatch {
 
 	/** MEOS: tpcpatchseq_from_base_tstzset */
-	static fromBaseTstzset(pa: Pcpatch, s: Set): TPcpatchSeq {
-		return wrapTemporal(F.tpcpatchseq_from_base_tstzset(pa.ptr, s.ptr)) as TPcpatchSeq;
+	static fromBaseTstzset(pa: PCPatch, s: Set): TPCPatchSeq {
+		return wrapTemporal(F.tpcpatchseq_from_base_tstzset(pa.ptr, s.ptr)) as TPCPatchSeq;
 	}
 
 	/** MEOS: tpcpatchseq_from_base_tstzspan */
-	static fromBaseTstzspan(pa: Pcpatch, sp: Span): TPcpatchSeq {
-		return wrapTemporal(F.tpcpatchseq_from_base_tstzspan(pa.ptr, sp.ptr)) as TPcpatchSeq;
+	static fromBaseTstzspan(pa: PCPatch, sp: Span): TPCPatchSeq {
+		return wrapTemporal(F.tpcpatchseq_from_base_tstzspan(pa.ptr, sp.ptr)) as TPCPatchSeq;
 	}
 }
 
 /**
- * A TPcpatch of subtype TSequenceSet.
+ * A TPCPatch of subtype TSequenceSet.
  */
-export class TPcpatchSeqSet extends TPcpatch {
+export class TPCPatchSeqSet extends TPCPatch {
 
 	/** MEOS: tpcpatchseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(pa: Pcpatch, ss: SpanSet): TPcpatchSeqSet {
-		return wrapTemporal(F.tpcpatchseqset_from_base_tstzspanset(pa.ptr, ss.ptr)) as TPcpatchSeqSet;
+	static fromBaseTstzspanset(pa: PCPatch, ss: SpanSet): TPCPatchSeqSet {
+		return wrapTemporal(F.tpcpatchseqset_from_base_tstzspanset(pa.ptr, ss.ptr)) as TPCPatchSeqSet;
 	}
 }
 
 /**
- * The TPcpoint class of the MEOS object model.
+ * The TPCPoint class of the MEOS object model.
  */
-export class TPcpoint extends TSpatial {
+export class TPCPoint extends TSpatial {
 
 	/** The text MEOS writes this value as (MEOS: tpcpoint_out). */
 	override toString(): string {
@@ -21943,71 +22077,71 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: always_eq_tpcpoint_pcpoint */
-	private _always_eq_tpcpoint_pcpoint(pt: Pcpoint): number {
+	private _always_eq_tpcpoint_pcpoint(pt: PCPoint): number {
 		return F.always_eq_tpcpoint_pcpoint(this.ptr, pt.ptr);
 	}
 
 	/** MEOS: always_eq_tpcpoint_tpcpoint */
-	private _always_eq_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+	private _always_eq_tpcpoint_tpcpoint(temp2: TPCPoint): number {
 		return F.always_eq_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: always_ne_tpcpoint_pcpoint */
-	private _always_ne_tpcpoint_pcpoint(pt: Pcpoint): number {
+	private _always_ne_tpcpoint_pcpoint(pt: PCPoint): number {
 		return F.always_ne_tpcpoint_pcpoint(this.ptr, pt.ptr);
 	}
 
 	/** MEOS: always_ne_tpcpoint_tpcpoint */
-	private _always_ne_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+	private _always_ne_tpcpoint_tpcpoint(temp2: TPCPoint): number {
 		return F.always_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_eq_tpcpoint_pcpoint */
-	private _ever_eq_tpcpoint_pcpoint(pt: Pcpoint): number {
+	private _ever_eq_tpcpoint_pcpoint(pt: PCPoint): number {
 		return F.ever_eq_tpcpoint_pcpoint(this.ptr, pt.ptr);
 	}
 
 	/** MEOS: ever_eq_tpcpoint_tpcpoint */
-	private _ever_eq_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+	private _ever_eq_tpcpoint_tpcpoint(temp2: TPCPoint): number {
 		return F.ever_eq_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: ever_ne_tpcpoint_pcpoint */
-	private _ever_ne_tpcpoint_pcpoint(pt: Pcpoint): number {
+	private _ever_ne_tpcpoint_pcpoint(pt: PCPoint): number {
 		return F.ever_ne_tpcpoint_pcpoint(this.ptr, pt.ptr);
 	}
 
 	/** MEOS: ever_ne_tpcpoint_tpcpoint */
-	private _ever_ne_tpcpoint_tpcpoint(temp2: TPcpoint): number {
+	private _ever_ne_tpcpoint_tpcpoint(temp2: TPCPoint): number {
 		return F.ever_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: teq_tpcpoint_pcpoint */
-	private _teq_tpcpoint_pcpoint(pt: Pcpoint): Temporal | null {
+	private _teq_tpcpoint_pcpoint(pt: PCPoint): Temporal | null {
 		return wrapTemporalOrNull(F.teq_tpcpoint_pcpoint(this.ptr, pt.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tne_tpcpoint_pcpoint */
-	private _tne_tpcpoint_pcpoint(pt: Pcpoint): Temporal | null {
+	private _tne_tpcpoint_pcpoint(pt: PCPoint): Temporal | null {
 		return wrapTemporalOrNull(F.tne_tpcpoint_pcpoint(this.ptr, pt.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: always_eq_tpcpoint_pcpoint, always_eq_tpcpoint_tpcpoint, chosen by the arguments' types */
-	override alwaysEq(pt: Pcpoint | TPcpoint | Temporal): number {
-		if (pt instanceof TPcpoint) return this._always_eq_tpcpoint_tpcpoint(pt as TPcpoint);
-		if (pt instanceof Pcpoint) return this._always_eq_tpcpoint_pcpoint(pt as Pcpoint);
+	override alwaysEq(pt: PCPoint | TPCPoint | Temporal): number {
+		if (pt instanceof TPCPoint) return this._always_eq_tpcpoint_tpcpoint(pt as TPCPoint);
+		if (pt instanceof PCPoint) return this._always_eq_tpcpoint_pcpoint(pt as PCPoint);
 		return super.alwaysEq(pt as Temporal);
 	}
 
 	/** MEOS: always_ne_tpcpoint_pcpoint, always_ne_tpcpoint_tpcpoint, chosen by the arguments' types */
-	override alwaysNe(pt: Pcpoint | TPcpoint | Temporal): number {
-		if (pt instanceof TPcpoint) return this._always_ne_tpcpoint_tpcpoint(pt as TPcpoint);
-		if (pt instanceof Pcpoint) return this._always_ne_tpcpoint_pcpoint(pt as Pcpoint);
+	override alwaysNe(pt: PCPoint | TPCPoint | Temporal): number {
+		if (pt instanceof TPCPoint) return this._always_ne_tpcpoint_tpcpoint(pt as TPCPoint);
+		if (pt instanceof PCPoint) return this._always_ne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.alwaysNe(pt as Temporal);
 	}
 
 	/** MEOS: tpcpoint_at_value */
-	atValue(pt: Pcpoint): this | null {
+	atValue(pt: PCPoint): this | null {
 		return wrapTemporalOrNull(F.tpcpoint_at_value(this.ptr, pt.ptr)) as this | null;
 	}
 
@@ -22017,26 +22151,26 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_end_value */
-	endValue(): Pcpoint {
-		return wrapPcpoint(F.tpcpoint_end_value(this.ptr)) as Pcpoint;
+	endValue(): PCPoint {
+		return wrapPCPoint(F.tpcpoint_end_value(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: ever_eq_tpcpoint_pcpoint, ever_eq_tpcpoint_tpcpoint, chosen by the arguments' types */
-	override everEq(pt: Pcpoint | TPcpoint | Temporal): number {
-		if (pt instanceof TPcpoint) return this._ever_eq_tpcpoint_tpcpoint(pt as TPcpoint);
-		if (pt instanceof Pcpoint) return this._ever_eq_tpcpoint_pcpoint(pt as Pcpoint);
+	override everEq(pt: PCPoint | TPCPoint | Temporal): number {
+		if (pt instanceof TPCPoint) return this._ever_eq_tpcpoint_tpcpoint(pt as TPCPoint);
+		if (pt instanceof PCPoint) return this._ever_eq_tpcpoint_pcpoint(pt as PCPoint);
 		return super.everEq(pt as Temporal);
 	}
 
 	/** MEOS: ever_ne_tpcpoint_pcpoint, ever_ne_tpcpoint_tpcpoint, chosen by the arguments' types */
-	override everNe(pt: Pcpoint | TPcpoint | Temporal): number {
-		if (pt instanceof TPcpoint) return this._ever_ne_tpcpoint_tpcpoint(pt as TPcpoint);
-		if (pt instanceof Pcpoint) return this._ever_ne_tpcpoint_pcpoint(pt as Pcpoint);
+	override everNe(pt: PCPoint | TPCPoint | Temporal): number {
+		if (pt instanceof TPCPoint) return this._ever_ne_tpcpoint_tpcpoint(pt as TPCPoint);
+		if (pt instanceof PCPoint) return this._ever_ne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.everNe(pt as Temporal);
 	}
 
 	/** MEOS: tpcpoint_minus_value */
-	minusValue(pt: Pcpoint): this | null {
+	minusValue(pt: PCPoint): this | null {
 		return wrapTemporalOrNull(F.tpcpoint_minus_value(this.ptr, pt.ptr)) as this | null;
 	}
 
@@ -22056,25 +22190,30 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_start_value */
-	startValue(): Pcpoint {
-		return wrapPcpoint(F.tpcpoint_start_value(this.ptr)) as Pcpoint;
+	startValue(): PCPoint {
+		return wrapPCPoint(F.tpcpoint_start_value(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: teq_tpcpoint_pcpoint, chosen by the arguments' types */
-	override teq(pt: Pcpoint | Temporal): Temporal | null {
-		if (pt instanceof Pcpoint) return this._teq_tpcpoint_pcpoint(pt as Pcpoint);
+	override teq(pt: PCPoint | Temporal): Temporal | null {
+		if (pt instanceof PCPoint) return this._teq_tpcpoint_pcpoint(pt as PCPoint);
 		return super.teq(pt as Temporal);
 	}
 
-	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPcpoint */
+	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TPCPoint */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
 	}
 
 	/** MEOS: tne_tpcpoint_pcpoint, chosen by the arguments' types */
-	override tne(pt: Pcpoint | Temporal): Temporal | null {
-		if (pt instanceof Pcpoint) return this._tne_tpcpoint_pcpoint(pt as Pcpoint);
+	override tne(pt: PCPoint | Temporal): Temporal | null {
+		if (pt instanceof PCPoint) return this._tne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.tne(pt as Temporal);
+	}
+
+	/** MEOS: tpcpoint_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tpcpoint_to_tgeogpoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tpcpoint_to_tgeompoint */
@@ -22082,23 +22221,23 @@ export class TPcpoint extends TSpatial {
 		return wrapTemporalOrNull(F.tpcpoint_to_tgeompoint(this.ptr)) as Temporal | null;
 	}
 
-	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPcpoint */
+	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPCPoint */
 	override toTstzspan(): TsTzSpan {
 		return super.toTstzspan() as TsTzSpan;
 	}
 
 	/** MEOS: tpcpoint_value */
-	value(): Pcpoint {
-		return wrapPcpoint(F.tpcpoint_value(this.ptr)) as Pcpoint;
+	value(): PCPoint {
+		return wrapPCPoint(F.tpcpoint_value(this.ptr)) as PCPoint;
 	}
 
 	/** MEOS: tpcpoint_value_n */
-	valueN(n: number): Pcpoint | null {
-		return wrapPcpointOrNull(F.tpcpoint_value_n(this.ptr, n)) as Pcpoint | null;
+	valueN(n: number): PCPoint | null {
+		return wrapPCPointOrNull(F.tpcpoint_value_n(this.ptr, n)) as PCPoint | null;
 	}
 
 	/** MEOS: tpcpoint_values */
-	values(): Pcpoint[] {
+	values(): PCPoint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tpcpoint_values(this.ptr, _count);
@@ -22106,8 +22245,8 @@ export class TPcpoint extends TSpatial {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: Pcpoint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapPcpoint(Number(_v.getBigUint64(_i * 8, true))) as Pcpoint);
+				const _out: PCPoint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapPCPoint(Number(_v.getBigUint64(_i * 8, true))) as PCPoint);
 				return _out;
 			} finally {
 				_free(_arr);
@@ -22117,14 +22256,14 @@ export class TPcpoint extends TSpatial {
 		}
 	}
 
-	/** MEOS: temporal_valueset, which answers a PcpointSet for a TPcpoint */
-	override valueset(): PcpointSet {
-		return super.valueset() as PcpointSet;
+	/** MEOS: temporal_valueset, which answers a PCPointSet for a TPCPoint */
+	override valueset(): PCPointSet {
+		return super.valueset() as PCPointSet;
 	}
 
 	/** MEOS: tpcpoint_from_base_temp */
-	static fromBaseTemp(pt: Pcpoint, temp: Temporal): TPcpoint {
-		return wrapTemporal(F.tpcpoint_from_base_temp(pt.ptr, temp.ptr)) as TPcpoint;
+	static fromBaseTemp(pt: PCPoint, temp: Temporal): TPCPoint {
+		return wrapTemporal(F.tpcpoint_from_base_temp(pt.ptr, temp.ptr)) as TPCPoint;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -22133,8 +22272,8 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_in */
-	static fromEWKT(str: string): TPcpoint {
-		return TPcpoint.in(str);
+	static fromEWKT(str: string): TPCPoint {
+		return TPCPoint.in(str);
 	}
 
 	/** MEOS: temporal_from_hexwkb */
@@ -22143,56 +22282,56 @@ export class TPcpoint extends TSpatial {
 	}
 
 	/** MEOS: tpcpoint_from_mfjson */
-	static fromMFJSON(mfjson: string): TPcpoint {
-		return wrapTemporal(F.tpcpoint_from_mfjson(mfjson)) as TPcpoint;
+	static fromMFJSON(mfjson: string): TPCPoint {
+		return wrapTemporal(F.tpcpoint_from_mfjson(mfjson)) as TPCPoint;
 	}
 
 	/** MEOS: tpcpoint_in */
-	static fromText(str: string): TPcpoint {
-		return TPcpoint.in(str);
+	static fromText(str: string): TPCPoint {
+		return TPCPoint.in(str);
 	}
 
 	/** MEOS: tpcpoint_in */
-	static in(str: string): TPcpoint {
-		return wrapTemporal(F.tpcpoint_in(str)) as TPcpoint;
+	static in(str: string): TPCPoint {
+		return wrapTemporal(F.tpcpoint_in(str)) as TPCPoint;
 	}
 }
 
 /**
- * A TPcpoint of subtype TInstant.
+ * A TPCPoint of subtype TInstant.
  */
-export class TPcpointInst extends TPcpoint {
+export class TPCPointInst extends TPCPoint {
 
 	/** MEOS: tpcpointinst_make */
-	static make(pt: Pcpoint, t: TimestampTz): TPcpointInst {
-		return wrapTemporal(F.tpcpointinst_make(pt.ptr, t)) as TPcpointInst;
+	static make(pt: PCPoint, t: TimestampTz): TPCPointInst {
+		return wrapTemporal(F.tpcpointinst_make(pt.ptr, t)) as TPCPointInst;
 	}
 }
 
 /**
- * A TPcpoint of subtype TSequence.
+ * A TPCPoint of subtype TSequence.
  */
-export class TPcpointSeq extends TPcpoint {
+export class TPCPointSeq extends TPCPoint {
 
 	/** MEOS: tpcpointseq_from_base_tstzset */
-	static fromBaseTstzset(pt: Pcpoint, s: Set): TPcpointSeq {
-		return wrapTemporal(F.tpcpointseq_from_base_tstzset(pt.ptr, s.ptr)) as TPcpointSeq;
+	static fromBaseTstzset(pt: PCPoint, s: Set): TPCPointSeq {
+		return wrapTemporal(F.tpcpointseq_from_base_tstzset(pt.ptr, s.ptr)) as TPCPointSeq;
 	}
 
 	/** MEOS: tpcpointseq_from_base_tstzspan */
-	static fromBaseTstzspan(pt: Pcpoint, sp: Span): TPcpointSeq {
-		return wrapTemporal(F.tpcpointseq_from_base_tstzspan(pt.ptr, sp.ptr)) as TPcpointSeq;
+	static fromBaseTstzspan(pt: PCPoint, sp: Span): TPCPointSeq {
+		return wrapTemporal(F.tpcpointseq_from_base_tstzspan(pt.ptr, sp.ptr)) as TPCPointSeq;
 	}
 }
 
 /**
- * A TPcpoint of subtype TSequenceSet.
+ * A TPCPoint of subtype TSequenceSet.
  */
-export class TPcpointSeqSet extends TPcpoint {
+export class TPCPointSeqSet extends TPCPoint {
 
 	/** MEOS: tpcpointseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(pt: Pcpoint, ss: SpanSet): TPcpointSeqSet {
-		return wrapTemporal(F.tpcpointseqset_from_base_tstzspanset(pt.ptr, ss.ptr)) as TPcpointSeqSet;
+	static fromBaseTstzspanset(pt: PCPoint, ss: SpanSet): TPCPointSeqSet {
+		return wrapTemporal(F.tpcpointseqset_from_base_tstzspanset(pt.ptr, ss.ptr)) as TPCPointSeqSet;
 	}
 }
 
@@ -22544,9 +22683,19 @@ export class TPose extends TSpatial {
 		return super.tne(pose as Temporal);
 	}
 
+	/** MEOS: tpose_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tpose_to_tgeogpoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tpose_to_tgeompoint */
+	toTgeompoint(): Temporal {
+		return wrapTemporal(F.tpose_to_tgeompoint(this.ptr)) as Temporal;
+	}
+
 	/** MEOS: tpose_to_tpoint */
-	toTpoint(): Temporal | null {
-		return wrapTemporalOrNull(F.tpose_to_tpoint(this.ptr)) as Temporal | null;
+	toTpoint(): Temporal {
+		return wrapTemporal(F.tpose_to_tpoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TPose */
@@ -22906,6 +23055,16 @@ export class TPoseChain extends TSpatial {
 	override tne(posechain: PoseChain | Temporal): Temporal | null {
 		if (posechain instanceof PoseChain) return this._tne_tposechain_posechain(posechain as PoseChain);
 		return super.tne(posechain as Temporal);
+	}
+
+	/** MEOS: tposechain_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tposechain_to_tgeogpoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tposechain_to_tgeompoint */
+	toTgeompoint(): Temporal {
+		return wrapTemporal(F.tposechain_to_tgeompoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tposechain_to_tpose */
@@ -23301,6 +23460,11 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.tquadbin_to_tbigint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tquadbin_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.tquadbin_to_tgeogpoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TQuadbin */
@@ -24238,6 +24402,16 @@ export class TRGeometry extends TSpatial {
 		return super.tne(gs as Temporal);
 	}
 
+	/** MEOS: trgeometry_to_tgeogpoint */
+	toTgeogpoint(): Temporal {
+		return wrapTemporal(F.trgeometry_to_tgeogpoint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: trgeometry_to_tgeography */
+	toTgeography(): Temporal {
+		return wrapTemporal(F.trgeometry_to_tgeography(this.ptr)) as Temporal;
+	}
+
 	/** MEOS: trgeometry_to_tgeometry */
 	toTgeometry(): Temporal {
 		return wrapTemporal(F.trgeometry_to_tgeometry(this.ptr)) as Temporal;
@@ -24635,6 +24809,11 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_to_tbigint */
 	toTbigint(): Temporal {
 		return wrapTemporal(F.ts2cell_to_tbigint(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: ts2cell_to_tgeompoint */
+	toTgeompoint(): Temporal {
+		return wrapTemporal(F.ts2cell_to_tgeompoint(this.ptr)) as Temporal;
 	}
 
 	/** MEOS: temporal_to_tstzspan, which answers a TsTzSpan for a TS2Cell */
@@ -26466,14 +26645,14 @@ export class TsTzSpanSet extends SpanSet {
 	}
 }
 
-/** The value at `ptr` as the Cbuffer class its runtime type names. */
-export function wrapCbuffer(ptr: Ptr): Cbuffer {
-	return new Cbuffer(ptr);
+/** The value at `ptr` as the CBuffer class its runtime type names. */
+export function wrapCBuffer(ptr: Ptr): CBuffer {
+	return new CBuffer(ptr);
 }
 
-/** As wrapCbuffer, answering null for a null pointer. */
-export function wrapCbufferOrNull(ptr: Ptr): Cbuffer | null {
-	return ptr ? wrapCbuffer(ptr) : null;
+/** As wrapCBuffer, answering null for a null pointer. */
+export function wrapCBufferOrNull(ptr: Ptr): CBuffer | null {
+	return ptr ? wrapCBuffer(ptr) : null;
 }
 
 /** The value at `ptr` as the Geo class its runtime type names. */
@@ -26516,44 +26695,54 @@ export function wrapMeosArrayOrNull(ptr: Ptr): MeosArray | null {
 	return ptr ? wrapMeosArray(ptr) : null;
 }
 
-/** The value at `ptr` as the Npoint class its runtime type names. */
-export function wrapNpoint(ptr: Ptr): Npoint {
-	return new Npoint(ptr);
+/** The value at `ptr` as the NPoint class its runtime type names. */
+export function wrapNPoint(ptr: Ptr): NPoint {
+	return new NPoint(ptr);
 }
 
-/** As wrapNpoint, answering null for a null pointer. */
-export function wrapNpointOrNull(ptr: Ptr): Npoint | null {
-	return ptr ? wrapNpoint(ptr) : null;
+/** As wrapNPoint, answering null for a null pointer. */
+export function wrapNPointOrNull(ptr: Ptr): NPoint | null {
+	return ptr ? wrapNPoint(ptr) : null;
 }
 
-/** The value at `ptr` as the Nsegment class its runtime type names. */
-export function wrapNsegment(ptr: Ptr): Nsegment {
-	return new Nsegment(ptr);
+/** The value at `ptr` as the NSegment class its runtime type names. */
+export function wrapNSegment(ptr: Ptr): NSegment {
+	return new NSegment(ptr);
 }
 
-/** As wrapNsegment, answering null for a null pointer. */
-export function wrapNsegmentOrNull(ptr: Ptr): Nsegment | null {
-	return ptr ? wrapNsegment(ptr) : null;
+/** As wrapNSegment, answering null for a null pointer. */
+export function wrapNSegmentOrNull(ptr: Ptr): NSegment | null {
+	return ptr ? wrapNSegment(ptr) : null;
 }
 
-/** The value at `ptr` as the Pcpatch class its runtime type names. */
-export function wrapPcpatch(ptr: Ptr): Pcpatch {
-	return new Pcpatch(ptr);
+/** The value at `ptr` as the Numeric class its runtime type names. */
+export function wrapNumeric(ptr: Ptr): Numeric {
+	return new Numeric(ptr);
 }
 
-/** As wrapPcpatch, answering null for a null pointer. */
-export function wrapPcpatchOrNull(ptr: Ptr): Pcpatch | null {
-	return ptr ? wrapPcpatch(ptr) : null;
+/** As wrapNumeric, answering null for a null pointer. */
+export function wrapNumericOrNull(ptr: Ptr): Numeric | null {
+	return ptr ? wrapNumeric(ptr) : null;
 }
 
-/** The value at `ptr` as the Pcpoint class its runtime type names. */
-export function wrapPcpoint(ptr: Ptr): Pcpoint {
-	return new Pcpoint(ptr);
+/** The value at `ptr` as the PCPatch class its runtime type names. */
+export function wrapPCPatch(ptr: Ptr): PCPatch {
+	return new PCPatch(ptr);
 }
 
-/** As wrapPcpoint, answering null for a null pointer. */
-export function wrapPcpointOrNull(ptr: Ptr): Pcpoint | null {
-	return ptr ? wrapPcpoint(ptr) : null;
+/** As wrapPCPatch, answering null for a null pointer. */
+export function wrapPCPatchOrNull(ptr: Ptr): PCPatch | null {
+	return ptr ? wrapPCPatch(ptr) : null;
+}
+
+/** The value at `ptr` as the PCPoint class its runtime type names. */
+export function wrapPCPoint(ptr: Ptr): PCPoint {
+	return new PCPoint(ptr);
+}
+
+/** As wrapPCPoint, answering null for a null pointer. */
+export function wrapPCPointOrNull(ptr: Ptr): PCPoint | null {
+	return ptr ? wrapPCPoint(ptr) : null;
 }
 
 /** The value at `ptr` as the Pcschema class its runtime type names. */
@@ -26606,14 +26795,14 @@ export function wrapRTreeNNCursorOrNull(ptr: Ptr): RTreeNNCursor | null {
 	return ptr ? wrapRTreeNNCursor(ptr) : null;
 }
 
-/** The value at `ptr` as the Raquet class its runtime type names. */
-export function wrapRaquet(ptr: Ptr): Raquet {
-	return new Raquet(ptr);
+/** The value at `ptr` as the RaQuet class its runtime type names. */
+export function wrapRaQuet(ptr: Ptr): RaQuet {
+	return new RaQuet(ptr);
 }
 
-/** As wrapRaquet, answering null for a null pointer. */
-export function wrapRaquetOrNull(ptr: Ptr): Raquet | null {
-	return ptr ? wrapRaquet(ptr) : null;
+/** As wrapRaQuet, answering null for a null pointer. */
+export function wrapRaQuetOrNull(ptr: Ptr): RaQuet | null {
+	return ptr ? wrapRaQuet(ptr) : null;
 }
 
 /** The value at `ptr` as the Raster class its runtime type names. */
@@ -26668,14 +26857,14 @@ export function wrapSet(ptr: Ptr): Set {
 		case 38: return new TsTzSet(ptr); // T_TSTZSET
 		case 43: return new GeomSet(ptr); // T_GEOMSET
 		case 45: return new GeogSet(ptr); // T_GEOGSET
-		case 49: return new NpointSet(ptr); // T_NPOINTSET
+		case 49: return new NPointSet(ptr); // T_NPOINTSET
 		case 55: return new PoseSet(ptr); // T_POSESET
-		case 58: return new CbufferSet(ptr); // T_CBUFFERSET
+		case 58: return new CBufferSet(ptr); // T_CBUFFERSET
 		case 65: return new JsonbSet(ptr); // T_JSONBSET
 		case 69: return new H3IndexSet(ptr); // T_H3INDEXSET
 		case 72: return new QuadbinSet(ptr); // T_QUADBINSET
-		case 75: return new PcpointSet(ptr); // T_PCPOINTSET
-		case 78: return new PcpatchSet(ptr); // T_PCPATCHSET
+		case 75: return new PCPointSet(ptr); // T_PCPOINTSET
+		case 78: return new PCPatchSet(ptr); // T_PCPATCHSET
 		case 83: return new PoseChainSet(ptr); // T_POSECHAINSET
 		case 86: return new S2CellSet(ptr); // T_S2CELLSET
 		default: return new Set(ptr);
@@ -26685,6 +26874,16 @@ export function wrapSet(ptr: Ptr): Set {
 /** As wrapSet, answering null for a null pointer. */
 export function wrapSetOrNull(ptr: Ptr): Set | null {
 	return ptr ? wrapSet(ptr) : null;
+}
+
+/** The value at `ptr` as the SkipList class its runtime type names. */
+export function wrapSkipList(ptr: Ptr): SkipList {
+	return new SkipList(ptr);
+}
+
+/** As wrapSkipList, answering null for a null pointer. */
+export function wrapSkipListOrNull(ptr: Ptr): SkipList | null {
+	return ptr ? wrapSkipList(ptr) : null;
 }
 
 /** The value at `ptr` as the Span class its runtime type names. */
@@ -26753,18 +26952,18 @@ export function wrapTemporal(ptr: Ptr): Temporal {
 		case 41: return wrapTTextSubtype(ptr); // T_TTEXT
 		case 46: return wrapTGeomPointSubtype(ptr); // T_TGEOMPOINT
 		case 47: return wrapTGeogPointSubtype(ptr); // T_TGEOGPOINT
-		case 51: return wrapTNpointSubtype(ptr); // T_TNPOINT
+		case 51: return wrapTNPointSubtype(ptr); // T_TNPOINT
 		case 56: return wrapTPoseSubtype(ptr); // T_TPOSE
-		case 59: return wrapTCbufferSubtype(ptr); // T_TCBUFFER
+		case 59: return wrapTCBufferSubtype(ptr); // T_TCBUFFER
 		case 60: return wrapTGeometrySubtype(ptr); // T_TGEOMETRY
 		case 61: return wrapTGeographySubtype(ptr); // T_TGEOGRAPHY
 		case 62: return wrapTRGeometrySubtype(ptr); // T_TRGEOMETRY
 		case 66: return wrapTJsonbSubtype(ptr); // T_TJSONB
-		case 67: return wrapTBigintSubtype(ptr); // T_TBIGINT
+		case 67: return wrapTBigIntSubtype(ptr); // T_TBIGINT
 		case 70: return wrapTH3IndexSubtype(ptr); // T_TH3INDEX
 		case 73: return wrapTQuadbinSubtype(ptr); // T_TQUADBIN
-		case 76: return wrapTPcpointSubtype(ptr); // T_TPCPOINT
-		case 79: return wrapTPcpatchSubtype(ptr); // T_TPCPATCH
+		case 76: return wrapTPCPointSubtype(ptr); // T_TPCPOINT
+		case 79: return wrapTPCPatchSubtype(ptr); // T_TPCPATCH
 		case 84: return wrapTPoseChainSubtype(ptr); // T_TPOSECHAIN
 		case 87: return wrapTS2CellSubtype(ptr); // T_TS2CELL
 		default: return new Temporal(ptr);
@@ -26786,12 +26985,12 @@ export function wrapTextOrNull(ptr: Ptr): Text | null {
 	return ptr ? wrapText(ptr) : null;
 }
 
-function wrapTBigintSubtype(ptr: Ptr): TBigint {
+function wrapTBigIntSubtype(ptr: Ptr): TBigInt {
 	switch (_byte(ptr, 5)) {
-		case 1: return new TBigintInst(ptr);
-		case 2: return new TBigintSeq(ptr);
-		case 3: return new TBigintSeqSet(ptr);
-		default: return new TBigint(ptr);
+		case 1: return new TBigIntInst(ptr);
+		case 2: return new TBigIntSeq(ptr);
+		case 3: return new TBigIntSeqSet(ptr);
+		default: return new TBigInt(ptr);
 	}
 }
 
@@ -26804,12 +27003,12 @@ function wrapTBoolSubtype(ptr: Ptr): TBool {
 	}
 }
 
-function wrapTCbufferSubtype(ptr: Ptr): TCbuffer {
+function wrapTCBufferSubtype(ptr: Ptr): TCBuffer {
 	switch (_byte(ptr, 5)) {
-		case 1: return new TCbufferInst(ptr);
-		case 2: return new TCbufferSeq(ptr);
-		case 3: return new TCbufferSeqSet(ptr);
-		default: return new TCbuffer(ptr);
+		case 1: return new TCBufferInst(ptr);
+		case 2: return new TCBufferSeq(ptr);
+		case 3: return new TCBufferSeqSet(ptr);
+		default: return new TCBuffer(ptr);
 	}
 }
 
@@ -26885,30 +27084,30 @@ function wrapTJsonbSubtype(ptr: Ptr): TJsonb {
 	}
 }
 
-function wrapTNpointSubtype(ptr: Ptr): TNpoint {
+function wrapTNPointSubtype(ptr: Ptr): TNPoint {
 	switch (_byte(ptr, 5)) {
-		case 1: return new TNpointInst(ptr);
-		case 2: return new TNpointSeq(ptr);
-		case 3: return new TNpointSeqSet(ptr);
-		default: return new TNpoint(ptr);
+		case 1: return new TNPointInst(ptr);
+		case 2: return new TNPointSeq(ptr);
+		case 3: return new TNPointSeqSet(ptr);
+		default: return new TNPoint(ptr);
 	}
 }
 
-function wrapTPcpatchSubtype(ptr: Ptr): TPcpatch {
+function wrapTPCPatchSubtype(ptr: Ptr): TPCPatch {
 	switch (_byte(ptr, 5)) {
-		case 1: return new TPcpatchInst(ptr);
-		case 2: return new TPcpatchSeq(ptr);
-		case 3: return new TPcpatchSeqSet(ptr);
-		default: return new TPcpatch(ptr);
+		case 1: return new TPCPatchInst(ptr);
+		case 2: return new TPCPatchSeq(ptr);
+		case 3: return new TPCPatchSeqSet(ptr);
+		default: return new TPCPatch(ptr);
 	}
 }
 
-function wrapTPcpointSubtype(ptr: Ptr): TPcpoint {
+function wrapTPCPointSubtype(ptr: Ptr): TPCPoint {
 	switch (_byte(ptr, 5)) {
-		case 1: return new TPcpointInst(ptr);
-		case 2: return new TPcpointSeq(ptr);
-		case 3: return new TPcpointSeqSet(ptr);
-		default: return new TPcpoint(ptr);
+		case 1: return new TPCPointInst(ptr);
+		case 2: return new TPCPointSeq(ptr);
+		case 3: return new TPCPointSeqSet(ptr);
+		default: return new TPCPoint(ptr);
 	}
 }
 
