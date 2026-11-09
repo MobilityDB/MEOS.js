@@ -289,7 +289,7 @@ describe('generated object layer: members answering their receiver type', () => 
 
 describe('generated object layer: the defaults a type encoding states', () => {
 	it('writes WKB and text with the defaults typeEncodings gives the writer', () => {
-		// set_as_hexwkb's variant defaults to 0 and floatspan_out's maxdd to 15
+		// set_as_hexwkb's variant defaults to 0 and span_out's maxdd to 15
 		// (typeEncodings encoderAux, writerAux).
 		using s = IntSet.in('{1, 2}');
 		using back = IntSet.fromHexWKB(s.asHexWKB());

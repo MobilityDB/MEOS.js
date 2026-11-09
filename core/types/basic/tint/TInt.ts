@@ -3,7 +3,7 @@ import { temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tint_in,
-	tint_out,
+	temporal_out,
 	tintinst_make,
 	tint_from_base_temp,
 	tintseq_from_base_tstzset,
@@ -161,10 +161,10 @@ export class TInt extends TNumber {
 
 	/**
 	 * WKT string representation.
-	 * MEOS: tint_out
+	 * MEOS: temporal_out
 	 */
 	toString(): string {
-		return tint_out(this._inner);
+		return temporal_out(this._inner, 0);
 	}
 
 	/**

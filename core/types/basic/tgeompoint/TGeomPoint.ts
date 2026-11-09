@@ -22,8 +22,6 @@ import {
 	tgeo_value_n,
 	tgeo_at_geom,
 	tgeo_minus_geom,
-	tpoint_at_geom,
-	tpoint_minus_geom,
 	tpoint_trajectory,
 	tpoint_length,
 	tpoint_speed,
@@ -525,11 +523,11 @@ export class TGeomPoint extends Temporal<string> {
 	 *
 	 * `srid` defaults to this temporal's own SRID so the geometry and the
 	 * trajectory share a coordinate system (MEOS rejects mixed-SRID operands).
-	 * MEOS: tpoint_at_geom
+	 * MEOS: tgeo_at_geom
 	 */
 	atGeom(wkt: string, srid: number = this.srid()): TGeomPoint | null {
 		const gs = geo_from_text(wkt, srid);
-		const r = tpoint_at_geom(this._inner, gs);
+		const r = tgeo_at_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);
 	}
@@ -538,11 +536,11 @@ export class TGeomPoint extends Temporal<string> {
 	 * Restrict to instants outside geometry `wkt`.
 	 *
 	 * `srid` defaults to this temporal's own SRID (see {@link atGeom}).
-	 * MEOS: tpoint_minus_geom
+	 * MEOS: tgeo_minus_geom
 	 */
 	minusGeom(wkt: string, srid: number = this.srid()): TGeomPoint | null {
 		const gs = geo_from_text(wkt, srid);
-		const r = tpoint_minus_geom(this._inner, gs);
+		const r = tgeo_minus_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeomPoint(r);
 	}

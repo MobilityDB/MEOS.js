@@ -2,7 +2,7 @@ import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	ttext_in,
-	ttext_out,
+	temporal_out,
 	ttext_from_mfjson,
 	ttext_from_base_temp,
 	ttextseq_from_base_tstzset,
@@ -124,9 +124,9 @@ export class TText extends Temporal<string> {
 		return new TText(inner) as this;
 	}
 
-	/** WKT string representation. MEOS: ttext_out */
+	/** WKT string representation. MEOS: temporal_out */
 	toString(): string {
-		return ttext_out(this._inner);
+		return temporal_out(this._inner, 0);
 	}
 
 	/** Starting value. MEOS: ttext_start_value */

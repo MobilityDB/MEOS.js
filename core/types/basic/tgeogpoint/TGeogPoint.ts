@@ -22,8 +22,6 @@ import {
 	tgeo_value_n,
 	tgeo_at_geom,
 	tgeo_minus_geom,
-	tpoint_at_geom,
-	tpoint_minus_geom,
 	tpoint_trajectory,
 	tpoint_length,
 	tpoint_speed,
@@ -461,18 +459,18 @@ export class TGeogPoint extends Temporal<string> {
 	// RESTRICTIONS
 	// -------------------------------------------------------------------------
 
-	/** Restrict to instants inside geometry `wkt`. MEOS: tpoint_at_geom */
+	/** Restrict to instants inside geometry `wkt`. MEOS: tgeo_at_geom */
 	atGeom(wkt: string): TGeogPoint | null {
 		const gs = geog_in(wkt, -1);
-		const r = tpoint_at_geom(this._inner, gs);
+		const r = tgeo_at_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeogPoint(r);
 	}
 
-	/** Restrict to instants outside geometry `wkt`. MEOS: tpoint_minus_geom */
+	/** Restrict to instants outside geometry `wkt`. MEOS: tgeo_minus_geom */
 	minusGeom(wkt: string): TGeogPoint | null {
 		const gs = geog_in(wkt, -1);
-		const r = tpoint_minus_geom(this._inner, gs);
+		const r = tgeo_minus_geom(this._inner, gs);
 		meos_free(gs);
 		return r === 0 ? null : new TGeogPoint(r);
 	}

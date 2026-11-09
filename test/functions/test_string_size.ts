@@ -5,8 +5,8 @@ import {
 	intset_in,
 	meos_version,
 	set_as_hexwkb,
+	temporal_out,
 	ttext_in,
-	ttext_out,
 } from '../../core/functions/functions.generated.js';
 
 // A string MEOS answers comes with its size, written through a size_t *, so its
@@ -19,12 +19,12 @@ describe('a string read for the size MEOS writes', () => {
 
 	it('reads back a value holding two-byte characters whole', () => {
 		const text = '{"Zürich"@2001-01-01 00:00:00+00, "Liège"@2001-01-02 00:00:00+00}';
-		assert.equal(ttext_out(ttext_in(text)), text);
+		assert.equal(temporal_out(ttext_in(text), 0), text);
 	});
 
 	it('reads back a long string whole', () => {
 		const text = `"${'x'.repeat(200000)}"@2001-01-01 00:00:00+00`;
-		assert.equal(ttext_out(ttext_in(text)), text);
+		assert.equal(temporal_out(ttext_in(text), 0), text);
 	});
 
 	it('takes no argument for a function whose only parameter is the size', () => {
@@ -39,9 +39,9 @@ describe('a string read for the size MEOS writes', () => {
 
 	it('frees the string it reads, so the heap does not grow', () => {
 		const temp = ttext_in(`"${'x'.repeat(1000000)}"@2001-01-01`);
-		ttext_out(temp);
+		temporal_out(temp, 0);
 		const before = getModule().HEAPU8.length;
-		for (let i = 0; i < 200; i++) ttext_out(temp);
+		for (let i = 0; i < 200; i++) temporal_out(temp, 0);
 		assert.equal(getModule().HEAPU8.length, before);
 	});
 });
