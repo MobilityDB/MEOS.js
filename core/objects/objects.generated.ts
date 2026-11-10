@@ -4285,6 +4285,16 @@ export class Geo extends Value {
 		return this.asText(15);
 	}
 
+	/** MEOS: bearing_point_point */
+	private _bearing_point_point(gs2: Geo): number {
+		return F.bearing_point_point(this.ptr, gs2.ptr);
+	}
+
+	/** MEOS: bearing_point_tpoint */
+	private _bearing_point_tpoint(temp: TPoint): Temporal | null {
+		return wrapTemporalOrNull(F.bearing_point_tpoint(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
 	/** MEOS: adisjoint_geo_tgeo */
 	adisjoint(temp: TGeo): number {
 		return F.adisjoint_geo_tgeo(this.ptr, temp.ptr);
@@ -4343,6 +4353,13 @@ export class Geo extends Value {
 	/** MEOS: geo_as_text */
 	asText(precision: number = 15): string {
 		return F.geo_as_text(this.ptr, precision);
+	}
+
+	/** MEOS: bearing_point_point, bearing_point_tpoint, chosen by the arguments' types */
+	bearing(gs2: Geo | TPoint): number | Temporal | null {
+		if (gs2 instanceof TPoint) return this._bearing_point_tpoint(gs2 as TPoint);
+		if (gs2 instanceof Geo) return this._bearing_point_point(gs2 as Geo);
+		throw new TypeError(`Geo.bearing: no overload takes these arguments`);
 	}
 
 	/** MEOS: geo_centroid */
