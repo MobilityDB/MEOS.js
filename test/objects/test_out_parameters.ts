@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { initMeos } from '../../core/runtime/meos.js';
-import { Jsonb, Raster, SpanSet, TFloat, TInt } from '../../core/objects/objects.generated.js';
+import { Geo, Jsonb, Raster, SpanSet, STBox, TFloat, TGeomPoint, TInt } from '../../core/objects/objects.generated.js';
 
 // The values MEOS writes through a method's out-parameters, read by the object
 // layer (codegen/ObjectGenerator.ts) as MEOS.NET's tools/objectgen.py reads them:
@@ -58,5 +58,29 @@ describe('generated object layer: arrays MEOS fills beside the one it answers', 
 		assert.equal(nodata.filter(n => n).length, 1);
 		assert.equal(values.filter((_v, i) => !nodata[i]).reduce((s, v) => s + v, 0),
 			10 + 30 + 40 + 50 + 60 + 70 + 80 + 90);
+	});
+});
+
+describe('generated object layer: a value MEOS answers beside the arrays it fills', () => {
+	it('answers the tile geometry of a temporal point with the time of each vertex', () => {
+		// MobilityDB's 076_tpoint_analytics regression: three vertices in the tile
+		// of the box (0,0),(1000,1000), snapped to integers as ST_AsMVTGeom snaps
+		// them, times in seconds from the Unix epoch.
+		using t = TGeomPoint.in('[Point(0 0)@2001-01-01 00:00:00+00, '
+			+ 'Point(100 100)@2001-01-02 00:00:00+00, Point(200 50)@2001-01-03 00:00:00+00]');
+		using bounds = STBox.in('STBOX X((0,0),(1000,1000))');
+		const answer = t.asMVTGeom(bounds);
+		assert.ok(answer);
+		const [geom, times] = answer;
+		assert.ok(geom instanceof Geo);
+		assert.equal(geom.asText(6), 'LINESTRING(0 4096,410 3686,819 3891)');
+		assert.deepEqual(times, [978307200, 978393600, 978480000]);
+		geom.free();
+	});
+
+	it('answers null for a temporal point with no representation in the tile', () => {
+		using t = TGeomPoint.in('Point(5000 5000)@2001-01-01 00:00:00+00');
+		using bounds = STBox.in('STBOX X((0,0),(1000,1000))');
+		assert.equal(t.asMVTGeom(bounds), null);
 	});
 });

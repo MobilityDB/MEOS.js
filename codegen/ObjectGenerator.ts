@@ -95,7 +95,7 @@ interface Shape {
 		releasedBy?: { function: string; param: string };
 	};
 	inputArrays?: { param: string; lengthFrom: { kind: string; name: string }; element: { canonical: string } }[];
-	outputArrays?: { param: string }[];
+	outputArrays?: { param: string; lengthFrom?: { kind: string; name: string } }[];
 	nullableResult?: string;
 }
 interface Encoding {
@@ -427,7 +427,12 @@ class Generator {
 		// An answered array's length, which MEOS writes through the parameter the
 		// shape names.
 		const arrayReturn = shape.arrayReturn;
-		const countOut = arrayReturn?.lengthFrom.kind === 'param' ? arrayReturn.lengthFrom.name : undefined;
+		// With no array answered, the arrays MEOS fills state the count
+		// themselves (`outputArrays[].lengthFrom`), as #_output_array_wrapper of
+		// MEOS.NET's tools/codegen.py takes it from the first of them.
+		const ownLength = (shape.outputArrays ?? []).find(a => a.lengthFrom?.kind === 'param')?.lengthFrom;
+		const countOut = arrayReturn?.lengthFrom.kind === 'param' ? arrayReturn.lengthFrom.name
+			: !arrayReturn && ownLength ? ownLength.name : undefined;
 		// The length of a byte buffer MEOS answers, written through `size_t *`.
 		const outs = new Set(shape.outParams ?? []);
 		// The arrays MEOS fills beside the answered one, read with it.
@@ -599,6 +604,35 @@ class Generator {
 			ret = `${one ? outReads[0].ts : `[${outReads.map(o => o.ts).join(', ')}]`} | null`;
 			body = [`if (!${call}) return null;`,
 				`return ${one ? outReads[0].expr : `[${outReads.map(o => o.expr).join(', ')}]`};`];
+		} else if (outArrays.length && !arrayReturn && countOut && args.get(countOut) === '_count') {
+			// One value answered beside the arrays MEOS fills, all of the count it
+			// writes (`tpoint_as_mvtgeom`: a geometry and the time of each of its
+			// vertices). A null answer or a false `bool` says MEOS answered nothing
+			// and wrote nothing, so the method answers null, as the `bool` case of
+			// #_output_array_wrapper of MEOS.NET's tools/codegen.py does; a `bool`
+			// is that answer alone, any other value is answered with the arrays.
+			const found = sig.ret === 'boolean';
+			const r = found ? undefined : this.returned(sig, false);
+			if (!found && !r)
+				return this.defer(cls, oo, 'return needs a class',
+					`${clean(sig.retCanonical)} answered beside output arrays`);
+			const pieces = [...(r ? [r.ts] : []), ...outArrays.map(o => `${o.read.ts}[]`)];
+			ret = `${pieces.length === 1 ? pieces[0] : `[${pieces.join(', ')}]`} | null`;
+			body = [
+				`const _r = ${call};`,
+				`if (!_r) return null;`,
+				`const _n = _view(_count, 4).getInt32(0, true);`,
+				...outArrays.map((o, k) => `const _a${k} = Number(_view(${o.slot}, 8).getBigUint64(0, true));`),
+				`try {`,
+			];
+			outArrays.forEach((o, k) => {
+				body.push(`\tconst _o${k}: ${o.read.ts}[] = [];`,
+					`\tif (_a${k}) { const _arr = _a${k}; const _v = _view(_arr, _n * ${o.read.width}); `
+					+ `for (let _i = 0; _i < _n; _i++) _o${k}.push(${o.read.expr.replace('{o}', `_i * ${o.read.width}`)}); }`);
+			});
+			const outs = [...(r ? [r.wrap.replace('$', '_r')] : []), ...outArrays.map((_o, k) => `_o${k}`)];
+			body.push(`\treturn ${outs.length === 1 ? outs[0] : `[${outs.join(', ')}]`};`, `} finally {`,
+				...outArrays.map((_o, k) => `\tif (_a${k}) _free(_a${k});`), `}`);
 		} else if (outArrays.length && arrayReturn && countOut && args.get(countOut) === '_count') {
 			// The answered array with the arrays MEOS fills beside it, all of the
 			// count MEOS writes, answered together in the order MEOS declares them;
