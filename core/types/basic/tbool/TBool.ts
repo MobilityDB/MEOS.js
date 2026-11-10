@@ -3,7 +3,7 @@ import { TsTzSpanSet } from '../../../objects/objects.generated.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tbool_in,
-	tbool_out,
+	temporal_out,
 	tboolinst_make,
 	tbool_from_base_temp,
 	tboolseq_from_base_tstzset,
@@ -150,10 +150,10 @@ export class TBool extends Temporal<boolean> {
 
 	/**
 	 * WKT string representation.
-	 * MEOS: tbool_out
+	 * MEOS: temporal_out
 	 */
 	toString(): string {
-		return tbool_out(this._inner);
+		return temporal_out(this._inner, 0);
 	}
 
 	/**

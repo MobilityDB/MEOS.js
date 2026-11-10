@@ -3,7 +3,7 @@ import { temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import {
 	tfloat_in,
-	tfloat_out,
+	temporal_out,
 	tfloatinst_make,
 	tfloat_from_base_temp,
 	tfloatseq_from_base_tstzset,
@@ -179,10 +179,10 @@ export class TFloat extends TNumber {
 	 * WKT string representation.
 	 *
 	 * @param maxdd Maximum number of decimal digits for float values (default 15).
-	 * MEOS: tfloat_out
+	 * MEOS: temporal_out
 	 */
 	toString(maxdd = 15): string {
-		return tfloat_out(this._inner, maxdd);
+		return temporal_out(this._inner, maxdd);
 	}
 
 	/**

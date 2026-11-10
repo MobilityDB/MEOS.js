@@ -503,6 +503,11 @@ export class Set extends Collection {
 		return F.set_num_values(this.ptr);
 	}
 
+	/** MEOS: set_out */
+	out(maxdd: number = 15): string {
+		return F.set_out(this.ptr, maxdd);
+	}
+
 	/** MEOS: overlaps_set_set */
 	overlaps(s2: Set): boolean {
 		return F.overlaps_set_set(this.ptr, s2.ptr);
@@ -634,9 +639,9 @@ export class Set extends Collection {
  */
 export class BigIntSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: bigintset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_bigint */
@@ -689,9 +694,9 @@ export class BigIntSet extends Set {
 		return wrapSetOrNull(F.union_set_bigint(this.ptr, i)) as this | null;
 	}
 
-	/** MEOS: bigintset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: contained_rid_bigintset_tnpoint */
@@ -738,11 +743,6 @@ export class BigIntSet extends Set {
 	override minus(i: number | Set): this | null {
 		if (typeof i === 'number') return this._minus_set_bigint(i as number);
 		return super.minus(i as Set);
-	}
-
-	/** MEOS: bigintset_out */
-	out(): string {
-		return F.bigintset_out(this.ptr);
 	}
 
 	/** MEOS: overlaps_rid_bigintset_tnpoint */
@@ -895,6 +895,11 @@ export class BigIntSet extends Set {
  * Contiguous range over an ordered base type.
  */
 export class Span extends Collection {
+
+	/** The text MEOS writes this value as (MEOS: span_out). */
+	override toString(): string {
+		return this.out(15);
+	}
 
 	/** MEOS: adjacent_span_span */
 	private _adjacent_span_span(s2: Span): boolean {
@@ -1113,6 +1118,11 @@ export class Span extends Collection {
 		return F.span_ne(this.ptr, s2.ptr);
 	}
 
+	/** MEOS: span_out */
+	out(maxdd: number = 15): string {
+		return F.span_out(this.ptr, maxdd);
+	}
+
 	/** MEOS: overlaps_span_span, overlaps_span_spanset, chosen by the arguments' types */
 	overlaps(s2: Span | SpanSet): boolean {
 		if (s2 instanceof Span) return this._overlaps_span_span(s2 as Span);
@@ -1194,11 +1204,6 @@ export class Span extends Collection {
  */
 export class BigIntSpan extends Span {
 
-	/** The text MEOS writes this value as (MEOS: bigintspan_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_span_bigint */
 	private _adjacent_span_bigint(i: number): boolean {
 		return F.adjacent_span_bigint(this.ptr, i);
@@ -1260,9 +1265,9 @@ export class BigIntSpan extends Span {
 		return super.adjacent(i as Span | SpanSet);
 	}
 
-	/** MEOS: bigintspan_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: span_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: bigintspan_bins */
@@ -1329,11 +1334,6 @@ export class BigIntSpan extends Span {
 	/** MEOS: nad_bigintspan_tbox */
 	nad(box: TBox): number {
 		return F.nad_bigintspan_tbox(this.ptr, box.ptr);
-	}
-
-	/** MEOS: bigintspan_out */
-	out(): string {
-		return F.bigintspan_out(this.ptr);
 	}
 
 	/** MEOS: overleft_span_bigint, chosen by the arguments' types */
@@ -1465,6 +1465,11 @@ export class BigIntSpan extends Span {
  * Set of disjoint spans.
  */
 export class SpanSet extends Collection {
+
+	/** The text MEOS writes this value as (MEOS: spanset_out). */
+	override toString(): string {
+		return this.out(15);
+	}
 
 	/** MEOS: adjacent_spanset_span */
 	private _adjacent_spanset_span(s: Span): boolean {
@@ -1698,6 +1703,11 @@ export class SpanSet extends Collection {
 		return F.spanset_num_spans(this.ptr);
 	}
 
+	/** MEOS: spanset_out */
+	out(maxdd: number = 15): string {
+		return F.spanset_out(this.ptr, maxdd);
+	}
+
 	/** MEOS: overlaps_spanset_span, overlaps_spanset_spanset, chosen by the arguments' types */
 	overlaps(s: Span | SpanSet): boolean {
 		if (s instanceof Span) return this._overlaps_spanset_span(s as Span);
@@ -1874,11 +1884,6 @@ export class SpanSet extends Collection {
  */
 export class BigIntSpanSet extends SpanSet {
 
-	/** The text MEOS writes this value as (MEOS: bigintspanset_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_spanset_bigint */
 	private _adjacent_spanset_bigint(i: number): boolean {
 		return F.adjacent_spanset_bigint(this.ptr, i);
@@ -1945,9 +1950,9 @@ export class BigIntSpanSet extends SpanSet {
 		return super.adjacent(i as Span | SpanSet);
 	}
 
-	/** MEOS: bigintspanset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: spanset_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: bigintspanset_bins */
@@ -2010,11 +2015,6 @@ export class BigIntSpanSet extends SpanSet {
 	override minus(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._minus_spanset_bigint(i as number);
 		return super.minus(i as Span | SpanSet);
-	}
-
-	/** MEOS: bigintspanset_out */
-	out(): string {
-		return F.bigintspanset_out(this.ptr);
 	}
 
 	/** MEOS: overleft_spanset_bigint, chosen by the arguments' types */
@@ -2578,11 +2578,6 @@ export class SpatialSet extends Set {
 		return F.spatialset_as_text(this.ptr, maxdd);
 	}
 
-	/** MEOS: spatialset_out */
-	out(maxdd: number): string {
-		return F.spatialset_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: spatialset_set_srid */
 	setSRID(srid: number): this {
 		return wrapSet(F.spatialset_set_srid(this.ptr, srid)) as this;
@@ -2667,11 +2662,6 @@ export class CBufferSet extends SpatialSet {
 		return super.minus(cb as Set);
 	}
 
-	/** MEOS: cbufferset_out */
-	override out(maxdd: number): string {
-		return F.cbufferset_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: cbufferset_start_value */
 	startValue(): CBuffer {
 		return wrapCBuffer(F.cbufferset_start_value(this.ptr)) as CBuffer;
@@ -2749,9 +2739,9 @@ export class CBufferSet extends SpatialSet {
  */
 export class DateSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: dateset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_date */
@@ -2789,9 +2779,9 @@ export class DateSet extends Set {
 		return F.after_set_date(this.ptr, d);
 	}
 
-	/** MEOS: dateset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_set_date */
@@ -2827,11 +2817,6 @@ export class DateSet extends Set {
 	override minus(d: DateADT | Set): this | null {
 		if (typeof d === 'number') return this._minus_set_date(d as DateADT);
 		return super.minus(d as Set);
-	}
-
-	/** MEOS: dateset_out */
-	out(): string {
-		return F.dateset_out(this.ptr);
 	}
 
 	/** MEOS: overafter_set_date */
@@ -2972,11 +2957,6 @@ export class DateSet extends Set {
  */
 export class DateSpan extends Span {
 
-	/** The text MEOS writes this value as (MEOS: datespan_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_span_date */
 	private _adjacent_span_date(d: DateADT): boolean {
 		return F.adjacent_span_date(this.ptr, d);
@@ -3023,9 +3003,9 @@ export class DateSpan extends Span {
 		return F.after_span_date(this.ptr, d);
 	}
 
-	/** MEOS: datespan_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: span_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_span_date */
@@ -3088,11 +3068,6 @@ export class DateSpan extends Span {
 	override minus(d: DateADT | Span | SpanSet): SpanSet | null {
 		if (typeof d === 'number') return this._minus_span_date(d as DateADT);
 		return super.minus(d as Span | SpanSet);
-	}
-
-	/** MEOS: datespan_out */
-	out(): string {
-		return F.datespan_out(this.ptr);
 	}
 
 	/** MEOS: overafter_span_date */
@@ -3212,11 +3187,6 @@ export class DateSpan extends Span {
  */
 export class DateSpanSet extends SpanSet {
 
-	/** The text MEOS writes this value as (MEOS: datespanset_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_spanset_date */
 	private _adjacent_spanset_date(d: DateADT): boolean {
 		return F.adjacent_spanset_date(this.ptr, d);
@@ -3268,9 +3238,9 @@ export class DateSpanSet extends SpanSet {
 		return F.after_spanset_date(this.ptr, d);
 	}
 
-	/** MEOS: datespanset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: spanset_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_spanset_date */
@@ -3359,11 +3329,6 @@ export class DateSpanSet extends SpanSet {
 	/** MEOS: datespanset_num_dates */
 	numDates(): number {
 		return F.datespanset_num_dates(this.ptr);
-	}
-
-	/** MEOS: datespanset_out */
-	out(): string {
-		return F.datespanset_out(this.ptr);
 	}
 
 	/** MEOS: overafter_spanset_date */
@@ -3483,7 +3448,7 @@ export class DateSpanSet extends SpanSet {
  */
 export class FloatSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: floatset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
 		return this.out(15);
 	}
@@ -3538,7 +3503,7 @@ export class FloatSet extends Set {
 		return wrapSetOrNull(F.union_set_float(this.ptr, d)) as this | null;
 	}
 
-	/** MEOS: floatset_out */
+	/** MEOS: set_out */
 	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
@@ -3592,11 +3557,6 @@ export class FloatSet extends Set {
 	override minus(d: number | Set): this | null {
 		if (typeof d === 'number') return this._minus_set_float(d as number);
 		return super.minus(d as Set);
-	}
-
-	/** MEOS: floatset_out */
-	out(maxdd: number = 15): string {
-		return F.floatset_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: overleft_set_float, chosen by the arguments' types */
@@ -3750,11 +3710,6 @@ export class FloatSet extends Set {
  */
 export class FloatSpan extends Span {
 
-	/** The text MEOS writes this value as (MEOS: floatspan_out). */
-	override toString(): string {
-		return this.out(15);
-	}
-
 	/** MEOS: adjacent_span_float */
 	private _adjacent_span_float(d: number): boolean {
 		return F.adjacent_span_float(this.ptr, d);
@@ -3816,7 +3771,7 @@ export class FloatSpan extends Span {
 		return super.adjacent(d as Span | SpanSet);
 	}
 
-	/** MEOS: floatspan_out */
+	/** MEOS: span_out */
 	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
@@ -3900,11 +3855,6 @@ export class FloatSpan extends Span {
 	/** MEOS: nad_floatspan_tbox */
 	nad(box: TBox): number {
 		return F.nad_floatspan_tbox(this.ptr, box.ptr);
-	}
-
-	/** MEOS: floatspan_out */
-	out(maxdd: number = 15): string {
-		return F.floatspan_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: overleft_span_float, chosen by the arguments' types */
@@ -4047,11 +3997,6 @@ export class FloatSpan extends Span {
  */
 export class FloatSpanSet extends SpanSet {
 
-	/** The text MEOS writes this value as (MEOS: floatspanset_out). */
-	override toString(): string {
-		return this.out(15);
-	}
-
 	/** MEOS: adjacent_spanset_float */
 	private _adjacent_spanset_float(d: number): boolean {
 		return F.adjacent_spanset_float(this.ptr, d);
@@ -4118,7 +4063,7 @@ export class FloatSpanSet extends SpanSet {
 		return super.adjacent(d as Span | SpanSet);
 	}
 
-	/** MEOS: floatspanset_out */
+	/** MEOS: spanset_out */
 	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
@@ -4198,11 +4143,6 @@ export class FloatSpanSet extends SpanSet {
 	override minus(d: number | Span | SpanSet): this | null {
 		if (typeof d === 'number') return this._minus_spanset_float(d as number);
 		return super.minus(d as Span | SpanSet);
-	}
-
-	/** MEOS: floatspanset_out */
-	out(maxdd: number = 15): string {
-		return F.floatspanset_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: overleft_spanset_float, chosen by the arguments' types */
@@ -5087,11 +5027,6 @@ export class GeogSet extends GeoSet {
  */
 export class Geography extends Geo {
 
-	/** MEOS: geog_area */
-	override area(use_spheroid: boolean): number {
-		return F.geog_area(this.ptr, use_spheroid);
-	}
-
 	/** MEOS: geo_as_geojson */
 	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
@@ -5122,19 +5057,9 @@ export class Geography extends Geo {
 		return F.geog_intersects(this.ptr, gs2.ptr, use_spheroid);
 	}
 
-	/** MEOS: geog_length */
-	override length(use_spheroid: boolean): number {
-		return F.geog_length(this.ptr, use_spheroid);
-	}
-
 	/** MEOS: minus_geo_set, which answers a GeogSet for a Geography */
 	override minus(s: GeoSet): GeogSet | null {
 		return super.minus(s) as GeogSet | null;
-	}
-
-	/** MEOS: geog_perimeter */
-	override perimeter(use_spheroid: boolean): number {
-		return F.geog_perimeter(this.ptr, use_spheroid);
 	}
 
 	/** MEOS: tdisjoint_geo_tgeo, which answers a TBool for a Geography */
@@ -5535,11 +5460,6 @@ export class Geometry extends Geo {
 		return super.alwaysNe(temp as TGeo);
 	}
 
-	/** MEOS: geom_area */
-	override area(): number {
-		return F.geom_area(this.ptr);
-	}
-
 	/** MEOS: geo_as_geojson */
 	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
@@ -5618,16 +5538,6 @@ export class Geometry extends Geo {
 		return F.geom_dwithin(this.ptr, gs2.ptr, dist);
 	}
 
-	/** MEOS: geom_dwithin2d */
-	dwithin2d(gs2: Geo, dist: number): boolean {
-		return F.geom_dwithin2d(this.ptr, gs2.ptr, dist);
-	}
-
-	/** MEOS: geom_dwithin3d */
-	dwithin3d(gs2: Geo, dist: number): boolean {
-		return F.geom_dwithin3d(this.ptr, gs2.ptr, dist);
-	}
-
 	/** MEOS: econtains_geo_tgeo, econtains_geo_tcbuffer, econtains_geo_trgeometry, chosen by the arguments' types */
 	econtains(temp: TGeo | TCBuffer | TRGeometry): number {
 		if (temp instanceof TGeo) return this._econtains_geo_tgeo(temp as TGeo);
@@ -5702,39 +5612,14 @@ export class Geometry extends Geo {
 		return F.geom_intersects(this.ptr, gs2.ptr);
 	}
 
-	/** MEOS: geom_intersects2d */
-	intersects2d(gs2: Geo): boolean {
-		return F.geom_intersects2d(this.ptr, gs2.ptr);
-	}
-
-	/** MEOS: geom_intersects3d */
-	intersects3d(gs2: Geo): boolean {
-		return F.geom_intersects3d(this.ptr, gs2.ptr);
-	}
-
 	/** MEOS: geom_is_simple */
 	isSimple(): boolean {
 		return F.geom_is_simple(this.ptr);
 	}
 
-	/** MEOS: geom_length */
-	override length(): number {
-		return F.geom_length(this.ptr);
-	}
-
 	/** MEOS: geom_max_distance */
 	maxDistance(gs2: Geo): number {
 		return F.geom_max_distance(this.ptr, gs2.ptr);
-	}
-
-	/** MEOS: geom_max_distance2d */
-	maxDistance2d(gs2: Geo): number {
-		return F.geom_max_distance2d(this.ptr, gs2.ptr);
-	}
-
-	/** MEOS: geom_max_distance3d */
-	maxDistance3d(gs2: Geo): number {
-		return F.geom_max_distance3d(this.ptr, gs2.ptr);
 	}
 
 	/** MEOS: geom_minimum_bounding_radius */
@@ -5756,11 +5641,6 @@ export class Geometry extends Geo {
 	/** MEOS: geom_oriented_envelope */
 	orientedEnvelope(): this | null {
 		return wrapGeoOrNull(F.geom_oriented_envelope(this.ptr)) as this | null;
-	}
-
-	/** MEOS: geom_perimeter */
-	override perimeter(): number {
-		return F.geom_perimeter(this.ptr);
 	}
 
 	/** MEOS: geom_relate */
@@ -5943,9 +5823,9 @@ export class Geometry extends Geo {
  */
 export class H3IndexSet extends SpatialSet {
 
-	/** The text MEOS writes this value as (MEOS: h3indexset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_h3index */
@@ -6004,11 +5884,6 @@ export class H3IndexSet extends SpatialSet {
 	override minus(cell: H3Index | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_h3index(cell as H3Index);
 		return super.minus(cell as Set);
-	}
-
-	/** MEOS: h3indexset_out */
-	override out(): string {
-		return F.h3indexset_out(this.ptr);
 	}
 
 	/** MEOS: contained_h3index_set */
@@ -6114,9 +5989,9 @@ export class H3IndexSet extends SpatialSet {
  */
 export class IntSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: intset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_int */
@@ -6169,9 +6044,9 @@ export class IntSet extends Set {
 		return wrapSetOrNull(F.union_set_int(this.ptr, i)) as this | null;
 	}
 
-	/** MEOS: intset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: contains_set_int, chosen by the arguments' types */
@@ -6208,11 +6083,6 @@ export class IntSet extends Set {
 	override minus(i: number | Set): this | null {
 		if (typeof i === 'number') return this._minus_set_int(i as number);
 		return super.minus(i as Set);
-	}
-
-	/** MEOS: intset_out */
-	out(): string {
-		return F.intset_out(this.ptr);
 	}
 
 	/** MEOS: overleft_set_int, chosen by the arguments' types */
@@ -6361,11 +6231,6 @@ export class IntSet extends Set {
  */
 export class IntSpan extends Span {
 
-	/** The text MEOS writes this value as (MEOS: intspan_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_span_int */
 	private _adjacent_span_int(i: number): boolean {
 		return F.adjacent_span_int(this.ptr, i);
@@ -6427,9 +6292,9 @@ export class IntSpan extends Span {
 		return super.adjacent(i as Span | SpanSet);
 	}
 
-	/** MEOS: intspan_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: span_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: intspan_bins */
@@ -6496,11 +6361,6 @@ export class IntSpan extends Span {
 	/** MEOS: nad_intspan_tbox */
 	nad(box: TBox): number {
 		return F.nad_intspan_tbox(this.ptr, box.ptr);
-	}
-
-	/** MEOS: intspan_out */
-	out(): string {
-		return F.intspan_out(this.ptr);
 	}
 
 	/** MEOS: overleft_span_int, chosen by the arguments' types */
@@ -6633,11 +6493,6 @@ export class IntSpan extends Span {
  */
 export class IntSpanSet extends SpanSet {
 
-	/** The text MEOS writes this value as (MEOS: intspanset_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_spanset_int */
 	private _adjacent_spanset_int(i: number): boolean {
 		return F.adjacent_spanset_int(this.ptr, i);
@@ -6704,9 +6559,9 @@ export class IntSpanSet extends SpanSet {
 		return super.adjacent(i as Span | SpanSet);
 	}
 
-	/** MEOS: intspanset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: spanset_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: intspanset_bins */
@@ -6769,11 +6624,6 @@ export class IntSpanSet extends SpanSet {
 	override minus(i: number | Span | SpanSet): this | null {
 		if (typeof i === 'number') return this._minus_spanset_int(i as number);
 		return super.minus(i as Span | SpanSet);
-	}
-
-	/** MEOS: intspanset_out */
-	out(): string {
-		return F.intspanset_out(this.ptr);
 	}
 
 	/** MEOS: overleft_spanset_int, chosen by the arguments' types */
@@ -7440,9 +7290,9 @@ export class Jsonb extends Value {
  */
 export class JsonbSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: jsonbset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_jsonb */
@@ -7480,9 +7330,9 @@ export class JsonbSet extends Set {
 		return wrapSetOrNull(F.jsonbset_array_length(this.ptr)) as Set | null;
 	}
 
-	/** MEOS: jsonbset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: concat_jsonbset_jsonb */
@@ -7623,11 +7473,6 @@ export class JsonbSet extends Set {
 	/** MEOS: jsonbset_object_field_text */
 	objectFieldText(key: string, null_handle: string): Set | null {
 		return wrapSetOrNull(F.jsonbset_object_field_text(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Set | null;
-	}
-
-	/** MEOS: jsonbset_out */
-	out(): string {
-		return F.jsonbset_out(this.ptr);
 	}
 
 	/** MEOS: jsonbset_path_exists */
@@ -8150,11 +7995,6 @@ export class NPointSet extends SpatialSet {
 	override minus(np: NPoint | Set): this | null {
 		if (np instanceof NPoint) return this._minus_set_npoint(np as NPoint);
 		return super.minus(np as Set);
-	}
-
-	/** MEOS: npointset_out */
-	override out(maxdd: number): string {
-		return F.npointset_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: npointset_routes */
@@ -8701,11 +8541,6 @@ export class PCPatchSet extends SpatialSet {
 		return super.minus(pa as Set);
 	}
 
-	/** MEOS: pcpatchset_out */
-	override out(maxdd: number): string {
-		return F.pcpatchset_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: pcpatchset_start_value */
 	startValue(): PCPatch {
 		return wrapPCPatch(F.pcpatchset_start_value(this.ptr)) as PCPatch;
@@ -9045,11 +8880,6 @@ export class PCPointSet extends SpatialSet {
 	override minus(pt: PCPoint | Set): this | null {
 		if (pt instanceof PCPoint) return this._minus_set_pcpoint(pt as PCPoint);
 		return super.minus(pt as Set);
-	}
-
-	/** MEOS: pcpointset_out */
-	override out(maxdd: number): string {
-		return F.pcpointset_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: pcpointset_start_value */
@@ -9980,11 +9810,6 @@ export class PoseChainSet extends SpatialSet {
 		return super.minus(pc as Set);
 	}
 
-	/** MEOS: posechainset_out */
-	override out(maxdd: number): string {
-		return F.posechainset_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: posechainset_start_value */
 	startValue(): PoseChain {
 		return wrapPoseChain(F.posechainset_start_value(this.ptr)) as PoseChain;
@@ -10115,11 +9940,6 @@ export class PoseSet extends SpatialSet {
 		return super.minus(pose as Set);
 	}
 
-	/** MEOS: poseset_out */
-	override out(maxdd: number): string {
-		return F.poseset_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: poseset_start_value */
 	startValue(): Pose {
 		return wrapPose(F.poseset_start_value(this.ptr)) as Pose;
@@ -10197,9 +10017,9 @@ export class PoseSet extends SpatialSet {
  */
 export class QuadbinSet extends SpatialSet {
 
-	/** The text MEOS writes this value as (MEOS: quadbinset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_quadbin */
@@ -10263,11 +10083,6 @@ export class QuadbinSet extends SpatialSet {
 	override minus(cell: Quadbin | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_quadbin(cell as Quadbin);
 		return super.minus(cell as Set);
-	}
-
-	/** MEOS: quadbinset_out */
-	override out(): string {
-		return F.quadbinset_out(this.ptr);
 	}
 
 	/** MEOS: contained_quadbin_set */
@@ -11161,9 +10976,9 @@ export class Raster extends Value {
  */
 export class S2CellSet extends SpatialSet {
 
-	/** The text MEOS writes this value as (MEOS: s2cellset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_s2cell */
@@ -11222,11 +11037,6 @@ export class S2CellSet extends SpatialSet {
 	override minus(cell: S2CellId | Set): this | null {
 		if (typeof cell === 'bigint') return this._minus_set_s2cell(cell as S2CellId);
 		return super.minus(cell as Set);
-	}
-
-	/** MEOS: s2cellset_out */
-	override out(): string {
-		return F.s2cellset_out(this.ptr);
 	}
 
 	/** MEOS: contained_s2cell_set */
@@ -11478,9 +11288,9 @@ export class SPTree extends Value {
  */
 export class STBox extends Box {
 
-	/** The text MEOS writes this value as (MEOS: stbox_out). */
+	/** The text MEOS writes this value as (MEOS: stbox_as_text). */
 	override toString(): string {
-		return this.out(15);
+		return this.asText(15);
 	}
 
 	/** MEOS: above_stbox_stbox */
@@ -11739,6 +11549,11 @@ export class STBox extends Box {
 		return readWkb(_sizeOut => F.stbox_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: stbox_out */
+	asEWKT(maxdd: number = 15): string {
+		return this.out(maxdd);
+	}
+
 	/** MEOS: stbox_as_hexewkb */
 	asHexEWKB(variant: number = 0): string {
 		return F.stbox_as_hexewkb(this.ptr, variant);
@@ -11749,9 +11564,9 @@ export class STBox extends Box {
 		return F.stbox_as_hexwkb(this.ptr, variant);
 	}
 
-	/** MEOS: stbox_out */
+	/** MEOS: stbox_as_text */
 	asText(maxdd: number = 15): string {
-		return this.out(maxdd);
+		return F.stbox_as_text(this.ptr, maxdd);
 	}
 
 	/** MEOS: stbox_as_wkb */
@@ -12252,6 +12067,11 @@ export class STBox extends Box {
 	/** MEOS: stbox_from_wkb */
 	static fromEWKB(wkb: Uint8Array): STBox {
 		return STBox.fromWKB(wkb);
+	}
+
+	/** MEOS: stbox_in */
+	static fromEWKT(str: string): STBox {
+		return STBox.in(str);
 	}
 
 	/** MEOS: gbox_to_stbox */
@@ -12856,6 +12676,11 @@ export class Temporal extends MeosObject {
 		return F.temporal_num_timestamps(this.ptr);
 	}
 
+	/** MEOS: temporal_out */
+	out(maxdd: number = 15): string {
+		return F.temporal_out(this.ptr, maxdd);
+	}
+
 	/** MEOS: overafter_temporal_tstzspan */
 	overafter(s: TsTzSpan): boolean {
 		return F.overafter_temporal_tstzspan(this.ptr, s.ptr);
@@ -12869,6 +12694,11 @@ export class Temporal extends MeosObject {
 	/** MEOS: overlaps_temporal_tstzspan */
 	overlaps(s: TsTzSpan): boolean {
 		return F.overlaps_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
+	/** MEOS: temporal_reachability_filter */
+	reachabilityFilter(maxspeed: number): this | null {
+		return wrapTemporalOrNull(F.temporal_reachability_filter(this.ptr, maxspeed)) as this | null;
 	}
 
 	/** MEOS: temporal_round */
@@ -13829,9 +13659,9 @@ export class TNumber extends Temporal {
  */
 export class TBigInt extends TNumber {
 
-	/** The text MEOS writes this value as (MEOS: tbigint_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: add_tbigint_bigint */
@@ -14006,9 +13836,9 @@ export class TBigInt extends TNumber {
 		return super.alwaysNe(i as Temporal);
 	}
 
-	/** MEOS: tbigint_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: temporal_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: tbigint_at_value */
@@ -14091,11 +13921,6 @@ export class TBigInt extends TNumber {
 		if (i instanceof TBox) return this._nad_tbigint_tbox(i as TBox);
 		if (typeof i === 'number') return this._nad_tbigint_bigint(i as number);
 		throw new TypeError(`TBigInt.nad: no overload takes these arguments`);
-	}
-
-	/** MEOS: tbigint_out */
-	out(): string {
-		return F.tbigint_out(this.ptr);
 	}
 
 	/** MEOS: add_bigint_tbigint */
@@ -14607,9 +14432,9 @@ export class TBigIntSeqSet extends TBigInt {
  */
 export class TBool extends TAlpha {
 
-	/** The text MEOS writes this value as (MEOS: tbool_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_tbool_bool */
@@ -14674,9 +14499,9 @@ export class TBool extends TAlpha {
 		return super.alwaysNe(b as Temporal);
 	}
 
-	/** MEOS: tbool_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: temporal_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: tbool_at_value */
@@ -14704,11 +14529,6 @@ export class TBool extends TAlpha {
 	/** MEOS: tbool_minus_value */
 	minusValue(b: boolean): this | null {
 		return wrapTemporalOrNull(F.tbool_minus_value(this.ptr, b)) as this | null;
-	}
-
-	/** MEOS: tbool_out */
-	out(): string {
-		return F.tbool_out(this.ptr);
 	}
 
 	/** MEOS: always_eq_bool_tbool */
@@ -16143,11 +15963,6 @@ export class TSpatial extends Temporal {
 		throw new TypeError(`TSpatial.left: no overload takes these arguments`);
 	}
 
-	/** MEOS: tspatial_out */
-	out(maxdd: number): string {
-		return F.tspatial_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: overabove_tspatial_stbox, overabove_tspatial_tspatial, chosen by the arguments' types */
 	overabove(box: STBox | TSpatial): boolean {
 		if (box instanceof STBox) return this._overabove_tspatial_stbox(box as STBox);
@@ -17169,7 +16984,7 @@ export class TCellIndex extends TSpatial {
  */
 export class TFloat extends TNumber {
 
-	/** The text MEOS writes this value as (MEOS: tfloat_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
 		return this.out(15);
 	}
@@ -17351,7 +17166,7 @@ export class TFloat extends TNumber {
 		return super.alwaysNe(d as Temporal);
 	}
 
-	/** MEOS: tfloat_out */
+	/** MEOS: temporal_out */
 	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
 	}
@@ -17471,11 +17286,6 @@ export class TFloat extends TNumber {
 		if (d instanceof TBox) return this._nad_tfloat_tbox(d as TBox);
 		if (typeof d === 'number') return this._nad_tfloat_float(d as number);
 		throw new TypeError(`TFloat.nad: no overload takes these arguments`);
-	}
-
-	/** MEOS: tfloat_out */
-	out(maxdd: number = 15): string {
-		return F.tfloat_out(this.ptr, maxdd);
 	}
 
 	/** MEOS: add_float_tfloat */
@@ -19913,9 +19723,9 @@ export class TGeometrySeqSet extends TGeometry {
  */
 export class TH3Index extends TCellIndex {
 
-	/** The text MEOS writes this value as (MEOS: th3index_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_th3index_h3index */
@@ -20147,11 +19957,6 @@ export class TH3Index extends TCellIndex {
 		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell)) as this | null;
 	}
 
-	/** MEOS: th3index_out */
-	override out(): string {
-		return F.th3index_out(this.ptr);
-	}
-
 	/** MEOS: always_eq_h3index_th3index */
 	ralwaysEq(cell: H3Index): number {
 		return F.always_eq_h3index_th3index(cell, this.ptr);
@@ -20335,11 +20140,6 @@ export class TH3Index extends TCellIndex {
 	static in(str: string): TH3Index {
 		return wrapTemporal(F.th3index_in(str)) as TH3Index;
 	}
-
-	/** MEOS: th3index_make */
-	static make(value: H3Index, t: TimestampTz): TH3Index {
-		return wrapTemporal(F.th3index_make(value, t)) as TH3Index;
-	}
 }
 
 /**
@@ -20367,6 +20167,20 @@ export class TH3IndexSeq extends TH3Index {
 	static fromBaseTstzspan(value: H3Index, s: Span): TH3IndexSeq {
 		return wrapTemporal(F.th3indexseq_from_base_tstzspan(value, s.ptr)) as TH3IndexSeq;
 	}
+
+	/** MEOS: th3indexseq_make */
+	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TH3IndexSeq {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		const _times = _alloc(Math.max(times.length, 1) * 8);
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return wrapTemporal(F.th3indexseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TH3IndexSeq;
+		} finally {
+			_free(_values);
+			_free(_times);
+		}
+	}
 }
 
 /**
@@ -20377,6 +20191,16 @@ export class TH3IndexSeqSet extends TH3Index {
 	/** MEOS: th3indexseqset_from_base_tstzspanset */
 	static fromBaseTstzspanset(value: H3Index, ss: SpanSet): TH3IndexSeqSet {
 		return wrapTemporal(F.th3indexseqset_from_base_tstzspanset(value, ss.ptr)) as TH3IndexSeqSet;
+	}
+
+	/** MEOS: th3indexseqset_make */
+	static make(sequences: Temporal[]): TH3IndexSeqSet {
+		const _sequences = _ptrArray(sequences.map(x => x.ptr));
+		try {
+			return wrapTemporal(F.th3indexseqset_make(_sequences, sequences.length)) as TH3IndexSeqSet;
+		} finally {
+			_free(_sequences);
+		}
 	}
 }
 
@@ -20396,9 +20220,9 @@ export class TInstant extends Temporal {
  */
 export class TInt extends TNumber {
 
-	/** The text MEOS writes this value as (MEOS: tint_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: add_tint_int */
@@ -20578,9 +20402,9 @@ export class TInt extends TNumber {
 		return super.alwaysNe(i as Temporal);
 	}
 
-	/** MEOS: tint_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: temporal_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: tint_at_value */
@@ -20663,11 +20487,6 @@ export class TInt extends TNumber {
 		if (i instanceof TBox) return this._nad_tint_tbox(i as TBox);
 		if (typeof i === 'number') return this._nad_tint_int(i as number);
 		throw new TypeError(`TInt.nad: no overload takes these arguments`);
-	}
-
-	/** MEOS: tint_out */
-	out(): string {
-		return F.tint_out(this.ptr);
 	}
 
 	/** MEOS: add_int_tint */
@@ -21170,9 +20989,9 @@ export class TIntSeqSet extends TInt {
  */
 export class TJsonb extends TAlpha {
 
-	/** The text MEOS writes this value as (MEOS: tjsonb_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_tjsonb_jsonb */
@@ -21264,9 +21083,9 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.tjsonb_array_length(this.ptr)) as Temporal | null;
 	}
 
-	/** MEOS: tjsonb_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: temporal_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: tjsonb_at_value */
@@ -21398,11 +21217,6 @@ export class TJsonb extends TAlpha {
 	/** MEOS: tjsonb_object_field_text */
 	objectFieldText(key: string, null_handle: string): Temporal | null {
 		return wrapTemporalOrNull(F.tjsonb_object_field_text(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
-	}
-
-	/** MEOS: tjsonb_out */
-	out(): string {
-		return F.tjsonb_out(this.ptr);
 	}
 
 	/** MEOS: tjsonb_path_exists */
@@ -21963,11 +21777,6 @@ export class TNPoint extends TSpatial {
 		throw new TypeError(`TNPoint.nai: no overload takes these arguments`);
 	}
 
-	/** MEOS: tnpoint_out */
-	override out(maxdd: number): string {
-		return F.tnpoint_out(this.ptr, maxdd);
-	}
-
 	/** MEOS: overlaps_rid_tnpoint_bigintset, overlaps_rid_tnpoint_tnpoint, chosen by the arguments' types */
 	overlapsRid(s: BigIntSet | TNPoint): boolean {
 		if (s instanceof BigIntSet) return this._overlaps_rid_tnpoint_bigintset(s as BigIntSet);
@@ -22242,9 +22051,9 @@ export class TNPointSeqSet extends TNPoint {
  */
 export class TPCBox extends Box {
 
-	/** The text MEOS writes this value as (MEOS: tpcbox_out). */
+	/** The text MEOS writes this value as (MEOS: tpcbox_as_text). */
 	override toString(): string {
-		return this.out(15);
+		return this.asText(15);
 	}
 
 	/** MEOS: above_tpcbox_tpcbox */
@@ -22483,6 +22292,11 @@ export class TPCBox extends Box {
 		return readWkb(_sizeOut => F.tpcbox_as_ewkb(this.ptr, variant, _sizeOut));
 	}
 
+	/** MEOS: tpcbox_out */
+	asEWKT(maxdd: number = 15): string {
+		return this.out(maxdd);
+	}
+
 	/** MEOS: tpcbox_as_hexewkb */
 	asHexEWKB(variant: number = 0): string {
 		return F.tpcbox_as_hexewkb(this.ptr, variant);
@@ -22493,9 +22307,9 @@ export class TPCBox extends Box {
 		return F.tpcbox_as_hexwkb(this.ptr, variant);
 	}
 
-	/** MEOS: tpcbox_out */
+	/** MEOS: tpcbox_as_text */
 	asText(maxdd: number = 15): string {
-		return this.out(maxdd);
+		return F.tpcbox_as_text(this.ptr, maxdd);
 	}
 
 	/** MEOS: tpcbox_as_wkb */
@@ -22794,6 +22608,11 @@ export class TPCBox extends Box {
 		return TPCBox.fromWKB(wkb);
 	}
 
+	/** MEOS: tpcbox_in */
+	static fromEWKT(str: string): TPCBox {
+		return TPCBox.in(str);
+	}
+
 	/** MEOS: tpcbox_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): TPCBox {
 		return TPCBox.fromHexWKB(hexwkb);
@@ -22840,9 +22659,9 @@ export class TPCBox extends Box {
  */
 export class TPCPatch extends TSpatial {
 
-	/** The text MEOS writes this value as (MEOS: tpcpatch_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_tpcpatch_pcpatch */
@@ -22946,11 +22765,6 @@ export class TPCPatch extends TSpatial {
 	/** MEOS: tpcpatch_npoints */
 	npoints(): number {
 		return F.tpcpatch_npoints(this.ptr);
-	}
-
-	/** MEOS: tpcpatch_out */
-	override out(): string {
-		return F.tpcpatch_out(this.ptr);
 	}
 
 	/** MEOS: tpcpatch_pcid */
@@ -23160,9 +22974,9 @@ export class TPCPatchSeqSet extends TPCPatch {
  */
 export class TPCPoint extends TSpatial {
 
-	/** The text MEOS writes this value as (MEOS: tpcpoint_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_tpcpoint_pcpoint */
@@ -23266,11 +23080,6 @@ export class TPCPoint extends TSpatial {
 	/** MEOS: nad_tpcpoint_geo */
 	nad(gs: Geo): number {
 		return F.nad_tpcpoint_geo(this.ptr, gs.ptr);
-	}
-
-	/** MEOS: tpcpoint_out */
-	override out(): string {
-		return F.tpcpoint_out(this.ptr);
 	}
 
 	/** MEOS: tpcpoint_pcid */
@@ -24424,9 +24233,9 @@ export class TPoseSeqSet extends TPose {
  */
 export class TQuadbin extends TCellIndex {
 
-	/** The text MEOS writes this value as (MEOS: tquadbin_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_tquadbin_quadbin */
@@ -24571,11 +24380,6 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_minus_value */
 	minusValue(cell: Quadbin): this | null {
 		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell)) as this | null;
-	}
-
-	/** MEOS: tquadbin_out */
-	override out(): string {
-		return F.tquadbin_out(this.ptr);
 	}
 
 	/** MEOS: always_eq_quadbin_tquadbin */
@@ -24751,11 +24555,6 @@ export class TQuadbin extends TCellIndex {
 	static in(str: string): TQuadbin {
 		return wrapTemporal(F.tquadbin_in(str)) as TQuadbin;
 	}
-
-	/** MEOS: tquadbin_make */
-	static make(value: Quadbin, t: TimestampTz): TQuadbin {
-		return wrapTemporal(F.tquadbin_make(value, t)) as TQuadbin;
-	}
 }
 
 /**
@@ -24783,6 +24582,20 @@ export class TQuadbinSeq extends TQuadbin {
 	static fromBaseTstzspan(value: Quadbin, s: Span): TQuadbinSeq {
 		return wrapTemporal(F.tquadbinseq_from_base_tstzspan(value, s.ptr)) as TQuadbinSeq;
 	}
+
+	/** MEOS: tquadbinseq_make */
+	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TQuadbinSeq {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		const _times = _alloc(Math.max(times.length, 1) * 8);
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return wrapTemporal(F.tquadbinseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TQuadbinSeq;
+		} finally {
+			_free(_values);
+			_free(_times);
+		}
+	}
 }
 
 /**
@@ -24793,6 +24606,16 @@ export class TQuadbinSeqSet extends TQuadbin {
 	/** MEOS: tquadbinseqset_from_base_tstzspanset */
 	static fromBaseTstzspanset(value: Quadbin, ss: SpanSet): TQuadbinSeqSet {
 		return wrapTemporal(F.tquadbinseqset_from_base_tstzspanset(value, ss.ptr)) as TQuadbinSeqSet;
+	}
+
+	/** MEOS: tquadbinseqset_make */
+	static make(sequences: Temporal[]): TQuadbinSeqSet {
+		const _sequences = _ptrArray(sequences.map(x => x.ptr));
+		try {
+			return wrapTemporal(F.tquadbinseqset_make(_sequences, sequences.length)) as TQuadbinSeqSet;
+		} finally {
+			_free(_sequences);
+		}
 	}
 }
 
@@ -25089,6 +24912,16 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_as_tinstant */
 	override asTinstant(): this {
 		return wrapTemporal(F.trgeometry_as_tinstant(this.ptr)) as this;
+	}
+
+	/** MEOS: trgeometry_as_tsequence */
+	override asTsequence(interp: string): this {
+		return wrapTemporal(F.trgeometry_as_tsequence(this.ptr, F.interptype_from_string(interp))) as this;
+	}
+
+	/** MEOS: trgeometry_as_tsequenceset */
+	override asTsequenceset(interp: string): this {
+		return wrapTemporal(F.trgeometry_as_tsequenceset(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: trgeometry_at_geom */
@@ -25857,9 +25690,9 @@ export class TRGeometrySeqSet extends TRGeometry {
  */
 export class TS2Cell extends TCellIndex {
 
-	/** The text MEOS writes this value as (MEOS: ts2cell_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_ts2cell_s2cell */
@@ -26004,11 +25837,6 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_minus_value */
 	minusValue(cell: S2CellId): this | null {
 		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell)) as this | null;
-	}
-
-	/** MEOS: ts2cell_out */
-	override out(): string {
-		return F.ts2cell_out(this.ptr);
 	}
 
 	/** MEOS: always_eq_s2cell_ts2cell */
@@ -26184,11 +26012,6 @@ export class TS2Cell extends TCellIndex {
 	static in(str: string): TS2Cell {
 		return wrapTemporal(F.ts2cell_in(str)) as TS2Cell;
 	}
-
-	/** MEOS: ts2cell_make */
-	static make(value: S2CellId, t: TimestampTz): TS2Cell {
-		return wrapTemporal(F.ts2cell_make(value, t)) as TS2Cell;
-	}
 }
 
 /**
@@ -26216,6 +26039,20 @@ export class TS2CellSeq extends TS2Cell {
 	static fromBaseTstzspan(value: S2CellId, s: Span): TS2CellSeq {
 		return wrapTemporal(F.ts2cellseq_from_base_tstzspan(value, s.ptr)) as TS2CellSeq;
 	}
+
+	/** MEOS: ts2cellseq_make */
+	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TS2CellSeq {
+		const _values = _alloc(Math.max(values.length, 1) * 8);
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		const _times = _alloc(Math.max(times.length, 1) * 8);
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		try {
+			return wrapTemporal(F.ts2cellseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TS2CellSeq;
+		} finally {
+			_free(_values);
+			_free(_times);
+		}
+	}
 }
 
 /**
@@ -26226,6 +26063,16 @@ export class TS2CellSeqSet extends TS2Cell {
 	/** MEOS: ts2cellseqset_from_base_tstzspanset */
 	static fromBaseTstzspanset(value: S2CellId, ss: SpanSet): TS2CellSeqSet {
 		return wrapTemporal(F.ts2cellseqset_from_base_tstzspanset(value, ss.ptr)) as TS2CellSeqSet;
+	}
+
+	/** MEOS: ts2cellseqset_make */
+	static make(sequences: Temporal[]): TS2CellSeqSet {
+		const _sequences = _ptrArray(sequences.map(x => x.ptr));
+		try {
+			return wrapTemporal(F.ts2cellseqset_make(_sequences, sequences.length)) as TS2CellSeqSet;
+		} finally {
+			_free(_sequences);
+		}
 	}
 }
 
@@ -26278,9 +26125,9 @@ export class TSequenceSet extends Temporal {
  */
 export class TText extends TAlpha {
 
-	/** The text MEOS writes this value as (MEOS: ttext_out). */
+	/** The text MEOS writes this value as (MEOS: temporal_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: always_eq_ttext_text */
@@ -26419,9 +26266,9 @@ export class TText extends TAlpha {
 		return super.alwaysNe(txt as Temporal);
 	}
 
-	/** MEOS: ttext_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: temporal_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: ttext_at_value */
@@ -26493,11 +26340,6 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_min_value */
 	minValue(): string {
 		return F.ttext_min_value(this.ptr);
-	}
-
-	/** MEOS: ttext_out */
-	out(): string {
-		return F.ttext_out(this.ptr);
 	}
 
 	/** MEOS: temporal_segm_duration, which answers a TBool for a TText */
@@ -26917,9 +26759,9 @@ export class Text extends Value {
  */
 export class TextSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: textset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_text */
@@ -26962,9 +26804,9 @@ export class TextSet extends Set {
 		return wrapSetOrNull(F.union_set_text(this.ptr, txt)) as this | null;
 	}
 
-	/** MEOS: textset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: contains_set_text, chosen by the arguments' types */
@@ -27004,11 +26846,6 @@ export class TextSet extends Set {
 	override minus(txt: string | Set): this | null {
 		if (typeof txt === 'string') return this._minus_set_text(txt as string);
 		return super.minus(txt as Set);
-	}
-
-	/** MEOS: textset_out */
-	out(): string {
-		return F.textset_out(this.ptr);
 	}
 
 	/** MEOS: overleft_set_text, chosen by the arguments' types */
@@ -27106,9 +26943,9 @@ export class TextSet extends Set {
  */
 export class TsTzSet extends Set {
 
-	/** The text MEOS writes this value as (MEOS: tstzset_out). */
+	/** The text MEOS writes this value as (MEOS: set_out). */
 	override toString(): string {
-		return this.out();
+		return this.out(15);
 	}
 
 	/** MEOS: contains_set_timestamptz */
@@ -27146,9 +26983,9 @@ export class TsTzSet extends Set {
 		return F.after_set_timestamptz(this.ptr, t);
 	}
 
-	/** MEOS: tstzset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: set_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_set_timestamptz */
@@ -27184,11 +27021,6 @@ export class TsTzSet extends Set {
 	override minus(t: TimestampTz | Set): this | null {
 		if (typeof t === 'number') return this._minus_set_timestamptz(t as TimestampTz);
 		return super.minus(t as Set);
-	}
-
-	/** MEOS: tstzset_out */
-	out(): string {
-		return F.tstzset_out(this.ptr);
 	}
 
 	/** MEOS: overafter_set_timestamptz */
@@ -27371,11 +27203,6 @@ export class TsTzSet extends Set {
  */
 export class TsTzSpan extends Span {
 
-	/** The text MEOS writes this value as (MEOS: tstzspan_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_span_timestamptz */
 	private _adjacent_span_timestamptz(t: TimestampTz): boolean {
 		return F.adjacent_span_timestamptz(this.ptr, t);
@@ -27537,9 +27364,9 @@ export class TsTzSpan extends Span {
 		throw new TypeError(`TsTzSpan.after: no overload takes these arguments`);
 	}
 
-	/** MEOS: tstzspan_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: span_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_span_timestamptz, before_tstzspan_tbox, before_tstzspan_temporal, chosen by the arguments' types */
@@ -27624,11 +27451,6 @@ export class TsTzSpan extends Span {
 	override minus(t: TimestampTz | Span | SpanSet): SpanSet | null {
 		if (typeof t === 'number') return this._minus_span_timestamptz(t as TimestampTz);
 		return super.minus(t as Span | SpanSet);
-	}
-
-	/** MEOS: tstzspan_out */
-	out(): string {
-		return F.tstzspan_out(this.ptr);
 	}
 
 	/** MEOS: overafter_span_timestamptz, overafter_tstzspan_tbox, overafter_tstzspan_temporal, chosen by the arguments' types */
@@ -27810,11 +27632,6 @@ export class TsTzSpan extends Span {
  */
 export class TsTzSpanSet extends SpanSet {
 
-	/** The text MEOS writes this value as (MEOS: tstzspanset_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: adjacent_spanset_timestamptz */
 	private _adjacent_spanset_timestamptz(t: TimestampTz): boolean {
 		return F.adjacent_spanset_timestamptz(this.ptr, t);
@@ -27866,9 +27683,9 @@ export class TsTzSpanSet extends SpanSet {
 		return F.after_spanset_timestamptz(this.ptr, t);
 	}
 
-	/** MEOS: tstzspanset_out */
-	asText(): string {
-		return this.out();
+	/** MEOS: spanset_out */
+	asText(maxdd: number = 15): string {
+		return this.out(maxdd);
 	}
 
 	/** MEOS: before_spanset_timestamptz */
@@ -27947,11 +27764,6 @@ export class TsTzSpanSet extends SpanSet {
 	/** MEOS: tstzspanset_num_timestamps */
 	numTimestamps(): number {
 		return F.tstzspanset_num_timestamps(this.ptr);
-	}
-
-	/** MEOS: tstzspanset_out */
-	out(): string {
-		return F.tstzspanset_out(this.ptr);
 	}
 
 	/** MEOS: overafter_spanset_timestamptz */
