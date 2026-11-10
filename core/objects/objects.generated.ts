@@ -18503,6 +18503,28 @@ export class TPoint extends TGeo {
 		return wrapTemporalOrNull(F.tpoint_angular_difference(this.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: tpoint_as_mvtgeom */
+	asMVTGeom(bounds: STBox, extent: number = 4096, buffer: number = 256, clip_geom: boolean = true): [Geo, number[]] | null {
+		const _timesarr = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _r = F.tpoint_as_mvtgeom(this.ptr, bounds.ptr, extent, buffer, clip_geom, _timesarr, _count);
+			if (!_r) return null;
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a0 = Number(_view(_timesarr, 8).getBigUint64(0, true));
+			try {
+				const _o0: number[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(Number(_v.getBigInt64(_i * 8, true))); }
+				return [wrapGeo(_r) as Geo, _o0];
+			} finally {
+				if (_a0) _free(_a0);
+			}
+		} finally {
+			_free(_timesarr);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tpoint_at_elevation */
 	atElevation(s: Span): this | null {
 		return wrapTemporalOrNull(F.tpoint_at_elevation(this.ptr, s.ptr)) as this | null;
