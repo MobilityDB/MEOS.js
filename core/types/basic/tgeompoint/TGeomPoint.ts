@@ -75,6 +75,7 @@ import {
 	nai_tgeo_tgeo,
 	temporal_at_timestamptz,
 	bearing_tpoint_point,
+	bearing_point_tpoint,
 	bearing_tpoint_tpoint,
 } from '../../../functions/functions.generated.js';
 import type { TFloat } from '../tfloat/TFloat.js';
@@ -434,7 +435,7 @@ export class TGeomPoint extends Temporal<string> {
 	 */
 	bearingToPoint(wkt: string, invert = false): Ptr {
 		const gs = geo_from_text(wkt, 0);
-		const r = bearing_tpoint_point(this._inner, gs, invert);
+		const r = invert ? bearing_point_tpoint(gs, this._inner) : bearing_tpoint_point(this._inner, gs);
 		meos_free(gs);
 		return r;
 	}

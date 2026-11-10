@@ -7172,6 +7172,11 @@ export class Jsonb extends Value {
 		}
 	}
 
+	/** MEOS: concat_jsonb_jsonbset */
+	setConcat(s: JsonbSet): Set {
+		return wrapSet(F.concat_jsonb_jsonbset(this.ptr, s.ptr)) as Set;
+	}
+
 	/** MEOS: jsonb_set_lax */
 	setLax(path_elems: Text[], newjb: Jsonb, create: boolean, handle_null: string): this | null {
 		const _path_elems = _ptrArray(path_elems.map(x => x.ptr));
@@ -7187,9 +7192,24 @@ export class Jsonb extends Value {
 		return wrapJsonb(F.jsonb_strip_nulls(this.ptr, strip_in_arrays)) as this;
 	}
 
+	/** MEOS: concat_jsonb_tjsonb */
+	tConcat(temp: TJsonb): Temporal {
+		return wrapTemporal(F.concat_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal;
+	}
+
 	/** MEOS: teq_jsonb_tjsonb */
 	teq(temp: TJsonb): Temporal | null {
 		return wrapTemporalOrNull(F.teq_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: contained_jsonb_tjsonb */
+	tjsonbContained(temp: TJsonb): Temporal {
+		return wrapTemporal(F.contained_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal;
+	}
+
+	/** MEOS: contains_jsonb_tjsonb */
+	tjsonbContains(temp: TJsonb): Temporal {
+		return wrapTemporal(F.contains_jsonb_tjsonb(this.ptr, temp.ptr)) as Temporal;
 	}
 
 	/** MEOS: tne_jsonb_tjsonb */
@@ -7336,8 +7356,8 @@ export class JsonbSet extends Set {
 	}
 
 	/** MEOS: concat_jsonbset_jsonb */
-	concat(jb: Jsonb, invert: boolean): this {
-		return wrapSet(F.concat_jsonbset_jsonb(this.ptr, jb.ptr, invert)) as this;
+	concat(jb: Jsonb): this {
+		return wrapSet(F.concat_jsonbset_jsonb(this.ptr, jb.ptr)) as this;
 	}
 
 	/** MEOS: contains_set_jsonb, chosen by the arguments' types */
@@ -18536,8 +18556,8 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: bearing_tpoint_point */
-	bearing(gs: Geo, invert: boolean): Temporal | null {
-		return wrapTemporalOrNull(F.bearing_tpoint_point(this.ptr, gs.ptr, invert)) as Temporal | null;
+	bearing(gs: Geo): Temporal | null {
+		return wrapTemporalOrNull(F.bearing_tpoint_point(this.ptr, gs.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tpoint_cumulative_length */
@@ -18657,8 +18677,8 @@ export class TGeogPoint extends TPoint {
 	}
 
 	/** MEOS: bearing_tpoint_point, which answers a TFloat for a TGeogPoint */
-	override bearing(gs: Geo, invert: boolean): TFloat | null {
-		return super.bearing(gs, invert) as TFloat | null;
+	override bearing(gs: Geo): TFloat | null {
+		return super.bearing(gs) as TFloat | null;
 	}
 
 	/** MEOS: tpoint_cumulative_length, which answers a TFloat for a TGeogPoint */
@@ -19125,9 +19145,9 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: bearing_tpoint_tpoint, chosen by the arguments' types */
-	override bearing(temp2: TGeomPoint | Geo, arg1?: boolean): Temporal | null {
-		if (temp2 instanceof TGeomPoint && arg1 === undefined) return this._bearing_tpoint_tpoint(temp2 as TGeomPoint);
-		return super.bearing(temp2 as Geo, arg1 as boolean);
+	override bearing(temp2: TGeomPoint | Geo): Temporal | null {
+		if (temp2 instanceof TGeomPoint) return this._bearing_tpoint_tpoint(temp2 as TGeomPoint);
+		return super.bearing(temp2 as Geo);
 	}
 
 	/** MEOS: tgeo_convex_hull, which answers a Geometry for a TGeomPoint */
@@ -21037,8 +21057,8 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: concat_tjsonb_jsonb */
-	private _concat_tjsonb_jsonb(jb: Jsonb, invert: boolean): this {
-		return wrapTemporal(F.concat_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as this;
+	private _concat_tjsonb_jsonb(jb: Jsonb): this {
+		return wrapTemporal(F.concat_tjsonb_jsonb(this.ptr, jb.ptr)) as this;
 	}
 
 	/** MEOS: concat_tjsonb_tjsonb */
@@ -21046,9 +21066,19 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.concat_tjsonb_tjsonb(this.ptr, temp2.ptr)) as this | null;
 	}
 
+	/** MEOS: contained_tjsonb_jsonb */
+	private _contained_tjsonb_jsonb(jb: Jsonb): Temporal {
+		return wrapTemporal(F.contained_tjsonb_jsonb(this.ptr, jb.ptr)) as Temporal;
+	}
+
+	/** MEOS: contained_tjsonb_tjsonb */
+	private _contained_tjsonb_tjsonb(temp2: TJsonb): Temporal {
+		return wrapTemporal(F.contained_tjsonb_tjsonb(this.ptr, temp2.ptr)) as Temporal;
+	}
+
 	/** MEOS: contains_tjsonb_jsonb */
-	private _contains_tjsonb_jsonb(jb: Jsonb, invert: boolean): Temporal {
-		return wrapTemporal(F.contains_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as Temporal;
+	private _contains_tjsonb_jsonb(jb: Jsonb): Temporal {
+		return wrapTemporal(F.contains_tjsonb_jsonb(this.ptr, jb.ptr)) as Temporal;
 	}
 
 	/** MEOS: contains_tjsonb_tjsonb */
@@ -21126,9 +21156,9 @@ export class TJsonb extends TAlpha {
 	}
 
 	/** MEOS: concat_tjsonb_jsonb, concat_tjsonb_tjsonb, chosen by the arguments' types */
-	concat(jb: Jsonb | TJsonb, invert?: boolean): this | null {
-		if (jb instanceof TJsonb && invert === undefined) return this._concat_tjsonb_tjsonb(jb as TJsonb);
-		if (jb instanceof Jsonb && typeof invert === 'boolean') return this._concat_tjsonb_jsonb(jb as Jsonb, invert as boolean);
+	concat(jb: Jsonb | TJsonb): this | null {
+		if (jb instanceof TJsonb) return this._concat_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._concat_tjsonb_jsonb(jb as Jsonb);
 		throw new TypeError(`TJsonb.concat: no overload takes these arguments`);
 	}
 
@@ -21317,10 +21347,17 @@ export class TJsonb extends TAlpha {
 		return super.time() as TsTzSpanSet;
 	}
 
+	/** MEOS: contained_tjsonb_jsonb, contained_tjsonb_tjsonb, chosen by the arguments' types */
+	tjsonbContained(jb: Jsonb | TJsonb): Temporal {
+		if (jb instanceof TJsonb) return this._contained_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._contained_tjsonb_jsonb(jb as Jsonb);
+		throw new TypeError(`TJsonb.tjsonbContained: no overload takes these arguments`);
+	}
+
 	/** MEOS: contains_tjsonb_jsonb, contains_tjsonb_tjsonb, chosen by the arguments' types */
-	tjsonbContains(jb: Jsonb | TJsonb, invert?: boolean): Temporal {
-		if (jb instanceof TJsonb && invert === undefined) return this._contains_tjsonb_tjsonb(jb as TJsonb);
-		if (jb instanceof Jsonb && typeof invert === 'boolean') return this._contains_tjsonb_jsonb(jb as Jsonb, invert as boolean);
+	tjsonbContains(jb: Jsonb | TJsonb): Temporal {
+		if (jb instanceof TJsonb) return this._contains_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb) return this._contains_tjsonb_jsonb(jb as Jsonb);
 		throw new TypeError(`TJsonb.tjsonbContains: no overload takes these arguments`);
 	}
 
