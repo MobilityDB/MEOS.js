@@ -21046,6 +21046,16 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.concat_tjsonb_tjsonb(this.ptr, temp2.ptr)) as this | null;
 	}
 
+	/** MEOS: contains_tjsonb_jsonb */
+	private _contains_tjsonb_jsonb(jb: Jsonb, invert: boolean): Temporal {
+		return wrapTemporal(F.contains_tjsonb_jsonb(this.ptr, jb.ptr, invert)) as Temporal;
+	}
+
+	/** MEOS: contains_tjsonb_tjsonb */
+	private _contains_tjsonb_tjsonb(temp2: TJsonb): Temporal {
+		return wrapTemporal(F.contains_tjsonb_tjsonb(this.ptr, temp2.ptr)) as Temporal;
+	}
+
 	/** MEOS: ever_eq_tjsonb_jsonb */
 	private _ever_eq_tjsonb_jsonb(jb: Jsonb): number {
 		return F.ever_eq_tjsonb_jsonb(this.ptr, jb.ptr);
@@ -21305,6 +21315,13 @@ export class TJsonb extends TAlpha {
 	/** MEOS: temporal_time, which answers a TsTzSpanSet for a TJsonb */
 	override time(): TsTzSpanSet {
 		return super.time() as TsTzSpanSet;
+	}
+
+	/** MEOS: contains_tjsonb_jsonb, contains_tjsonb_tjsonb, chosen by the arguments' types */
+	tjsonbContains(jb: Jsonb | TJsonb, invert?: boolean): Temporal {
+		if (jb instanceof TJsonb && invert === undefined) return this._contains_tjsonb_tjsonb(jb as TJsonb);
+		if (jb instanceof Jsonb && typeof invert === 'boolean') return this._contains_tjsonb_jsonb(jb as Jsonb, invert as boolean);
+		throw new TypeError(`TJsonb.tjsonbContains: no overload takes these arguments`);
 	}
 
 	/** MEOS: tne_tjsonb_jsonb, chosen by the arguments' types */
