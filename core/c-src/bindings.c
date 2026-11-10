@@ -9271,8 +9271,13 @@ double bearing_point_point_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * bearing_tpoint_point_w(const Temporal * temp, const GSERIALIZED * gs, int invert) {
-  return bearing_tpoint_point(temp, gs, (bool) invert);
+Temporal * bearing_point_tpoint_w(const GSERIALIZED * gs, const Temporal * temp) {
+  return bearing_point_tpoint(gs, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * bearing_tpoint_point_w(const Temporal * temp, const GSERIALIZED * gs) {
+  return bearing_tpoint_point(temp, gs);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -12731,8 +12736,13 @@ Jsonb ** jsonbset_values_w(const Set * s, int * count) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * concat_jsonbset_jsonb_w(const Set * s, const Jsonb * jb, int invert) {
-  return concat_jsonbset_jsonb(s, jb, (bool) invert);
+Set * concat_jsonb_jsonbset_w(const Jsonb * jb, const Set * s) {
+  return concat_jsonb_jsonbset(jb, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * concat_jsonbset_jsonb_w(const Set * s, const Jsonb * jb) {
+  return concat_jsonbset_jsonb(s, jb);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -12998,8 +13008,13 @@ SpanSet ** tjsonb_unnest_w(const Temporal * temp, Jsonb *** values, int * count)
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * concat_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb, int invert) {
-  return concat_tjsonb_jsonb(temp, jb, (bool) invert);
+Temporal * concat_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return concat_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * concat_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return concat_tjsonb_jsonb(temp, jb);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13008,8 +13023,28 @@ Temporal * concat_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2
 }
 
 EMSCRIPTEN_KEEPALIVE
-Temporal * contains_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb, int invert) {
-  return contains_tjsonb_jsonb(temp, jb, (bool) invert);
+Temporal * contained_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return contained_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contained_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return contained_tjsonb_jsonb(temp, jb);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contained_tjsonb_tjsonb_w(const Temporal * temp1, const Temporal * temp2) {
+  return contained_tjsonb_tjsonb(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contains_jsonb_tjsonb_w(const Jsonb * jb, const Temporal * temp) {
+  return contains_jsonb_tjsonb(jb, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * contains_tjsonb_jsonb_w(const Temporal * temp, const Jsonb * jb) {
+  return contains_tjsonb_jsonb(temp, jb);
 }
 
 EMSCRIPTEN_KEEPALIVE

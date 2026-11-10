@@ -10825,8 +10825,14 @@ export function bearing_point_point(gs1: Ptr, gs2: Ptr): number {
 	return _r;
 }
 
-export function bearing_tpoint_point(temp: Ptr, gs: Ptr, invert: boolean): Ptr {
-	const _r = callPtr('bearing_tpoint_point_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(gs), invert ? 1 : 0]);
+export function bearing_point_tpoint(gs: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('bearing_point_tpoint_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function bearing_tpoint_point(temp: Ptr, gs: Ptr): Ptr {
+	const _r = callPtr('bearing_tpoint_point_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(gs)]);
 	checkMeosError();
 	return _r;
 }
@@ -14890,8 +14896,14 @@ export function jsonbset_values(s: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
-export function concat_jsonbset_jsonb(s: Ptr, jb: Ptr, invert: boolean): Ptr {
-	const _r = callPtr('concat_jsonbset_jsonb_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(s), ptrArgVal(jb), invert ? 1 : 0]);
+export function concat_jsonb_jsonbset(jb: Ptr, s: Ptr): Ptr {
+	const _r = callPtr('concat_jsonb_jsonbset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(jb), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function concat_jsonbset_jsonb(s: Ptr, jb: Ptr): Ptr {
+	const _r = callPtr('concat_jsonbset_jsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(jb)]);
 	checkMeosError();
 	return _r;
 }
@@ -15208,8 +15220,14 @@ export function tjsonb_unnest(temp: Ptr, values: Ptr, count: Ptr): Ptr {
 	return _r;
 }
 
-export function concat_tjsonb_jsonb(temp: Ptr, jb: Ptr, invert: boolean): Ptr {
-	const _r = callPtr('concat_tjsonb_jsonb_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(jb), invert ? 1 : 0]);
+export function concat_jsonb_tjsonb(jb: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('concat_jsonb_tjsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(jb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function concat_tjsonb_jsonb(temp: Ptr, jb: Ptr): Ptr {
+	const _r = callPtr('concat_tjsonb_jsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(jb)]);
 	checkMeosError();
 	return _r;
 }
@@ -15220,8 +15238,32 @@ export function concat_tjsonb_tjsonb(temp1: Ptr, temp2: Ptr): Ptr {
 	return _r;
 }
 
-export function contains_tjsonb_jsonb(temp: Ptr, jb: Ptr, invert: boolean): Ptr {
-	const _r = callPtr('contains_tjsonb_jsonb_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(jb), invert ? 1 : 0]);
+export function contained_jsonb_tjsonb(jb: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('contained_jsonb_tjsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(jb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contained_tjsonb_jsonb(temp: Ptr, jb: Ptr): Ptr {
+	const _r = callPtr('contained_tjsonb_jsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(jb)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contained_tjsonb_tjsonb(temp1: Ptr, temp2: Ptr): Ptr {
+	const _r = callPtr('contained_tjsonb_tjsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contains_jsonb_tjsonb(jb: Ptr, temp: Ptr): Ptr {
+	const _r = callPtr('contains_jsonb_tjsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(jb), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function contains_tjsonb_jsonb(temp: Ptr, jb: Ptr): Ptr {
+	const _r = callPtr('contains_tjsonb_jsonb_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(jb)]);
 	checkMeosError();
 	return _r;
 }
