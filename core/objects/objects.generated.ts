@@ -1,10 +1,10 @@
 /* AUTO-GENERATED - DO NOT EDIT. Run: npm run generate */
 import { getModule } from '../runtime/meos.js';
 import * as F from '../functions/functions.generated.js';
-import type { Ptr, TimestampTz, DateADT, H3Index, Quadbin, S2CellId } from '../functions/functions.generated.js';
+import type { Ptr, TimestampTz, DateADT, S2CellId } from '../functions/functions.generated.js';
 import { readWkb } from '../functions/wkb.js';
 
-export type { Ptr, TimestampTz, DateADT, H3Index, Quadbin, S2CellId };
+export type { Ptr, TimestampTz, DateADT, S2CellId };
 
 /** A view of `size` bytes of the WASM heap at `ptr`, taken after any growth. */
 function _view(ptr: Ptr, size: number): DataView {
@@ -2139,7 +2139,7 @@ export class Box extends MeosObject {
 }
 
 /**
- * Base values MEOS passes by reference.
+ * Base values a binding holds as instances: those MEOS passes by reference, and the grid cells, which it passes by value.
  */
 export class Value extends MeosObject {
 }
@@ -4659,7 +4659,7 @@ export class Geo extends Value {
 
 	/** MEOS: geo_to_h3index_cell */
 	toH3indexCell(resolution: number): H3Index {
-		return F.geo_to_h3index_cell(this.ptr, resolution);
+		return new H3Index(F.geo_to_h3index_cell(this.ptr, resolution));
 	}
 
 	/** MEOS: geo_to_h3index_set */
@@ -4669,7 +4669,7 @@ export class Geo extends Value {
 
 	/** MEOS: geo_to_quadbin_cell */
 	toQuadbinCell(resolution: number): Quadbin {
-		return F.geo_to_quadbin_cell(this.ptr, resolution);
+		return new Quadbin(F.geo_to_quadbin_cell(this.ptr, resolution));
 	}
 
 	/** MEOS: geo_to_quadbin_set */
@@ -4678,8 +4678,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_to_s2cell_cell */
-	toS2cellCell(level: number): S2CellId {
-		return F.geo_to_s2cell_cell(this.ptr, level);
+	toS2cellCell(level: number): S2Cell {
+		return new S2Cell(F.geo_to_s2cell_cell(this.ptr, level));
 	}
 
 	/** MEOS: geo_to_s2cell_set */
@@ -5142,11 +5142,6 @@ export class Geography extends Geo {
 	/** MEOS: geo_from_geojson */
 	static fromMFJSON(geojson: string): Geo {
 		return Geo.fromGeoJSON(geojson);
-	}
-
-	/** MEOS: s2cell_cell_to_geog */
-	static fromS2cellCell(cell: S2CellId): Geography | null {
-		return wrapGeoOrNull(F.s2cell_cell_to_geog(cell)) as Geography | null;
 	}
 
 	/** MEOS: geog_in */
@@ -5824,14 +5819,163 @@ export class Geometry extends Geo {
 		return Geo.fromGeoJSON(geojson);
 	}
 
-	/** MEOS: quadbin_cell_to_geom */
-	static fromQuadbinCell(cell: Quadbin): Geometry {
-		return wrapGeo(F.quadbin_cell_to_geom(cell)) as Geometry;
-	}
-
 	/** MEOS: geom_in */
 	static in(str: string, typmod: number): Geometry {
 		return wrapGeo(F.geom_in(str, typmod)) as Geometry;
+	}
+}
+
+/**
+ * A cell of the H3 grid, the base type of TH3Index and H3IndexSet. MEOS passes it by value, as a uint64; it is a class all the same because it reads and writes formats of its own (text, WKB, hex WKB), and every type a binding exposes has its readers and writers.
+ */
+export class H3Index {
+
+	/** Holds the value MEOS passes by value, of C type H3Index. */
+	constructor(readonly value: F.H3Index) {}
+
+	/** The text MEOS writes this value as (MEOS: h3index_out). */
+	toString(): string {
+		return this.out();
+	}
+
+	/** MEOS: h3index_as_hexwkb */
+	asHexWKB(variant: number = 0): string {
+		return F.h3index_as_hexwkb(this.value, variant);
+	}
+
+	/** MEOS: h3index_out */
+	asText(): string {
+		return this.out();
+	}
+
+	/** MEOS: h3index_as_wkb */
+	asWKB(variant: number = 0): Uint8Array {
+		return readWkb(_sizeOut => F.h3index_as_wkb(this.value, variant, _sizeOut));
+	}
+
+	/** MEOS: h3index_cell_area */
+	cellArea(): number {
+		return F.h3index_cell_area(this.value);
+	}
+
+	/** MEOS: h3index_cell_to_boundary */
+	cellToBoundary(): Geo | null {
+		return wrapGeoOrNull(F.h3index_cell_to_boundary(this.value)) as Geo | null;
+	}
+
+	/** MEOS: h3index_cell_to_cover */
+	cellToCover(resolution: number): Set | null {
+		return wrapSetOrNull(F.h3index_cell_to_cover(this.value, resolution)) as Set | null;
+	}
+
+	/** MEOS: h3index_cell_to_parent */
+	cellToParent(parent_resolution: number): H3Index {
+		return new H3Index(F.h3index_cell_to_parent(this.value, parent_resolution));
+	}
+
+	/** MEOS: h3index_cell_to_point */
+	cellToPoint(): Geo | null {
+		return wrapGeoOrNull(F.h3index_cell_to_point(this.value)) as Geo | null;
+	}
+
+	/** MEOS: h3index_cmp */
+	cmp(b: H3Index): number {
+		return F.h3index_cmp(this.value, b.value);
+	}
+
+	/** MEOS: h3index_eq */
+	eq(b: H3Index): boolean {
+		return F.h3index_eq(this.value, b.value);
+	}
+
+	/** MEOS: h3index_ge */
+	ge(b: H3Index): boolean {
+		return F.h3index_ge(this.value, b.value);
+	}
+
+	/** MEOS: h3index_get_resolution */
+	getResolution(): number {
+		return F.h3index_get_resolution(this.value);
+	}
+
+	/** MEOS: h3index_gt */
+	gt(b: H3Index): boolean {
+		return F.h3index_gt(this.value, b.value);
+	}
+
+	/** MEOS: h3index_hash */
+	hash(): number {
+		return F.h3index_hash(this.value);
+	}
+
+	/** MEOS: h3index_hash_extended */
+	hashExtended(seed: number): number {
+		return F.h3index_hash_extended(this.value, seed);
+	}
+
+	/** MEOS: h3index_le */
+	le(b: H3Index): boolean {
+		return F.h3index_le(this.value, b.value);
+	}
+
+	/** MEOS: h3index_lt */
+	lt(b: H3Index): boolean {
+		return F.h3index_lt(this.value, b.value);
+	}
+
+	/** MEOS: h3index_ne */
+	ne(b: H3Index): boolean {
+		return F.h3index_ne(this.value, b.value);
+	}
+
+	/** MEOS: h3index_out */
+	out(): string {
+		return F.h3index_out(this.value);
+	}
+
+	/** MEOS: h3index_timestamptz_to_stbox */
+	timestamptzToStbox(t: TimestampTz): STBox {
+		return wrapSTBox(F.h3index_timestamptz_to_stbox(this.value, t)) as STBox;
+	}
+
+	/** MEOS: h3index_to_set */
+	toSet(): Set {
+		return wrapSet(F.h3index_to_set(this.value)) as Set;
+	}
+
+	/** MEOS: h3index_to_stbox */
+	toStbox(): STBox {
+		return wrapSTBox(F.h3index_to_stbox(this.value)) as STBox;
+	}
+
+	/** MEOS: h3index_tstzspan_to_stbox */
+	tstzspanToStbox(s: Span): STBox {
+		return wrapSTBox(F.h3index_tstzspan_to_stbox(this.value, s.ptr)) as STBox;
+	}
+
+	/** MEOS: h3index_from_hexwkb */
+	static fromHexWKB(hexwkb: string): H3Index {
+		return new H3Index(F.h3index_from_hexwkb(hexwkb));
+	}
+
+	/** MEOS: h3index_in */
+	static fromText(str: string): H3Index {
+		return H3Index.in(str);
+	}
+
+	/** MEOS: h3index_from_wkb */
+	static fromWKB(wkb: Uint8Array): H3Index {
+		const _wkb = _bytes(wkb);
+		try {
+			return new H3Index(F.h3index_from_wkb(_wkb, wkb.length));
+		} finally {
+			_free(_wkb);
+		}
+	}
+
+	/** MEOS: h3index_in */
+	static in(str: string): H3Index {
+		return new H3Index(F.h3index_in(str));
 	}
 }
 
@@ -5847,27 +5991,27 @@ export class H3IndexSet extends SpatialSet {
 
 	/** MEOS: contains_set_h3index */
 	private _contains_set_h3index(cell: H3Index): boolean {
-		return F.contains_set_h3index(this.ptr, cell);
+		return F.contains_set_h3index(this.ptr, cell.value);
 	}
 
 	/** MEOS: intersection_set_h3index */
 	private _intersection_set_h3index(cell: H3Index): this | null {
-		return wrapSetOrNull(F.intersection_set_h3index(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.intersection_set_h3index(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: minus_set_h3index */
 	private _minus_set_h3index(cell: H3Index): this | null {
-		return wrapSetOrNull(F.minus_set_h3index(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.minus_set_h3index(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: union_set_h3index */
 	private _union_set_h3index(cell: H3Index): this | null {
-		return wrapSetOrNull(F.union_set_h3index(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.union_set_h3index(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: contains_set_h3index, chosen by the arguments' types */
 	override contains(cell: H3Index | Set): boolean {
-		if (typeof cell === 'bigint') return this._contains_set_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._contains_set_h3index(cell as H3Index);
 		return super.contains(cell as Set);
 	}
 
@@ -5878,7 +6022,7 @@ export class H3IndexSet extends SpatialSet {
 
 	/** MEOS: h3indexset_end_value */
 	endValue(): H3Index {
-		return F.h3indexset_end_value(this.ptr);
+		return new H3Index(F.h3indexset_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_h3indexset_th3index */
@@ -5893,54 +6037,54 @@ export class H3IndexSet extends SpatialSet {
 
 	/** MEOS: intersection_set_h3index, chosen by the arguments' types */
 	override intersection(cell: H3Index | Set): this | null {
-		if (typeof cell === 'bigint') return this._intersection_set_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._intersection_set_h3index(cell as H3Index);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_h3index, chosen by the arguments' types */
 	override minus(cell: H3Index | Set): this | null {
-		if (typeof cell === 'bigint') return this._minus_set_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._minus_set_h3index(cell as H3Index);
 		return super.minus(cell as Set);
 	}
 
 	/** MEOS: contained_h3index_set */
 	rcontained(cell: H3Index): boolean {
-		return F.contained_h3index_set(cell, this.ptr);
+		return F.contained_h3index_set(cell.value, this.ptr);
 	}
 
 	/** MEOS: intersection_h3index_set */
 	rintersection(cell: H3Index): this | null {
-		return wrapSetOrNull(F.intersection_h3index_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.intersection_h3index_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_h3index_set */
 	rminus(cell: H3Index): this | null {
-		return wrapSetOrNull(F.minus_h3index_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.minus_h3index_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_h3index_set */
 	runion(cell: H3Index): this | null {
-		return wrapSetOrNull(F.union_h3index_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.union_h3index_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: h3indexset_start_value */
 	startValue(): H3Index {
-		return F.h3indexset_start_value(this.ptr);
+		return new H3Index(F.h3indexset_start_value(this.ptr));
 	}
 
 	/** MEOS: union_set_h3index, chosen by the arguments' types */
 	override union(cell: H3Index | Set): this | null {
-		if (typeof cell === 'bigint') return this._union_set_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._union_set_h3index(cell as H3Index);
 		return super.union(cell as Set);
 	}
 
 	/** MEOS: h3indexset_value_n */
 	valueN(n: number): H3Index {
-		return F.h3indexset_value_n(this.ptr, n);
+		return new H3Index(F.h3indexset_value_n(this.ptr, n));
 	}
 
 	/** MEOS: h3indexset_values */
-	values(): bigint[] {
+	values(): H3Index[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.h3indexset_values(this.ptr, _count);
@@ -5948,8 +6092,8 @@ export class H3IndexSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: H3Index[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new H3Index(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -5969,11 +6113,6 @@ export class H3IndexSet extends SpatialSet {
 		return H3IndexSet.in(str);
 	}
 
-	/** MEOS: h3index_to_set */
-	static fromH3index(cell: H3Index): H3IndexSet {
-		return wrapSet(F.h3index_to_set(cell)) as H3IndexSet;
-	}
-
 	/** MEOS: set_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): Set {
 		return Set.fromHexWKB(hexwkb);
@@ -5990,9 +6129,9 @@ export class H3IndexSet extends SpatialSet {
 	}
 
 	/** MEOS: h3indexset_make */
-	static make(values: bigint[]): H3IndexSet {
+	static make(values: H3Index[]): H3IndexSet {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		try {
 			return wrapSet(F.h3indexset_make(_values, values.length)) as H3IndexSet;
 		} finally {
@@ -7140,7 +7279,7 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_path_match */
-	pathMatch(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): boolean {
+	pathMatch(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): number {
 		return F.jsonb_path_match(this.ptr, jp.ptr, vars.ptr, silent, tz);
 	}
 
@@ -10050,6 +10189,270 @@ export class PoseSet extends SpatialSet {
 }
 
 /**
+ * A cell of the Quadbin grid, the base type of TQuadbin and QuadbinSet, passed by value as H3Index is.
+ */
+export class Quadbin {
+
+	/** Holds the value MEOS passes by value, of C type Quadbin. */
+	constructor(readonly value: F.Quadbin) {}
+
+	/** The text MEOS writes this value as (MEOS: quadbin_out). */
+	toString(): string {
+		return this.out();
+	}
+
+	/** MEOS: quadbin_as_hexwkb */
+	asHexWKB(variant: number = 0): string {
+		return F.quadbin_as_hexwkb(this.value, variant);
+	}
+
+	/** MEOS: quadbin_out */
+	asText(): string {
+		return this.out();
+	}
+
+	/** MEOS: quadbin_as_wkb */
+	asWKB(variant: number = 0): Uint8Array {
+		return readWkb(_sizeOut => F.quadbin_as_wkb(this.value, variant, _sizeOut));
+	}
+
+	/** MEOS: quadbin_cell_area */
+	cellArea(): number {
+		return F.quadbin_cell_area(this.value);
+	}
+
+	/** MEOS: quadbin_cell_sibling */
+	cellSibling(direction: string): Quadbin {
+		return new Quadbin(F.quadbin_cell_sibling(this.value, direction));
+	}
+
+	/** MEOS: quadbin_cell_to_children */
+	cellToChildren(children_resolution: number): Quadbin[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.quadbin_cell_to_children(this.value, children_resolution, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 8);
+				const _out: Quadbin[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new Quadbin(_v.getBigUint64(_i * 8, true)));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: quadbin_cell_to_children_set */
+	cellToChildrenSet(children_resolution: number): Set | null {
+		return wrapSetOrNull(F.quadbin_cell_to_children_set(this.value, children_resolution)) as Set | null;
+	}
+
+	/** MEOS: quadbin_cell_to_cover */
+	cellToCover(resolution: number): Set | null {
+		return wrapSetOrNull(F.quadbin_cell_to_cover(this.value, resolution)) as Set | null;
+	}
+
+	/** MEOS: quadbin_cell_to_geom */
+	cellToGeom(): Geo {
+		return wrapGeo(F.quadbin_cell_to_geom(this.value)) as Geo;
+	}
+
+	/** MEOS: quadbin_cell_to_geompoint */
+	cellToGeompoint(): Geo {
+		return wrapGeo(F.quadbin_cell_to_geompoint(this.value)) as Geo;
+	}
+
+	/** MEOS: quadbin_cell_to_parent */
+	cellToParent(parent_resolution: number): Quadbin {
+		return new Quadbin(F.quadbin_cell_to_parent(this.value, parent_resolution));
+	}
+
+	/** MEOS: quadbin_cell_to_quadkey */
+	cellToQuadkey(): string {
+		return F.quadbin_cell_to_quadkey(this.value);
+	}
+
+	/** MEOS: quadbin_cell_to_tile */
+	cellToTile(): number[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.quadbin_cell_to_tile(this.value, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 4);
+				const _out: number[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getInt32(_i * 4, true));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: quadbin_cmp */
+	cmp(b: Quadbin): number {
+		return F.quadbin_cmp(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_eq */
+	eq(b: Quadbin): boolean {
+		return F.quadbin_eq(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_ge */
+	ge(b: Quadbin): boolean {
+		return F.quadbin_ge(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_get_resolution */
+	getResolution(): number {
+		return F.quadbin_get_resolution(this.value);
+	}
+
+	/** MEOS: quadbin_grid_disk */
+	gridDisk(k: number): Set | null {
+		return wrapSetOrNull(F.quadbin_grid_disk(this.value, k)) as Set | null;
+	}
+
+	/** MEOS: quadbin_gt */
+	gt(b: Quadbin): boolean {
+		return F.quadbin_gt(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_hash */
+	hash(): number {
+		return F.quadbin_hash(this.value);
+	}
+
+	/** MEOS: quadbin_hash_extended */
+	hashExtended(seed: number): number {
+		return F.quadbin_hash_extended(this.value, seed);
+	}
+
+	/** MEOS: quadbin_index_to_string */
+	indexToString(): string {
+		return F.quadbin_index_to_string(this.value);
+	}
+
+	/** MEOS: quadbin_is_valid_cell */
+	isValidCell(): boolean {
+		return F.quadbin_is_valid_cell(this.value);
+	}
+
+	/** MEOS: quadbin_is_valid_index */
+	isValidIndex(): boolean {
+		return F.quadbin_is_valid_index(this.value);
+	}
+
+	/** MEOS: quadbin_k_ring */
+	kRing(k: number): Quadbin[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.quadbin_k_ring(this.value, k, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 8);
+				const _out: Quadbin[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new Quadbin(_v.getBigUint64(_i * 8, true)));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: quadbin_le */
+	le(b: Quadbin): boolean {
+		return F.quadbin_le(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_lt */
+	lt(b: Quadbin): boolean {
+		return F.quadbin_lt(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_ne */
+	ne(b: Quadbin): boolean {
+		return F.quadbin_ne(this.value, b.value);
+	}
+
+	/** MEOS: quadbin_out */
+	out(): string {
+		return F.quadbin_out(this.value);
+	}
+
+	/** MEOS: quadbin_timestamptz_to_stbox */
+	timestamptzToStbox(t: TimestampTz): STBox {
+		return wrapSTBox(F.quadbin_timestamptz_to_stbox(this.value, t)) as STBox;
+	}
+
+	/** MEOS: quadbin_to_set */
+	toSet(): Set {
+		return wrapSet(F.quadbin_to_set(this.value)) as Set;
+	}
+
+	/** MEOS: quadbin_to_stbox */
+	toStbox(): STBox {
+		return wrapSTBox(F.quadbin_to_stbox(this.value)) as STBox;
+	}
+
+	/** MEOS: quadbin_tstzspan_to_stbox */
+	tstzspanToStbox(s: Span): STBox {
+		return wrapSTBox(F.quadbin_tstzspan_to_stbox(this.value, s.ptr)) as STBox;
+	}
+
+	/** MEOS: quadbin_from_hexwkb */
+	static fromHexWKB(hexwkb: string): Quadbin {
+		return new Quadbin(F.quadbin_from_hexwkb(hexwkb));
+	}
+
+	/** MEOS: quadbin_in */
+	static fromText(str: string): Quadbin {
+		return Quadbin.in(str);
+	}
+
+	/** MEOS: quadbin_from_wkb */
+	static fromWKB(wkb: Uint8Array): Quadbin {
+		const _wkb = _bytes(wkb);
+		try {
+			return new Quadbin(F.quadbin_from_wkb(_wkb, wkb.length));
+		} finally {
+			_free(_wkb);
+		}
+	}
+
+	/** MEOS: quadbin_in */
+	static in(str: string): Quadbin {
+		return new Quadbin(F.quadbin_in(str));
+	}
+
+	/** MEOS: quadbin_point_to_cell */
+	static pointToCell(longitude: number, latitude: number, resolution: number): Quadbin {
+		return new Quadbin(F.quadbin_point_to_cell(longitude, latitude, resolution));
+	}
+
+	/** MEOS: quadbin_string_to_index */
+	static stringToIndex(str: string): Quadbin {
+		return new Quadbin(F.quadbin_string_to_index(str));
+	}
+
+	/** MEOS: quadbin_tile_to_cell */
+	static tileToCell(x: number, y: number, z: number): Quadbin {
+		return new Quadbin(F.quadbin_tile_to_cell(x, y, z));
+	}
+}
+
+/**
  * The QuadbinSet class of the MEOS object model.
  */
 export class QuadbinSet extends SpatialSet {
@@ -10061,22 +10464,22 @@ export class QuadbinSet extends SpatialSet {
 
 	/** MEOS: contains_set_quadbin */
 	private _contains_set_quadbin(cell: Quadbin): boolean {
-		return F.contains_set_quadbin(this.ptr, cell);
+		return F.contains_set_quadbin(this.ptr, cell.value);
 	}
 
 	/** MEOS: intersection_set_quadbin */
 	private _intersection_set_quadbin(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.intersection_set_quadbin(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.intersection_set_quadbin(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: minus_set_quadbin */
 	private _minus_set_quadbin(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.minus_set_quadbin(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.minus_set_quadbin(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: union_set_quadbin */
 	private _union_set_quadbin(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.union_set_quadbin(this.ptr, cell)) as this | null;
+		return wrapSetOrNull(F.union_set_quadbin(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: quadbinset_compact_cells */
@@ -10086,7 +10489,7 @@ export class QuadbinSet extends SpatialSet {
 
 	/** MEOS: contains_set_quadbin, chosen by the arguments' types */
 	override contains(cell: Quadbin | Set): boolean {
-		if (typeof cell === 'bigint') return this._contains_set_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._contains_set_quadbin(cell as Quadbin);
 		return super.contains(cell as Set);
 	}
 
@@ -10097,7 +10500,7 @@ export class QuadbinSet extends SpatialSet {
 
 	/** MEOS: quadbinset_end_value */
 	endValue(): Quadbin {
-		return F.quadbinset_end_value(this.ptr);
+		return new Quadbin(F.quadbinset_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_quadbinset_tquadbin */
@@ -10112,39 +10515,39 @@ export class QuadbinSet extends SpatialSet {
 
 	/** MEOS: intersection_set_quadbin, chosen by the arguments' types */
 	override intersection(cell: Quadbin | Set): this | null {
-		if (typeof cell === 'bigint') return this._intersection_set_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._intersection_set_quadbin(cell as Quadbin);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_quadbin, chosen by the arguments' types */
 	override minus(cell: Quadbin | Set): this | null {
-		if (typeof cell === 'bigint') return this._minus_set_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._minus_set_quadbin(cell as Quadbin);
 		return super.minus(cell as Set);
 	}
 
 	/** MEOS: contained_quadbin_set */
 	rcontained(cell: Quadbin): boolean {
-		return F.contained_quadbin_set(cell, this.ptr);
+		return F.contained_quadbin_set(cell.value, this.ptr);
 	}
 
 	/** MEOS: intersection_quadbin_set */
 	rintersection(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.intersection_quadbin_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.intersection_quadbin_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_quadbin_set */
 	rminus(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.minus_quadbin_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.minus_quadbin_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_quadbin_set */
 	runion(cell: Quadbin): this | null {
-		return wrapSetOrNull(F.union_quadbin_set(cell, this.ptr)) as this | null;
+		return wrapSetOrNull(F.union_quadbin_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: quadbinset_start_value */
 	startValue(): Quadbin {
-		return F.quadbinset_start_value(this.ptr);
+		return new Quadbin(F.quadbinset_start_value(this.ptr));
 	}
 
 	/** MEOS: quadbinset_uncompact_cells */
@@ -10154,17 +10557,17 @@ export class QuadbinSet extends SpatialSet {
 
 	/** MEOS: union_set_quadbin, chosen by the arguments' types */
 	override union(cell: Quadbin | Set): this | null {
-		if (typeof cell === 'bigint') return this._union_set_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._union_set_quadbin(cell as Quadbin);
 		return super.union(cell as Set);
 	}
 
 	/** MEOS: quadbinset_value_n */
 	valueN(n: number): Quadbin {
-		return F.quadbinset_value_n(this.ptr, n);
+		return new Quadbin(F.quadbinset_value_n(this.ptr, n));
 	}
 
 	/** MEOS: quadbinset_values */
-	values(): bigint[] {
+	values(): Quadbin[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.quadbinset_values(this.ptr, _count);
@@ -10172,8 +10575,8 @@ export class QuadbinSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: Quadbin[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new Quadbin(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -10198,11 +10601,6 @@ export class QuadbinSet extends SpatialSet {
 		return Set.fromHexWKB(hexwkb);
 	}
 
-	/** MEOS: quadbin_to_set */
-	static fromQuadbin(cell: Quadbin): QuadbinSet {
-		return wrapSet(F.quadbin_to_set(cell)) as QuadbinSet;
-	}
-
 	/** MEOS: quadbinset_in */
 	static fromText(str: string): QuadbinSet {
 		return QuadbinSet.in(str);
@@ -10214,9 +10612,9 @@ export class QuadbinSet extends SpatialSet {
 	}
 
 	/** MEOS: quadbinset_make */
-	static make(values: bigint[]): QuadbinSet {
+	static make(values: Quadbin[]): QuadbinSet {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		try {
 			return wrapSet(F.quadbinset_make(_values, values.length)) as QuadbinSet;
 		} finally {
@@ -10371,19 +10769,9 @@ export class RTreeNNCursor extends Value {
  */
 export class RaQuet extends Value {
 
-	/** The text MEOS writes this value as (MEOS: raquet_out). */
-	override toString(): string {
-		return this.out();
-	}
-
 	/** MEOS: raquet_as_hexwkb */
 	asHexWKB(variant: number = 0): string {
 		return F.raquet_as_hexwkb(this.ptr, variant);
-	}
-
-	/** MEOS: raquet_out */
-	asText(): string {
-		return this.out();
 	}
 
 	/** MEOS: raquet_as_wkb */
@@ -10478,7 +10866,7 @@ export class RaQuet extends Value {
 
 	/** MEOS: raquet_quadbin */
 	quadbin(): Quadbin {
-		return F.raquet_quadbin(this.ptr);
+		return new Quadbin(F.raquet_quadbin(this.ptr));
 	}
 
 	/** MEOS: raquet_to_stbox */
@@ -10494,11 +10882,6 @@ export class RaQuet extends Value {
 	/** MEOS: raquet_from_hexwkb */
 	static fromHexWKB(hexwkb: string): RaQuet {
 		return wrapRaQuet(F.raquet_from_hexwkb(hexwkb)) as RaQuet;
-	}
-
-	/** MEOS: raquet_in */
-	static fromText(str: string): RaQuet {
-		return RaQuet.in(str);
 	}
 
 	/** MEOS: raquet_from_wkb */
@@ -10520,7 +10903,7 @@ export class RaQuet extends Value {
 	static make(quadbin: Quadbin, width: number, height: number, pixtype: string, nodata: number, has_nodata: boolean, pixels: Uint8Array): RaQuet {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapRaQuet(F.raquet_make(quadbin, width, height, F.meospixtype_from_string(pixtype), nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
+			return wrapRaQuet(F.raquet_make(quadbin.value, width, height, F.meospixtype_from_string(pixtype), nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
 		} finally {
 			_free(_pixels);
 		}
@@ -10533,14 +10916,14 @@ export class RaQuet extends Value {
 
 	/** MEOS: raquet_read */
 	static read(path: string, quadbin: Quadbin): RaQuet | null {
-		return wrapRaQuetOrNull(F.raquet_read(path, quadbin)) as RaQuet | null;
+		return wrapRaQuetOrNull(F.raquet_read(path, quadbin.value)) as RaQuet | null;
 	}
 
 	/** MEOS: raquet_read_bytes */
 	static readBytes(data: Uint8Array, quadbin: Quadbin): RaQuet | null {
 		const _data = _bytes(data);
 		try {
-			return wrapRaQuetOrNull(F.raquet_read_bytes(_data, data.length, quadbin)) as RaQuet | null;
+			return wrapRaQuetOrNull(F.raquet_read_bytes(_data, data.length, quadbin.value)) as RaQuet | null;
 		} finally {
 			_free(_data);
 		}
@@ -10991,7 +11374,7 @@ export class Raster extends Value {
 	static tileValueQuadbin(traj: Temporal, pixels: Uint8Array, width: number, height: number, quadbin: Quadbin, pixtype: string, nodata: number, has_nodata: boolean): Temporal | null {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin, F.meospixtype_from_string(pixtype), nodata, has_nodata)) as Temporal | null;
+			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin.value, F.meospixtype_from_string(pixtype), nodata, has_nodata)) as Temporal | null;
 		} finally {
 			_free(_pixels);
 		}
@@ -11009,6 +11392,265 @@ export class Raster extends Value {
 }
 
 /**
+ * A cell of the S2 grid, the base type of TS2Cell and S2CellSet, passed by value as H3Index is.
+ */
+export class S2Cell {
+
+	/** Holds the value MEOS passes by value, of C type S2CellId. */
+	constructor(readonly value: F.S2CellId) {}
+
+	/** The text MEOS writes this value as (MEOS: s2cell_out). */
+	toString(): string {
+		return this.out();
+	}
+
+	/** MEOS: s2cell_as_hexwkb */
+	asHexWKB(variant: number = 0): string {
+		return F.s2cell_as_hexwkb(this.value, variant);
+	}
+
+	/** MEOS: s2cell_out */
+	asText(): string {
+		return this.out();
+	}
+
+	/** MEOS: s2cell_as_wkb */
+	asWKB(variant: number = 0): Uint8Array {
+		return readWkb(_sizeOut => F.s2cell_as_wkb(this.value, variant, _sizeOut));
+	}
+
+	/** MEOS: s2cell_cell_area */
+	cellArea(): number {
+		return F.s2cell_cell_area(this.value);
+	}
+
+	/** MEOS: s2cell_cell_contains */
+	cellContains(other: S2Cell): boolean {
+		return F.s2cell_cell_contains(this.value, other.value);
+	}
+
+	/** MEOS: s2cell_cell_to_child */
+	cellToChild(level: number, position: number): S2Cell {
+		return new S2Cell(F.s2cell_cell_to_child(this.value, level, position));
+	}
+
+	/** MEOS: s2cell_cell_to_children */
+	cellToChildren(level: number): S2Cell[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.s2cell_cell_to_children(this.value, level, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 8);
+				const _out: S2Cell[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new S2Cell(_v.getBigUint64(_i * 8, true)));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: s2cell_cell_to_children_set */
+	cellToChildrenSet(children_level: number): Set | null {
+		return wrapSetOrNull(F.s2cell_cell_to_children_set(this.value, children_level)) as Set | null;
+	}
+
+	/** MEOS: s2cell_cell_to_cover */
+	cellToCover(resolution: number): Set | null {
+		return wrapSetOrNull(F.s2cell_cell_to_cover(this.value, resolution)) as Set | null;
+	}
+
+	/** MEOS: s2cell_cell_to_geog */
+	cellToGeog(): Geo | null {
+		return wrapGeoOrNull(F.s2cell_cell_to_geog(this.value)) as Geo | null;
+	}
+
+	/** MEOS: s2cell_cell_to_geogpoint */
+	cellToGeogpoint(): Geo | null {
+		return wrapGeoOrNull(F.s2cell_cell_to_geogpoint(this.value)) as Geo | null;
+	}
+
+	/** MEOS: s2cell_cell_to_parent */
+	cellToParent(level: number): S2Cell {
+		return new S2Cell(F.s2cell_cell_to_parent(this.value, level));
+	}
+
+	/** MEOS: s2cell_cell_to_token */
+	cellToToken(): string {
+		return F.s2cell_cell_to_token(this.value);
+	}
+
+	/** MEOS: s2cell_cmp */
+	cmp(b: S2Cell): number {
+		return F.s2cell_cmp(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_common_ancestor_level */
+	commonAncestorLevel(b: S2Cell): number {
+		return F.s2cell_common_ancestor_level(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_edge_length */
+	edgeLength(edge: number): number {
+		return F.s2cell_edge_length(this.value, edge);
+	}
+
+	/** MEOS: s2cell_edge_neighbors */
+	edgeNeighbors(): S2Cell[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.s2cell_edge_neighbors(this.value, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 8);
+				const _out: S2Cell[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new S2Cell(_v.getBigUint64(_i * 8, true)));
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: s2cell_edge_neighbors_set */
+	edgeNeighborsSet(): Set | null {
+		return wrapSetOrNull(F.s2cell_edge_neighbors_set(this.value)) as Set | null;
+	}
+
+	/** MEOS: s2cell_eq */
+	eq(b: S2Cell): boolean {
+		return F.s2cell_eq(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_ge */
+	ge(b: S2Cell): boolean {
+		return F.s2cell_ge(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_get_face */
+	getFace(): number {
+		return F.s2cell_get_face(this.value);
+	}
+
+	/** MEOS: s2cell_get_resolution */
+	getResolution(): number {
+		return F.s2cell_get_resolution(this.value);
+	}
+
+	/** MEOS: s2cell_gt */
+	gt(b: S2Cell): boolean {
+		return F.s2cell_gt(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_hash */
+	hash(): number {
+		return F.s2cell_hash(this.value);
+	}
+
+	/** MEOS: s2cell_hash_extended */
+	hashExtended(seed: number): number {
+		return F.s2cell_hash_extended(this.value, seed);
+	}
+
+	/** MEOS: s2cell_is_valid_cell */
+	isValidCell(): boolean {
+		return F.s2cell_is_valid_cell(this.value);
+	}
+
+	/** MEOS: s2cell_le */
+	le(b: S2Cell): boolean {
+		return F.s2cell_le(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_lt */
+	lt(b: S2Cell): boolean {
+		return F.s2cell_lt(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_ne */
+	ne(b: S2Cell): boolean {
+		return F.s2cell_ne(this.value, b.value);
+	}
+
+	/** MEOS: s2cell_out */
+	out(): string {
+		return F.s2cell_out(this.value);
+	}
+
+	/** MEOS: s2cell_range_max */
+	rangeMax(): S2Cell {
+		return new S2Cell(F.s2cell_range_max(this.value));
+	}
+
+	/** MEOS: s2cell_range_min */
+	rangeMin(): S2Cell {
+		return new S2Cell(F.s2cell_range_min(this.value));
+	}
+
+	/** MEOS: s2cell_timestamptz_to_stbox */
+	timestamptzToStbox(t: TimestampTz): STBox {
+		return wrapSTBox(F.s2cell_timestamptz_to_stbox(this.value, t)) as STBox;
+	}
+
+	/** MEOS: s2cell_to_set */
+	toSet(): Set {
+		return wrapSet(F.s2cell_to_set(this.value)) as Set;
+	}
+
+	/** MEOS: s2cell_to_stbox */
+	toStbox(): STBox {
+		return wrapSTBox(F.s2cell_to_stbox(this.value)) as STBox;
+	}
+
+	/** MEOS: s2cell_tstzspan_to_stbox */
+	tstzspanToStbox(s: Span): STBox {
+		return wrapSTBox(F.s2cell_tstzspan_to_stbox(this.value, s.ptr)) as STBox;
+	}
+
+	/** MEOS: s2cell_from_hexwkb */
+	static fromHexWKB(hexwkb: string): S2Cell {
+		return new S2Cell(F.s2cell_from_hexwkb(hexwkb));
+	}
+
+	/** MEOS: s2cell_in */
+	static fromText(str: string): S2Cell {
+		return S2Cell.in(str);
+	}
+
+	/** MEOS: s2cell_from_wkb */
+	static fromWKB(wkb: Uint8Array): S2Cell {
+		const _wkb = _bytes(wkb);
+		try {
+			return new S2Cell(F.s2cell_from_wkb(_wkb, wkb.length));
+		} finally {
+			_free(_wkb);
+		}
+	}
+
+	/** MEOS: s2cell_in */
+	static in(str: string): S2Cell {
+		return new S2Cell(F.s2cell_in(str));
+	}
+
+	/** MEOS: s2cell_point_to_cell */
+	static pointToCell(longitude: number, latitude: number, level: number): S2Cell {
+		return new S2Cell(F.s2cell_point_to_cell(longitude, latitude, level));
+	}
+
+	/** MEOS: s2cell_token_to_cell */
+	static tokenToCell(token: string): S2Cell {
+		return new S2Cell(F.s2cell_token_to_cell(token));
+	}
+}
+
+/**
  * The S2CellSet class of the MEOS object model.
  */
 export class S2CellSet extends SpatialSet {
@@ -11019,23 +11661,23 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_s2cell */
-	private _contains_set_s2cell(cell: S2CellId): boolean {
-		return F.contains_set_s2cell(this.ptr, cell);
+	private _contains_set_s2cell(cell: S2Cell): boolean {
+		return F.contains_set_s2cell(this.ptr, cell.value);
 	}
 
 	/** MEOS: intersection_set_s2cell */
-	private _intersection_set_s2cell(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.intersection_set_s2cell(this.ptr, cell)) as this | null;
+	private _intersection_set_s2cell(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.intersection_set_s2cell(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: minus_set_s2cell */
-	private _minus_set_s2cell(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.minus_set_s2cell(this.ptr, cell)) as this | null;
+	private _minus_set_s2cell(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.minus_set_s2cell(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: union_set_s2cell */
-	private _union_set_s2cell(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.union_set_s2cell(this.ptr, cell)) as this | null;
+	private _union_set_s2cell(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.union_set_s2cell(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: s2cellset_compact_cells */
@@ -11044,8 +11686,8 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: contains_set_s2cell, chosen by the arguments' types */
-	override contains(cell: S2CellId | Set): boolean {
-		if (typeof cell === 'bigint') return this._contains_set_s2cell(cell as S2CellId);
+	override contains(cell: S2Cell | Set): boolean {
+		if (cell instanceof S2Cell) return this._contains_set_s2cell(cell as S2Cell);
 		return super.contains(cell as Set);
 	}
 
@@ -11055,8 +11697,8 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: s2cellset_end_value */
-	endValue(): S2CellId {
-		return F.s2cellset_end_value(this.ptr);
+	endValue(): S2Cell {
+		return new S2Cell(F.s2cellset_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_s2cellset_ts2cell */
@@ -11065,40 +11707,40 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: intersection_set_s2cell, chosen by the arguments' types */
-	override intersection(cell: S2CellId | Set): this | null {
-		if (typeof cell === 'bigint') return this._intersection_set_s2cell(cell as S2CellId);
+	override intersection(cell: S2Cell | Set): this | null {
+		if (cell instanceof S2Cell) return this._intersection_set_s2cell(cell as S2Cell);
 		return super.intersection(cell as Set);
 	}
 
 	/** MEOS: minus_set_s2cell, chosen by the arguments' types */
-	override minus(cell: S2CellId | Set): this | null {
-		if (typeof cell === 'bigint') return this._minus_set_s2cell(cell as S2CellId);
+	override minus(cell: S2Cell | Set): this | null {
+		if (cell instanceof S2Cell) return this._minus_set_s2cell(cell as S2Cell);
 		return super.minus(cell as Set);
 	}
 
 	/** MEOS: contained_s2cell_set */
-	rcontained(cell: S2CellId): boolean {
-		return F.contained_s2cell_set(cell, this.ptr);
+	rcontained(cell: S2Cell): boolean {
+		return F.contained_s2cell_set(cell.value, this.ptr);
 	}
 
 	/** MEOS: intersection_s2cell_set */
-	rintersection(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.intersection_s2cell_set(cell, this.ptr)) as this | null;
+	rintersection(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.intersection_s2cell_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: minus_s2cell_set */
-	rminus(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.minus_s2cell_set(cell, this.ptr)) as this | null;
+	rminus(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.minus_s2cell_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_s2cell_set */
-	runion(cell: S2CellId): this | null {
-		return wrapSetOrNull(F.union_s2cell_set(cell, this.ptr)) as this | null;
+	runion(cell: S2Cell): this | null {
+		return wrapSetOrNull(F.union_s2cell_set(cell.value, this.ptr)) as this | null;
 	}
 
 	/** MEOS: s2cellset_start_value */
-	startValue(): S2CellId {
-		return F.s2cellset_start_value(this.ptr);
+	startValue(): S2Cell {
+		return new S2Cell(F.s2cellset_start_value(this.ptr));
 	}
 
 	/** MEOS: s2cellset_uncompact_cells */
@@ -11107,18 +11749,18 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: union_set_s2cell, chosen by the arguments' types */
-	override union(cell: S2CellId | Set): this | null {
-		if (typeof cell === 'bigint') return this._union_set_s2cell(cell as S2CellId);
+	override union(cell: S2Cell | Set): this | null {
+		if (cell instanceof S2Cell) return this._union_set_s2cell(cell as S2Cell);
 		return super.union(cell as Set);
 	}
 
 	/** MEOS: s2cellset_value_n */
-	valueN(n: number): S2CellId {
-		return F.s2cellset_value_n(this.ptr, n);
+	valueN(n: number): S2Cell {
+		return new S2Cell(F.s2cellset_value_n(this.ptr, n));
 	}
 
 	/** MEOS: s2cellset_values */
-	values(): bigint[] {
+	values(): S2Cell[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.s2cellset_values(this.ptr, _count);
@@ -11126,8 +11768,8 @@ export class S2CellSet extends SpatialSet {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: S2Cell[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new S2Cell(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -11152,11 +11794,6 @@ export class S2CellSet extends SpatialSet {
 		return Set.fromHexWKB(hexwkb);
 	}
 
-	/** MEOS: s2cell_to_set */
-	static fromS2cell(cell: S2CellId): S2CellSet {
-		return wrapSet(F.s2cell_to_set(cell)) as S2CellSet;
-	}
-
 	/** MEOS: s2cellset_in */
 	static fromText(str: string): S2CellSet {
 		return S2CellSet.in(str);
@@ -11168,9 +11805,9 @@ export class S2CellSet extends SpatialSet {
 	}
 
 	/** MEOS: s2cellset_make */
-	static make(values: bigint[]): S2CellSet {
+	static make(values: S2Cell[]): S2CellSet {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		try {
 			return wrapSet(F.s2cellset_make(_values, values.length)) as S2CellSet;
 		} finally {
@@ -11360,6 +11997,31 @@ export class STBox extends Box {
 		return F.after_stbox_tspatial(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: always_overlaps_stbox_tcbuffer */
+	private _always_overlaps_stbox_tcbuffer(temp: TCBuffer): number {
+		return F.always_overlaps_stbox_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_stbox_tgeo */
+	private _always_overlaps_stbox_tgeo(temp: TGeo): number {
+		return F.always_overlaps_stbox_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_stbox_tnpoint */
+	private _always_overlaps_stbox_tnpoint(temp: TNPoint): number {
+		return F.always_overlaps_stbox_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_stbox_tpose */
+	private _always_overlaps_stbox_tpose(temp: TPose): number {
+		return F.always_overlaps_stbox_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_stbox_trgeometry */
+	private _always_overlaps_stbox_trgeometry(temp: TRGeometry): number {
+		return F.always_overlaps_stbox_trgeometry(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: back_stbox_stbox */
 	private _back_stbox_stbox(box2: STBox): boolean {
 		return F.back_stbox_stbox(this.ptr, box2.ptr);
@@ -11408,6 +12070,31 @@ export class STBox extends Box {
 	/** MEOS: contains_stbox_tspatial */
 	private _contains_stbox_tspatial(temp: TSpatial): boolean {
 		return F.contains_stbox_tspatial(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tcbuffer */
+	private _ever_overlaps_stbox_tcbuffer(temp: TCBuffer): number {
+		return F.ever_overlaps_stbox_tcbuffer(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tgeo */
+	private _ever_overlaps_stbox_tgeo(temp: TGeo): number {
+		return F.ever_overlaps_stbox_tgeo(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tnpoint */
+	private _ever_overlaps_stbox_tnpoint(temp: TNPoint): number {
+		return F.ever_overlaps_stbox_tnpoint(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tpose */
+	private _ever_overlaps_stbox_tpose(temp: TPose): number {
+		return F.ever_overlaps_stbox_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_trgeometry */
+	private _ever_overlaps_stbox_trgeometry(temp: TRGeometry): number {
+		return F.ever_overlaps_stbox_trgeometry(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: front_stbox_stbox */
@@ -11576,6 +12263,16 @@ export class STBox extends Box {
 		throw new TypeError(`STBox.after: no overload takes these arguments`);
 	}
 
+	/** MEOS: always_overlaps_stbox_tgeo, always_overlaps_stbox_tcbuffer, always_overlaps_stbox_tnpoint, always_overlaps_stbox_tpose, always_overlaps_stbox_trgeometry, chosen by the arguments' types */
+	alwaysOverlaps(temp: TGeo | TCBuffer | TNPoint | TPose | TRGeometry): number {
+		if (temp instanceof TGeo) return this._always_overlaps_stbox_tgeo(temp as TGeo);
+		if (temp instanceof TCBuffer) return this._always_overlaps_stbox_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TNPoint) return this._always_overlaps_stbox_tnpoint(temp as TNPoint);
+		if (temp instanceof TPose) return this._always_overlaps_stbox_tpose(temp as TPose);
+		if (temp instanceof TRGeometry) return this._always_overlaps_stbox_trgeometry(temp as TRGeometry);
+		throw new TypeError(`STBox.alwaysOverlaps: no overload takes these arguments`);
+	}
+
 	/** MEOS: stbox_area */
 	area(spheroid: boolean = true): number {
 		return F.stbox_area(this.ptr, spheroid);
@@ -11659,6 +12356,16 @@ export class STBox extends Box {
 	/** MEOS: stbox_eq */
 	eq(box2: STBox): boolean {
 		return F.stbox_eq(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tgeo, ever_overlaps_stbox_tcbuffer, ever_overlaps_stbox_tnpoint, ever_overlaps_stbox_tpose, ever_overlaps_stbox_trgeometry, chosen by the arguments' types */
+	everOverlaps(temp: TGeo | TCBuffer | TNPoint | TPose | TRGeometry): number {
+		if (temp instanceof TGeo) return this._ever_overlaps_stbox_tgeo(temp as TGeo);
+		if (temp instanceof TCBuffer) return this._ever_overlaps_stbox_tcbuffer(temp as TCBuffer);
+		if (temp instanceof TNPoint) return this._ever_overlaps_stbox_tnpoint(temp as TNPoint);
+		if (temp instanceof TPose) return this._ever_overlaps_stbox_tpose(temp as TPose);
+		if (temp instanceof TRGeometry) return this._ever_overlaps_stbox_trgeometry(temp as TRGeometry);
+		throw new TypeError(`STBox.everOverlaps: no overload takes these arguments`);
 	}
 
 	/** MEOS: stbox_expand_space */
@@ -12121,21 +12828,6 @@ export class STBox extends Box {
 		}
 	}
 
-	/** MEOS: h3index_to_stbox */
-	static fromH3index(cell: H3Index): STBox {
-		return wrapSTBox(F.h3index_to_stbox(cell)) as STBox;
-	}
-
-	/** MEOS: h3index_timestamptz_to_stbox */
-	static fromH3indexTimestamptz(cell: H3Index, t: TimestampTz): STBox {
-		return wrapSTBox(F.h3index_timestamptz_to_stbox(cell, t)) as STBox;
-	}
-
-	/** MEOS: h3index_tstzspan_to_stbox */
-	static fromH3indexTstzspan(cell: H3Index, s: Span): STBox {
-		return wrapSTBox(F.h3index_tstzspan_to_stbox(cell, s.ptr)) as STBox;
-	}
-
 	/** MEOS: stbox_from_hexwkb */
 	static fromHexEWKB(hexwkb: string): STBox {
 		return STBox.fromHexWKB(hexwkb);
@@ -12144,36 +12836,6 @@ export class STBox extends Box {
 	/** MEOS: stbox_from_hexwkb */
 	static fromHexWKB(hexwkb: string): STBox {
 		return wrapSTBox(F.stbox_from_hexwkb(hexwkb)) as STBox;
-	}
-
-	/** MEOS: quadbin_to_stbox */
-	static fromQuadbin(cell: Quadbin): STBox {
-		return wrapSTBox(F.quadbin_to_stbox(cell)) as STBox;
-	}
-
-	/** MEOS: quadbin_timestamptz_to_stbox */
-	static fromQuadbinTimestamptz(cell: Quadbin, t: TimestampTz): STBox {
-		return wrapSTBox(F.quadbin_timestamptz_to_stbox(cell, t)) as STBox;
-	}
-
-	/** MEOS: quadbin_tstzspan_to_stbox */
-	static fromQuadbinTstzspan(cell: Quadbin, s: Span): STBox {
-		return wrapSTBox(F.quadbin_tstzspan_to_stbox(cell, s.ptr)) as STBox;
-	}
-
-	/** MEOS: s2cell_to_stbox */
-	static fromS2cell(cell: S2CellId): STBox {
-		return wrapSTBox(F.s2cell_to_stbox(cell)) as STBox;
-	}
-
-	/** MEOS: s2cell_timestamptz_to_stbox */
-	static fromS2cellTimestamptz(cell: S2CellId, t: TimestampTz): STBox {
-		return wrapSTBox(F.s2cell_timestamptz_to_stbox(cell, t)) as STBox;
-	}
-
-	/** MEOS: s2cell_tstzspan_to_stbox */
-	static fromS2cellTstzspan(cell: S2CellId, s: Span): STBox {
-		return wrapSTBox(F.s2cell_tstzspan_to_stbox(cell, s.ptr)) as STBox;
 	}
 
 	/** MEOS: stbox_in */
@@ -12301,6 +12963,11 @@ export class Temporal extends MeosObject {
 	/** MEOS: always_ne_temporal_temporal */
 	alwaysNe(temp2: Temporal): number {
 		return F.always_ne_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: always_overlaps_temporal_temporal */
+	alwaysOverlaps(temp2: Temporal): number {
+		return F.always_overlaps_temporal_temporal(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: temporal_append_tinstant */
@@ -12526,6 +13193,11 @@ export class Temporal extends MeosObject {
 	/** MEOS: ever_ne_temporal_temporal */
 	everNe(temp2: Temporal): number {
 		return F.ever_ne_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_temporal_temporal */
+	everOverlaps(temp2: Temporal): number {
+		return F.ever_overlaps_temporal_temporal(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: temporal_ext_kalman_filter */
@@ -13155,6 +13827,11 @@ export class TAlpha extends Temporal {
 		return F.after_temporal_temporal(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_temporal_tstzspan */
+	private _always_overlaps_temporal_tstzspan(s: TsTzSpan): number {
+		return F.always_overlaps_temporal_tstzspan(this.ptr, s.ptr);
+	}
+
 	/** MEOS: before_temporal_temporal */
 	private _before_temporal_temporal(temp2: TAlpha): boolean {
 		return F.before_temporal_temporal(this.ptr, temp2.ptr);
@@ -13168,6 +13845,11 @@ export class TAlpha extends Temporal {
 	/** MEOS: contains_temporal_temporal */
 	private _contains_temporal_temporal(temp2: TAlpha): boolean {
 		return F.contains_temporal_temporal(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_temporal_tstzspan */
+	private _ever_overlaps_temporal_tstzspan(s: TsTzSpan): number {
+		return F.ever_overlaps_temporal_tstzspan(this.ptr, s.ptr);
 	}
 
 	/** MEOS: overafter_temporal_temporal */
@@ -13202,6 +13884,12 @@ export class TAlpha extends Temporal {
 		return super.after(temp2 as TsTzSpan);
 	}
 
+	/** MEOS: always_overlaps_temporal_tstzspan, chosen by the arguments' types */
+	override alwaysOverlaps(s: TsTzSpan | Temporal): number {
+		if (s instanceof TsTzSpan) return this._always_overlaps_temporal_tstzspan(s as TsTzSpan);
+		return super.alwaysOverlaps(s as Temporal);
+	}
+
 	/** MEOS: before_temporal_temporal, chosen by the arguments' types */
 	override before(temp2: TAlpha | TsTzSpan): boolean {
 		if (temp2 instanceof TAlpha) return this._before_temporal_temporal(temp2 as TAlpha);
@@ -13218,6 +13906,12 @@ export class TAlpha extends Temporal {
 	override contains(temp2: TAlpha | TsTzSpan): boolean {
 		if (temp2 instanceof TAlpha) return this._contains_temporal_temporal(temp2 as TAlpha);
 		return super.contains(temp2 as TsTzSpan);
+	}
+
+	/** MEOS: ever_overlaps_temporal_tstzspan, chosen by the arguments' types */
+	override everOverlaps(s: TsTzSpan | Temporal): number {
+		if (s instanceof TsTzSpan) return this._ever_overlaps_temporal_tstzspan(s as TsTzSpan);
+		return super.everOverlaps(s as Temporal);
 	}
 
 	/** MEOS: overafter_temporal_temporal, chosen by the arguments' types */
@@ -13275,6 +13969,11 @@ export class TNumber extends Temporal {
 		return F.after_tnumber_tnumber(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tnumber_tbox */
+	private _always_overlaps_tnumber_tbox(box: TBox): number {
+		return F.always_overlaps_tnumber_tbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: before_tnumber_tbox */
 	private _before_tnumber_tbox(box: TBox): boolean {
 		return F.before_tnumber_tbox(this.ptr, box.ptr);
@@ -13313,6 +14012,11 @@ export class TNumber extends Temporal {
 	/** MEOS: contains_tnumber_tnumber */
 	private _contains_tnumber_tnumber(temp2: TNumber): boolean {
 		return F.contains_tnumber_tnumber(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tnumber_tbox */
+	private _ever_overlaps_tnumber_tbox(box: TBox): number {
+		return F.ever_overlaps_tnumber_tbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: left_tnumber_numspan */
@@ -13450,6 +14154,12 @@ export class TNumber extends Temporal {
 		return super.after(box as TsTzSpan);
 	}
 
+	/** MEOS: always_overlaps_tnumber_tbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: TBox | Temporal): number {
+		if (box instanceof TBox) return this._always_overlaps_tnumber_tbox(box as TBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tnumber_angular_difference */
 	angularDifference(): Temporal {
 		return wrapTemporal(F.tnumber_angular_difference(this.ptr)) as Temporal;
@@ -13506,6 +14216,12 @@ export class TNumber extends Temporal {
 	/** MEOS: div_tnumber_tnumber */
 	div(tnumber2: TNumber): this | null {
 		return wrapTemporalOrNull(F.div_tnumber_tnumber(this.ptr, tnumber2.ptr)) as this | null;
+	}
+
+	/** MEOS: ever_overlaps_tnumber_tbox, chosen by the arguments' types */
+	override everOverlaps(box: TBox | Temporal): number {
+		if (box instanceof TBox) return this._ever_overlaps_tnumber_tbox(box as TBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tnumber_integral */
@@ -15041,6 +15757,11 @@ export class TBox extends Box {
 		throw new TypeError(`TBox.after: no overload takes these arguments`);
 	}
 
+	/** MEOS: always_overlaps_tbox_tnumber */
+	alwaysOverlaps(temp: TNumber): number {
+		return F.always_overlaps_tbox_tnumber(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: tbox_as_hexwkb */
 	asHexWKB(variant: number = 0): string {
 		return F.tbox_as_hexwkb(this.ptr, variant);
@@ -15095,6 +15816,11 @@ export class TBox extends Box {
 	/** MEOS: tbox_eq */
 	eq(box2: TBox): boolean {
 		return F.tbox_eq(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tbox_tnumber */
+	everOverlaps(temp: TNumber): number {
+		return F.ever_overlaps_tbox_tnumber(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: tbigintbox_expand */
@@ -15173,6 +15899,11 @@ export class TBox extends Box {
 	/** MEOS: tbox_lt */
 	lt(box2: TBox): boolean {
 		return F.tbox_lt(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: nad_tbox_tbox */
+	nad(box2: TBox): number {
+		return F.nad_tbox_tbox(this.ptr, box2.ptr);
 	}
 
 	/** MEOS: tbox_ne */
@@ -16208,6 +16939,11 @@ export class TCBuffer extends TSpatial {
 		return F.always_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tcbuffer_stbox */
+	private _always_overlaps_tcbuffer_stbox(box: STBox): number {
+		return F.always_overlaps_tcbuffer_stbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: atouches_tcbuffer_cbuffer */
 	private _atouches_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.atouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
@@ -16331,6 +17067,11 @@ export class TCBuffer extends TSpatial {
 	/** MEOS: ever_ne_tcbuffer_tcbuffer */
 	private _ever_ne_tcbuffer_tcbuffer(temp2: TCBuffer): number {
 		return F.ever_ne_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tcbuffer_stbox */
+	private _ever_overlaps_tcbuffer_stbox(box: STBox): number {
+		return F.ever_overlaps_tcbuffer_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: nad_tcbuffer_cbuffer */
@@ -16552,6 +17293,12 @@ export class TCBuffer extends TSpatial {
 		return super.alwaysNe(cb as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tcbuffer_stbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._always_overlaps_tcbuffer_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tcbuffer_at_cbuffer */
 	atCbuffer(cb: CBuffer): this | null {
 		return wrapTemporalOrNull(F.tcbuffer_at_cbuffer(this.ptr, cb.ptr)) as this | null;
@@ -16645,6 +17392,12 @@ export class TCBuffer extends TSpatial {
 		if (cb instanceof TCBuffer) return this._ever_ne_tcbuffer_tcbuffer(cb as TCBuffer);
 		if (cb instanceof CBuffer) return this._ever_ne_tcbuffer_cbuffer(cb as CBuffer);
 		return super.everNe(cb as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tcbuffer_stbox, chosen by the arguments' types */
+	override everOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._ever_overlaps_tcbuffer_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tcbuffer_expand */
@@ -17890,6 +18643,16 @@ export class TGeo extends TSpatial {
 		return F.always_ne_tgeo_tgeo(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tgeo_stbox */
+	private _always_overlaps_tgeo_stbox(box: STBox): number {
+		return F.always_overlaps_tgeo_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: always_overlaps_tgeo_tgeo */
+	private _always_overlaps_tgeo_tgeo(temp2: TGeo): number {
+		return F.always_overlaps_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
 	/** MEOS: edisjoint_tgeo_geo */
 	private _edisjoint_tgeo_geo(gs: Geo): number {
 		return F.edisjoint_tgeo_geo(this.ptr, gs.ptr);
@@ -17938,6 +18701,16 @@ export class TGeo extends TSpatial {
 	/** MEOS: ever_ne_tgeo_tgeo */
 	private _ever_ne_tgeo_tgeo(temp2: TGeo): number {
 		return F.ever_ne_tgeo_tgeo(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tgeo_stbox */
+	private _ever_overlaps_tgeo_stbox(box: STBox): number {
+		return F.ever_overlaps_tgeo_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tgeo_tgeo */
+	private _ever_overlaps_tgeo_tgeo(temp2: TGeo): number {
+		return F.ever_overlaps_tgeo_tgeo(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tgeo_geo */
@@ -18065,6 +18838,13 @@ export class TGeo extends TSpatial {
 		return super.alwaysNe(gs as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tgeo_stbox, always_overlaps_tgeo_tgeo, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | TGeo | Temporal): number {
+		if (box instanceof TGeo) return this._always_overlaps_tgeo_tgeo(box as TGeo);
+		if (box instanceof STBox) return this._always_overlaps_tgeo_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tgeo_at_geom */
 	atGeom(gs: Geo): this | null {
 		return wrapTemporalOrNull(F.tgeo_at_geom(this.ptr, gs.ptr)) as this | null;
@@ -18128,6 +18908,13 @@ export class TGeo extends TSpatial {
 		if (gs instanceof TGeo) return this._ever_ne_tgeo_tgeo(gs as TGeo);
 		if (gs instanceof Geo) return this._ever_ne_tgeo_geo(gs as Geo);
 		return super.everNe(gs as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tgeo_stbox, ever_overlaps_tgeo_tgeo, chosen by the arguments' types */
+	override everOverlaps(box: STBox | TGeo | Temporal): number {
+		if (box instanceof TGeo) return this._ever_overlaps_tgeo_tgeo(box as TGeo);
+		if (box instanceof STBox) return this._ever_overlaps_tgeo_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tgeo_force2d */
@@ -18729,7 +19516,7 @@ export class TGeogPoint extends TPoint {
 	}
 
 	/** MEOS: tgeogpoint_h3index_split */
-	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], H3Index[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -18740,8 +19527,8 @@ export class TGeogPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: H3Index[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new H3Index(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -18754,7 +19541,7 @@ export class TGeogPoint extends TPoint {
 	}
 
 	/** MEOS: tgeogpoint_quadbin_split */
-	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], Quadbin[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -18765,8 +19552,8 @@ export class TGeogPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: Quadbin[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new Quadbin(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -18779,7 +19566,7 @@ export class TGeogPoint extends TPoint {
 	}
 
 	/** MEOS: tgeogpoint_s2cell_split */
-	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], S2Cell[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -18790,8 +19577,8 @@ export class TGeogPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: S2Cell[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new S2Cell(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -19203,7 +19990,7 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: tgeompoint_h3index_split */
-	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	h3indexSplit(resolution: number, border_inc: boolean = true): [Temporal[], H3Index[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -19214,8 +20001,8 @@ export class TGeomPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: H3Index[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new H3Index(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -19228,7 +20015,7 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: tgeompoint_quadbin_split */
-	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	quadbinSplit(resolution: number, border_inc: boolean = true): [Temporal[], Quadbin[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -19239,8 +20026,8 @@ export class TGeomPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: Quadbin[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new Quadbin(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -19253,7 +20040,7 @@ export class TGeomPoint extends TPoint {
 	}
 
 	/** MEOS: tgeompoint_s2cell_split */
-	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], bigint[]] {
+	s2cellSplit(level: number, border_inc: boolean = true): [Temporal[], S2Cell[]] {
 		const _cells = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -19264,8 +20051,8 @@ export class TGeomPoint extends TPoint {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: S2Cell[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new S2Cell(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -19789,7 +20576,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: always_eq_th3index_h3index */
 	private _always_eq_th3index_h3index(cell: H3Index): number {
-		return F.always_eq_th3index_h3index(this.ptr, cell);
+		return F.always_eq_th3index_h3index(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_eq_th3index_th3index */
@@ -19799,7 +20586,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: always_ne_th3index_h3index */
 	private _always_ne_th3index_h3index(cell: H3Index): number {
-		return F.always_ne_th3index_h3index(this.ptr, cell);
+		return F.always_ne_th3index_h3index(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_ne_th3index_th3index */
@@ -19809,7 +20596,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: ever_eq_th3index_h3index */
 	private _ever_eq_th3index_h3index(cell: H3Index): number {
-		return F.ever_eq_th3index_h3index(this.ptr, cell);
+		return F.ever_eq_th3index_h3index(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_eq_th3index_h3indexset */
@@ -19824,7 +20611,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: ever_ne_th3index_h3index */
 	private _ever_ne_th3index_h3index(cell: H3Index): number {
-		return F.ever_ne_th3index_h3index(this.ptr, cell);
+		return F.ever_ne_th3index_h3index(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_ne_th3index_th3index */
@@ -19834,7 +20621,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: teq_th3index_h3index */
 	private _teq_th3index_h3index(cell: H3Index): Temporal {
-		return wrapTemporal(F.teq_th3index_h3index(this.ptr, cell)) as Temporal;
+		return wrapTemporal(F.teq_th3index_h3index(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: teq_th3index_th3index */
@@ -19844,7 +20631,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: tne_th3index_h3index */
 	private _tne_th3index_h3index(cell: H3Index): Temporal {
-		return wrapTemporal(F.tne_th3index_h3index(this.ptr, cell)) as Temporal;
+		return wrapTemporal(F.tne_th3index_h3index(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: tne_th3index_th3index */
@@ -19855,14 +20642,14 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: always_eq_th3index_h3index, always_eq_th3index_th3index, chosen by the arguments' types */
 	override alwaysEq(cell: H3Index | TH3Index | Temporal): number {
 		if (cell instanceof TH3Index) return this._always_eq_th3index_th3index(cell as TH3Index);
-		if (typeof cell === 'bigint') return this._always_eq_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._always_eq_th3index_h3index(cell as H3Index);
 		return super.alwaysEq(cell as Temporal);
 	}
 
 	/** MEOS: always_ne_th3index_h3index, always_ne_th3index_th3index, chosen by the arguments' types */
 	override alwaysNe(cell: H3Index | TH3Index | Temporal): number {
 		if (cell instanceof TH3Index) return this._always_ne_th3index_th3index(cell as TH3Index);
-		if (typeof cell === 'bigint') return this._always_ne_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._always_ne_th3index_h3index(cell as H3Index);
 		return super.alwaysNe(cell as Temporal);
 	}
 
@@ -19873,7 +20660,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: th3index_at_value */
 	atValue(cell: H3Index): this | null {
-		return wrapTemporalOrNull(F.th3index_at_value(this.ptr, cell)) as this | null;
+		return wrapTemporalOrNull(F.th3index_at_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TH3Index */
@@ -19938,21 +20725,21 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: th3index_end_value */
 	endValue(): H3Index {
-		return F.th3index_end_value(this.ptr);
+		return new H3Index(F.th3index_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_th3index_h3index, ever_eq_th3index_th3index, ever_eq_th3index_h3indexset, chosen by the arguments' types */
 	override everEq(cell: H3Index | TH3Index | H3IndexSet | Temporal): number {
 		if (cell instanceof TH3Index) return this._ever_eq_th3index_th3index(cell as TH3Index);
 		if (cell instanceof H3IndexSet) return this._ever_eq_th3index_h3indexset(cell as H3IndexSet);
-		if (typeof cell === 'bigint') return this._ever_eq_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._ever_eq_th3index_h3index(cell as H3Index);
 		return super.everEq(cell as Temporal);
 	}
 
 	/** MEOS: ever_ne_th3index_h3index, ever_ne_th3index_th3index, chosen by the arguments' types */
 	override everNe(cell: H3Index | TH3Index | Temporal): number {
 		if (cell instanceof TH3Index) return this._ever_ne_th3index_th3index(cell as TH3Index);
-		if (typeof cell === 'bigint') return this._ever_ne_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._ever_ne_th3index_h3index(cell as H3Index);
 		return super.everNe(cell as Temporal);
 	}
 
@@ -20013,48 +20800,48 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: th3index_minus_value */
 	minusValue(cell: H3Index): this | null {
-		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell)) as this | null;
+		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: always_eq_h3index_th3index */
 	ralwaysEq(cell: H3Index): number {
-		return F.always_eq_h3index_th3index(cell, this.ptr);
+		return F.always_eq_h3index_th3index(cell.value, this.ptr);
 	}
 
 	/** MEOS: always_ne_h3index_th3index */
 	ralwaysNe(cell: H3Index): number {
-		return F.always_ne_h3index_th3index(cell, this.ptr);
+		return F.always_ne_h3index_th3index(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_eq_h3index_th3index */
 	reverEq(cell: H3Index): number {
-		return F.ever_eq_h3index_th3index(cell, this.ptr);
+		return F.ever_eq_h3index_th3index(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_ne_h3index_th3index */
 	reverNe(cell: H3Index): number {
-		return F.ever_ne_h3index_th3index(cell, this.ptr);
+		return F.ever_ne_h3index_th3index(cell.value, this.ptr);
 	}
 
 	/** MEOS: teq_h3index_th3index */
 	rteq(cell: H3Index): Temporal {
-		return wrapTemporal(F.teq_h3index_th3index(cell, this.ptr)) as Temporal;
+		return wrapTemporal(F.teq_h3index_th3index(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tne_h3index_th3index */
 	rtne(cell: H3Index): Temporal {
-		return wrapTemporal(F.tne_h3index_th3index(cell, this.ptr)) as Temporal;
+		return wrapTemporal(F.tne_h3index_th3index(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: th3index_start_value */
 	startValue(): H3Index {
-		return F.th3index_start_value(this.ptr);
+		return new H3Index(F.th3index_start_value(this.ptr));
 	}
 
 	/** MEOS: teq_th3index_h3index, teq_th3index_th3index, chosen by the arguments' types */
 	override teq(cell: H3Index | TH3Index | Temporal): Temporal | null {
 		if (cell instanceof TH3Index) return this._teq_th3index_th3index(cell as TH3Index);
-		if (typeof cell === 'bigint') return this._teq_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._teq_th3index_h3index(cell as H3Index);
 		return super.teq(cell as Temporal);
 	}
 
@@ -20066,7 +20853,7 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: tne_th3index_h3index, tne_th3index_th3index, chosen by the arguments' types */
 	override tne(cell: H3Index | TH3Index | Temporal): Temporal | null {
 		if (cell instanceof TH3Index) return this._tne_th3index_th3index(cell as TH3Index);
-		if (typeof cell === 'bigint') return this._tne_th3index_h3index(cell as H3Index);
+		if (cell instanceof H3Index) return this._tne_th3index_h3index(cell as H3Index);
 		return super.tne(cell as Temporal);
 	}
 
@@ -20096,7 +20883,7 @@ export class TH3Index extends TCellIndex {
 	}
 
 	/** MEOS: th3index_unnest */
-	unnest(): [SpanSet[], bigint[]] {
+	unnest(): [SpanSet[], H3Index[]] {
 		const _values = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -20107,8 +20894,8 @@ export class TH3Index extends TCellIndex {
 			try {
 				const _o0: SpanSet[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: H3Index[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new H3Index(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -20122,21 +20909,21 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: th3index_value */
 	value(): H3Index {
-		return F.th3index_value(this.ptr);
+		return new H3Index(F.th3index_value(this.ptr));
 	}
 
 	/** MEOS: th3index_value_at_timestamptz */
 	valueAtTimestamptz(t: TimestampTz, strict: boolean): H3Index {
-		return F.th3index_value_at_timestamptz(this.ptr, t, strict);
+		return new H3Index(F.th3index_value_at_timestamptz(this.ptr, t, strict));
 	}
 
 	/** MEOS: th3index_value_n */
 	valueN(n: number): H3Index {
-		return F.th3index_value_n(this.ptr, n);
+		return new H3Index(F.th3index_value_n(this.ptr, n));
 	}
 
 	/** MEOS: th3index_values */
-	values(): bigint[] {
+	values(): H3Index[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.th3index_values(this.ptr, _count);
@@ -20144,8 +20931,8 @@ export class TH3Index extends TCellIndex {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: H3Index[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new H3Index(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -20167,7 +20954,7 @@ export class TH3Index extends TCellIndex {
 
 	/** MEOS: th3index_from_base_temp */
 	static fromBaseTemp(value: H3Index, temp: Temporal): TH3Index {
-		return wrapTemporal(F.th3index_from_base_temp(value, temp.ptr)) as TH3Index;
+		return wrapTemporal(F.th3index_from_base_temp(value.value, temp.ptr)) as TH3Index;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -20208,7 +20995,7 @@ export class TH3IndexInst extends TH3Index {
 
 	/** MEOS: th3indexinst_make */
 	static make(value: H3Index, t: TimestampTz): TH3IndexInst {
-		return wrapTemporal(F.th3indexinst_make(value, t)) as TH3IndexInst;
+		return wrapTemporal(F.th3indexinst_make(value.value, t)) as TH3IndexInst;
 	}
 }
 
@@ -20219,18 +21006,18 @@ export class TH3IndexSeq extends TH3Index {
 
 	/** MEOS: th3indexseq_from_base_tstzset */
 	static fromBaseTstzset(value: H3Index, s: Set): TH3IndexSeq {
-		return wrapTemporal(F.th3indexseq_from_base_tstzset(value, s.ptr)) as TH3IndexSeq;
+		return wrapTemporal(F.th3indexseq_from_base_tstzset(value.value, s.ptr)) as TH3IndexSeq;
 	}
 
 	/** MEOS: th3indexseq_from_base_tstzspan */
 	static fromBaseTstzspan(value: H3Index, s: Span): TH3IndexSeq {
-		return wrapTemporal(F.th3indexseq_from_base_tstzspan(value, s.ptr)) as TH3IndexSeq;
+		return wrapTemporal(F.th3indexseq_from_base_tstzspan(value.value, s.ptr)) as TH3IndexSeq;
 	}
 
 	/** MEOS: th3indexseq_make */
-	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TH3IndexSeq {
+	static make(values: H3Index[], times: number[], lower_inc: boolean, upper_inc: boolean): TH3IndexSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
 		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
 		try {
@@ -20249,7 +21036,7 @@ export class TH3IndexSeqSet extends TH3Index {
 
 	/** MEOS: th3indexseqset_from_base_tstzspanset */
 	static fromBaseTstzspanset(value: H3Index, ss: SpanSet): TH3IndexSeqSet {
-		return wrapTemporal(F.th3indexseqset_from_base_tstzspanset(value, ss.ptr)) as TH3IndexSeqSet;
+		return wrapTemporal(F.th3indexseqset_from_base_tstzspanset(value.value, ss.ptr)) as TH3IndexSeqSet;
 	}
 
 	/** MEOS: th3indexseqset_make */
@@ -21599,6 +22386,11 @@ export class TNPoint extends TSpatial {
 		return F.always_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tnpoint_stbox */
+	private _always_overlaps_tnpoint_stbox(box: STBox): number {
+		return F.always_overlaps_tnpoint_stbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: contained_rid_tnpoint_bigintset */
 	private _contained_rid_tnpoint_bigintset(s: BigIntSet): boolean {
 		return F.contained_rid_tnpoint_bigintset(this.ptr, s.ptr);
@@ -21647,6 +22439,11 @@ export class TNPoint extends TSpatial {
 	/** MEOS: ever_ne_tnpoint_tnpoint */
 	private _ever_ne_tnpoint_tnpoint(temp2: TNPoint): number {
 		return F.ever_ne_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tnpoint_stbox */
+	private _ever_overlaps_tnpoint_stbox(box: STBox): number {
+		return F.ever_overlaps_tnpoint_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: nad_tnpoint_geo */
@@ -21768,6 +22565,12 @@ export class TNPoint extends TSpatial {
 		return super.alwaysNe(np as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tnpoint_stbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._always_overlaps_tnpoint_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tnpoint_at_geom */
 	atGeom(gs: Geo): this | null {
 		return wrapTemporalOrNull(F.tnpoint_at_geom(this.ptr, gs.ptr)) as this | null;
@@ -21826,6 +22629,12 @@ export class TNPoint extends TSpatial {
 		if (np instanceof TNPoint) return this._ever_ne_tnpoint_tnpoint(np as TNPoint);
 		if (np instanceof NPoint) return this._ever_ne_tnpoint_npoint(np as NPoint);
 		return super.everNe(np as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tnpoint_stbox, chosen by the arguments' types */
+	override everOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._ever_overlaps_tnpoint_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tnpoint_length */
@@ -22821,6 +23630,11 @@ export class TPCPatch extends TSpatial {
 		return super.alwaysNe(pa as Temporal);
 	}
 
+	/** MEOS: tpcpatch_at_tpcbox */
+	atTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_at_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
+	}
+
 	/** MEOS: tpcpatch_at_value */
 	atValue(pa: PCPatch): this | null {
 		return wrapTemporalOrNull(F.tpcpatch_at_value(this.ptr, pa.ptr)) as this | null;
@@ -22848,6 +23662,11 @@ export class TPCPatch extends TSpatial {
 		if (pa instanceof TPCPatch) return this._ever_ne_tpcpatch_tpcpatch(pa as TPCPatch);
 		if (pa instanceof PCPatch) return this._ever_ne_tpcpatch_pcpatch(pa as PCPatch);
 		return super.everNe(pa as Temporal);
+	}
+
+	/** MEOS: tpcpatch_minus_tpcbox */
+	minusTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_minus_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tpcpatch_minus_value */
@@ -23136,6 +23955,11 @@ export class TPCPoint extends TSpatial {
 		return super.alwaysNe(pt as Temporal);
 	}
 
+	/** MEOS: tpcpoint_at_tpcbox */
+	atTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpoint_at_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
+	}
+
 	/** MEOS: tpcpoint_at_value */
 	atValue(pt: PCPoint): this | null {
 		return wrapTemporalOrNull(F.tpcpoint_at_value(this.ptr, pt.ptr)) as this | null;
@@ -23163,6 +23987,11 @@ export class TPCPoint extends TSpatial {
 		if (pt instanceof TPCPoint) return this._ever_ne_tpcpoint_tpcpoint(pt as TPCPoint);
 		if (pt instanceof PCPoint) return this._ever_ne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.everNe(pt as Temporal);
+	}
+
+	/** MEOS: tpcpoint_minus_tpcbox */
+	minusTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpoint_minus_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tpcpoint_minus_value */
@@ -23392,6 +24221,16 @@ export class TPose extends TSpatial {
 		return F.always_ne_tpose_tpose(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tpose_stbox */
+	private _always_overlaps_tpose_stbox(box: STBox): number {
+		return F.always_overlaps_tpose_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: always_overlaps_tpose_tpose */
+	private _always_overlaps_tpose_tpose(temp2: TPose): number {
+		return F.always_overlaps_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
 	/** MEOS: ever_eq_tpose_pose */
 	private _ever_eq_tpose_pose(pose: Pose): number {
 		return F.ever_eq_tpose_pose(this.ptr, pose.ptr);
@@ -23410,6 +24249,16 @@ export class TPose extends TSpatial {
 	/** MEOS: ever_ne_tpose_tpose */
 	private _ever_ne_tpose_tpose(temp2: TPose): number {
 		return F.ever_ne_tpose_tpose(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpose_stbox */
+	private _ever_overlaps_tpose_stbox(box: STBox): number {
+		return F.ever_overlaps_tpose_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpose_tpose */
+	private _ever_overlaps_tpose_tpose(temp2: TPose): number {
+		return F.ever_overlaps_tpose_tpose(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tpose_geo */
@@ -23501,6 +24350,13 @@ export class TPose extends TSpatial {
 		return super.alwaysNe(pose as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tpose_stbox, always_overlaps_tpose_tpose, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | TPose | Temporal): number {
+		if (box instanceof TPose) return this._always_overlaps_tpose_tpose(box as TPose);
+		if (box instanceof STBox) return this._always_overlaps_tpose_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tpose_angular_speed */
 	angularSpeed(): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_angular_speed(this.ptr)) as Temporal | null;
@@ -23578,6 +24434,13 @@ export class TPose extends TSpatial {
 		if (pose instanceof TPose) return this._ever_ne_tpose_tpose(pose as TPose);
 		if (pose instanceof Pose) return this._ever_ne_tpose_pose(pose as Pose);
 		return super.everNe(pose as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tpose_stbox, ever_overlaps_tpose_tpose, chosen by the arguments' types */
+	override everOverlaps(box: STBox | TPose | Temporal): number {
+		if (box instanceof TPose) return this._ever_overlaps_tpose_tpose(box as TPose);
+		if (box instanceof STBox) return this._ever_overlaps_tpose_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tpose_force2d */
@@ -24333,7 +25196,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: always_eq_tquadbin_quadbin */
 	private _always_eq_tquadbin_quadbin(cell: Quadbin): number {
-		return F.always_eq_tquadbin_quadbin(this.ptr, cell);
+		return F.always_eq_tquadbin_quadbin(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_eq_tquadbin_tquadbin */
@@ -24343,7 +25206,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: always_ne_tquadbin_quadbin */
 	private _always_ne_tquadbin_quadbin(cell: Quadbin): number {
-		return F.always_ne_tquadbin_quadbin(this.ptr, cell);
+		return F.always_ne_tquadbin_quadbin(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_ne_tquadbin_tquadbin */
@@ -24353,7 +25216,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: ever_eq_tquadbin_quadbin */
 	private _ever_eq_tquadbin_quadbin(cell: Quadbin): number {
-		return F.ever_eq_tquadbin_quadbin(this.ptr, cell);
+		return F.ever_eq_tquadbin_quadbin(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_eq_tquadbin_quadbinset */
@@ -24368,7 +25231,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: ever_ne_tquadbin_quadbin */
 	private _ever_ne_tquadbin_quadbin(cell: Quadbin): number {
-		return F.ever_ne_tquadbin_quadbin(this.ptr, cell);
+		return F.ever_ne_tquadbin_quadbin(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_ne_tquadbin_tquadbin */
@@ -24378,7 +25241,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: teq_tquadbin_quadbin */
 	private _teq_tquadbin_quadbin(cell: Quadbin): Temporal {
-		return wrapTemporal(F.teq_tquadbin_quadbin(this.ptr, cell)) as Temporal;
+		return wrapTemporal(F.teq_tquadbin_quadbin(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: teq_tquadbin_tquadbin */
@@ -24388,7 +25251,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: tne_tquadbin_quadbin */
 	private _tne_tquadbin_quadbin(cell: Quadbin): Temporal {
-		return wrapTemporal(F.tne_tquadbin_quadbin(this.ptr, cell)) as Temporal;
+		return wrapTemporal(F.tne_tquadbin_quadbin(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: tne_tquadbin_tquadbin */
@@ -24399,20 +25262,20 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: always_eq_tquadbin_quadbin, always_eq_tquadbin_tquadbin, chosen by the arguments' types */
 	override alwaysEq(cell: Quadbin | TQuadbin | Temporal): number {
 		if (cell instanceof TQuadbin) return this._always_eq_tquadbin_tquadbin(cell as TQuadbin);
-		if (typeof cell === 'bigint') return this._always_eq_tquadbin_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._always_eq_tquadbin_quadbin(cell as Quadbin);
 		return super.alwaysEq(cell as Temporal);
 	}
 
 	/** MEOS: always_ne_tquadbin_quadbin, always_ne_tquadbin_tquadbin, chosen by the arguments' types */
 	override alwaysNe(cell: Quadbin | TQuadbin | Temporal): number {
 		if (cell instanceof TQuadbin) return this._always_ne_tquadbin_tquadbin(cell as TQuadbin);
-		if (typeof cell === 'bigint') return this._always_ne_tquadbin_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._always_ne_tquadbin_quadbin(cell as Quadbin);
 		return super.alwaysNe(cell as Temporal);
 	}
 
 	/** MEOS: tquadbin_at_value */
 	atValue(cell: Quadbin): this | null {
-		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell)) as this | null;
+		return wrapTemporalOrNull(F.tquadbin_at_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TQuadbin */
@@ -24437,21 +25300,21 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: tquadbin_end_value */
 	endValue(): Quadbin {
-		return F.tquadbin_end_value(this.ptr);
+		return new Quadbin(F.tquadbin_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_tquadbin_quadbinset, ever_eq_tquadbin_quadbin, ever_eq_tquadbin_tquadbin, chosen by the arguments' types */
 	override everEq(cells: QuadbinSet | Quadbin | TQuadbin | Temporal): number {
 		if (cells instanceof QuadbinSet) return this._ever_eq_tquadbin_quadbinset(cells as QuadbinSet);
 		if (cells instanceof TQuadbin) return this._ever_eq_tquadbin_tquadbin(cells as TQuadbin);
-		if (typeof cells === 'bigint') return this._ever_eq_tquadbin_quadbin(cells as Quadbin);
+		if (cells instanceof Quadbin) return this._ever_eq_tquadbin_quadbin(cells as Quadbin);
 		return super.everEq(cells as Temporal);
 	}
 
 	/** MEOS: ever_ne_tquadbin_quadbin, ever_ne_tquadbin_tquadbin, chosen by the arguments' types */
 	override everNe(cell: Quadbin | TQuadbin | Temporal): number {
 		if (cell instanceof TQuadbin) return this._ever_ne_tquadbin_tquadbin(cell as TQuadbin);
-		if (typeof cell === 'bigint') return this._ever_ne_tquadbin_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._ever_ne_tquadbin_quadbin(cell as Quadbin);
 		return super.everNe(cell as Temporal);
 	}
 
@@ -24472,48 +25335,48 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: tquadbin_minus_value */
 	minusValue(cell: Quadbin): this | null {
-		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell)) as this | null;
+		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: always_eq_quadbin_tquadbin */
 	ralwaysEq(cell: Quadbin): number {
-		return F.always_eq_quadbin_tquadbin(cell, this.ptr);
+		return F.always_eq_quadbin_tquadbin(cell.value, this.ptr);
 	}
 
 	/** MEOS: always_ne_quadbin_tquadbin */
 	ralwaysNe(cell: Quadbin): number {
-		return F.always_ne_quadbin_tquadbin(cell, this.ptr);
+		return F.always_ne_quadbin_tquadbin(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_eq_quadbin_tquadbin */
 	reverEq(cell: Quadbin): number {
-		return F.ever_eq_quadbin_tquadbin(cell, this.ptr);
+		return F.ever_eq_quadbin_tquadbin(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_ne_quadbin_tquadbin */
 	reverNe(cell: Quadbin): number {
-		return F.ever_ne_quadbin_tquadbin(cell, this.ptr);
+		return F.ever_ne_quadbin_tquadbin(cell.value, this.ptr);
 	}
 
 	/** MEOS: teq_quadbin_tquadbin */
 	rteq(cell: Quadbin): Temporal {
-		return wrapTemporal(F.teq_quadbin_tquadbin(cell, this.ptr)) as Temporal;
+		return wrapTemporal(F.teq_quadbin_tquadbin(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tne_quadbin_tquadbin */
 	rtne(cell: Quadbin): Temporal {
-		return wrapTemporal(F.tne_quadbin_tquadbin(cell, this.ptr)) as Temporal;
+		return wrapTemporal(F.tne_quadbin_tquadbin(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tquadbin_start_value */
 	startValue(): Quadbin {
-		return F.tquadbin_start_value(this.ptr);
+		return new Quadbin(F.tquadbin_start_value(this.ptr));
 	}
 
 	/** MEOS: teq_tquadbin_quadbin, teq_tquadbin_tquadbin, chosen by the arguments' types */
 	override teq(cell: Quadbin | TQuadbin | Temporal): Temporal | null {
 		if (cell instanceof TQuadbin) return this._teq_tquadbin_tquadbin(cell as TQuadbin);
-		if (typeof cell === 'bigint') return this._teq_tquadbin_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._teq_tquadbin_quadbin(cell as Quadbin);
 		return super.teq(cell as Temporal);
 	}
 
@@ -24525,7 +25388,7 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tne_tquadbin_quadbin, tne_tquadbin_tquadbin, chosen by the arguments' types */
 	override tne(cell: Quadbin | TQuadbin | Temporal): Temporal | null {
 		if (cell instanceof TQuadbin) return this._tne_tquadbin_tquadbin(cell as TQuadbin);
-		if (typeof cell === 'bigint') return this._tne_tquadbin_quadbin(cell as Quadbin);
+		if (cell instanceof Quadbin) return this._tne_tquadbin_quadbin(cell as Quadbin);
 		return super.tne(cell as Temporal);
 	}
 
@@ -24550,7 +25413,7 @@ export class TQuadbin extends TCellIndex {
 	}
 
 	/** MEOS: tquadbin_unnest */
-	unnest(): [SpanSet[], bigint[]] {
+	unnest(): [SpanSet[], Quadbin[]] {
 		const _values = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -24561,8 +25424,8 @@ export class TQuadbin extends TCellIndex {
 			try {
 				const _o0: SpanSet[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: Quadbin[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new Quadbin(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -24576,21 +25439,21 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: tquadbin_value */
 	value(): Quadbin {
-		return F.tquadbin_value(this.ptr);
+		return new Quadbin(F.tquadbin_value(this.ptr));
 	}
 
 	/** MEOS: tquadbin_value_at_timestamptz */
 	valueAtTimestamptz(t: TimestampTz, strict: boolean): Quadbin {
-		return F.tquadbin_value_at_timestamptz(this.ptr, t, strict);
+		return new Quadbin(F.tquadbin_value_at_timestamptz(this.ptr, t, strict));
 	}
 
 	/** MEOS: tquadbin_value_n */
 	valueN(n: number): Quadbin {
-		return F.tquadbin_value_n(this.ptr, n);
+		return new Quadbin(F.tquadbin_value_n(this.ptr, n));
 	}
 
 	/** MEOS: tquadbin_values */
-	values(): bigint[] {
+	values(): Quadbin[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tquadbin_values(this.ptr, _count);
@@ -24598,8 +25461,8 @@ export class TQuadbin extends TCellIndex {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: Quadbin[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new Quadbin(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -24616,7 +25479,7 @@ export class TQuadbin extends TCellIndex {
 
 	/** MEOS: tquadbin_from_base_temp */
 	static fromBaseTemp(value: Quadbin, temp: Temporal): TQuadbin {
-		return wrapTemporal(F.tquadbin_from_base_temp(value, temp.ptr)) as TQuadbin;
+		return wrapTemporal(F.tquadbin_from_base_temp(value.value, temp.ptr)) as TQuadbin;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -24657,7 +25520,7 @@ export class TQuadbinInst extends TQuadbin {
 
 	/** MEOS: tquadbininst_make */
 	static make(value: Quadbin, t: TimestampTz): TQuadbinInst {
-		return wrapTemporal(F.tquadbininst_make(value, t)) as TQuadbinInst;
+		return wrapTemporal(F.tquadbininst_make(value.value, t)) as TQuadbinInst;
 	}
 }
 
@@ -24668,18 +25531,18 @@ export class TQuadbinSeq extends TQuadbin {
 
 	/** MEOS: tquadbinseq_from_base_tstzset */
 	static fromBaseTstzset(value: Quadbin, s: Set): TQuadbinSeq {
-		return wrapTemporal(F.tquadbinseq_from_base_tstzset(value, s.ptr)) as TQuadbinSeq;
+		return wrapTemporal(F.tquadbinseq_from_base_tstzset(value.value, s.ptr)) as TQuadbinSeq;
 	}
 
 	/** MEOS: tquadbinseq_from_base_tstzspan */
 	static fromBaseTstzspan(value: Quadbin, s: Span): TQuadbinSeq {
-		return wrapTemporal(F.tquadbinseq_from_base_tstzspan(value, s.ptr)) as TQuadbinSeq;
+		return wrapTemporal(F.tquadbinseq_from_base_tstzspan(value.value, s.ptr)) as TQuadbinSeq;
 	}
 
 	/** MEOS: tquadbinseq_make */
-	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TQuadbinSeq {
+	static make(values: Quadbin[], times: number[], lower_inc: boolean, upper_inc: boolean): TQuadbinSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
 		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
 		try {
@@ -24698,7 +25561,7 @@ export class TQuadbinSeqSet extends TQuadbin {
 
 	/** MEOS: tquadbinseqset_from_base_tstzspanset */
 	static fromBaseTstzspanset(value: Quadbin, ss: SpanSet): TQuadbinSeqSet {
-		return wrapTemporal(F.tquadbinseqset_from_base_tstzspanset(value, ss.ptr)) as TQuadbinSeqSet;
+		return wrapTemporal(F.tquadbinseqset_from_base_tstzspanset(value.value, ss.ptr)) as TQuadbinSeqSet;
 	}
 
 	/** MEOS: tquadbinseqset_make */
@@ -24772,6 +25635,11 @@ export class TRGeometry extends TSpatial {
 		return F.always_ne_trgeometry_trgeometry(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_trgeometry_stbox */
+	private _always_overlaps_trgeometry_stbox(box: STBox): number {
+		return F.always_overlaps_trgeometry_stbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: edisjoint_trgeometry_geo */
 	private _edisjoint_trgeometry_geo(gs: Geometry): number {
 		return F.edisjoint_trgeometry_geo(this.ptr, gs.ptr);
@@ -24820,6 +25688,11 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: ever_ne_trgeometry_trgeometry */
 	private _ever_ne_trgeometry_trgeometry(temp2: TRGeometry): number {
 		return F.ever_ne_trgeometry_trgeometry(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_trgeometry_stbox */
+	private _ever_overlaps_trgeometry_stbox(box: STBox): number {
+		return F.ever_overlaps_trgeometry_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: nad_trgeometry_geo */
@@ -24946,11 +25819,6 @@ export class TRGeometry extends TSpatial {
 		throw new TypeError(`TRGeometry.adwithin: no overload takes these arguments`);
 	}
 
-	/** MEOS: trgeometry_after_timestamptz */
-	override afterTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_after_timestamptz(this.ptr, t, strict)) as this | null;
-	}
-
 	/** MEOS: aintersects_trgeometry_geo, aintersects_trgeometry_trgeometry, chosen by the arguments' types */
 	aintersects(gs: Geometry | TRGeometry): number {
 		if (gs instanceof Geometry) return this._aintersects_trgeometry_geo(gs as Geometry);
@@ -24972,24 +25840,15 @@ export class TRGeometry extends TSpatial {
 		return super.alwaysNe(gs as Temporal);
 	}
 
+	/** MEOS: always_overlaps_trgeometry_stbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._always_overlaps_trgeometry_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: trgeometry_angular_speed */
 	angularSpeed(): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_angular_speed(this.ptr)) as Temporal | null;
-	}
-
-	/** MEOS: trgeometry_append_tinstant */
-	override appendTinstant(inst: Temporal, interp: string, maxdist: number, maxt: Interval, expand: boolean): this {
-		const _maxt = _putInterval(maxt);
-		try {
-			return wrapTemporal(F.trgeometry_append_tinstant(this.ptr, inst.ptr, F.interptype_from_string(interp), maxdist, _maxt, expand)) as this;
-		} finally {
-			_free(_maxt);
-		}
-	}
-
-	/** MEOS: trgeometry_append_tsequence */
-	override appendTsequence(seq: Temporal, expand: boolean): this {
-		return wrapTemporal(F.trgeometry_append_tsequence(this.ptr, seq.ptr, expand)) as this;
 	}
 
 	/** MEOS: trgeometry_as_ewkt */
@@ -25032,39 +25891,9 @@ export class TRGeometry extends TSpatial {
 		return wrapTemporalOrNull(F.trgeometry_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
-	/** MEOS: trgeometry_at_timestamptz */
-	override atTimestamptz(t: TimestampTz): this | null {
-		return wrapTemporalOrNull(F.trgeometry_at_timestamptz(this.ptr, t)) as this | null;
-	}
-
-	/** MEOS: trgeometry_at_tstzset */
-	override atTstzset(s: Set): this | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzset(this.ptr, s.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_at_tstzspan */
-	override atTstzspan(s: Span): this | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzspan(this.ptr, s.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_at_tstzspanset */
-	override atTstzspanset(ss: SpanSet): this | null {
-		return wrapTemporalOrNull(F.trgeometry_at_tstzspanset(this.ptr, ss.ptr)) as this | null;
-	}
-
 	/** MEOS: trgeometry_at_value */
 	atValue(pose: Pose): this | null {
 		return wrapTemporalOrNull(F.trgeometry_at_value(this.ptr, pose.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_at_values */
-	override atValues(s: Set): this | null {
-		return wrapTemporalOrNull(F.trgeometry_at_values(this.ptr, s.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_before_timestamptz */
-	override beforeTimestamptz(t: TimestampTz, strict: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_before_timestamptz(this.ptr, t, strict)) as this | null;
 	}
 
 	/** MEOS: trgeometry_body_point_trajectory */
@@ -25085,26 +25914,6 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_cumulative_length */
 	cumulativeLength(): Temporal {
 		return wrapTemporal(F.trgeometry_cumulative_length(this.ptr)) as Temporal;
-	}
-
-	/** MEOS: trgeometry_delete_timestamptz */
-	override deleteTimestamptz(t: TimestampTz, connect: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_timestamptz(this.ptr, t, connect)) as this | null;
-	}
-
-	/** MEOS: trgeometry_delete_tstzset */
-	override deleteTstzset(s: Set, connect: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzset(this.ptr, s.ptr, connect)) as this | null;
-	}
-
-	/** MEOS: trgeometry_delete_tstzspan */
-	override deleteTstzspan(s: Span, connect: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzspan(this.ptr, s.ptr, connect)) as this | null;
-	}
-
-	/** MEOS: trgeometry_delete_tstzspanset */
-	override deleteTstzspanset(ss: SpanSet, connect: boolean = true): this | null {
-		return wrapTemporalOrNull(F.trgeometry_delete_tstzspanset(this.ptr, ss.ptr, connect)) as this | null;
 	}
 
 	/** MEOS: ecovers_trgeometry_geo */
@@ -25133,16 +25942,6 @@ export class TRGeometry extends TSpatial {
 		throw new TypeError(`TRGeometry.eintersects: no overload takes these arguments`);
 	}
 
-	/** MEOS: trgeometry_end_instant */
-	override endInstant(): this {
-		return wrapTemporal(F.trgeometry_end_instant(this.ptr)) as this;
-	}
-
-	/** MEOS: trgeometry_end_sequence */
-	override endSequence(): this {
-		return wrapTemporal(F.trgeometry_end_sequence(this.ptr)) as this;
-	}
-
 	/** MEOS: trgeometry_end_value */
 	endValue(): Geo {
 		return wrapGeo(F.trgeometry_end_value(this.ptr)) as Geo;
@@ -25167,6 +25966,12 @@ export class TRGeometry extends TSpatial {
 		return super.everNe(gs as Temporal);
 	}
 
+	/** MEOS: ever_overlaps_trgeometry_stbox, chosen by the arguments' types */
+	override everOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._ever_overlaps_trgeometry_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
+	}
+
 	/** MEOS: trgeometry_force2d */
 	force2d(): this {
 		return wrapTemporal(F.trgeometry_force2d(this.ptr)) as this;
@@ -25177,39 +25982,9 @@ export class TRGeometry extends TSpatial {
 		return wrapGeo(F.trgeometry_geom(this.ptr)) as Geo;
 	}
 
-	/** MEOS: trgeometry_instant_n */
-	override instantN(n: number): this | null {
-		return wrapTemporalOrNull(F.trgeometry_instant_n(this.ptr, n)) as this | null;
-	}
-
-	/** MEOS: trgeometry_instants */
-	override instants(): Temporal[] {
-		const _count = _alloc(4);
-		try {
-			const _arr = F.trgeometry_instants(this.ptr, _count);
-			if (!_arr) return [];
-			try {
-				const _n = _view(_count, 4).getInt32(0, true);
-				const _v = _view(_arr, _n * 8);
-				const _out: Temporal[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal);
-				return _out;
-			} finally {
-				_free(_arr);
-			}
-		} finally {
-			_free(_count);
-		}
-	}
-
 	/** MEOS: trgeometry_length */
 	length(): number {
 		return F.trgeometry_length(this.ptr);
-	}
-
-	/** MEOS: trgeometry_merge */
-	override merge(temp2: Temporal): this | null {
-		return wrapTemporalOrNull(F.trgeometry_merge(this.ptr, temp2.ptr)) as this | null;
 	}
 
 	/** MEOS: trgeometry_minus_geom */
@@ -25222,34 +25997,9 @@ export class TRGeometry extends TSpatial {
 		return wrapTemporalOrNull(F.trgeometry_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
-	/** MEOS: trgeometry_minus_timestamptz */
-	override minusTimestamptz(t: TimestampTz): this | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_timestamptz(this.ptr, t)) as this | null;
-	}
-
-	/** MEOS: trgeometry_minus_tstzset */
-	override minusTstzset(s: Set): this | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzset(this.ptr, s.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_minus_tstzspan */
-	override minusTstzspan(s: Span): this | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzspan(this.ptr, s.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_minus_tstzspanset */
-	override minusTstzspanset(ss: SpanSet): this | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_tstzspanset(this.ptr, ss.ptr)) as this | null;
-	}
-
 	/** MEOS: trgeometry_minus_value */
 	minusValue(pose: Pose): this | null {
 		return wrapTemporalOrNull(F.trgeometry_minus_value(this.ptr, pose.ptr)) as this | null;
-	}
-
-	/** MEOS: trgeometry_minus_values */
-	override minusValues(s: Set): this | null {
-		return wrapTemporalOrNull(F.trgeometry_minus_values(this.ptr, s.ptr)) as this | null;
 	}
 
 	/** MEOS: nad_trgeometry_geo, nad_trgeometry_stbox, nad_trgeometry_tpoint, nad_trgeometry_trgeometry, chosen by the arguments' types */
@@ -25307,61 +26057,6 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_rotate_z */
 	rotateZ(angle: number): this {
 		return wrapTemporal(F.trgeometry_rotate_z(this.ptr, angle)) as this;
-	}
-
-	/** MEOS: trgeometry_round */
-	override round(maxdd: number = 0): this {
-		return wrapTemporal(F.trgeometry_round(this.ptr, maxdd)) as this;
-	}
-
-	/** MEOS: trgeometry_segments */
-	override segments(): Temporal[] {
-		const _count = _alloc(4);
-		try {
-			const _arr = F.trgeometry_segments(this.ptr, _count);
-			if (!_arr) return [];
-			try {
-				const _n = _view(_count, 4).getInt32(0, true);
-				const _v = _view(_arr, _n * 8);
-				const _out: Temporal[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal);
-				return _out;
-			} finally {
-				_free(_arr);
-			}
-		} finally {
-			_free(_count);
-		}
-	}
-
-	/** MEOS: trgeometry_sequence_n */
-	override sequenceN(i: number): this | null {
-		return wrapTemporalOrNull(F.trgeometry_sequence_n(this.ptr, i)) as this | null;
-	}
-
-	/** MEOS: trgeometry_sequences */
-	override sequences(): Temporal[] {
-		const _count = _alloc(4);
-		try {
-			const _arr = F.trgeometry_sequences(this.ptr, _count);
-			if (!_arr) return [];
-			try {
-				const _n = _view(_count, 4).getInt32(0, true);
-				const _v = _view(_arr, _n * 8);
-				const _out: Temporal[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal);
-				return _out;
-			} finally {
-				_free(_arr);
-			}
-		} finally {
-			_free(_count);
-		}
-	}
-
-	/** MEOS: trgeometry_set_interp */
-	override setInterp(interp: string): this {
-		return wrapTemporal(F.trgeometry_set_interp(this.ptr, F.interptype_from_string(interp))) as this;
 	}
 
 	/** MEOS: shortestline_trgeometry_geo, shortestline_trgeometry_tpoint, shortestline_trgeometry_trgeometry, chosen by the arguments' types */
@@ -25457,16 +26152,6 @@ export class TRGeometry extends TSpatial {
 		} finally {
 			_free(_count);
 		}
-	}
-
-	/** MEOS: trgeometry_start_instant */
-	override startInstant(): this {
-		return wrapTemporal(F.trgeometry_start_instant(this.ptr)) as this;
-	}
-
-	/** MEOS: trgeometry_start_sequence */
-	override startSequence(): this {
-		return wrapTemporal(F.trgeometry_start_sequence(this.ptr)) as this;
 	}
 
 	/** MEOS: trgeometry_start_value */
@@ -25711,16 +26396,6 @@ export class TRGeometry extends TSpatial {
 	static in(str: string): TRGeometry {
 		return wrapTemporal(F.trgeometry_in(str)) as TRGeometry;
 	}
-
-	/** MEOS: trgeometry_merge_array */
-	static mergeArray(temparr: Temporal[]): Temporal {
-		const _temparr = _ptrArray(temparr.map(x => x.ptr));
-		try {
-			return wrapTemporal(F.trgeometry_merge_array(_temparr, temparr.length)) as Temporal;
-		} finally {
-			_free(_temparr);
-		}
-	}
 }
 
 /**
@@ -25789,8 +26464,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: always_eq_ts2cell_s2cell */
-	private _always_eq_ts2cell_s2cell(cell: S2CellId): number {
-		return F.always_eq_ts2cell_s2cell(this.ptr, cell);
+	private _always_eq_ts2cell_s2cell(cell: S2Cell): number {
+		return F.always_eq_ts2cell_s2cell(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_eq_ts2cell_ts2cell */
@@ -25799,8 +26474,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: always_ne_ts2cell_s2cell */
-	private _always_ne_ts2cell_s2cell(cell: S2CellId): number {
-		return F.always_ne_ts2cell_s2cell(this.ptr, cell);
+	private _always_ne_ts2cell_s2cell(cell: S2Cell): number {
+		return F.always_ne_ts2cell_s2cell(this.ptr, cell.value);
 	}
 
 	/** MEOS: always_ne_ts2cell_ts2cell */
@@ -25809,8 +26484,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ever_eq_ts2cell_s2cell */
-	private _ever_eq_ts2cell_s2cell(cell: S2CellId): number {
-		return F.ever_eq_ts2cell_s2cell(this.ptr, cell);
+	private _ever_eq_ts2cell_s2cell(cell: S2Cell): number {
+		return F.ever_eq_ts2cell_s2cell(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_eq_ts2cell_s2cellset */
@@ -25824,8 +26499,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ever_ne_ts2cell_s2cell */
-	private _ever_ne_ts2cell_s2cell(cell: S2CellId): number {
-		return F.ever_ne_ts2cell_s2cell(this.ptr, cell);
+	private _ever_ne_ts2cell_s2cell(cell: S2Cell): number {
+		return F.ever_ne_ts2cell_s2cell(this.ptr, cell.value);
 	}
 
 	/** MEOS: ever_ne_ts2cell_ts2cell */
@@ -25834,8 +26509,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: teq_ts2cell_s2cell */
-	private _teq_ts2cell_s2cell(cell: S2CellId): Temporal {
-		return wrapTemporal(F.teq_ts2cell_s2cell(this.ptr, cell)) as Temporal;
+	private _teq_ts2cell_s2cell(cell: S2Cell): Temporal {
+		return wrapTemporal(F.teq_ts2cell_s2cell(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: teq_ts2cell_ts2cell */
@@ -25844,8 +26519,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: tne_ts2cell_s2cell */
-	private _tne_ts2cell_s2cell(cell: S2CellId): Temporal {
-		return wrapTemporal(F.tne_ts2cell_s2cell(this.ptr, cell)) as Temporal;
+	private _tne_ts2cell_s2cell(cell: S2Cell): Temporal {
+		return wrapTemporal(F.tne_ts2cell_s2cell(this.ptr, cell.value)) as Temporal;
 	}
 
 	/** MEOS: tne_ts2cell_ts2cell */
@@ -25854,22 +26529,22 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: always_eq_ts2cell_s2cell, always_eq_ts2cell_ts2cell, chosen by the arguments' types */
-	override alwaysEq(cell: S2CellId | TS2Cell | Temporal): number {
+	override alwaysEq(cell: S2Cell | TS2Cell | Temporal): number {
 		if (cell instanceof TS2Cell) return this._always_eq_ts2cell_ts2cell(cell as TS2Cell);
-		if (typeof cell === 'bigint') return this._always_eq_ts2cell_s2cell(cell as S2CellId);
+		if (cell instanceof S2Cell) return this._always_eq_ts2cell_s2cell(cell as S2Cell);
 		return super.alwaysEq(cell as Temporal);
 	}
 
 	/** MEOS: always_ne_ts2cell_s2cell, always_ne_ts2cell_ts2cell, chosen by the arguments' types */
-	override alwaysNe(cell: S2CellId | TS2Cell | Temporal): number {
+	override alwaysNe(cell: S2Cell | TS2Cell | Temporal): number {
 		if (cell instanceof TS2Cell) return this._always_ne_ts2cell_ts2cell(cell as TS2Cell);
-		if (typeof cell === 'bigint') return this._always_ne_ts2cell_s2cell(cell as S2CellId);
+		if (cell instanceof S2Cell) return this._always_ne_ts2cell_s2cell(cell as S2Cell);
 		return super.alwaysNe(cell as Temporal);
 	}
 
 	/** MEOS: ts2cell_at_value */
-	atValue(cell: S2CellId): this | null {
-		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell)) as this | null;
+	atValue(cell: S2Cell): this | null {
+		return wrapTemporalOrNull(F.ts2cell_at_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: tcellindex_cell_area, which answers a TFloat for a TS2Cell */
@@ -25893,22 +26568,22 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_end_value */
-	endValue(): S2CellId {
-		return F.ts2cell_end_value(this.ptr);
+	endValue(): S2Cell {
+		return new S2Cell(F.ts2cell_end_value(this.ptr));
 	}
 
 	/** MEOS: ever_eq_ts2cell_s2cellset, ever_eq_ts2cell_s2cell, ever_eq_ts2cell_ts2cell, chosen by the arguments' types */
-	override everEq(cells: S2CellSet | S2CellId | TS2Cell | Temporal): number {
+	override everEq(cells: S2CellSet | S2Cell | TS2Cell | Temporal): number {
 		if (cells instanceof S2CellSet) return this._ever_eq_ts2cell_s2cellset(cells as S2CellSet);
 		if (cells instanceof TS2Cell) return this._ever_eq_ts2cell_ts2cell(cells as TS2Cell);
-		if (typeof cells === 'bigint') return this._ever_eq_ts2cell_s2cell(cells as S2CellId);
+		if (cells instanceof S2Cell) return this._ever_eq_ts2cell_s2cell(cells as S2Cell);
 		return super.everEq(cells as Temporal);
 	}
 
 	/** MEOS: ever_ne_ts2cell_s2cell, ever_ne_ts2cell_ts2cell, chosen by the arguments' types */
-	override everNe(cell: S2CellId | TS2Cell | Temporal): number {
+	override everNe(cell: S2Cell | TS2Cell | Temporal): number {
 		if (cell instanceof TS2Cell) return this._ever_ne_ts2cell_ts2cell(cell as TS2Cell);
-		if (typeof cell === 'bigint') return this._ever_ne_ts2cell_s2cell(cell as S2CellId);
+		if (cell instanceof S2Cell) return this._ever_ne_ts2cell_s2cell(cell as S2Cell);
 		return super.everNe(cell as Temporal);
 	}
 
@@ -25928,49 +26603,49 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_minus_value */
-	minusValue(cell: S2CellId): this | null {
-		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell)) as this | null;
+	minusValue(cell: S2Cell): this | null {
+		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell.value)) as this | null;
 	}
 
 	/** MEOS: always_eq_s2cell_ts2cell */
-	ralwaysEq(cell: S2CellId): number {
-		return F.always_eq_s2cell_ts2cell(cell, this.ptr);
+	ralwaysEq(cell: S2Cell): number {
+		return F.always_eq_s2cell_ts2cell(cell.value, this.ptr);
 	}
 
 	/** MEOS: always_ne_s2cell_ts2cell */
-	ralwaysNe(cell: S2CellId): number {
-		return F.always_ne_s2cell_ts2cell(cell, this.ptr);
+	ralwaysNe(cell: S2Cell): number {
+		return F.always_ne_s2cell_ts2cell(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_eq_s2cell_ts2cell */
-	reverEq(cell: S2CellId): number {
-		return F.ever_eq_s2cell_ts2cell(cell, this.ptr);
+	reverEq(cell: S2Cell): number {
+		return F.ever_eq_s2cell_ts2cell(cell.value, this.ptr);
 	}
 
 	/** MEOS: ever_ne_s2cell_ts2cell */
-	reverNe(cell: S2CellId): number {
-		return F.ever_ne_s2cell_ts2cell(cell, this.ptr);
+	reverNe(cell: S2Cell): number {
+		return F.ever_ne_s2cell_ts2cell(cell.value, this.ptr);
 	}
 
 	/** MEOS: teq_s2cell_ts2cell */
-	rteq(cell: S2CellId): Temporal {
-		return wrapTemporal(F.teq_s2cell_ts2cell(cell, this.ptr)) as Temporal;
+	rteq(cell: S2Cell): Temporal {
+		return wrapTemporal(F.teq_s2cell_ts2cell(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tne_s2cell_ts2cell */
-	rtne(cell: S2CellId): Temporal {
-		return wrapTemporal(F.tne_s2cell_ts2cell(cell, this.ptr)) as Temporal;
+	rtne(cell: S2Cell): Temporal {
+		return wrapTemporal(F.tne_s2cell_ts2cell(cell.value, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: ts2cell_start_value */
-	startValue(): S2CellId {
-		return F.ts2cell_start_value(this.ptr);
+	startValue(): S2Cell {
+		return new S2Cell(F.ts2cell_start_value(this.ptr));
 	}
 
 	/** MEOS: teq_ts2cell_s2cell, teq_ts2cell_ts2cell, chosen by the arguments' types */
-	override teq(cell: S2CellId | TS2Cell | Temporal): Temporal | null {
+	override teq(cell: S2Cell | TS2Cell | Temporal): Temporal | null {
 		if (cell instanceof TS2Cell) return this._teq_ts2cell_ts2cell(cell as TS2Cell);
-		if (typeof cell === 'bigint') return this._teq_ts2cell_s2cell(cell as S2CellId);
+		if (cell instanceof S2Cell) return this._teq_ts2cell_s2cell(cell as S2Cell);
 		return super.teq(cell as Temporal);
 	}
 
@@ -25980,9 +26655,9 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: tne_ts2cell_s2cell, tne_ts2cell_ts2cell, chosen by the arguments' types */
-	override tne(cell: S2CellId | TS2Cell | Temporal): Temporal | null {
+	override tne(cell: S2Cell | TS2Cell | Temporal): Temporal | null {
 		if (cell instanceof TS2Cell) return this._tne_ts2cell_ts2cell(cell as TS2Cell);
-		if (typeof cell === 'bigint') return this._tne_ts2cell_s2cell(cell as S2CellId);
+		if (cell instanceof S2Cell) return this._tne_ts2cell_s2cell(cell as S2Cell);
 		return super.tne(cell as Temporal);
 	}
 
@@ -26007,7 +26682,7 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_unnest */
-	unnest(): [SpanSet[], bigint[]] {
+	unnest(): [SpanSet[], S2Cell[]] {
 		const _values = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -26018,8 +26693,8 @@ export class TS2Cell extends TCellIndex {
 			try {
 				const _o0: SpanSet[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
-				const _o1: bigint[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigUint64(_i * 8, true)); }
+				const _o1: S2Cell[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(new S2Cell(_v.getBigUint64(_i * 8, true))); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -26032,22 +26707,22 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_value */
-	value(): S2CellId {
-		return F.ts2cell_value(this.ptr);
+	value(): S2Cell {
+		return new S2Cell(F.ts2cell_value(this.ptr));
 	}
 
 	/** MEOS: ts2cell_value_at_timestamptz */
-	valueAtTimestamptz(t: TimestampTz, strict: boolean): S2CellId {
-		return F.ts2cell_value_at_timestamptz(this.ptr, t, strict);
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): S2Cell {
+		return new S2Cell(F.ts2cell_value_at_timestamptz(this.ptr, t, strict));
 	}
 
 	/** MEOS: ts2cell_value_n */
-	valueN(n: number): S2CellId {
-		return F.ts2cell_value_n(this.ptr, n);
+	valueN(n: number): S2Cell {
+		return new S2Cell(F.ts2cell_value_n(this.ptr, n));
 	}
 
 	/** MEOS: ts2cell_values */
-	values(): bigint[] {
+	values(): S2Cell[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.ts2cell_values(this.ptr, _count);
@@ -26055,8 +26730,8 @@ export class TS2Cell extends TCellIndex {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: bigint[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigUint64(_i * 8, true));
+				const _out: S2Cell[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(new S2Cell(_v.getBigUint64(_i * 8, true)));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -26072,8 +26747,8 @@ export class TS2Cell extends TCellIndex {
 	}
 
 	/** MEOS: ts2cell_from_base_temp */
-	static fromBaseTemp(value: S2CellId, temp: Temporal): TS2Cell {
-		return wrapTemporal(F.ts2cell_from_base_temp(value, temp.ptr)) as TS2Cell;
+	static fromBaseTemp(value: S2Cell, temp: Temporal): TS2Cell {
+		return wrapTemporal(F.ts2cell_from_base_temp(value.value, temp.ptr)) as TS2Cell;
 	}
 
 	/** MEOS: temporal_from_wkb */
@@ -26113,8 +26788,8 @@ export class TS2Cell extends TCellIndex {
 export class TS2CellInst extends TS2Cell {
 
 	/** MEOS: ts2cellinst_make */
-	static make(value: S2CellId, t: TimestampTz): TS2CellInst {
-		return wrapTemporal(F.ts2cellinst_make(value, t)) as TS2CellInst;
+	static make(value: S2Cell, t: TimestampTz): TS2CellInst {
+		return wrapTemporal(F.ts2cellinst_make(value.value, t)) as TS2CellInst;
 	}
 }
 
@@ -26124,19 +26799,19 @@ export class TS2CellInst extends TS2Cell {
 export class TS2CellSeq extends TS2Cell {
 
 	/** MEOS: ts2cellseq_from_base_tstzset */
-	static fromBaseTstzset(value: S2CellId, s: Set): TS2CellSeq {
-		return wrapTemporal(F.ts2cellseq_from_base_tstzset(value, s.ptr)) as TS2CellSeq;
+	static fromBaseTstzset(value: S2Cell, s: Set): TS2CellSeq {
+		return wrapTemporal(F.ts2cellseq_from_base_tstzset(value.value, s.ptr)) as TS2CellSeq;
 	}
 
 	/** MEOS: ts2cellseq_from_base_tstzspan */
-	static fromBaseTstzspan(value: S2CellId, s: Span): TS2CellSeq {
-		return wrapTemporal(F.ts2cellseq_from_base_tstzspan(value, s.ptr)) as TS2CellSeq;
+	static fromBaseTstzspan(value: S2Cell, s: Span): TS2CellSeq {
+		return wrapTemporal(F.ts2cellseq_from_base_tstzspan(value.value, s.ptr)) as TS2CellSeq;
 	}
 
 	/** MEOS: ts2cellseq_make */
-	static make(values: bigint[], times: number[], lower_inc: boolean, upper_inc: boolean): TS2CellSeq {
+	static make(values: S2Cell[], times: number[], lower_inc: boolean, upper_inc: boolean): TS2CellSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x, true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
 		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
 		try {
@@ -26154,8 +26829,8 @@ export class TS2CellSeq extends TS2Cell {
 export class TS2CellSeqSet extends TS2Cell {
 
 	/** MEOS: ts2cellseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(value: S2CellId, ss: SpanSet): TS2CellSeqSet {
-		return wrapTemporal(F.ts2cellseqset_from_base_tstzspanset(value, ss.ptr)) as TS2CellSeqSet;
+	static fromBaseTstzspanset(value: S2Cell, ss: SpanSet): TS2CellSeqSet {
+		return wrapTemporal(F.ts2cellseqset_from_base_tstzspanset(value.value, ss.ptr)) as TS2CellSeqSet;
 	}
 
 	/** MEOS: ts2cellseqset_make */
@@ -27457,6 +28132,11 @@ export class TsTzSpan extends Span {
 		throw new TypeError(`TsTzSpan.after: no overload takes these arguments`);
 	}
 
+	/** MEOS: always_overlaps_tstzspan_temporal */
+	alwaysOverlaps(temp: TAlpha): number {
+		return F.always_overlaps_tstzspan_temporal(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: span_out */
 	asText(maxdd: number = 15): string {
 		return this.out(maxdd);
@@ -27517,6 +28197,11 @@ export class TsTzSpan extends Span {
 	/** MEOS: tstzspan_duration */
 	duration(): Interval {
 		return _takeInterval(F.tstzspan_duration(this.ptr))!;
+	}
+
+	/** MEOS: ever_overlaps_tstzspan_temporal */
+	everOverlaps(temp: TAlpha): number {
+		return F.ever_overlaps_tstzspan_temporal(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: tstzspan_expand */
