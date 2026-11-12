@@ -6947,6 +6947,36 @@ export function always_ne_ttext_text(temp: Ptr, txt: string): number {
 	return _r;
 }
 
+export function always_overlaps_tbox_tnumber(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_tbox_tnumber_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_temporal_temporal(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('always_overlaps_temporal_temporal_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_temporal_tstzspan(temp: Ptr, s: Ptr): number {
+	const _r = call<number>('always_overlaps_temporal_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tnumber_tbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_tnumber_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tstzspan_temporal(s: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_tstzspan_temporal_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_bool_tbool(b: boolean, temp: Ptr): number {
 	const _r = call<number>('ever_eq_bool_tbool_w', 'number', ['number', ptrArgType()], [b ? 1 : 0, ptrArgVal(temp)]);
 	checkMeosError();
@@ -7291,6 +7321,36 @@ export function ever_ne_tbigint_bigint(temp: Ptr, i: number): number {
 
 export function ever_ne_ttext_text(temp: Ptr, txt: string): number {
 	const _r = call<number>('ever_ne_ttext_text_w', 'number', [ptrArgType(), 'string'], [ptrArgVal(temp), txt]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tbox_tnumber(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_tbox_tnumber_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_temporal_temporal(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('ever_overlaps_temporal_temporal_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_temporal_tstzspan(temp: Ptr, s: Ptr): number {
+	const _r = call<number>('ever_overlaps_temporal_tstzspan_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tnumber_tbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_tnumber_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tstzspan_temporal(s: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_tstzspan_temporal_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -8537,20 +8597,14 @@ export function nad_bigintspan_tbox(s: Ptr, box: Ptr): number {
 	return _r;
 }
 
-export function nad_tboxfloat_tboxfloat(box1: Ptr, box2: Ptr): number {
-	const _r = call<number>('nad_tboxfloat_tboxfloat_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
+export function nad_tbox_tbox(box1: Ptr, box2: Ptr): number {
+	const _r = call<number>('nad_tbox_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
 	checkMeosError();
 	return _r;
 }
 
 export function nad_floatspan_tbox(s: Ptr, box: Ptr): number {
 	const _r = call<number>('nad_floatspan_tbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(s), ptrArgVal(box)]);
-	checkMeosError();
-	return _r;
-}
-
-export function nad_tboxint_tboxint(box1: Ptr, box2: Ptr): number {
-	const _r = call<number>('nad_tboxint_tboxint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]);
 	checkMeosError();
 	return _r;
 }
@@ -8605,12 +8659,6 @@ export function nad_tbigint_tbox(temp: Ptr, box: Ptr): number {
 
 export function nad_tbigint_tbigint(temp1: Ptr, temp2: Ptr): number {
 	const _r = Number(call<bigint>('nad_tbigint_tbigint_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]));
-	checkMeosError();
-	return _r;
-}
-
-export function nad_tboxbigint_tboxbigint(box1: Ptr, box2: Ptr): number {
-	const _r = Number(call<bigint>('nad_tboxbigint_tboxbigint_w', 'bigint', [ptrArgType(), ptrArgType()], [ptrArgVal(box1), ptrArgVal(box2)]));
 	checkMeosError();
 	return _r;
 }
@@ -11167,6 +11215,24 @@ export function always_ne_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function always_overlaps_stbox_tgeo(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_stbox_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tgeo_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_tgeo_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('always_overlaps_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_geo_tgeo(gs: Ptr, temp: Ptr): number {
 	const _r = call<number>('ever_eq_geo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
@@ -11199,6 +11265,24 @@ export function ever_ne_tgeo_geo(temp: Ptr, gs: Ptr): number {
 
 export function ever_ne_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('ever_ne_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_stbox_tgeo(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_stbox_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tgeo_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_tgeo_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tgeo_tgeo(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('ever_overlaps_tgeo_tgeo_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
@@ -12978,6 +13062,18 @@ export function always_ne_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function always_overlaps_stbox_tcbuffer(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_stbox_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tcbuffer_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_tcbuffer_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_cbuffer_tcbuffer(cb: Ptr, temp: Ptr): number {
 	const _r = call<number>('ever_eq_cbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(cb), ptrArgVal(temp)]);
 	checkMeosError();
@@ -13010,6 +13106,18 @@ export function ever_ne_tcbuffer_cbuffer(temp: Ptr, cb: Ptr): number {
 
 export function ever_ne_tcbuffer_tcbuffer(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('ever_ne_tcbuffer_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_stbox_tcbuffer(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_stbox_tcbuffer_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tcbuffer_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_tcbuffer_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }
@@ -14796,8 +14904,8 @@ export function jsonb_path_exists(jb: Ptr, jp: Ptr, vars: Ptr, silent: boolean, 
 	return _r;
 }
 
-export function jsonb_path_match(jb: Ptr, jp: Ptr, vars: Ptr, silent: boolean, tz: boolean): boolean {
-	const _r = call<number>('jsonb_path_match_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(jb), ptrArgVal(jp), ptrArgVal(vars), silent ? 1 : 0, tz ? 1 : 0]) !== 0;
+export function jsonb_path_match(jb: Ptr, jp: Ptr, vars: Ptr, silent: boolean, tz: boolean): number {
+	const _r = call<number>('jsonb_path_match_w', 'number', [ptrArgType(), ptrArgType(), ptrArgType(), 'number', 'number'], [ptrArgVal(jb), ptrArgVal(jp), ptrArgVal(vars), silent ? 1 : 0, tz ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -16415,6 +16523,18 @@ export function always_ne_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function always_overlaps_stbox_tnpoint(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_stbox_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tnpoint_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_tnpoint_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_npoint_tnpoint(np: Ptr, temp: Ptr): number {
 	const _r = call<number>('ever_eq_npoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(np), ptrArgVal(temp)]);
 	checkMeosError();
@@ -16447,6 +16567,18 @@ export function ever_ne_tnpoint_npoint(temp: Ptr, np: Ptr): number {
 
 export function ever_ne_tnpoint_tnpoint(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('ever_ne_tnpoint_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_stbox_tnpoint(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_stbox_tnpoint_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tnpoint_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_tnpoint_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }
@@ -17621,6 +17753,18 @@ export function tpcpoint_minus_value(temp: Ptr, pt: Ptr): Ptr {
 	return _r;
 }
 
+export function tpcpoint_at_tpcbox(temp: Ptr, box: Ptr, border_inc: boolean): Ptr {
+	const _r = callPtr('tpcpoint_at_tpcbox_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(box), border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_minus_tpcbox(temp: Ptr, box: Ptr, border_inc: boolean): Ptr {
+	const _r = callPtr('tpcpoint_minus_tpcbox_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(box), border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcpoint_pcid(temp: Ptr): number {
 	const _r = (call<number>('tpcpoint_pcid_w', 'number', [ptrArgType()], [ptrArgVal(temp)])) >>> 0;
 	checkMeosError();
@@ -17707,6 +17851,18 @@ export function tpcpatch_at_value(temp: Ptr, pa: Ptr): Ptr {
 
 export function tpcpatch_minus_value(temp: Ptr, pa: Ptr): Ptr {
 	const _r = callPtr('tpcpatch_minus_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pa)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_at_tpcbox(temp: Ptr, box: Ptr, border_inc: boolean): Ptr {
+	const _r = callPtr('tpcpatch_at_tpcbox_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(box), border_inc ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpatch_minus_tpcbox(temp: Ptr, box: Ptr, border_inc: boolean): Ptr {
+	const _r = callPtr('tpcpatch_minus_tpcbox_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(box), border_inc ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -19204,6 +19360,24 @@ export function always_ne_tpose_tpose(temp1: Ptr, temp2: Ptr): number {
 	return _r;
 }
 
+export function always_overlaps_stbox_tpose(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_stbox_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tpose_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_tpose_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_tpose_tpose(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('always_overlaps_tpose_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_pose_tpose(pose: Ptr, temp: Ptr): number {
 	const _r = call<number>('ever_eq_pose_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(pose), ptrArgVal(temp)]);
 	checkMeosError();
@@ -19236,6 +19410,24 @@ export function ever_ne_tpose_pose(temp: Ptr, pose: Ptr): number {
 
 export function ever_ne_tpose_tpose(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('ever_ne_tpose_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_stbox_tpose(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_stbox_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tpose_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_tpose_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_tpose_tpose(temp1: Ptr, temp2: Ptr): number {
+	const _r = call<number>('ever_overlaps_tpose_tpose_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
 	checkMeosError();
 	return _r;
 }
@@ -21403,18 +21595,6 @@ export function trgeometry_to_tgeography(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function trgeometry_end_instant(temp: Ptr): Ptr {
-	const _r = callPtr('trgeometry_end_instant_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_end_sequence(temp: Ptr): Ptr {
-	const _r = callPtr('trgeometry_end_sequence_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
 export function trgeometry_end_value(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_end_value_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -21423,18 +21603,6 @@ export function trgeometry_end_value(temp: Ptr): Ptr {
 
 export function trgeometry_geom(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_geom_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_instant_n(temp: Ptr, n: number): Ptr {
-	const _r = callPtr('trgeometry_instant_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), n]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_instants(temp: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('trgeometry_instants_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -21459,36 +21627,6 @@ export function trgeometry_pitch(temp: Ptr): Ptr {
 
 export function trgeometry_roll(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_roll_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_segments(temp: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('trgeometry_segments_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_sequence_n(temp: Ptr, i: number): Ptr {
-	const _r = callPtr('trgeometry_sequence_n_w', [ptrArgType(), 'number'], [ptrArgVal(temp), i]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_sequences(temp: Ptr, count: Ptr): Ptr {
-	const _r = callPtr('trgeometry_sequences_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(count)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_start_instant(temp: Ptr): Ptr {
-	const _r = callPtr('trgeometry_start_instant_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_start_sequence(temp: Ptr): Ptr {
-	const _r = callPtr('trgeometry_start_sequence_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -21619,62 +21757,8 @@ export function trgeometry_twcentroid(temp: Ptr): Ptr {
 	return _r;
 }
 
-export function trgeometry_append_tinstant(temp: Ptr, inst: Ptr, interp: number, maxdist: number, maxt: Ptr, expand: boolean): Ptr {
-	const _r = callPtr('trgeometry_append_tinstant_w', [ptrArgType(), ptrArgType(), 'number', 'number', ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(inst), interp, maxdist, ptrArgVal(maxt), expand ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_append_tsequence(temp: Ptr, seq: Ptr, expand: boolean): Ptr {
-	const _r = callPtr('trgeometry_append_tsequence_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(seq), expand ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_delete_timestamptz(temp: Ptr, t: TimestampTz, connect: boolean): Ptr {
-	const _r = callPtr('trgeometry_delete_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), connect ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_delete_tstzset(temp: Ptr, s: Ptr, connect: boolean): Ptr {
-	const _r = callPtr('trgeometry_delete_tstzset_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(s), connect ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_delete_tstzspan(temp: Ptr, s: Ptr, connect: boolean): Ptr {
-	const _r = callPtr('trgeometry_delete_tstzspan_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(s), connect ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_delete_tstzspanset(temp: Ptr, ss: Ptr, connect: boolean): Ptr {
-	const _r = callPtr('trgeometry_delete_tstzspanset_w', [ptrArgType(), ptrArgType(), 'number'], [ptrArgVal(temp), ptrArgVal(ss), connect ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
 export function trgeometry_force2d(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_force2d_w', [ptrArgType()], [ptrArgVal(temp)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_merge(temp1: Ptr, temp2: Ptr): Ptr {
-	const _r = callPtr('trgeometry_merge_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_merge_array(temparr: Ptr, count: number): Ptr {
-	const _r = callPtr('trgeometry_merge_array_w', [ptrArgType(), 'number'], [ptrArgVal(temparr), count]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_round(temp: Ptr, maxdd: number): Ptr {
-	const _r = callPtr('trgeometry_round_w', [ptrArgType(), 'number'], [ptrArgVal(temp), maxdd]);
 	checkMeosError();
 	return _r;
 }
@@ -21703,12 +21787,6 @@ export function trgeometry_rotate_z(temp: Ptr, angle: number): Ptr {
 	return _r;
 }
 
-export function trgeometry_set_interp(temp: Ptr, interp: number): Ptr {
-	const _r = callPtr('trgeometry_set_interp_w', [ptrArgType(), 'number'], [ptrArgVal(temp), interp]);
-	checkMeosError();
-	return _r;
-}
-
 export function trgeometry_translate(temp: Ptr, deltax: number, deltay: number, deltaz: number): Ptr {
 	const _r = callPtr('trgeometry_translate_w', [ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(temp), deltax, deltay, deltaz]);
 	checkMeosError();
@@ -21729,18 +21807,6 @@ export function trgeometry_as_tsequence(temp: Ptr, interp: number): Ptr {
 
 export function trgeometry_as_tsequenceset(temp: Ptr, interp: number): Ptr {
 	const _r = callPtr('trgeometry_as_tsequenceset_w', [ptrArgType(), 'number'], [ptrArgVal(temp), interp]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_after_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): Ptr {
-	const _r = callPtr('trgeometry_after_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_before_timestamptz(temp: Ptr, t: TimestampTz, strict: boolean): Ptr {
-	const _r = callPtr('trgeometry_before_timestamptz_w', [ptrArgType(), 'bigint', 'number'], [ptrArgVal(temp), BigInt(t), strict ? 1 : 0]);
 	checkMeosError();
 	return _r;
 }
@@ -21777,66 +21843,6 @@ export function trgeometry_at_value(temp: Ptr, pose: Ptr): Ptr {
 
 export function trgeometry_minus_value(temp: Ptr, pose: Ptr): Ptr {
 	const _r = callPtr('trgeometry_minus_value_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(pose)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_at_values(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_at_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_values(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_minus_values_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_at_timestamptz(temp: Ptr, t: TimestampTz): Ptr {
-	const _r = callPtr('trgeometry_at_timestamptz_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(t)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_timestamptz(temp: Ptr, t: TimestampTz): Ptr {
-	const _r = callPtr('trgeometry_minus_timestamptz_w', [ptrArgType(), 'bigint'], [ptrArgVal(temp), BigInt(t)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_at_tstzset(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_at_tstzset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_tstzset(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_minus_tstzset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_at_tstzspan(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_at_tstzspan_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_tstzspan(temp: Ptr, s: Ptr): Ptr {
-	const _r = callPtr('trgeometry_minus_tstzspan_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(s)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_at_tstzspanset(temp: Ptr, ss: Ptr): Ptr {
-	const _r = callPtr('trgeometry_at_tstzspanset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(ss)]);
-	checkMeosError();
-	return _r;
-}
-
-export function trgeometry_minus_tstzspanset(temp: Ptr, ss: Ptr): Ptr {
-	const _r = callPtr('trgeometry_minus_tstzspanset_w', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(ss)]);
 	checkMeosError();
 	return _r;
 }
@@ -22015,6 +22021,18 @@ export function always_ne_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): number 
 	return _r;
 }
 
+export function always_overlaps_stbox_trgeometry(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('always_overlaps_stbox_trgeometry_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function always_overlaps_trgeometry_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('always_overlaps_trgeometry_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
+	checkMeosError();
+	return _r;
+}
+
 export function ever_eq_geo_trgeometry(gs: Ptr, temp: Ptr): number {
 	const _r = call<number>('ever_eq_geo_trgeometry_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
@@ -22047,6 +22065,18 @@ export function ever_ne_trgeometry_geo(temp: Ptr, gs: Ptr): number {
 
 export function ever_ne_trgeometry_trgeometry(temp1: Ptr, temp2: Ptr): number {
 	const _r = call<number>('ever_ne_trgeometry_trgeometry_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp1), ptrArgVal(temp2)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_stbox_trgeometry(box: Ptr, temp: Ptr): number {
+	const _r = call<number>('ever_overlaps_stbox_trgeometry_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(box), ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function ever_overlaps_trgeometry_stbox(temp: Ptr, box: Ptr): number {
+	const _r = call<number>('ever_overlaps_trgeometry_stbox_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(box)]);
 	checkMeosError();
 	return _r;
 }

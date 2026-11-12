@@ -84,7 +84,12 @@ interface ObjectModel {
 	lattice: Record<string, LatticeNode>;
 	axes: { subtype: { values: { name: string; value: number; class: string | null }[] } };
 	companions: Record<string, { nodes?: Record<string, CompanionNode> } | string>;
-	classes: Record<string, { cType?: string; methods: MethodEntry[]; operators?: MethodEntry[] }>;
+	/**
+	 * `byValue`: MEOS passes the class's values by value, and `cType` is then
+	 * the type passed (a grid cell's `H3Index`), not the struct a pointer
+	 * points to.
+	 */
+	classes: Record<string, { cType?: string; byValue?: boolean; methods: MethodEntry[]; operators?: MethodEntry[] }>;
 }
 interface Shape {
 	outParams?: string[];
@@ -159,6 +164,8 @@ class Model {
 	/** C struct -> the shallowest class a pointer to it is wrapped in. */
 	readonly wrapRoot = new Map<string, string>();
 	readonly doc = new Map<string, string>();
+	/** The classes the catalog marks `byValue`, whose instances hold their value. */
+	readonly byValue = new Set<string>();
 
 	/** Mirrors #_build of MEOS.NET's tools/objectgen.py, step for step. */
 	constructor(readonly idl: FullIdl) {
@@ -198,7 +205,16 @@ class Model {
 		// What a class's instances point to is the catalog's to say.
 		for (const [name, spec] of Object.entries(this.om.classes))
 			if (spec.cType) this.ctype.set(name, spec.cType);
+		// A class MEOS passes by value holds its value, not a pointer: it is
+		// wrapped from no pointer and extends no handle class, as GoMEOS's
+		// objectgen.py declares one as a type over the flat layer's (#value_of).
+		for (const [name, spec] of Object.entries(this.om.classes))
+			if (spec.byValue && spec.cType) {
+				this.byValue.add(name);
+				this.parent.set(name, null);
+			}
 		for (const [name, ct] of this.ctype) {
+			if (this.byValue.has(name)) continue;
 			const best = this.wrapRoot.get(ct);
 			if (best === undefined || this.depth(name) < this.depth(best)) this.wrapRoot.set(ct, name);
 		}
@@ -357,8 +373,24 @@ class Generator {
 	private readonly textWriter = new Map<string, string | undefined>();
 	emitted = 0;
 
+	/**
+	 * The flat surface's type of its own -> the class MEOS passes by value over
+	 * it: a `byValue` class whose `cType` the flat layer declares under its own
+	 * name (H3Index over a bigint), as #value_of of GoMEOS's objectgen.py reads
+	 * the class of a value beside #classForCtype reading the class of a pointer.
+	 */
+	private readonly valueOf: Map<string, string>;
+
 	/** Takes the model and the flat signatures, as #Generator's __init__ takes the model. */
-	constructor(private readonly m: Model, private readonly sigs: Map<string, WrapperSignature>) {}
+	constructor(private readonly m: Model, private readonly sigs: Map<string, WrapperSignature>) {
+		const own = ownTypeAliases();
+		this.valueOf = new Map([...m.byValue].map(c => [m.ctype.get(c)!, c] as [string, string]).filter(([ct]) => own.has(ct)));
+	}
+
+	/** The class MEOS passes by value over a slot of this TypeScript type, if any. */
+	private valueClass(ts: string): string | undefined {
+		return this.valueOf.get(ts);
+	}
 
 	/**
 	 * The text pair of an enumeration slot whose two functions the flat surface
@@ -399,6 +431,11 @@ class Generator {
 		if (r && recv && r.ts === 'Ptr' && clean(r.canonical) === `${recv} *`) {
 			isStatic = false;
 			args.set(r.name, 'this.ptr');
+			params = params.filter((_p, i) => i !== at);
+		} else if (r && this.m.byValue.has(cls) && this.valueClass(r.ts) === cls) {
+			// A receiver MEOS takes by value, which the instance holds (#valueOf).
+			isStatic = false;
+			args.set(r.name, 'this.value');
 			params = params.filter((_p, i) => i !== at);
 		} else if (entry.role === 'operator' && at === 0 && r?.ts === 'string' && clean(r.canonical) === 'text *') {
 			// A `text *` receiver the flat surface takes as a JavaScript string
@@ -459,7 +496,7 @@ class Generator {
 				// `int64_t **values` points at the slot of an array of `int64_t`, and
 				// `Jsonb ***values` at the slot of an array of `Jsonb *`.
 				const elem = clean(p.canonical).replace(/\s*\*\s*\*$/, '').trim();
-				const read = this.arrayElement(elem);
+				const read = this.arrayElement(elem, f.params.find(q => q.name === p.name)?.typedef);
 				if (!read)
 					return this.defer(cls, oo, 'out-parameter needs a reader',
 						`out-parameter ${p.name} of type ${clean(p.canonical)}`);
@@ -526,10 +563,13 @@ class Generator {
 						decl.push({ name: p.tsName, ts: 'Uint8Array' });
 						setup.push(`const ${tmp} = _bytes(${p.tsName});`);
 					} else {
-						decl.push({ name: p.tsName, ts: `${scalar.ts}[]` });
+						// The values of a class MEOS passes by value (the slot's
+						// `typedef`, #arrayElement) are written as the values they hold.
+						const value = this.valueClass(f.params.find(q => q.name === p.name)?.typedef ?? '');
+						decl.push({ name: p.tsName, ts: `${value ?? scalar.ts}[]` });
 						const w = scalar.width;
 						setup.push(`const ${tmp} = _alloc(Math.max(${p.tsName}.length, 1) * ${w});`,
-							`{ const _v = _view(${tmp}, Math.max(${p.tsName}.length, 1) * ${w}); ${p.tsName}.forEach((_x, _i) => ${scalar.write.replace('{o}', `_i * ${w}`).replace('{x}', '_x')}); }`);
+							`{ const _v = _view(${tmp}, Math.max(${p.tsName}.length, 1) * ${w}); ${p.tsName}.forEach((_x, _i) => ${scalar.write.replace('{o}', `_i * ${w}`).replace('{x}', value ? '_x.value' : '_x')}); }`);
 					}
 					teardown.push(`_free(${tmp});`);
 					args.set(p.name, tmp);
@@ -637,7 +677,7 @@ class Generator {
 			// The answered array with the arrays MEOS fills beside it, all of the
 			// count MEOS writes, answered together in the order MEOS declares them;
 			// MEOS allocates each, and the method frees each after reading it.
-			const read = this.arrayElement(arrayReturn.element.canonical);
+			const read = this.arrayElement(arrayReturn.element.canonical, f.returnType.typedef);
 			if (!read)
 				return this.defer(cls, oo, 'return needs a class',
 					`array of ${clean(arrayReturn.element.canonical)} needs a reader`);
@@ -684,7 +724,7 @@ class Generator {
 				`}`,
 			];
 		} else if (arrayReturn && countOut && args.get(countOut) === '_count') {
-			const read = this.arrayElement(arrayReturn.element.canonical);
+			const read = this.arrayElement(arrayReturn.element.canonical, f.returnType.typedef);
 			if (!read)
 				return this.defer(cls, oo, 'return needs a class',
 					`array of ${clean(arrayReturn.element.canonical)} needs a reader`);
@@ -729,7 +769,9 @@ class Generator {
 			// (`answersReceiver`, every SQL signature answering the receiver's SQL
 			// type) answers the class it is called on, where the C return names the
 			// template: IntSpan.expand answers an IntSpan, not a Span.
-			else if (!isStatic && entry.answersReceiver
+			// A class held by value builds its answer as itself (`new H3Index`),
+			// which is not the `this` of a subclass, so it answers its own class.
+			else if (!isStatic && entry.answersReceiver && !this.m.byValue.has(cls)
 				&& (answered === cls || this.m.ancestors(cls).includes(answered))) {
 				const narrowed = ts.endsWith(' | null') ? 'this | null' : 'this';
 				wrap = wrap.replace(` as ${ts}`, ` as ${narrowed}`);
@@ -843,6 +885,9 @@ class Generator {
 	 */
 	private param(p: WrapperParam): { ts: string; arg: string; setup?: string; teardown?: string } | undefined {
 		if (p.ts !== 'Ptr') {
+			// A value of a class MEOS passes by value crosses as the value it holds.
+			const value = this.valueClass(p.ts);
+			if (value) return { ts: value, arg: `${p.tsName}.value` };
 			const text = this.flatText(p.canonical);
 			return text ? { ts: 'string', arg: `F.${text.fromString}(${p.tsName})` } : { ts: p.ts, arg: p.tsName };
 		}
@@ -863,6 +908,8 @@ class Generator {
 	/** The return: #map_return of MEOS.NET. A value struct is read and its buffer freed. */
 	private returned(sig: WrapperSignature, nullable: boolean): { ts: string; wrap: string } | undefined {
 		if (sig.ret !== 'Ptr') {
+			const value = this.valueClass(sig.ret);
+			if (value) return { ts: value, wrap: `new ${value}($)` };
 			const text = this.flatText(sig.retCanonical);
 			return text ? { ts: 'string', wrap: `F.${text.name}($)!` } : { ts: sig.ret, wrap: '$' };
 		}
@@ -1068,8 +1115,16 @@ class Generator {
 		return lines.join('\n');
 	}
 
-	private arrayElement(canonical: string): { ts: string; width: number; expr: string } | undefined {
+	/**
+	 * How an element of an answered array is read. `typedef` is the type of its
+	 * own the catalog states on the array's slot (`uint64_t *` of an H3Index):
+	 * an element of a class MEOS passes by value is held in that class.
+	 */
+	private arrayElement(canonical: string, typedef?: string): { ts: string; width: number; expr: string } | undefined {
 		const c = clean(canonical);
+		const value = typedef ? this.valueClass(typedef) : undefined;
+		const scalar = value ? ELEMENT_READERS[this.resolve(c)] : undefined;
+		if (value && scalar) return { ts: value, width: scalar.width, expr: `new ${value}(${scalar.read})` };
 		const cls = this.m.classForCtype(c);
 		if (cls) return { ts: cls, width: 8, expr: `wrap${this.rootOf(cls)}(Number(_v.getBigUint64({o}, true))) as ${cls}` };
 		// An array of structs laid out inline: a value struct is read off it, and
@@ -1175,9 +1230,19 @@ class Generator {
 			'/**',
 			` * ${(this.m.doc.get(cls) ?? this.defaultDoc(cls)).replace(/\*\//g, '* /')}`,
 			' */',
-			`export class ${cls} extends ${parent} {`,
 		];
-		lines.push(...this.toStringMethod(cls, functions));
+		const byValue = this.m.byValue.has(cls);
+		if (byValue) {
+			// A value MEOS passes by value is held as that value, the flat layer's
+			// type, converted at each call, with no handle to free: the TypeScript
+			// form of GoMEOS's `type H3Index functions.H3Index` (#emit_class there).
+			lines.push(`export class ${cls} {`, '',
+				`\t/** Holds the value MEOS passes by value, of C type ${this.m.ctype.get(cls)}. */`,
+				`\tconstructor(readonly value: F.${this.m.ctype.get(cls)}) {}`);
+		} else {
+			lines.push(`export class ${cls} extends ${parent} {`);
+		}
+		lines.push(...this.toStringMethod(cls, functions, byValue));
 		for (const m of own) {
 			const overrides = !m.isStatic && this.inheritedSig(cls, m.name, false) !== undefined;
 			lines.push('', `\t/** ${m.doc ?? `MEOS: ${m.fn}`} */`);
@@ -1491,9 +1556,10 @@ class Generator {
 	 * #to_string and #text_writer of MEOS.NET read it: the writer of its SQL type
 	 * in `writers.text`, else the text encoder of its C type, with MEOS's default
 	 * precision where the writer takes one. A class whose writer is the one it
-	 * inherits emits none of its own.
+	 * inherits emits none of its own. A class extending none (`root`, one MEOS
+	 * passes by value) declares it rather than overriding it.
 	 */
-	private toStringMethod(cls: string, functions: Map<string, Emitted>): string[] {
+	private toStringMethod(cls: string, functions: Map<string, Emitted>, root = false): string[] {
 		const parent = this.m.parent.get(cls);
 		const inherited = parent ? this.textWriter.get(parent) : undefined;
 		const enc = this.m.idl.typeEncodings?.[this.m.ctype.get(cls) ?? ''];
@@ -1512,7 +1578,7 @@ class Generator {
 		return [
 			'',
 			`\t/** The text MEOS writes this value as (MEOS: ${writer}). */`,
-			`\toverride toString(): string {`,
+			`\t${root ? '' : 'override '}toString(): string {`,
 			`\t\treturn this.${out.name}(${args});`,
 			'\t}',
 		];
@@ -1719,8 +1785,9 @@ function main(): void {
 	const body = classes.map(c => gen.emitClass(c)).join('\n');
 	const structs = gen.valueStructCode() + '\n' + gen.structCode();
 	// The types of their own the flat surface declares over a width (H3Index),
-	// which the signatures name.
-	const own = ownTypeNames().map(n => `, ${n}`).join('');
+	// which the signatures name. A class MEOS passes by value of the same name
+	// (H3Index) stands for it here, and holds a value of it as `F.H3Index`.
+	const own = ownTypeNames().filter(n => !model.byValue.has(n)).map(n => `, ${n}`).join('');
 	const out = BANNER + PRELUDE.replaceAll('@OWN_TYPES@', own) + '\n' + structs + '\n' + body + '\n' + gen.factory();
 
 	const outDir = path.resolve(__dirname, '../core/objects');
