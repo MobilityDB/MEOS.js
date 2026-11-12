@@ -23,13 +23,13 @@ before(async () => {
 
 describe('TsTzSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.ok(s.ptr !== 0);
 		s.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		const out = s.toString();
 		assert.ok(out.includes('2001-01-01'));
 		assert.ok(out.includes('2001-01-02'));
@@ -37,7 +37,7 @@ describe('TsTzSet - Construction', () => {
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const s1 = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s1 = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		const hex = s1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const s2 = TsTzSet.fromHexWKB(hex);
@@ -47,7 +47,7 @@ describe('TsTzSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const s1 = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s1 = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		const wkb = s1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -58,7 +58,7 @@ describe('TsTzSet - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with same content', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		const c = s.copy();
 		assert.notEqual(s.ptr, c.ptr);
 		assert.equal(c.toString(), s.toString());
@@ -69,13 +69,13 @@ describe('TsTzSet - Construction', () => {
 
 describe('TsTzSet - Accessors', () => {
 	it('numValues returns correct count', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.equal(s.numValues(), 3);
 		s.free();
 	});
 
 	it('startValue and endValue return int64 timestamps', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		const start = s.startValue();
 		const end = s.endValue();
 		assert.equal(typeof start, 'number');
@@ -85,19 +85,19 @@ describe('TsTzSet - Accessors', () => {
 	});
 
 	it('valueN(0) equals startValue', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.equal(s.valueN(1), s.startValue());
 		s.free();
 	});
 
 	it('valueN(n-1) equals endValue', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.equal(s.valueN(3), s.endValue());
 		s.free();
 	});
 
 	it('hash returns a number', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		assert.equal(typeof s.hash(), 'number');
 		s.free();
 	});
@@ -105,19 +105,19 @@ describe('TsTzSet - Accessors', () => {
 
 describe('TsTzSet - Conversions', () => {
 	it('toSpan returns a non-zero pointer', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.ok(s.toSpan() !== null);
 		s.free();
 	});
 
 	it('toSpanSet returns a non-zero pointer', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.ok(s.toSpanset() !== null);
 		s.free();
 	});
 
 	it('toDateSet returns a non-zero pointer', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.ok(s.toDateset() !== null);
 		s.free();
 	});
@@ -125,32 +125,32 @@ describe('TsTzSet - Conversions', () => {
 
 describe('TsTzSet - Topological predicates', () => {
 	it('isContainedIn: {ts1,ts2} is contained in {ts1,ts2,ts3}', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		assert.equal(a.contained(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('contains: {ts1,ts2,ts3} contains {ts1,ts2}', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		assert.equal(a.contains(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('overlaps: {ts1,ts2} and {ts2,ts3} share ts2', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS2}, ${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS2}, ${TS3}}`);
 		assert.equal(a.overlaps(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('overlaps: {ts1} and {ts3} do not overlap', () => {
-		const a = TsTzSet.in(`{${TS1}}`);
-		const b = TsTzSet.in(`{${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}}`);
+		const b = TsTzSet.fromText(`{${TS3}}`);
 		assert.equal(a.overlaps(b), false);
 		a.free();
 		b.free();
@@ -159,32 +159,32 @@ describe('TsTzSet - Topological predicates', () => {
 
 describe('TsTzSet - Position predicates', () => {
 	it('isBefore: {ts1,ts2} is before {ts4,ts5}', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS4}, ${TS5}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS4}, ${TS5}}`);
 		assert.equal(a.left(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isAfter: {ts4,ts5} is after {ts1,ts2}', () => {
-		const a = TsTzSet.in(`{${TS4}, ${TS5}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const a = TsTzSet.fromText(`{${TS4}, ${TS5}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		assert.equal(a.right(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isOverOrBefore', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS3}}`);
-		const b = TsTzSet.in(`{${TS2}, ${TS5}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS3}}`);
+		const b = TsTzSet.fromText(`{${TS2}, ${TS5}}`);
 		assert.equal(a.overleft(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isOverOrAfter', () => {
-		const a = TsTzSet.in(`{${TS3}, ${TS5}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS4}}`);
+		const a = TsTzSet.fromText(`{${TS3}, ${TS5}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS4}}`);
 		assert.equal(a.overright(b), true);
 		a.free();
 		b.free();
@@ -193,16 +193,16 @@ describe('TsTzSet - Position predicates', () => {
 
 describe('TsTzSet - Distance', () => {
 	it('distance is 0 for sets sharing a value', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS2}, ${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS2}, ${TS3}}`);
 		assert.equal(nonzero(a.distance(b)), false);
 		a.free();
 		b.free();
 	});
 
 	it('distance > 0 for disjoint sets', () => {
-		const a = TsTzSet.in(`{${TS1}}`);
-		const b = TsTzSet.in(`{${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}}`);
+		const b = TsTzSet.fromText(`{${TS3}}`);
 		assert.ok(nonzero(a.distance(b)));
 		a.free();
 		b.free();
@@ -211,8 +211,8 @@ describe('TsTzSet - Distance', () => {
 
 describe('TsTzSet - Set operations', () => {
 	it('union produces a set containing all values', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS3}, ${TS4}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS3}, ${TS4}}`);
 		const u = a.union(b);
 		assert.equal(u!.numValues(), 4);
 		a.free();
@@ -221,8 +221,8 @@ describe('TsTzSet - Set operations', () => {
 	});
 
 	it('intersection returns shared values', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
-		const b = TsTzSet.in(`{${TS2}, ${TS3}, ${TS4}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
+		const b = TsTzSet.fromText(`{${TS2}, ${TS3}, ${TS4}}`);
 		const r = a.intersection(b);
 		assert.ok(r !== null);
 		assert.equal(r!.numValues(), 2);
@@ -232,16 +232,16 @@ describe('TsTzSet - Set operations', () => {
 	});
 
 	it('intersection returns null for disjoint sets', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS4}, ${TS5}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS4}, ${TS5}}`);
 		assert.equal(a.intersection(b), null);
 		a.free();
 		b.free();
 	});
 
 	it('minus removes values present in other', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
-		const b = TsTzSet.in(`{${TS2}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
+		const b = TsTzSet.fromText(`{${TS2}}`);
 		const r = a.minus(b);
 		assert.ok(r !== null);
 		assert.equal(r!.numValues(), 2);
@@ -253,24 +253,24 @@ describe('TsTzSet - Set operations', () => {
 
 describe('TsTzSet - Comparisons', () => {
 	it('eq: same set', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		assert.equal(a.eq(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('ne: different sets', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS3}}`);
 		assert.equal(a.ne(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('lt / gt order', () => {
-		const a = TsTzSet.in(`{${TS1}}`);
-		const b = TsTzSet.in(`{${TS3}}`);
+		const a = TsTzSet.fromText(`{${TS1}}`);
+		const b = TsTzSet.fromText(`{${TS3}}`);
 		assert.equal(a.lt(b), true);
 		assert.equal(b.gt(a), true);
 		a.free();
@@ -278,8 +278,8 @@ describe('TsTzSet - Comparisons', () => {
 	});
 
 	it('le / ge for equal sets', () => {
-		const a = TsTzSet.in(`{${TS1}, ${TS2}}`);
-		const b = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const a = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
+		const b = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		assert.equal(a.le(b), true);
 		assert.equal(a.ge(b), true);
 		a.free();
@@ -289,7 +289,7 @@ describe('TsTzSet - Comparisons', () => {
 
 describe('TsTzSet - shiftScale', () => {
 	it('shift by 1 day: all timestamps advance by 1 day', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		const interv = { time: 0, day: 1, month: 0 }; // 1 day
 		const r = s.shift(interv);
 		assert.ok(r.ptr !== 0);
@@ -299,7 +299,7 @@ describe('TsTzSet - shiftScale', () => {
 	});
 
 	it('shift by 1 day and scale to 2 days: the set starts 1 day later', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		const interv = { time: 0, day: 1, month: 0 }; // 1 day
 		const dur = { time: 0, day: 2, month: 0 };    // 2 days
 		const r = s.shiftScale(interv, dur);
@@ -311,7 +311,7 @@ describe('TsTzSet - shiftScale', () => {
 
 describe('TsTzSet - tprecision', () => {
 	it('returns a non-zero pointer', () => {
-		const s = TsTzSet.in(`{${TS1}, ${TS2}, ${TS3}}`);
+		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		const dur = { time: 0, day: 1, month: 0 }; // 1-day bucket
 		const r = s.tprecision(dur, s.startValue());
 		assert.ok(r.ptr !== 0);

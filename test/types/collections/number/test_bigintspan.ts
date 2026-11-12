@@ -10,13 +10,13 @@ before(async () => {
 
 describe('BigIntSpan - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.ok(s.ptr !== 0);
 		s.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.equal(s.toString(), '[1, 10)');
 		s.free();
 	});
@@ -34,7 +34,7 @@ describe('BigIntSpan - Construction', () => {
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const s1 = BigIntSpan.in('[1, 10)');
+		const s1 = BigIntSpan.fromText('[1, 10)');
 		const hex = s1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const s2 = BigIntSpan.fromHexWKB(hex);
@@ -44,7 +44,7 @@ describe('BigIntSpan - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const s1 = BigIntSpan.in('[1, 10)');
+		const s1 = BigIntSpan.fromText('[1, 10)');
 		const wkb = s1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -55,7 +55,7 @@ describe('BigIntSpan - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		const c = s.copy();
 		assert.notEqual(s.ptr, c.ptr);
 		assert.equal(c.toString(), s.toString());
@@ -66,27 +66,27 @@ describe('BigIntSpan - Construction', () => {
 
 describe('BigIntSpan - Accessors', () => {
 	it('lower and upper return integer bounds', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.equal(s.lower(), 1);
 		assert.equal(s.upper(), 10);
 		s.free();
 	});
 
 	it('lowerInc / upperInc match WKT brackets', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.equal(s.lowerInc(), true);
 		assert.equal(s.upperInc(), false);
 		s.free();
 	});
 
 	it('width returns upper - lower', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.equal(s.width(), 9);
 		s.free();
 	});
 
 	it('hash returns a number', () => {
-		const s = BigIntSpan.in('[1, 10)');
+		const s = BigIntSpan.fromText('[1, 10)');
 		assert.equal(typeof s.hash(), 'number');
 		s.free();
 	});
@@ -94,48 +94,48 @@ describe('BigIntSpan - Accessors', () => {
 
 describe('BigIntSpan - Topological predicates', () => {
 	it('isAdjacent: [1,5) and [5,10) are adjacent', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[5, 10)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[5, 10)');
 		assert.equal(a.adjacent(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isAdjacent: [1,5) and [6,10) are not adjacent', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[6, 10)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[6, 10)');
 		assert.equal(a.adjacent(b), false);
 		a.free();
 		b.free();
 	});
 
 	it('isContainedIn: [2,5) is contained in [1,10)', () => {
-		const a = BigIntSpan.in('[2, 5)');
-		const b = BigIntSpan.in('[1, 10)');
+		const a = BigIntSpan.fromText('[2, 5)');
+		const b = BigIntSpan.fromText('[1, 10)');
 		assert.equal(a.contained(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('contains: [1,10) contains [2,5)', () => {
-		const a = BigIntSpan.in('[1, 10)');
-		const b = BigIntSpan.in('[2, 5)');
+		const a = BigIntSpan.fromText('[1, 10)');
+		const b = BigIntSpan.fromText('[2, 5)');
 		assert.equal(a.contains(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('overlaps: [1,5) and [3,8) overlap', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[3, 8)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[3, 8)');
 		assert.equal(a.overlaps(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('overlaps: [1,5) and [7,10) do not overlap', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[7, 10)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[7, 10)');
 		assert.equal(a.overlaps(b), false);
 		a.free();
 		b.free();
@@ -144,32 +144,32 @@ describe('BigIntSpan - Topological predicates', () => {
 
 describe('BigIntSpan - Position predicates', () => {
 	it('isBefore: [1,5) is before [6,10)', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[6, 10)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[6, 10)');
 		assert.equal(a.left(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isAfter: [6,10) is after [1,5)', () => {
-		const a = BigIntSpan.in('[6, 10)');
-		const b = BigIntSpan.in('[1, 5)');
+		const a = BigIntSpan.fromText('[6, 10)');
+		const b = BigIntSpan.fromText('[1, 5)');
 		assert.equal(a.right(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isOverOrBefore: [1,5) overleft [3,8)', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[3, 8)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[3, 8)');
 		assert.equal(a.overleft(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isOverOrAfter: [5,10) overright [1,6)', () => {
-		const a = BigIntSpan.in('[5, 10)');
-		const b = BigIntSpan.in('[1, 6)');
+		const a = BigIntSpan.fromText('[5, 10)');
+		const b = BigIntSpan.fromText('[1, 6)');
 		assert.equal(a.overright(b), true);
 		a.free();
 		b.free();
@@ -178,16 +178,16 @@ describe('BigIntSpan - Position predicates', () => {
 
 describe('BigIntSpan - Distance', () => {
 	it('distance is 0 for overlapping spans', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[3, 8)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[3, 8)');
 		assert.equal(a.distance(b), 0);
 		a.free();
 		b.free();
 	});
 
 	it('distance between disjoint spans', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[8, 12)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[8, 12)');
 		assert.equal(a.distance(b), 4);
 		a.free();
 		b.free();
@@ -196,8 +196,8 @@ describe('BigIntSpan - Distance', () => {
 
 describe('BigIntSpan - Set operations', () => {
 	it('intersection returns overlapping region', () => {
-		const a = BigIntSpan.in('[1, 8)');
-		const b = BigIntSpan.in('[4, 12)');
+		const a = BigIntSpan.fromText('[1, 8)');
+		const b = BigIntSpan.fromText('[4, 12)');
 		const r = a.intersection(b) as BigIntSpan | null;
 		assert.ok(r !== null);
 		assert.equal(r!.lower(), 4);
@@ -206,16 +206,16 @@ describe('BigIntSpan - Set operations', () => {
 	});
 
 	it('intersection returns null for disjoint spans', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[8, 12)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[8, 12)');
 		assert.equal(a.intersection(b), null);
 		a.free();
 		b.free();
 	});
 
 	it('minus returns non-zero ptr', () => {
-		const a = BigIntSpan.in('[1, 10)');
-		const b = BigIntSpan.in('[4, 7)');
+		const a = BigIntSpan.fromText('[1, 10)');
+		const b = BigIntSpan.fromText('[4, 7)');
 		const ptr = a.minus(b);
 		assert.ok(ptr !== null);
 		ptr!.free();
@@ -224,8 +224,8 @@ describe('BigIntSpan - Set operations', () => {
 	});
 
 	it('union returns non-zero ptr', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[3, 8)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[3, 8)');
 		const ptr = a.union(b);
 		assert.ok(ptr !== null);
 		ptr!.free();
@@ -236,24 +236,24 @@ describe('BigIntSpan - Set operations', () => {
 
 describe('BigIntSpan - Comparisons', () => {
 	it('eq: same span is equal', () => {
-		const a = BigIntSpan.in('[1, 10)');
-		const b = BigIntSpan.in('[1, 10)');
+		const a = BigIntSpan.fromText('[1, 10)');
+		const b = BigIntSpan.fromText('[1, 10)');
 		assert.equal(a.eq(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('ne: different spans', () => {
-		const a = BigIntSpan.in('[1, 10)');
-		const b = BigIntSpan.in('[2, 10)');
+		const a = BigIntSpan.fromText('[1, 10)');
+		const b = BigIntSpan.fromText('[2, 10)');
 		assert.equal(a.ne(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('lt / gt order', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[3, 8)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[3, 8)');
 		assert.equal(a.lt(b), true);
 		assert.equal(b.gt(a), true);
 		a.free();
@@ -261,8 +261,8 @@ describe('BigIntSpan - Comparisons', () => {
 	});
 
 	it('le / ge', () => {
-		const a = BigIntSpan.in('[1, 5)');
-		const b = BigIntSpan.in('[1, 5)');
+		const a = BigIntSpan.fromText('[1, 5)');
+		const b = BigIntSpan.fromText('[1, 5)');
 		assert.equal(a.le(b), true);
 		assert.equal(a.ge(b), true);
 		a.free();
@@ -272,7 +272,7 @@ describe('BigIntSpan - Comparisons', () => {
 
 describe('BigIntSpan - expand / shiftScale', () => {
 	it('expand grows the span on each side', () => {
-		const s = BigIntSpan.in('[5, 10)');
+		const s = BigIntSpan.fromText('[5, 10)');
 		const e = s.expand(3);
 		assert.equal(e!.lower(), 2);
 		assert.equal(e!.upper(), 13);
@@ -281,7 +281,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 	});
 
 	it('shift only: lower moves by shift amount', () => {
-		const s = BigIntSpan.in('[1, 5)');
+		const s = BigIntSpan.fromText('[1, 5)');
 		const r = s.shiftScale(10, 0, true, false);
 		assert.equal(r.lower(), 11);
 		assert.equal(r.upper(), 15);
@@ -290,7 +290,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 	});
 
 	it('scale only: width is adjusted', () => {
-		const s = BigIntSpan.in('[1, 5)');
+		const s = BigIntSpan.fromText('[1, 5)');
 		const r = s.shiftScale(0, 8, false, true);
 		assert.equal(r.lower(), 1);
 		assert.equal(r.width(), 9);
@@ -299,7 +299,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 	});
 
 	it('shift and scale together', () => {
-		const s = BigIntSpan.in('[1, 5)');
+		const s = BigIntSpan.fromText('[1, 5)');
 		const r = s.shiftScale(10, 8, true, true);
 		assert.equal(r.lower(), 11);
 		assert.equal(r.width(), 9);

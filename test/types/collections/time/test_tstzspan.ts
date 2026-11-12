@@ -24,21 +24,21 @@ before(async () => {
 
 describe('TsTzSpan - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		assert.ok(s.ptr !== 0);
 		s.free();
 	});
 
 	it('toString round-trips WKT', () => {
 		const wkt = `[${T0}, ${T1})`;
-		const s = TsTzSpan.in(wkt);
+		const s = TsTzSpan.fromText(wkt);
 		assert.equal(s.toString(), wkt);
 		s.free();
 	});
 
 	it('fromString with inclusive upper bound round-trips', () => {
 		const wkt = `[${T0}, ${T1}]`;
-		const s = TsTzSpan.in(wkt);
+		const s = TsTzSpan.fromText(wkt);
 		assert.equal(s.toString(), wkt);
 		s.free();
 	});
@@ -51,7 +51,7 @@ describe('TsTzSpan - Construction', () => {
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const hex = s1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const s2 = TsTzSpan.fromHexWKB(hex);
@@ -61,7 +61,7 @@ describe('TsTzSpan - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const wkb = s1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -72,7 +72,7 @@ describe('TsTzSpan - Construction', () => {
 	});
 
 	it('copy() produces a distinct pointer with identical WKT', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const c = s.copy();
 		assert.ok(c.ptr !== 0);
 		assert.notEqual(c.ptr, s.ptr);
@@ -90,7 +90,7 @@ describe('TsTzSpan - Accessors', () => {
 	let s: TsTzSpan;
 
 	before(() => {
-		s = TsTzSpan.in(`[${T0}, ${T2})`);
+		s = TsTzSpan.fromText(`[${T0}, ${T2})`);
 	});
 
 	it('lower() < upper()', () => {
@@ -109,13 +109,13 @@ describe('TsTzSpan - Accessors', () => {
 	});
 
 	it('lowerInc() = false for ( bound', () => {
-		const open = TsTzSpan.in(`(${T0}, ${T2})`);
+		const open = TsTzSpan.fromText(`(${T0}, ${T2})`);
 		assert.equal(open.lowerInc(), false);
 		open.free();
 	});
 
 	it('upperInc() = true for ] bound', () => {
-		const closed = TsTzSpan.in(`[${T0}, ${T2}]`);
+		const closed = TsTzSpan.fromText(`[${T0}, ${T2}]`);
 		assert.equal(closed.upperInc(), true);
 		closed.free();
 	});
@@ -135,7 +135,7 @@ describe('TsTzSpan - Accessors', () => {
 
 describe('TsTzSpan - Conversions', () => {
 	it('toSpanSet() returns a non-zero pointer', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const ss = s.toSpanset();
 		assert.ok(ss !== null);
 		s.free();
@@ -154,10 +154,10 @@ describe('TsTzSpan - Topological predicates', () => {
 	let s4: TsTzSpan;
 
 	before(() => {
-		s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		s2 = TsTzSpan.in(`[${T1}, ${T2})`);
-		s3 = TsTzSpan.in(`[${T0}, ${T2})`);
-		s4 = TsTzSpan.in(`[${T2}, ${T3})`);
+		s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		s2 = TsTzSpan.fromText(`[${T1}, ${T2})`);
+		s3 = TsTzSpan.fromText(`[${T0}, ${T2})`);
+		s4 = TsTzSpan.fromText(`[${T2}, ${T3})`);
 	});
 
 	it('isAdjacent: [T0,T1) adj [T1,T2) = true', () => {
@@ -205,10 +205,10 @@ describe('TsTzSpan - Position predicates', () => {
 	let s4: TsTzSpan;
 
 	before(() => {
-		s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		s2 = TsTzSpan.in(`[${T1}, ${T2})`);
-		s3 = TsTzSpan.in(`[${T2}, ${T3})`);
-		s4 = TsTzSpan.in(`[${T0}, ${T4})`);
+		s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		s2 = TsTzSpan.fromText(`[${T1}, ${T2})`);
+		s3 = TsTzSpan.fromText(`[${T2}, ${T3})`);
+		s4 = TsTzSpan.fromText(`[${T0}, ${T4})`);
 	});
 
 	it('isBefore: [T0,T1) before [T2,T3) = true', () => {
@@ -246,24 +246,24 @@ describe('TsTzSpan - Position predicates', () => {
 
 describe('TsTzSpan - Distance', () => {
 	it('distance between overlapping spans = 0', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T2})`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T3})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T2})`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T3})`);
 		assert.equal(nonzero(s1.distance(s2)), false);
 		s1.free();
 		s2.free();
 	});
 
 	it('distance between disjoint spans > 0', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		const s2 = TsTzSpan.in(`[${T2}, ${T3})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		const s2 = TsTzSpan.fromText(`[${T2}, ${T3})`);
 		assert.ok(nonzero(s1.distance(s2)), `expected distance > 0, got ${s1.distance(s2)}`);
 		s1.free();
 		s2.free();
 	});
 
 	it('distance between adjacent spans = 0 (they share an endpoint)', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1}]`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T2}]`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1}]`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T2}]`);
 		assert.equal(nonzero(s1.distance(s2)), false);
 		s1.free();
 		s2.free();
@@ -276,8 +276,8 @@ describe('TsTzSpan - Distance', () => {
 
 describe('TsTzSpan - Set operations', () => {
 	it('intersection of overlapping spans returns a non-null TsTzSpan', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T2})`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T3})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T2})`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T3})`);
 		const inter = s1.intersection(s2);
 		assert.ok(inter !== null, 'expected non-null intersection');
 		assert.ok(inter!.ptr !== 0);
@@ -287,8 +287,8 @@ describe('TsTzSpan - Set operations', () => {
 	});
 
 	it('intersection of overlapping spans = [T1, T2)', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T2})`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T3})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T2})`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T3})`);
 		const inter = s1.intersection(s2);
 		assert.equal(inter!.toString(), `[${T1}, ${T2})`);
 		inter!.free();
@@ -297,8 +297,8 @@ describe('TsTzSpan - Set operations', () => {
 	});
 
 	it('intersection of disjoint spans returns null', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		const s2 = TsTzSpan.in(`[${T2}, ${T3})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		const s2 = TsTzSpan.fromText(`[${T2}, ${T3})`);
 		const inter = s1.intersection(s2);
 		assert.equal(inter, null);
 		s1.free();
@@ -306,8 +306,8 @@ describe('TsTzSpan - Set operations', () => {
 	});
 
 	it('minus() returns a non-zero Ptr', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T3})`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T2})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T3})`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T2})`);
 		const diff = s1.minus(s2);
 		assert.ok(diff !== null);
 		s1.free();
@@ -315,8 +315,8 @@ describe('TsTzSpan - Set operations', () => {
 	});
 
 	it('union() returns a non-zero Ptr', () => {
-		const s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		const s2 = TsTzSpan.in(`[${T1}, ${T2})`);
+		const s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		const s2 = TsTzSpan.fromText(`[${T1}, ${T2})`);
 		const u = s1.union(s2);
 		assert.ok(u !== null);
 		s1.free();
@@ -334,9 +334,9 @@ describe('TsTzSpan - Comparisons', () => {
 	let s1b: TsTzSpan;
 
 	before(() => {
-		s1 = TsTzSpan.in(`[${T0}, ${T1})`);
-		s1b = TsTzSpan.in(`[${T0}, ${T1})`); // same WKT as s1
-		s2 = TsTzSpan.in(`[${T1}, ${T2})`);
+		s1 = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		s1b = TsTzSpan.fromText(`[${T0}, ${T1})`); // same WKT as s1
+		s2 = TsTzSpan.fromText(`[${T1}, ${T2})`);
 	});
 
 	it('eq: same span = true', () => assert.equal(s1.eq(s1b), true));
@@ -353,7 +353,7 @@ describe('TsTzSpan - Comparisons', () => {
 
 describe('TsTzSpan - shiftScale', () => {
 	it('shift by 1 hour: [T0,T1) becomes [T1,T2)', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
 		const r = s.shift(interv);
 		assert.equal(r.toString(), `[${T1}, ${T2})`);
@@ -362,7 +362,7 @@ describe('TsTzSpan - shiftScale', () => {
 	});
 
 	it('scale to 2h: width doubles', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1}]`); // 1h
+		const s = TsTzSpan.fromText(`[${T0}, ${T1}]`); // 1h
 		const dur = { time: 7200000000, day: 0, month: 0 };  // 2 hours
 		const r = s.scale(dur);
 		// lower stays, upper moves to lower + 2h
@@ -373,7 +373,7 @@ describe('TsTzSpan - shiftScale', () => {
 	});
 
 	it('shift by 1 hour and scale to 2h: [T0,T1] starts at T1 and lasts 2h', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1}]`); // 1h
+		const s = TsTzSpan.fromText(`[${T0}, ${T1}]`); // 1h
 		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
 		const dur = { time: 7200000000, day: 0, month: 0 };    // 2 hours
 		const r = s.shiftScale(interv, dur);
@@ -386,7 +386,7 @@ describe('TsTzSpan - shiftScale', () => {
 
 describe('TsTzSpan - expand', () => {
 	it('expands span by 1 hour on each side', () => {
-		const s = TsTzSpan.in(`[${T1}, ${T2})`); // [+1h, +2h)
+		const s = TsTzSpan.fromText(`[${T1}, ${T2})`); // [+1h, +2h)
 		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
 		const r = s.expand(interv);
 		// lower shrinks by 1h, upper grows by 1h
@@ -399,7 +399,7 @@ describe('TsTzSpan - expand', () => {
 
 describe('TsTzSpan - tprecision', () => {
 	it('returns a non-zero pointer', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T3}]`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T3}]`);
 		const dur = { time: 3600000000, day: 0, month: 0 }; // 1-hour bucket
 		const r = s.tprecision(dur, s.lower());
 		assert.ok(r.ptr !== 0);
@@ -410,7 +410,7 @@ describe('TsTzSpan - tprecision', () => {
 
 describe('TsTzSpan - toDateSpan', () => {
 	it('returns a non-zero pointer', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1}]`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1}]`);
 		const ptr = s.toDatespan();
 		assert.ok(ptr !== null);
 		ptr.free();

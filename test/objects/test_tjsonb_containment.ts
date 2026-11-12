@@ -16,27 +16,27 @@ before(async () => {
 
 describe('generated object layer: the two containments of a temporal JSONB value', () => {
 	it('answers whether each JSONB value contains another as a temporal boolean', () => {
-		using t = TJsonb.in('["{\\"a\\": 1, \\"b\\": 2}"@2001-01-01 00:00:00+00, "{\\"a\\": 2}"@2001-01-02 00:00:00+00]');
-		using jb = Jsonb.in('{"a": 1}');
+		using t = TJsonb.fromText('["{\\"a\\": 1, \\"b\\": 2}"@2001-01-01 00:00:00+00, "{\\"a\\": 2}"@2001-01-02 00:00:00+00]');
+		using jb = Jsonb.fromText('{"a": 1}', false);
 		using answer = t.tjsonbContains(jb);
 		assert.equal(answer.toString(),
 			'[t@2001-01-01 00:00:00+00, f@2001-01-02 00:00:00+00]');
-		using other = TJsonb.in('"{\\"a\\": 1}"@2001-01-01 00:00:00+00');
+		using other = TJsonb.fromText('"{\\"a\\": 1}"@2001-01-01 00:00:00+00');
 		using both = t.tjsonbContains(other);
 		assert.equal(both.toString(), 't@2001-01-01 00:00:00+00');
 	});
 
 	it('answers whether each JSONB value is contained in another as a temporal boolean', () => {
-		using t = TJsonb.in('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"c\\": 3}"@2001-01-02 00:00:00+00]');
-		using jb = Jsonb.in('{"a": 1, "b": 2}');
+		using t = TJsonb.fromText('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"c\\": 3}"@2001-01-02 00:00:00+00]');
+		using jb = Jsonb.fromText('{"a": 1, "b": 2}', false);
 		using answer = t.tjsonbContained(jb);
 		assert.equal(answer.toString(),
 			'[t@2001-01-01 00:00:00+00, f@2001-01-02 00:00:00+00]');
 	});
 
 	it('states the JSONB value first as a member of the JSONB value', () => {
-		using t = TJsonb.in('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"c\\": 3}"@2001-01-02 00:00:00+00]');
-		using jb = Jsonb.in('{"a": 1, "b": 2}');
+		using t = TJsonb.fromText('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"c\\": 3}"@2001-01-02 00:00:00+00]');
+		using jb = Jsonb.fromText('{"a": 1, "b": 2}', false);
 		using contains = jb.tjsonbContains(t);
 		assert.equal(contains.toString(),
 			'[t@2001-01-01 00:00:00+00, f@2001-01-02 00:00:00+00]');
@@ -49,8 +49,8 @@ describe('generated object layer: the two containments of a temporal JSONB value
 	});
 
 	it('keeps the inherited contains as the containment of time', () => {
-		using t = TJsonb.in('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"a\\": 2}"@2001-01-03 00:00:00+00]');
-		using inside = TJsonb.in('"{\\"z\\": 0}"@2001-01-02 00:00:00+00');
+		using t = TJsonb.fromText('["{\\"a\\": 1}"@2001-01-01 00:00:00+00, "{\\"a\\": 2}"@2001-01-03 00:00:00+00]');
+		using inside = TJsonb.fromText('"{\\"z\\": 0}"@2001-01-02 00:00:00+00');
 		assert.equal(t.contains(inside), true);
 	});
 });

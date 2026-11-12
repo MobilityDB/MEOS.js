@@ -14,13 +14,13 @@ const D30 = 30; // 2000-01-31
 
 describe('DateSpan - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		assert.ok(s.ptr !== 0);
 		s.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		assert.equal(s.toString(), '[2000-01-01, 2000-01-11)');
 		s.free();
 	});
@@ -33,7 +33,7 @@ describe('DateSpan - Construction', () => {
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const s1 = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s1 = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		const hex = s1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const s2 = DateSpan.fromHexWKB(hex);
@@ -43,7 +43,7 @@ describe('DateSpan - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const s1 = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s1 = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		const wkb = s1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), s1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -54,7 +54,7 @@ describe('DateSpan - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with same bounds', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		const c = s.copy() as DateSpan;
 		assert.notEqual(s.ptr, c.ptr);
 		assert.equal(c.lower(), s.lower());
@@ -72,7 +72,7 @@ describe('DateSpan - Accessors', () => {
 	});
 
 	it('lowerInc / upperInc match brackets', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		assert.equal(s.lowerInc(), true);
 		assert.equal(s.upperInc(), false);
 		s.free();
@@ -85,7 +85,7 @@ describe('DateSpan - Accessors', () => {
 	});
 
 	it('hash returns a number', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		assert.equal(typeof s.hash(), 'number');
 		s.free();
 	});
@@ -93,14 +93,14 @@ describe('DateSpan - Accessors', () => {
 
 describe('DateSpan - Conversions', () => {
 	it('toTsTzSpan returns a non-zero pointer', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		const ptr = s.toTstzspan();
 		assert.ok(ptr !== null);
 		s.free();
 	});
 
 	it('toSpanSet returns a non-zero pointer', () => {
-		const s = DateSpan.in('[2000-01-01, 2000-01-11)');
+		const s = DateSpan.fromText('[2000-01-01, 2000-01-11)');
 		const ptr = s.toSpanset();
 		assert.ok(ptr !== null);
 		s.free();

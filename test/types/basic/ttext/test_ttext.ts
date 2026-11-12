@@ -235,7 +235,7 @@ describe('TText - fromBaseTemporal', () => {
 
 describe('TText - fromBaseTime', () => {
 	it('fromBaseTime with TsTzSpan creates a sequence', () => {
-		const span = TsTzSpan.in(`[${TS1}, ${TS2}]`);
+		const span = TsTzSpan.fromText(`[${TS1}, ${TS2}]`);
 		const t = TText.fromBaseTime('hello', span.ptr, 'tstzspan');
 		assert.ok(t.inner !== 0);
 		assert.equal(t.startValue(), 'hello');
@@ -243,14 +243,14 @@ describe('TText - fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with TsTzSet creates a discrete sequence', () => {
-		const set = TsTzSet.in(`{${TS1}, ${TS2}}`);
+		const set = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
 		const t = TText.fromBaseTime('hello', set.ptr, 'tstzset');
 		assert.ok(t.inner !== 0);
 		set.free(); t.free();
 	});
 
 	it('fromBaseTime with TsTzSpanSet creates a sequence set', () => {
-		const ss = TsTzSpanSet.in(`{[${TS1}, ${TS2}], [${TS3}, ${TS4}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${TS1}, ${TS2}], [${TS3}, ${TS4}]}`);
 		const t = TText.fromBaseTime('hello', ss.ptr, 'tstzspanset');
 		assert.ok(t.inner !== 0);
 		ss.free(); t.free();

@@ -29,19 +29,19 @@ before(async () => {
 
 describe('TsTzSpanSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const ss = TsTzSpanSet.in(WKT_AB);
+		const ss = TsTzSpanSet.fromText(WKT_AB);
 		assert.ok(ss.ptr !== 0);
 		ss.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const ss = TsTzSpanSet.in(WKT_AB);
+		const ss = TsTzSpanSet.fromText(WKT_AB);
 		assert.equal(ss.toString(), WKT_AB);
 		ss.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const ss1 = TsTzSpanSet.in(WKT_AB);
+		const ss1 = TsTzSpanSet.fromText(WKT_AB);
 		const hex = ss1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const ss2 = TsTzSpanSet.fromHexWKB(hex);
@@ -51,7 +51,7 @@ describe('TsTzSpanSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const ss1 = TsTzSpanSet.in(WKT_AB);
+		const ss1 = TsTzSpanSet.fromText(WKT_AB);
 		const wkb = ss1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -62,7 +62,7 @@ describe('TsTzSpanSet - Construction', () => {
 	});
 
 	it('fromSpan wraps a single TsTzSpan', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T2})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T2})`);
 		const ss = s.toSpanset();
 		assert.equal(ss.numSpans(), 1);
 		assert.equal(ss.toString(), WKT_SINGLE);
@@ -71,7 +71,7 @@ describe('TsTzSpanSet - Construction', () => {
 	});
 
 	it('copy() produces a distinct pointer with identical WKT', () => {
-		const ss = TsTzSpanSet.in(WKT_AB);
+		const ss = TsTzSpanSet.fromText(WKT_AB);
 		const c = ss.copy();
 		assert.ok(c.ptr !== 0);
 		assert.notEqual(c.ptr, ss.ptr);
@@ -89,7 +89,7 @@ describe('TsTzSpanSet - Accessors', () => {
 	let ss: TsTzSpanSet; // {[T0,T1), [T2,T3)}
 
 	before(() => {
-		ss = TsTzSpanSet.in(WKT_AB);
+		ss = TsTzSpanSet.fromText(WKT_AB);
 	});
 
 	it('numSpans() = 2', () => {
@@ -189,10 +189,10 @@ describe('TsTzSpanSet - Topological predicates', () => {
 	let s_overlap: TsTzSpan; // [T0,T2) - overlaps first span
 
 	before(() => {
-		ss1 = TsTzSpanSet.in(WKT_AB);
-		ss2 = TsTzSpanSet.in(`{[${T3}, ${T4})}`);
-		ss_big = TsTzSpanSet.in(`{[${T0}, ${T4})}`);
-		s_overlap = TsTzSpan.in(`[${T0}, ${T2})`);
+		ss1 = TsTzSpanSet.fromText(WKT_AB);
+		ss2 = TsTzSpanSet.fromText(`{[${T3}, ${T4})}`);
+		ss_big = TsTzSpanSet.fromText(`{[${T0}, ${T4})}`);
+		s_overlap = TsTzSpan.fromText(`[${T0}, ${T2})`);
 	});
 
 	it('isAdjacent(TsTzSpanSet): {[T0,T1),[T2,T3)} adj {[T3,T4)} = true', () => {
@@ -200,7 +200,7 @@ describe('TsTzSpanSet - Topological predicates', () => {
 	});
 
 	it('isAdjacent(TsTzSpan): {[T0,T1),[T2,T3)} adj [T3,T4) = true', () => {
-		const s = TsTzSpan.in(`[${T3}, ${T4})`);
+		const s = TsTzSpan.fromText(`[${T3}, ${T4})`);
 		assert.equal(ss1.adjacent(s), true);
 		s.free();
 	});
@@ -210,7 +210,7 @@ describe('TsTzSpanSet - Topological predicates', () => {
 	});
 
 	it('isContainedIn(TsTzSpan): {[T0,T1),[T2,T3)} in [T0,T4) = true', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T4})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T4})`);
 		assert.equal(ss1.contained(s), true);
 		s.free();
 	});
@@ -220,7 +220,7 @@ describe('TsTzSpanSet - Topological predicates', () => {
 	});
 
 	it('contains(TsTzSpan): {[T0,T4)} contains [T1,T2) = true', () => {
-		const s = TsTzSpan.in(`[${T1}, ${T2})`);
+		const s = TsTzSpan.fromText(`[${T1}, ${T2})`);
 		assert.equal(ss_big.contains(s), true);
 		s.free();
 	});
@@ -248,8 +248,8 @@ describe('TsTzSpanSet - Position predicates', () => {
 	let ss2: TsTzSpanSet;
 
 	before(() => {
-		ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		ss2 = TsTzSpanSet.in(`{[${T2}, ${T3})}`);
+		ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		ss2 = TsTzSpanSet.fromText(`{[${T2}, ${T3})}`);
 	});
 
 	it('isBefore(TsTzSpanSet): {[T0,T1)} before {[T2,T3)} = true', () => {
@@ -257,7 +257,7 @@ describe('TsTzSpanSet - Position predicates', () => {
 	});
 
 	it('isBefore(TsTzSpan): {[T0,T1)} before [T2,T3) = true', () => {
-		const s = TsTzSpan.in(`[${T2}, ${T3})`);
+		const s = TsTzSpan.fromText(`[${T2}, ${T3})`);
 		assert.equal(ss1.left(s), true);
 		s.free();
 	});
@@ -267,7 +267,7 @@ describe('TsTzSpanSet - Position predicates', () => {
 	});
 
 	it('isAfter(TsTzSpan): {[T2,T3)} after [T0,T1) = true', () => {
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		assert.equal(ss2.right(s), true);
 		s.free();
 	});
@@ -287,32 +287,32 @@ describe('TsTzSpanSet - Position predicates', () => {
 
 describe('TsTzSpanSet - Distance', () => {
 	it('distance to overlapping spanset = 0', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T2})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T1}, ${T3})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T2})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T1}, ${T3})}`);
 		assert.equal(nonzero(ss1.distance(ss2)), false);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance to disjoint spanset > 0', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T2}, ${T3})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T2}, ${T3})}`);
 		assert.ok(nonzero(ss1.distance(ss2)));
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance to overlapping TsTzSpan = 0', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T2})}`);
-		const s = TsTzSpan.in(`[${T1}, ${T3})`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T2})}`);
+		const s = TsTzSpan.fromText(`[${T1}, ${T3})`);
 		assert.equal(nonzero(ss.distance(s)), false);
 		ss.free();
 		s.free();
 	});
 
 	it('distance to disjoint TsTzSpan > 0', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const s = TsTzSpan.in(`[${T2}, ${T3})`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const s = TsTzSpan.fromText(`[${T2}, ${T3})`);
 		assert.ok(nonzero(ss.distance(s)));
 		ss.free();
 		s.free();
@@ -325,8 +325,8 @@ describe('TsTzSpanSet - Distance', () => {
 
 describe('TsTzSpanSet - Set operations', () => {
 	it('intersection(TsTzSpanSet): overlapping = non-null', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T2})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T1}, ${T3})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T2})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T1}, ${T3})}`);
 		const inter = ss1.intersection(ss2);
 		assert.ok(inter !== null);
 		assert.equal(inter!.toString(), `{[${T1}, ${T2})}`);
@@ -336,8 +336,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('intersection(TsTzSpanSet): disjoint = null', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T2}, ${T3})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T2}, ${T3})}`);
 		const inter = ss1.intersection(ss2);
 		assert.equal(inter, null);
 		ss1.free();
@@ -345,8 +345,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('intersection(TsTzSpan): overlapping = non-null', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T2})}`);
-		const s = TsTzSpan.in(`[${T1}, ${T3})`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T2})}`);
+		const s = TsTzSpan.fromText(`[${T1}, ${T3})`);
 		const inter = ss.intersection(s);
 		assert.ok(inter !== null);
 		assert.equal(inter!.toString(), `{[${T1}, ${T2})}`);
@@ -356,8 +356,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('minus(TsTzSpanSet): returns non-null when result is non-empty', () => {
-		const ss1 = TsTzSpanSet.in(WKT_AB); // {[T0,T1),[T2,T3)}
-		const ss2 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
+		const ss1 = TsTzSpanSet.fromText(WKT_AB); // {[T0,T1),[T2,T3)}
+		const ss2 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
 		const diff = ss1.minus(ss2);
 		assert.ok(diff !== null);
 		// result should be {[T2,T3)}
@@ -368,8 +368,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('minus(TsTzSpanSet): returns null when result is empty', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T0}, ${T2})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T0}, ${T2})}`);
 		const diff = ss1.minus(ss2);
 		assert.equal(diff, null);
 		ss1.free();
@@ -377,8 +377,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('minus(TsTzSpan): removes overlapping part', () => {
-		const ss = TsTzSpanSet.in(WKT_AB); // {[T0,T1),[T2,T3)}
-		const s = TsTzSpan.in(`[${T0}, ${T1})`);
+		const ss = TsTzSpanSet.fromText(WKT_AB); // {[T0,T1),[T2,T3)}
+		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
 		const diff = ss.minus(s);
 		assert.ok(diff !== null);
 		assert.equal(diff!.toString(), `{[${T2}, ${T3})}`);
@@ -388,8 +388,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('union(TsTzSpanSet): merges disjoint spansets', () => {
-		const ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const ss2 = TsTzSpanSet.in(`{[${T2}, ${T3})}`);
+		const ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const ss2 = TsTzSpanSet.fromText(`{[${T2}, ${T3})}`);
 		const u = ss1.union(ss2);
 		assert.equal(u!.toString(), WKT_AB);
 		u!.free();
@@ -398,8 +398,8 @@ describe('TsTzSpanSet - Set operations', () => {
 	});
 
 	it('union(TsTzSpan): merges span into spanset', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		const s = TsTzSpan.in(`[${T2}, ${T3})`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		const s = TsTzSpan.fromText(`[${T2}, ${T3})`);
 		const u = ss.union(s);
 		assert.equal(u!.toString(), WKT_AB);
 		u!.free();
@@ -418,9 +418,9 @@ describe('TsTzSpanSet - Comparisons', () => {
 	let ss2: TsTzSpanSet;
 
 	before(() => {
-		ss1 = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
-		ss1b = TsTzSpanSet.in(`{[${T0}, ${T1})}`); // same
-		ss2 = TsTzSpanSet.in(`{[${T1}, ${T2})}`);
+		ss1 = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
+		ss1b = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`); // same
+		ss2 = TsTzSpanSet.fromText(`{[${T1}, ${T2})}`);
 	});
 
 	it('eq: same spanset = true', () => assert.equal(ss1.eq(ss1b), true));
@@ -433,7 +433,7 @@ describe('TsTzSpanSet - Comparisons', () => {
 
 describe('TsTzSpanSet - shiftScale', () => {
 	it('shift by 1 hour: each span moves forward 1 hour', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
 		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
 		const r = ss.shift(interv);
 		assert.ok(r.ptr !== 0);
@@ -443,7 +443,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 	});
 
 	it('scale to 4h total duration: upper bound extends', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1})}`); // 1h span
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`); // 1h span
 		const dur = { time: 14400000000, day: 0, month: 0 };       // 4 hours
 		const r = ss.scale(dur);
 		assert.ok(r.upper() > ss.upper());
@@ -452,7 +452,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 	});
 
 	it('shift by 1 hour and scale to 4h: the span set starts 1 hour later', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
 		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
 		const dur = { time: 14400000000, day: 0, month: 0 };    // 4 hours
 		const r = ss.shiftScale(interv, dur);
@@ -464,7 +464,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 
 describe('TsTzSpanSet - tprecision', () => {
 	it('returns a non-zero pointer', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T3})}`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T3})}`);
 		const dur = { time: 3600000000, day: 0, month: 0 }; // 1-hour bucket
 		const r = ss.tprecision(dur, ss.lower());
 		assert.ok(r.ptr !== 0);
@@ -475,7 +475,7 @@ describe('TsTzSpanSet - tprecision', () => {
 
 describe('TsTzSpanSet - toDateSpanSet', () => {
 	it('returns a non-zero pointer', () => {
-		const ss = TsTzSpanSet.in(`{[${T0}, ${T1})}`);
+		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`);
 		const ptr = ss.toDatespanset();
 		assert.ok(ptr !== null);
 		ptr.free();

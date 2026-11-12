@@ -11,19 +11,19 @@ const WKT_AB = '{[1, 5), [8, 12)}';
 
 describe('BigIntSpanSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		assert.ok(ss.ptr !== 0);
 		ss.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		assert.equal(ss.toString(), WKT_AB);
 		ss.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const ss1 = BigIntSpanSet.in(WKT_AB);
+		const ss1 = BigIntSpanSet.fromText(WKT_AB);
 		const hex = ss1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const ss2 = BigIntSpanSet.fromHexWKB(hex);
@@ -33,7 +33,7 @@ describe('BigIntSpanSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const ss1 = BigIntSpanSet.in(WKT_AB);
+		const ss1 = BigIntSpanSet.fromText(WKT_AB);
 		const wkb = ss1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -54,7 +54,7 @@ describe('BigIntSpanSet - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		const c = ss.copy();
 		assert.ok(c.ptr !== 0);
 		assert.notEqual(c.ptr, ss.ptr);
@@ -66,34 +66,34 @@ describe('BigIntSpanSet - Construction', () => {
 
 describe('BigIntSpanSet - Accessors', () => {
 	it('numSpans returns 2', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		assert.equal(ss.numSpans(), 2);
 		ss.free();
 	});
 
 	it('lower and upper return outer bounds', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		assert.equal(ss.lower(), 1);
 		assert.equal(ss.upper(), 12);
 		ss.free();
 	});
 
 	it('width (sum of spans)', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		// [1,5) = 4 wide, [8,12) = 4 wide → total = 8
 		assert.equal(ss.width(), 8);
 		ss.free();
 	});
 
 	it('width (bounding span)', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		// bounding [1,12) = 11 wide
 		assert.equal(ss.width(true), 11);
 		ss.free();
 	});
 
 	it('spanN returns correct span', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
+		const ss = BigIntSpanSet.fromText(WKT_AB);
 		const s = ss.spanN(1);
 		assert.ok(s!.ptr !== 0);
 		assert.equal(s!.lower(), 1);
@@ -105,24 +105,24 @@ describe('BigIntSpanSet - Accessors', () => {
 
 describe('BigIntSpanSet - Distance', () => {
 	it('distance to BigIntSpan returns 0 when overlapping', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
-		const s = BigIntSpan.in('[3, 6)');
+		const ss = BigIntSpanSet.fromText(WKT_AB);
+		const s = BigIntSpan.fromText('[3, 6)');
 		assert.equal(ss.distance(s), 0);
 		ss.free();
 		s.free();
 	});
 
 	it('distance to BigIntSpan returns gap', () => {
-		const ss = BigIntSpanSet.in('{[1, 3), [10, 15)}');
-		const s = BigIntSpan.in('[20, 30)'); // outside bounding span [1, 15)
+		const ss = BigIntSpanSet.fromText('{[1, 3), [10, 15)}');
+		const s = BigIntSpan.fromText('[20, 30)'); // outside bounding span [1, 15)
 		assert.ok(ss.distance(s) > 0);
 		ss.free();
 		s.free();
 	});
 
 	it('distance to BigIntSpanSet returns 0 when overlapping', () => {
-		const ss1 = BigIntSpanSet.in(WKT_AB);
-		const ss2 = BigIntSpanSet.in('{[3, 6)}');
+		const ss1 = BigIntSpanSet.fromText(WKT_AB);
+		const ss2 = BigIntSpanSet.fromText('{[3, 6)}');
 		assert.equal(ss1.distance(ss2), 0);
 		ss1.free();
 		ss2.free();
@@ -131,16 +131,16 @@ describe('BigIntSpanSet - Distance', () => {
 
 describe('BigIntSpanSet - Set operations', () => {
 	it('intersection returns overlapping region', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
-		const s = BigIntSpan.in('[3, 6)');
+		const ss = BigIntSpanSet.fromText(WKT_AB);
+		const s = BigIntSpan.fromText('[3, 6)');
 		const r = ss.intersection(s);
 		assert.ok(r !== null);
 		ss.free(); s.free(); r!.free();
 	});
 
 	it('union contains elements from both', () => {
-		const ss = BigIntSpanSet.in(WKT_AB);
-		const s = BigIntSpan.in('[20, 25)');
+		const ss = BigIntSpanSet.fromText(WKT_AB);
+		const s = BigIntSpan.fromText('[20, 25)');
 		const r = ss.union(s);
 		assert.ok(r!.numSpans() >= 2);
 		r!.free();
@@ -151,16 +151,16 @@ describe('BigIntSpanSet - Set operations', () => {
 
 describe('BigIntSpanSet - Comparisons', () => {
 	it('eq: same span set is equal', () => {
-		const a = BigIntSpanSet.in(WKT_AB);
-		const b = BigIntSpanSet.in(WKT_AB);
+		const a = BigIntSpanSet.fromText(WKT_AB);
+		const b = BigIntSpanSet.fromText(WKT_AB);
 		assert.equal(a.eq(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('ne: different span sets', () => {
-		const a = BigIntSpanSet.in(WKT_AB);
-		const b = BigIntSpanSet.in('{[2, 5), [8, 12)}');
+		const a = BigIntSpanSet.fromText(WKT_AB);
+		const b = BigIntSpanSet.fromText('{[2, 5), [8, 12)}');
 		assert.equal(a.ne(b), true);
 		a.free();
 		b.free();
@@ -169,7 +169,7 @@ describe('BigIntSpanSet - Comparisons', () => {
 
 describe('BigIntSpanSet - shiftScale', () => {
 	it('shift only', () => {
-		const ss = BigIntSpanSet.in('{[1, 5), [8, 12)}');
+		const ss = BigIntSpanSet.fromText('{[1, 5), [8, 12)}');
 		const r = ss.shiftScale(10, 0, true, false);
 		assert.equal(r.lower(), 11);
 		ss.free();
@@ -177,7 +177,7 @@ describe('BigIntSpanSet - shiftScale', () => {
 	});
 
 	it('scale only: width adjusts', () => {
-		const ss = BigIntSpanSet.in('{[0, 10)}');
+		const ss = BigIntSpanSet.fromText('{[0, 10)}');
 		const r = ss.shiftScale(0, 20, false, true);
 		assert.equal(r.lower(), 0);
 		assert.equal(r.width(), 21); // BigInt half-open: width 20 → span [0, 21)

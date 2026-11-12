@@ -35,9 +35,9 @@ before(async () => {
 
 describe('generated object layer: the factory', () => {
 	it('wraps a value in the concrete class its header names', () => {
-		const inst = TFloat.in(`1.5@${T0}`);
-		const seq = TFloat.in(`[1@${T0}, 3@${T2}]`);
-		const ss = TFloat.in(`{[1@${T0}, 3@${T1}], [5@${T2}]}`);
+		const inst = TFloat.fromText(`1.5@${T0}`);
+		const seq = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
+		const ss = TFloat.fromText(`{[1@${T0}, 3@${T1}], [5@${T2}]}`);
 		assert.ok(inst instanceof TFloatInst);
 		assert.ok(seq instanceof TFloatSeq);
 		assert.ok(ss instanceof TFloatSeqSet);
@@ -49,20 +49,20 @@ describe('generated object layer: the factory', () => {
 	});
 
 	it('writes itself with the text writer the catalog names', () => {
-		using t = TFloat.in(`[1.5@${T0}, 2.5@${T1}]`);
+		using t = TFloat.fromText(`[1.5@${T0}, 2.5@${T1}]`);
 		assert.equal(t.toString(), `[1.5@${T0}, 2.5@${T1}]`);
 	});
 });
 
 describe('generated object layer: arrays', () => {
 	it('answers an array of values MEOS counts through an out-parameter', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		assert.deepEqual(t.values(), [1, 3]);
 		assert.equal(t.timestamps().length, 2);
 	});
 
 	it('answers an array of MEOS values, each wrapped in its class', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		const instants = t.instants();
 		assert.equal(instants.length, t.numInstants());
 		for (const i of instants) assert.ok(i instanceof TFloatInst);
@@ -71,8 +71,8 @@ describe('generated object layer: arrays', () => {
 	});
 
 	it('takes an array of MEOS values for a counted array argument', () => {
-		const a = TFloat.in(`1@${T0}`);
-		const b = TFloat.in(`3@${T2}`);
+		const a = TFloat.fromText(`1@${T0}`);
+		const b = TFloat.fromText(`3@${T2}`);
 		// the interpolation is passed as text, as the SQL constructor takes it, and
 		// MEOS reads it (interptype_from_string); normalize as the SQL constructor does
 		const seq = TSequence.make([a, b], true, true, 'linear', true);
@@ -84,7 +84,7 @@ describe('generated object layer: arrays', () => {
 	});
 
 	it('copies each inline struct out of an answered array', () => {
-		using ss = IntSpanSet.in('{[1, 3), [5, 7)}');
+		using ss = IntSpanSet.fromText('{[1, 3), [5, 7)}');
 		const spans = ss.spans();
 		assert.deepEqual(spans.map(s => s.toString()), ['[1, 3)', '[5, 7)']);
 		for (const s of spans) assert.ok(s instanceof IntSpan);
@@ -94,8 +94,8 @@ describe('generated object layer: arrays', () => {
 	it('passes the inline structs of a counted array argument as values', () => {
 		// cbufferset_make reads its buffers as Cbuffer values one after another,
 		// a varlena header with each, at sizeof(Cbuffer).
-		const a = CBuffer.in('Cbuffer(Point(1 1),0.5)');
-		const b = CBuffer.in('Cbuffer(Point(2 2),1.5)');
+		const a = CBuffer.fromText('Cbuffer(Point(1 1),0.5)');
+		const b = CBuffer.fromText('Cbuffer(Point(2 2),1.5)');
 		const set = CBufferSet.make([a, b]);
 		assert.ok(set instanceof CBufferSet);
 		assert.equal(set.numValues(), 2);
@@ -106,13 +106,13 @@ describe('generated object layer: arrays', () => {
 
 describe('generated object layer: values and buffers', () => {
 	it('carries a scalar-only struct as a value', () => {
-		using t = TFloat.in(`1@${T0}`);
+		using t = TFloat.fromText(`1@${T0}`);
 		using shifted = t.shiftTime({ time: 60_000_000, day: 0, month: 0 });
 		assert.equal(shifted.toString(), `1@${T1}`);
 	});
 
 	it('answers a byte buffer for the size MEOS writes', () => {
-		using t = TFloat.in(`1@${T0}`);
+		using t = TFloat.fromText(`1@${T0}`);
 		const wkb = t.asWKB(0);
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
 	});
@@ -130,34 +130,34 @@ describe('generated object layer: operators', () => {
 	// The operators the catalog assigns each class (`classes.<C>.operators`),
 	// one method per name that chooses the overload by its arguments.
 	it('chooses the overload a scalar argument fits', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		using plus = t.add(1);
 		assert.equal(plus!.toString(), `[2@${T0}, 4@${T2}]`);
 		assert.equal(t.nad(5), 2);
 	});
 
 	it('passes an argument no overload of the class takes to the inherited operator', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
-		using u = TFloat.in(`[10@${T0}, 10@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
+		using u = TFloat.fromText(`[10@${T0}, 10@${T2}]`);
 		using sum = t.add(u);
 		assert.equal(sum!.toString(), `[11@${T0}, 13@${T2}]`);
 	});
 
 	it('names a reflected operator apart from its mirror', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		using diff = t.rsub(10);
 		assert.equal(diff.toString(), `[9@${T0}, 7@${T2}]`);
 	});
 
 	it('answers the ever comparison MEOS answers', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		assert.equal(t.everEq(3), 1);
 		assert.equal(t.everEq(5), 0);
 	});
 
 	it('is a member of the instantiation its SQL signatures name', () => {
-		using s = IntSet.in('{1, 2, 3}');
-		using sub = IntSet.in('{1, 2}');
+		using s = IntSet.fromText('{1, 2, 3}');
+		using sub = IntSet.fromText('{1, 2}');
 		assert.equal(s.contains(2), true);
 		assert.equal(s.contains(sub), true);
 		using a = IntSpan.make(1, 5, true, false);
@@ -168,14 +168,14 @@ describe('generated object layer: operators', () => {
 	});
 
 	it('refuses an argument no overload takes', () => {
-		using t = TFloat.in(`1@${T0}`);
+		using t = TFloat.fromText(`1@${T0}`);
 		assert.throws(() => (t as unknown as { nad(x: unknown): number }).nad('x'), TypeError);
 	});
 });
 
 describe('generated object layer: byte arrays, scalar arrays and out-parameters', () => {
 	it('reads a value back from the WKB it writes', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		using back = Temporal.fromWKB(t.asWKB(0));
 		assert.ok(back instanceof TFloatSeq);
 		assert.equal(back.toString(), t.toString());
@@ -185,10 +185,10 @@ describe('generated object layer: byte arrays, scalar arrays and out-parameters'
 	});
 
 	it('answers a value MEOS writes through a pointer, or null where it finds none', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		const start = t.startTimestamptz();
 		assert.equal(t.valueAtTimestamptz(start, true), 1);
-		using later = TFloat.in(`5@${T2}`);
+		using later = TFloat.fromText(`5@${T2}`);
 		assert.equal(t.valueAtTimestamptz(later.startTimestamptz() + 60_000_000, true), null);
 	});
 
@@ -216,35 +216,35 @@ describe('generated object layer: constructors from base values', () => {
 
 describe('generated object layer: the wrappers the flat surface no longer writes by hand', () => {
 	it('reads the bounds of a timestamptz span', () => {
-		using s = TsTzSpan.in(`[${T0}, ${T2})`);
-		using t = TFloat.in(`1@${T0}`);
+		using s = TsTzSpan.fromText(`[${T0}, ${T2})`);
+		using t = TFloat.fromText(`1@${T0}`);
 		assert.equal(s.lower(), t.startTimestamptz());
 		assert.ok(s.upper() > s.lower());
 	});
 
 	it('compares and tells the adjacency of spans by their bounds', () => {
-		using a = TsTzSpan.in(`[${T0}, ${T1})`);
-		using b = TsTzSpan.in(`[${T0}, ${T1})`);
-		using c = TsTzSpan.in(`[${T1}, ${T2})`);
+		using a = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		using b = TsTzSpan.fromText(`[${T0}, ${T1})`);
+		using c = TsTzSpan.fromText(`[${T1}, ${T2})`);
 		assert.equal(a.eq(b), true);
 		assert.equal(a.adjacent(c), true);
 	});
 
 	it('answers the n-th text of a set, or null past its end', () => {
-		using s = TextSet.in('{"a", "b"}');
+		using s = TextSet.fromText('{"a", "b"}');
 		assert.equal(s.valueN(1), 'a');
 		assert.equal(s.valueN(3), null);
 	});
 
 	it('writes hex WKB and MF-JSON, with no SRS for a null one', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		using back = Temporal.fromHexWKB(t.asHexWKB(0));
 		assert.equal(back.toString(), t.toString());
 		assert.ok(t.asMFJSON(0, 3, 6, null).includes('"MovingFloat"'));
 	});
 
 	it('answers the n-th instant at the index MEOS counts from 1', () => {
-		using t = TFloat.in(`[1@${T0}, 3@${T2}]`);
+		using t = TFloat.fromText(`[1@${T0}, 3@${T2}]`);
 		using second = t.instantN(2);
 		assert.equal(second!.toString(), `3@${T2}`);
 	});
@@ -262,12 +262,12 @@ describe('generated object layer: SQL defaults', () => {
 	it('takes the default through a method choosing among overloads', () => {
 		// nearestApproachDistance(stbox, stbox, boolean DEFAULT true) is one of
 		// the overloads STBox.nad chooses among by the arguments' types
-		using a = STBox.in('STBOX X((1,1),(2,2))');
-		using b = STBox.in('STBOX X((5,5),(6,6))');
+		using a = STBox.fromText('STBOX X((1,1),(2,2))');
+		using b = STBox.fromText('STBOX X((5,5),(6,6))');
 		assert.ok(Math.abs(a.nad(b) - Math.sqrt(18)) < 1e-9);
 		assert.equal(a.nad(b), a.nad(b, true));
-		using c = STBox.in('STBOX X((1,1),(3,3))');
-		using d = STBox.in('STBOX X((2,2),(4,4))');
+		using c = STBox.fromText('STBOX X((1,1),(3,3))');
+		using d = STBox.fromText('STBOX X((2,2),(4,4))');
 		assert.equal(c.nad(d), 0);
 	});
 });
@@ -291,11 +291,11 @@ describe('generated object layer: the defaults a type encoding states', () => {
 	it('writes WKB and text with the defaults typeEncodings gives the writer', () => {
 		// set_as_hexwkb's variant defaults to 0 and span_out's maxdd to 15
 		// (typeEncodings encoderAux, writerAux).
-		using s = IntSet.in('{1, 2}');
+		using s = IntSet.fromText('{1, 2}');
 		using back = IntSet.fromHexWKB(s.asHexWKB());
 		assert.equal(back.toString(), '{1, 2}');
-		using f = FloatSpan.in('[1.5, 2.5]');
-		assert.equal(f.out(), f.toString());
+		using f = FloatSpan.fromText('[1.5, 2.5]');
+		assert.equal(f.asText(), f.toString());
 	});
 });
 
@@ -303,7 +303,7 @@ describe('generated object layer: answers narrowed per receiver class', () => {
 	it('answers the instantiation the SQL signature names for this receiver', () => {
 		// spanset_span returns a Span * in C; span(intspanset) answers an intspan,
 		// so IntSpanSet.span answers an IntSpan, whose own members it reaches.
-		using ss = IntSpanSet.in('{[1, 3), [5, 8)}');
+		using ss = IntSpanSet.fromText('{[1, 3), [5, 8)}');
 		using bounding = ss.span();
 		assert.ok(bounding instanceof IntSpan);
 		assert.equal(bounding.lower(), 1);

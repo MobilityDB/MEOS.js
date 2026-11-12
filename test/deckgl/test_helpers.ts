@@ -47,7 +47,7 @@ describe('atTime (temporal restriction)', () => {
 
 	it('accepts a TsTzSpan instance and leaves it to the caller', () => {
 		using t = TGeomPoint.fromString(TRAJ);
-		using span = TsTzSpan.in(`[${T0}, ${T1}]`);
+		using span = TsTzSpan.fromText(`[${T0}, ${T1}]`);
 		const trips = atTime(t, span);
 		assert.equal(trips.length, 1);
 		// span still usable afterwards (not freed by the helper)

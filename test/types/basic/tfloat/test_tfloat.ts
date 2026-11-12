@@ -472,14 +472,14 @@ describe('TFloat - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan (linear) creates a sequence', () => {
-		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const span = TsTzSpan.fromText(`[${T1}, ${T3}]`);
 		const r = TFloat.fromBaseTime(2.5, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const set = TsTzSet.fromText(`{${T1}, ${T2}, ${T3}}`);
 		const r = TFloat.fromBaseTime(3.14, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
@@ -487,7 +487,7 @@ describe('TFloat - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
 		const r = TFloat.fromBaseTime(2.5, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();

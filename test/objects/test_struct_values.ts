@@ -99,7 +99,7 @@ describe('generated object layer: an array of structs of scalars and strings pas
 
 describe('generated object layer: a struct of scalars carried as a value', () => {
 	it('reads a box as a GBOX value and builds the box back from it', () => {
-		using box = STBox.in('STBOX X((1,2),(3,4))');
+		using box = STBox.fromText('STBOX X((1,2),(3,4))');
 		const gbox = box.toGbox();
 		assert.deepEqual([gbox.xmin, gbox.xmax, gbox.ymin, gbox.ymax], [1, 3, 2, 4]);
 		using back = STBox.fromGbox(gbox);

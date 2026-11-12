@@ -32,22 +32,22 @@ function upper(ss: FloatSpanSet): number {
 
 describe('FloatSpanSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const ss = FloatSpanSet.in(WKT_AB);
+		const ss = FloatSpanSet.fromText(WKT_AB);
 		assert.ok(ss.ptr !== 0);
 		ss.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const ss = FloatSpanSet.in(WKT_AB);
+		const ss = FloatSpanSet.fromText(WKT_AB);
 		const str = ss.toString();
-		const ss2 = FloatSpanSet.in(str);
+		const ss2 = FloatSpanSet.fromText(str);
 		assert.equal(ss2.toString(), str);
 		ss.free();
 		ss2.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const ss1 = FloatSpanSet.in(WKT_AB);
+		const ss1 = FloatSpanSet.fromText(WKT_AB);
 		const hex = ss1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const ss2 = FloatSpanSet.fromHexWKB(hex);
@@ -57,7 +57,7 @@ describe('FloatSpanSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const ss1 = FloatSpanSet.in(WKT_AB);
+		const ss1 = FloatSpanSet.fromText(WKT_AB);
 		const wkb = ss1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -78,7 +78,7 @@ describe('FloatSpanSet - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const ss = FloatSpanSet.in(WKT_AB);
+		const ss = FloatSpanSet.fromText(WKT_AB);
 		const c = ss.copy();
 		assert.ok(c.ptr !== 0);
 		assert.notEqual(c.ptr, ss.ptr);
@@ -96,7 +96,7 @@ describe('FloatSpanSet - Accessors', () => {
 	let ss: FloatSpanSet; // {[1,4), [7,10)}
 
 	before(() => {
-		ss = FloatSpanSet.in(WKT_AB);
+		ss = FloatSpanSet.fromText(WKT_AB);
 	});
 
 	it('numSpans() = 2', () => {
@@ -182,9 +182,9 @@ describe('FloatSpanSet - Topological predicates', () => {
 	let s_overlap: FloatSpan; // [1,7)
 
 	before(() => {
-		ss1 = FloatSpanSet.in(WKT_AB);
-		ss2 = FloatSpanSet.in('{[10, 14)}');
-		ss_big = FloatSpanSet.in('{[1, 14)}');
+		ss1 = FloatSpanSet.fromText(WKT_AB);
+		ss2 = FloatSpanSet.fromText('{[10, 14)}');
+		ss_big = FloatSpanSet.fromText('{[1, 14)}');
 		s_overlap = FloatSpan.make(1.0, 7.0);
 	});
 
@@ -240,8 +240,8 @@ describe('FloatSpanSet - Position predicates', () => {
 	let ss2: FloatSpanSet; // {[7,10)}
 
 	before(() => {
-		ss1 = FloatSpanSet.in('{[1, 4)}');
-		ss2 = FloatSpanSet.in('{[7, 10)}');
+		ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		ss2 = FloatSpanSet.fromText('{[7, 10)}');
 	});
 
 	it('isBefore(FloatSpanSet): ss1 before ss2 = true', () => {
@@ -279,23 +279,23 @@ describe('FloatSpanSet - Position predicates', () => {
 
 describe('FloatSpanSet - Distance', () => {
 	it('distance(FloatSpanSet): overlapping = 0', () => {
-		const ss1 = FloatSpanSet.in('{[1, 7)}');
-		const ss2 = FloatSpanSet.in('{[4, 10)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 7)}');
+		const ss2 = FloatSpanSet.fromText('{[4, 10)}');
 		assert.equal(ss1.distance(ss2), 0);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance(FloatSpanSet): disjoint > 0', () => {
-		const ss1 = FloatSpanSet.in('{[1, 4)}');
-		const ss2 = FloatSpanSet.in('{[7, 10)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		const ss2 = FloatSpanSet.fromText('{[7, 10)}');
 		assert.ok(ss1.distance(ss2) > 0);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance(FloatSpan): overlapping = 0', () => {
-		const ss = FloatSpanSet.in('{[1, 7)}');
+		const ss = FloatSpanSet.fromText('{[1, 7)}');
 		const s = FloatSpan.make(4.0, 10.0);
 		assert.equal(ss.distance(s), 0);
 		ss.free();
@@ -303,7 +303,7 @@ describe('FloatSpanSet - Distance', () => {
 	});
 
 	it('distance(FloatSpan): disjoint > 0', () => {
-		const ss = FloatSpanSet.in('{[1, 4)}');
+		const ss = FloatSpanSet.fromText('{[1, 4)}');
 		const s = FloatSpan.make(7.0, 10.0);
 		assert.ok(ss.distance(s) > 0);
 		ss.free();
@@ -317,8 +317,8 @@ describe('FloatSpanSet - Distance', () => {
 
 describe('FloatSpanSet - Set operations', () => {
 	it('intersection(FloatSpanSet): overlapping = non-null with correct bounds', () => {
-		const ss1 = FloatSpanSet.in('{[1, 7)}');
-		const ss2 = FloatSpanSet.in('{[4, 10)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 7)}');
+		const ss2 = FloatSpanSet.fromText('{[4, 10)}');
 		const inter = ss1.intersection(ss2);
 		assert.ok(inter !== null);
 		assert.ok(Math.abs(lower(inter!) - 4.0) < 1e-9);
@@ -329,8 +329,8 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('intersection(FloatSpanSet): disjoint = null', () => {
-		const ss1 = FloatSpanSet.in('{[1, 4)}');
-		const ss2 = FloatSpanSet.in('{[7, 10)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		const ss2 = FloatSpanSet.fromText('{[7, 10)}');
 		const inter = ss1.intersection(ss2);
 		assert.equal(inter, null);
 		ss1.free();
@@ -338,7 +338,7 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('intersection(FloatSpan): overlapping = non-null with correct bounds', () => {
-		const ss = FloatSpanSet.in('{[1, 7)}');
+		const ss = FloatSpanSet.fromText('{[1, 7)}');
 		const s = FloatSpan.make(4.0, 10.0);
 		const inter = ss.intersection(s);
 		assert.ok(inter !== null);
@@ -350,8 +350,8 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('minus(FloatSpanSet): returns non-null when result is non-empty', () => {
-		const ss1 = FloatSpanSet.in(WKT_AB); // {[1,4),[7,10)}
-		const ss2 = FloatSpanSet.in('{[1, 4)}');
+		const ss1 = FloatSpanSet.fromText(WKT_AB); // {[1,4),[7,10)}
+		const ss2 = FloatSpanSet.fromText('{[1, 4)}');
 		const diff = ss1.minus(ss2);
 		assert.ok(diff !== null);
 		assert.equal(diff!.numSpans(), 1);
@@ -362,8 +362,8 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('minus(FloatSpanSet): returns null when result is empty', () => {
-		const ss1 = FloatSpanSet.in('{[1, 4)}');
-		const ss2 = FloatSpanSet.in('{[0, 5)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		const ss2 = FloatSpanSet.fromText('{[0, 5)}');
 		const diff = ss1.minus(ss2);
 		assert.equal(diff, null);
 		ss1.free();
@@ -371,7 +371,7 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('minus(FloatSpan): removes overlapping part', () => {
-		const ss = FloatSpanSet.in(WKT_AB);
+		const ss = FloatSpanSet.fromText(WKT_AB);
 		const s = FloatSpan.make(1.0, 4.0);
 		const diff = ss.minus(s);
 		assert.ok(diff !== null);
@@ -383,8 +383,8 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('union(FloatSpanSet): merges disjoint spansets', () => {
-		const ss1 = FloatSpanSet.in('{[1, 4)}');
-		const ss2 = FloatSpanSet.in('{[7, 10)}');
+		const ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		const ss2 = FloatSpanSet.fromText('{[7, 10)}');
 		const u = ss1.union(ss2);
 		assert.equal(u!.numSpans(), 2);
 		assert.ok(Math.abs(lower(u!) - 1.0) < 1e-9);
@@ -395,7 +395,7 @@ describe('FloatSpanSet - Set operations', () => {
 	});
 
 	it('union(FloatSpan): merges span into spanset', () => {
-		const ss = FloatSpanSet.in('{[1, 4)}');
+		const ss = FloatSpanSet.fromText('{[1, 4)}');
 		const s = FloatSpan.make(7.0, 10.0);
 		const u = ss.union(s);
 		assert.equal(u!.numSpans(), 2);
@@ -417,9 +417,9 @@ describe('FloatSpanSet - Comparisons', () => {
 	let ss2: FloatSpanSet;
 
 	before(() => {
-		ss1 = FloatSpanSet.in('{[1, 4)}');
-		ss1b = FloatSpanSet.in('{[1, 4)}');
-		ss2 = FloatSpanSet.in('{[7, 10)}');
+		ss1 = FloatSpanSet.fromText('{[1, 4)}');
+		ss1b = FloatSpanSet.fromText('{[1, 4)}');
+		ss2 = FloatSpanSet.fromText('{[7, 10)}');
 	});
 
 	it('eq: same spanset = true', () => assert.equal(ss1.eq(ss1b), true));
@@ -436,7 +436,7 @@ describe('FloatSpanSet - Comparisons', () => {
 
 describe('FloatSpanSet - Math methods', () => {
 	it('ceil rounds span bounds up', () => {
-		const ss = FloatSpanSet.in('{[1.2, 4.7), [7.1, 9.8)}');
+		const ss = FloatSpanSet.fromText('{[1.2, 4.7), [7.1, 9.8)}');
 		const c = ss.ceil();
 		assert.ok(Math.abs(lower(c) - 2.0) < 1e-9);
 		assert.ok(Math.abs(upper(c) - 10.0) < 1e-9);
@@ -445,7 +445,7 @@ describe('FloatSpanSet - Math methods', () => {
 	});
 
 	it('floor rounds span bounds down', () => {
-		const ss = FloatSpanSet.in('{[1.7, 4.2), [7.8, 9.3)}');
+		const ss = FloatSpanSet.fromText('{[1.7, 4.2), [7.8, 9.3)}');
 		const f = ss.floor();
 		assert.ok(Math.abs(lower(f) - 1.0) < 1e-9);
 		assert.ok(Math.abs(upper(f) - 9.0) < 1e-9);
@@ -454,7 +454,7 @@ describe('FloatSpanSet - Math methods', () => {
 	});
 
 	it('round rounds to given decimal places', () => {
-		const ss = FloatSpanSet.in('{[1.234, 4.567)}');
+		const ss = FloatSpanSet.fromText('{[1.234, 4.567)}');
 		const r = ss.round(2);
 		assert.ok(Math.abs(lower(r) - 1.23) < 1e-9);
 		assert.ok(Math.abs(upper(r) - 4.57) < 1e-9);
@@ -463,7 +463,7 @@ describe('FloatSpanSet - Math methods', () => {
 	});
 
 	it('radians and degrees are inverse', () => {
-		const ss = FloatSpanSet.in('{[1, 4)}');
+		const ss = FloatSpanSet.fromText('{[1, 4)}');
 		const rad = ss.radians();
 		const back = rad.degrees();
 		assert.ok(Math.abs(lower(back) - 1.0) < 1e-9);
@@ -474,7 +474,7 @@ describe('FloatSpanSet - Math methods', () => {
 	});
 
 	it('shiftScale shifts spanset forward', () => {
-		const ss = FloatSpanSet.in('{[1, 4)}');
+		const ss = FloatSpanSet.fromText('{[1, 4)}');
 		const shifted = ss.shiftScale(1.0, 0, true, false);
 		assert.ok(Math.abs(lower(shifted) - 2.0) < 1e-9);
 		assert.ok(Math.abs(upper(shifted) - 5.0) < 1e-9);
@@ -483,7 +483,7 @@ describe('FloatSpanSet - Math methods', () => {
 	});
 
 	it('toIntSpanSet returns a non-zero pointer', () => {
-		const ss = FloatSpanSet.in(WKT_AB);
+		const ss = FloatSpanSet.fromText(WKT_AB);
 		assert.ok(ss.toIntspanset() !== null);
 		ss.free();
 	});
