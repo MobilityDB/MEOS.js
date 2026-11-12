@@ -307,7 +307,7 @@ describe('Temporal - atTsTzSpan / minusTsTzSpan', () => {
 
 	it('atTsTzSpan restricts to instants in the span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const span = TsTzSpan.in(`[${T1}, ${T2}]`);
+		const span = TsTzSpan.fromText(`[${T1}, ${T2}]`);
 		const r = t.atTsTzSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); span.free(); r.free();
@@ -315,7 +315,7 @@ describe('Temporal - atTsTzSpan / minusTsTzSpan', () => {
 
 	it('minusTsTzSpan excludes instants in the span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const span = TsTzSpan.in(`[${T1}, ${T2}]`);
+		const span = TsTzSpan.fromText(`[${T1}, ${T2}]`);
 		const r = t.minusTsTzSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); span.free(); r.free();
@@ -401,14 +401,14 @@ describe('TBool - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan creates a sequence', () => {
-		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const span = TsTzSpan.fromText(`[${T1}, ${T3}]`);
 		const r = TBool.fromBaseTime(false, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const set = TsTzSet.fromText(`{${T1}, ${T2}, ${T3}}`);
 		const r = TBool.fromBaseTime(true, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
@@ -416,7 +416,7 @@ describe('TBool - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
 		const r = TBool.fromBaseTime(false, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();
@@ -430,7 +430,7 @@ describe('Temporal - atTsTzSet / minusTsTzSet', () => {
 
 	it('atTsTzSet restricts to instants in the set', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const set = TsTzSet.in(`{${T1}, ${T3}}`);
+		const set = TsTzSet.fromText(`{${T1}, ${T3}}`);
 		const r = t.atTsTzSet(set.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 2);
@@ -439,7 +439,7 @@ describe('Temporal - atTsTzSet / minusTsTzSet', () => {
 
 	it('minusTsTzSet excludes instants in the set', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const set = TsTzSet.in(`{${T1}, ${T3}}`);
+		const set = TsTzSet.fromText(`{${T1}, ${T3}}`);
 		const r = t.minusTsTzSet(set.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);
@@ -454,7 +454,7 @@ describe('Temporal - atTsTzSpanSet / minusTsTzSpanSet', () => {
 
 	it('atTsTzSpanSet restricts to instants within any span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const ss = TsTzSpanSet.in(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
 		const r = t.atTsTzSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 2);
@@ -463,7 +463,7 @@ describe('Temporal - atTsTzSpanSet / minusTsTzSpanSet', () => {
 
 	it('minusTsTzSpanSet excludes instants within any span', () => {
 		const t = TBool.fromString(`{t@${T1}, f@${T2}, t@${T3}}`);
-		const ss = TsTzSpanSet.in(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${T1}, ${T1}], [${T3}, ${T3}]}`);
 		const r = t.minusTsTzSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);

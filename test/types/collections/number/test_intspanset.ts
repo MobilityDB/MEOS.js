@@ -16,19 +16,19 @@ const WKT_AB = '{[1, 5), [8, 12)}';
 
 describe('IntSpanSet - Construction', () => {
 	it('fromString returns a non-zero pointer', () => {
-		const ss = IntSpanSet.in(WKT_AB);
+		const ss = IntSpanSet.fromText(WKT_AB);
 		assert.ok(ss.ptr !== 0);
 		ss.free();
 	});
 
 	it('toString round-trips WKT', () => {
-		const ss = IntSpanSet.in(WKT_AB);
+		const ss = IntSpanSet.fromText(WKT_AB);
 		assert.equal(ss.toString(), WKT_AB);
 		ss.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const ss1 = IntSpanSet.in(WKT_AB);
+		const ss1 = IntSpanSet.fromText(WKT_AB);
 		const hex = ss1.asHexWKB();
 		assert.ok(typeof hex === 'string' && hex.length > 0);
 		const ss2 = IntSpanSet.fromHexWKB(hex);
@@ -38,7 +38,7 @@ describe('IntSpanSet - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const ss1 = IntSpanSet.in(WKT_AB);
+		const ss1 = IntSpanSet.fromText(WKT_AB);
 		const wkb = ss1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), ss1.asHexWKB());
 		assert.ok(wkb instanceof Uint8Array && wkb.length > 0);
@@ -59,7 +59,7 @@ describe('IntSpanSet - Construction', () => {
 	});
 
 	it('copy produces a distinct pointer with identical WKT', () => {
-		const ss = IntSpanSet.in(WKT_AB);
+		const ss = IntSpanSet.fromText(WKT_AB);
 		const c = ss.copy();
 		assert.ok(c.ptr !== 0);
 		assert.notEqual(c.ptr, ss.ptr);
@@ -77,7 +77,7 @@ describe('IntSpanSet - Accessors', () => {
 	let ss: IntSpanSet; // {[1,5), [8,12)}
 
 	before(() => {
-		ss = IntSpanSet.in(WKT_AB);
+		ss = IntSpanSet.fromText(WKT_AB);
 	});
 
 	it('numSpans() = 2', () => {
@@ -163,9 +163,9 @@ describe('IntSpanSet - Topological predicates', () => {
 	let s_overlap: IntSpan; // [1,8)
 
 	before(() => {
-		ss1 = IntSpanSet.in(WKT_AB);
-		ss2 = IntSpanSet.in('{[12, 16)}');
-		ss_big = IntSpanSet.in('{[1, 16)}');
+		ss1 = IntSpanSet.fromText(WKT_AB);
+		ss2 = IntSpanSet.fromText('{[12, 16)}');
+		ss_big = IntSpanSet.fromText('{[1, 16)}');
 		s_overlap = IntSpan.make(1, 8);
 	});
 
@@ -221,8 +221,8 @@ describe('IntSpanSet - Position predicates', () => {
 	let ss2: IntSpanSet; // {[8,12)}
 
 	before(() => {
-		ss1 = IntSpanSet.in('{[1, 5)}');
-		ss2 = IntSpanSet.in('{[8, 12)}');
+		ss1 = IntSpanSet.fromText('{[1, 5)}');
+		ss2 = IntSpanSet.fromText('{[8, 12)}');
 	});
 
 	it('isBefore(IntSpanSet): ss1 before ss2 = true', () => {
@@ -260,8 +260,8 @@ describe('IntSpanSet - Position predicates', () => {
 
 describe('IntSpanSet - Distance', () => {
 	it('distance(IntSpanSet): overlapping = 0', () => {
-		const ss1 = IntSpanSet.in('{[1, 8)}');
-		const ss2 = IntSpanSet.in('{[4, 12)}');
+		const ss1 = IntSpanSet.fromText('{[1, 8)}');
+		const ss2 = IntSpanSet.fromText('{[4, 12)}');
 		assert.equal(ss1.distance(ss2), 0);
 		ss1.free();
 		ss2.free();
@@ -269,15 +269,15 @@ describe('IntSpanSet - Distance', () => {
 
 	it('distance(IntSpanSet): disjoint = gap between spans', () => {
 		// [1,5) ends at 4 inclusive; [8,12) starts at 8 → gap = 8-4=4
-		const ss1 = IntSpanSet.in('{[1, 5)}');
-		const ss2 = IntSpanSet.in('{[8, 12)}');
+		const ss1 = IntSpanSet.fromText('{[1, 5)}');
+		const ss2 = IntSpanSet.fromText('{[8, 12)}');
 		assert.equal(ss1.distance(ss2), 4);
 		ss1.free();
 		ss2.free();
 	});
 
 	it('distance(IntSpan): overlapping = 0', () => {
-		const ss = IntSpanSet.in('{[1, 8)}');
+		const ss = IntSpanSet.fromText('{[1, 8)}');
 		const s = IntSpan.make(4, 12);
 		assert.equal(ss.distance(s), 0);
 		ss.free();
@@ -285,7 +285,7 @@ describe('IntSpanSet - Distance', () => {
 	});
 
 	it('distance(IntSpan): disjoint > 0', () => {
-		const ss = IntSpanSet.in('{[1, 5)}');
+		const ss = IntSpanSet.fromText('{[1, 5)}');
 		const s = IntSpan.make(8, 12);
 		assert.ok(ss.distance(s) > 0);
 		ss.free();
@@ -299,8 +299,8 @@ describe('IntSpanSet - Distance', () => {
 
 describe('IntSpanSet - Set operations', () => {
 	it('intersection(IntSpanSet): overlapping = non-null with correct bounds', () => {
-		const ss1 = IntSpanSet.in('{[1, 8)}');
-		const ss2 = IntSpanSet.in('{[4, 12)}');
+		const ss1 = IntSpanSet.fromText('{[1, 8)}');
+		const ss2 = IntSpanSet.fromText('{[4, 12)}');
 		const inter = ss1.intersection(ss2);
 		assert.ok(inter !== null);
 		assert.equal(inter!.lower(), 4);
@@ -311,8 +311,8 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('intersection(IntSpanSet): disjoint = null', () => {
-		const ss1 = IntSpanSet.in('{[1, 5)}');
-		const ss2 = IntSpanSet.in('{[8, 12)}');
+		const ss1 = IntSpanSet.fromText('{[1, 5)}');
+		const ss2 = IntSpanSet.fromText('{[8, 12)}');
 		const inter = ss1.intersection(ss2);
 		assert.equal(inter, null);
 		ss1.free();
@@ -320,7 +320,7 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('intersection(IntSpan): overlapping = non-null with correct bounds', () => {
-		const ss = IntSpanSet.in('{[1, 8)}');
+		const ss = IntSpanSet.fromText('{[1, 8)}');
 		const s = IntSpan.make(4, 12);
 		const inter = ss.intersection(s);
 		assert.ok(inter !== null);
@@ -332,8 +332,8 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('minus(IntSpanSet): returns non-null when result is non-empty', () => {
-		const ss1 = IntSpanSet.in(WKT_AB); // {[1,5),[8,12)}
-		const ss2 = IntSpanSet.in('{[1, 5)}');
+		const ss1 = IntSpanSet.fromText(WKT_AB); // {[1,5),[8,12)}
+		const ss2 = IntSpanSet.fromText('{[1, 5)}');
 		const diff = ss1.minus(ss2);
 		assert.ok(diff !== null);
 		assert.equal(diff!.numSpans(), 1);
@@ -344,8 +344,8 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('minus(IntSpanSet): returns null when result is empty', () => {
-		const ss1 = IntSpanSet.in('{[1, 5)}');
-		const ss2 = IntSpanSet.in('{[0, 6)}');
+		const ss1 = IntSpanSet.fromText('{[1, 5)}');
+		const ss2 = IntSpanSet.fromText('{[0, 6)}');
 		const diff = ss1.minus(ss2);
 		assert.equal(diff, null);
 		ss1.free();
@@ -353,7 +353,7 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('minus(IntSpan): removes overlapping part', () => {
-		const ss = IntSpanSet.in(WKT_AB);
+		const ss = IntSpanSet.fromText(WKT_AB);
 		const s = IntSpan.make(1, 5);
 		const diff = ss.minus(s);
 		assert.ok(diff !== null);
@@ -365,8 +365,8 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('union(IntSpanSet): merges disjoint spansets', () => {
-		const ss1 = IntSpanSet.in('{[1, 5)}');
-		const ss2 = IntSpanSet.in('{[8, 12)}');
+		const ss1 = IntSpanSet.fromText('{[1, 5)}');
+		const ss2 = IntSpanSet.fromText('{[8, 12)}');
 		const u = ss1.union(ss2);
 		assert.equal(u!.toString(), WKT_AB);
 		u!.free();
@@ -375,7 +375,7 @@ describe('IntSpanSet - Set operations', () => {
 	});
 
 	it('union(IntSpan): merges span into spanset', () => {
-		const ss = IntSpanSet.in('{[1, 5)}');
+		const ss = IntSpanSet.fromText('{[1, 5)}');
 		const s = IntSpan.make(8, 12);
 		const u = ss.union(s);
 		assert.equal(u!.toString(), WKT_AB);
@@ -395,9 +395,9 @@ describe('IntSpanSet - Comparisons', () => {
 	let ss2: IntSpanSet;
 
 	before(() => {
-		ss1 = IntSpanSet.in('{[1, 5)}');
-		ss1b = IntSpanSet.in('{[1, 5)}');
-		ss2 = IntSpanSet.in('{[8, 12)}');
+		ss1 = IntSpanSet.fromText('{[1, 5)}');
+		ss1b = IntSpanSet.fromText('{[1, 5)}');
+		ss2 = IntSpanSet.fromText('{[8, 12)}');
 	});
 
 	it('eq: same spanset = true', () => assert.equal(ss1.eq(ss1b), true));
@@ -414,7 +414,7 @@ describe('IntSpanSet - Comparisons', () => {
 
 describe('IntSpanSet - Math methods', () => {
 	it('shiftScale shifts spanset forward', () => {
-		const ss = IntSpanSet.in('{[1, 5)}');
+		const ss = IntSpanSet.fromText('{[1, 5)}');
 		const shifted = ss.shiftScale(2, 0, true, false);
 		assert.equal(shifted.lower(), 3);
 		assert.equal(shifted.upper(), 7);
@@ -423,7 +423,7 @@ describe('IntSpanSet - Math methods', () => {
 	});
 
 	it('toFloatSpanSet returns a non-zero pointer', () => {
-		const ss = IntSpanSet.in(WKT_AB);
+		const ss = IntSpanSet.fromText(WKT_AB);
 		assert.ok(ss.toFloatspanset() !== null);
 		ss.free();
 	});

@@ -21,7 +21,7 @@ const RASTER_VALUES =
 
 describe('generated object layer: arrays MEOS fills beside the one it answers', () => {
 	it('unnests a temporal integer into each value and the time it takes it', () => {
-		using t = TInt.in('[1@2000-01-01, 2@2000-01-02, 1@2000-01-03]');
+		using t = TInt.fromText('[1@2000-01-01, 2@2000-01-02, 1@2000-01-03]');
 		const [times, values] = t.unnest();
 		// One time per value, read with the count MEOS writes for both arrays.
 		assert.equal(times.length, values.length);
@@ -31,7 +31,7 @@ describe('generated object layer: arrays MEOS fills beside the one it answers', 
 	});
 
 	it('splits a temporal float into bins, each with the value it starts at', () => {
-		using t = TFloat.in('[1@2000-01-01, 5@2000-01-05]');
+		using t = TFloat.fromText('[1@2000-01-01, 5@2000-01-05]');
 		const [pieces, starts] = t.valueSplit(2);
 		assert.equal(pieces.length, starts.length);
 		// Bins of size 2 from the origin 0 cover 1 to 5: [0, 2), [2, 4) and [4, 6).
@@ -40,7 +40,7 @@ describe('generated object layer: arrays MEOS fills beside the one it answers', 
 	});
 
 	it('answers the keys of a JSON object with the value of each', () => {
-		using jb = Jsonb.in('{"a": 1, "b": [2, 3]}');
+		using jb = Jsonb.fromText('{"a": 1, "b": [2, 3]}', false);
 		const [keys, values] = jb.each();
 		assert.equal(keys.length, 2);
 		assert.equal(values.length, 2);
@@ -66,9 +66,9 @@ describe('generated object layer: a value MEOS answers beside the arrays it fill
 		// MobilityDB's 076_tpoint_analytics regression: three vertices in the tile
 		// of the box (0,0),(1000,1000), snapped to integers as ST_AsMVTGeom snaps
 		// them, times in seconds from the Unix epoch.
-		using t = TGeomPoint.in('[Point(0 0)@2001-01-01 00:00:00+00, '
+		using t = TGeomPoint.fromText('[Point(0 0)@2001-01-01 00:00:00+00, '
 			+ 'Point(100 100)@2001-01-02 00:00:00+00, Point(200 50)@2001-01-03 00:00:00+00]');
-		using bounds = STBox.in('STBOX X((0,0),(1000,1000))');
+		using bounds = STBox.fromText('STBOX X((0,0),(1000,1000))');
 		const answer = t.asMVTGeom(bounds);
 		assert.ok(answer);
 		const [geom, times] = answer;
@@ -79,8 +79,8 @@ describe('generated object layer: a value MEOS answers beside the arrays it fill
 	});
 
 	it('answers null for a temporal point with no representation in the tile', () => {
-		using t = TGeomPoint.in('Point(5000 5000)@2001-01-01 00:00:00+00');
-		using bounds = STBox.in('STBOX X((0,0),(1000,1000))');
+		using t = TGeomPoint.fromText('Point(5000 5000)@2001-01-01 00:00:00+00');
+		using bounds = STBox.fromText('STBOX X((0,0),(1000,1000))');
 		assert.equal(t.asMVTGeom(bounds), null);
 	});
 });

@@ -360,6 +360,23 @@ interface Emitted {
 	returnPairs?: { receiverClass: string; returnClass: string }[];
 }
 
+/**
+ * The portable spelling of each encoding the catalog's `typeEncodings` names,
+ * the SQL dialect's (asText, asEWKT, asWKB, asHexWKB, asEWKB, asHexEWKB,
+ * asMFJSON and their `from` readers), in the order #portableFormat prefers
+ * them, as #FORMAT_SPELLING of the siblings' tools/objectgen.py.
+ */
+const FORMAT_SPELLING: Record<string, string> = {
+	text: 'Text', ewkt: 'EWKT', wkb: 'WKB', hexwkb: 'HexWKB', ewkb: 'EWKB', hexewkb: 'HexEWKB', mfjson: 'MFJSON',
+};
+
+/**
+ * The `ooName`s by which the model calls a reader or writer by its role, the
+ * input and output functions and the hex ones of the point cloud types: the
+ * object layer names none of them so (#portableName).
+ */
+const ROLE_NAMES = new Set(['in', 'out', 'hexIn', 'hexOut']);
+
 /** The TypeScript twin of #Generator in MEOS.NET's tools/objectgen.py. */
 class Generator {
 	readonly deferred: { cls: string; member: string; kind: string; detail: string }[] = [];
@@ -1178,9 +1195,10 @@ class Generator {
 	 * Whether a method may stand in a subclass beside an ancestor's of the same
 	 * name. TypeScript accepts it only where it is assignable to the ancestor's,
 	 * which a method is when its parameters are a prefix of the ancestor's
-	 * (`out()` beside an inherited `out(maxdd)`); the return is left to tsc. Any
-	 * other pairing is deferred, never renamed — the siblings key the same check
-	 * on the whole signature (#inherited_names of MEOS.NET).
+	 * (`distance(gs2)` beside an inherited `distance(g2, use_spheroid)`); the
+	 * return is left to tsc. Any other pairing is deferred, never renamed — the
+	 * siblings key the same check on the whole signature (#inherited_names of
+	 * MEOS.NET).
 	 */
 	private compatible(cls: string, m: Emitted): boolean {
 		const prior = this.inheritedSig(cls, m.name, m.isStatic);
@@ -1200,9 +1218,15 @@ class Generator {
 		const parent = this.m.parent.get(cls) || 'MeosObject';
 		const entries = (this.m.om.classes[cls]?.methods ?? []).filter(e => !e.ooExclude);
 		const own: Emitted[] = [];
+		const named = new Set(entries.filter(e => !ROLE_NAMES.has(e.ooName)).map(e => e.ooName));
 		for (const e of entries) {
-			const m = this.method(cls, e);
+			let m = this.method(cls, e);
 			if (!m) continue;
+			if (ROLE_NAMES.has(e.ooName)) {
+				const portable = this.portableName(cls, e, m, named);
+				if (!portable) continue;
+				m = { ...m, name: portable };
+			}
 			if (!this.compatible(cls, m)) {
 				this.defer(cls, m.name, 'name taken by an ancestor',
 					`${m.fn} ${this.sigKey(m)} beside the inherited ${this.inheritedSig(cls, m.name, m.isStatic)}`);
@@ -1506,6 +1530,66 @@ class Generator {
 		return a === b || (this.m.parent.has(a) && this.m.ancestors(a).includes(b));
 	}
 
+	/** class -> C function -> the writer whose method the class drops (#portableName). */
+	private readonly droppedWriters = new Map<string, Map<string, Emitted>>();
+	/** Each method named by its role and what became of it, for the run's summary. */
+	readonly roleOutcomes: { cls: string; ooName: string; fn: string; outcome: string }[] = [];
+
+	/**
+	 * The verb and spelling of the first format, in #FORMAT_SPELLING's order,
+	 * that `typeEncodings` reads or writes with the function, for any type, as
+	 * #portable_format of GoMEOS's tools/objectgen.py reads it: a function a
+	 * `readers` or `decoders` entry names reads, one a `writers` or `encoders`
+	 * entry names writes. `tgeompoint_in` reads the text and the EWKT of
+	 * tgeompoint, so it is ['from', 'Text']; `set_out` writes the text of every
+	 * set type, so it is ['as', 'Text'].
+	 */
+	private portableFormat(fn: string): ['as' | 'from', string] | undefined {
+		const found = new Set<string>();
+		for (const enc of Object.values(this.m.idl.typeEncodings ?? {}) as Encoding[]) {
+			for (const [verb, byType, byClass] of [['as', 'writers', 'encoders'], ['from', 'readers', 'decoders']] as const) {
+				for (const [format, perType] of Object.entries(enc[byType] ?? {}))
+					if (Object.values(perType).includes(fn)) found.add(`${verb} ${format}`);
+				for (const [format, f] of Object.entries(enc[byClass] ?? {}))
+					if (f === fn) found.add(`${verb} ${format}`);
+			}
+		}
+		for (const [format, spelling] of Object.entries(FORMAT_SPELLING))
+			for (const verb of ['as', 'from'] as const)
+				if (found.has(`${verb} ${format}`)) return [verb, spelling];
+		return undefined;
+	}
+
+	/**
+	 * The name of an own method the model calls by its role (#ROLE_NAMES), as
+	 * #take_portable_names of GoMEOS's tools/objectgen.py names a type support
+	 * function: the portable name of the format `typeEncodings` reads or writes
+	 * with its function (#portableFormat), `static fromText` for
+	 * `bigintset_in` and `asText` for `set_out`. A class whose model already has
+	 * that name drops the method; one whose function serves no format leaves it
+	 * to the flat layer (`F.geom_in`), as #plumbing leaves a type support
+	 * function serving none. A dropped text writer stays the one `toString`
+	 * calls (#toStringMethod).
+	 */
+	private portableName(cls: string, e: MethodEntry, m: Emitted, named: Set<string>): string | undefined {
+		const record = (outcome: string) => this.roleOutcomes.push({ cls, ooName: e.ooName, fn: e.function, outcome });
+		const format = this.portableFormat(e.function);
+		if (!format) return record('left the object layer'), undefined;
+		const [verb, spelling] = format;
+		const name = verb + spelling;
+		if ((verb === 'from') !== m.isStatic)
+			return record(`left the object layer (${name} on ${m.isStatic ? 'no receiver' : 'a receiver'})`), undefined;
+		if (named.has(name)) {
+			if (!m.isStatic) {
+				const dropped = this.droppedWriters.get(cls) ?? new Map<string, Emitted>();
+				this.droppedWriters.set(cls, dropped.set(m.fn, m));
+			}
+			return record(`dropped (${name} already)`), undefined;
+		}
+		record(`renamed to ${m.isStatic ? 'static ' : ''}${name}`);
+		return name;
+	}
+
 	/**
 	 * The portable reader and writer of every encoding the catalog's
 	 * `typeEncodings` gives the class's type, as #portable_methods of MEOS.NET's
@@ -1516,9 +1600,6 @@ class Generator {
 	 * behind the reader.
 	 */
 	private portableMethods(cls: string, own: Emitted[], functions: Map<string, Emitted>): Emitted[] {
-		const FORMAT_SPELLING: Record<string, string> = {
-			text: 'Text', ewkt: 'EWKT', wkb: 'WKB', hexwkb: 'HexWKB', ewkb: 'EWKB', hexewkb: 'HexEWKB', mfjson: 'MFJSON',
-		};
 		const meostype = this.m.meostype.get(cls);
 		const enc = this.m.idl.typeEncodings?.[this.m.ctype.get(cls) ?? ''];
 		if (!meostype || !enc) return [];
@@ -1568,7 +1649,10 @@ class Generator {
 		const writer = own ?? inherited;
 		this.textWriter.set(cls, writer);
 		if (!writer || writer === inherited) return [];
-		const out = functions.get(writer);
+		// A writer the class drops for its portable name (#portableName) is
+		// still the one it is written as: its body is the toString's own.
+		const dropped = functions.has(writer) ? undefined : this.droppedWriters.get(cls)?.get(writer);
+		const out = functions.get(writer) ?? dropped;
 		if (!out || out.ret !== 'string') return [];
 		const digits = this.m.idl.macros?.find(m => m.name === 'OUT_DEFAULT_DECIMAL_DIGITS')?.value;
 		let args: string;
@@ -1579,7 +1663,9 @@ class Generator {
 			'',
 			`\t/** The text MEOS writes this value as (MEOS: ${writer}). */`,
 			`\t${root ? '' : 'override '}toString(): string {`,
-			`\t\treturn this.${out.name}(${args});`,
+			...(dropped
+				? [...dropped.params.map(p => `\t\tconst ${p.name} = ${args};`), ...dropped.body.map(l => `\t\t${l}`)]
+				: [`\t\treturn this.${out.name}(${args});`]),
 			'\t}',
 		];
 	}
@@ -1795,6 +1881,8 @@ function main(): void {
 	fs.writeFileSync(path.join(outDir, 'objects.generated.ts'), out);
 	fs.writeFileSync(path.resolve(__dirname, '../GAP-LEDGER.md'), ledger(gen, idl.sourceCommit ?? 'unknown'));
 	console.log(`ObjectGenerator: ${classes.length} classes, ${gen.emitted} methods emitted, ${gen.deferred.length} deferred to GAP-LEDGER.md`);
+	if (process.env.ROLE_OUTCOMES)
+		fs.writeFileSync(process.env.ROLE_OUTCOMES, gen.roleOutcomes.map(o => `${o.cls}\t${o.ooName}\t${o.fn}\t${o.outcome}`).join('\n') + '\n');
 }
 
 main();

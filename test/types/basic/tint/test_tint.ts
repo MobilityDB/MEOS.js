@@ -360,7 +360,7 @@ describe('TNumber - toValueSpan / toTBox', () => {
 describe('TNumber - atSpan / minusSpan', () => {
 	it('atSpan restricts to the value range', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const span = IntSpan.in('[1, 3]');
+		const span = IntSpan.fromText('[1, 3]');
 		const r = t.atSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); r.free(); span.free();
@@ -368,7 +368,7 @@ describe('TNumber - atSpan / minusSpan', () => {
 
 	it('minusSpan excludes the value range', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const span = IntSpan.in('[1, 3]');
+		const span = IntSpan.fromText('[1, 3]');
 		const r = t.minusSpan(span.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); r.free(); span.free();
@@ -479,14 +479,14 @@ describe('TInt - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspan creates a sequence', () => {
-		const span = TsTzSpan.in(`[${T1}, ${T3}]`);
+		const span = TsTzSpan.fromText(`[${T1}, ${T3}]`);
 		const r = TInt.fromBaseTime(7, span.ptr, 'tstzspan');
 		assert.ok(r.inner !== 0);
 		span.free(); r.free();
 	});
 
 	it('fromBaseTime with tstzset creates a discrete sequence', () => {
-		const set = TsTzSet.in(`{${T1}, ${T2}, ${T3}}`);
+		const set = TsTzSet.fromText(`{${T1}, ${T2}, ${T3}}`);
 		const r = TInt.fromBaseTime(42, set.ptr, 'tstzset');
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 3);
@@ -494,7 +494,7 @@ describe('TInt - fromBaseTemporal / fromBaseTime', () => {
 	});
 
 	it('fromBaseTime with tstzspanset creates a sequence set', () => {
-		const ss = TsTzSpanSet.in(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
+		const ss = TsTzSpanSet.fromText(`{[${T1}, ${T2}], [${T3}, ${T3}]}`);
 		const r = TInt.fromBaseTime(7, ss.ptr, 'tstzspanset');
 		assert.ok(r.inner !== 0);
 		ss.free(); r.free();
@@ -504,7 +504,7 @@ describe('TInt - fromBaseTemporal / fromBaseTime', () => {
 describe('TNumber - atSpanSet / minusSpanSet', () => {
 	it('atSpanSet restricts to instants whose value falls in any span', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const ss = IntSpanSet.in('{[1, 2], [4, 6]}');
+		const ss = IntSpanSet.fromText('{[1, 2], [4, 6]}');
 		const r = t.atSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		t.free(); ss.free(); r.free();
@@ -512,7 +512,7 @@ describe('TNumber - atSpanSet / minusSpanSet', () => {
 
 	it('minusSpanSet excludes instants whose value falls in any span', () => {
 		const t = TInt.fromString(`{1@${T1}, 3@${T2}, 5@${T3}}`);
-		const ss = IntSpanSet.in('{[1, 2], [4, 6]}');
+		const ss = IntSpanSet.fromText('{[1, 2], [4, 6]}');
 		const r = t.minusSpanSet(ss.ptr);
 		assert.ok(r.inner !== 0);
 		assert.equal(r.numInstants(), 1);

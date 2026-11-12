@@ -117,7 +117,7 @@ describe('makeMeosException - dispatch', () => {
 describe('MEOS integration - text input errors', () => {
 	it('IntSet.fromString with invalid WKT throws MeosTextInputError', () => {
 		assert.throws(
-			() => IntSet.in('not-a-set'),
+			() => IntSet.fromText('not-a-set'),
 			(err: unknown) => {
 				assert.ok(
 					err instanceof MeosTextInputError,
@@ -130,15 +130,15 @@ describe('MEOS integration - text input errors', () => {
 	});
 
 	it('IntSpan.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => IntSpan.in('garbage'), MeosTextInputError);
+		assert.throws(() => IntSpan.fromText('garbage'), MeosTextInputError);
 	});
 
 	it('FloatSet.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => FloatSet.in('{not, a, float, set}'), MeosTextInputError);
+		assert.throws(() => FloatSet.fromText('{not, a, float, set}'), MeosTextInputError);
 	});
 
 	it('TsTzSpan.fromString with invalid WKT throws MeosTextInputError', () => {
-		assert.throws(() => TsTzSpan.in('not-a-span'), MeosTextInputError);
+		assert.throws(() => TsTzSpan.fromText('not-a-span'), MeosTextInputError);
 	});
 });
 
@@ -166,7 +166,7 @@ describe('MEOS integration - thrown error is instanceof Error', () => {
 	it('MeosTextInputError is a proper Error subclass', () => {
 		let caught: unknown;
 		try {
-			IntSet.in('bad');
+			IntSet.fromText('bad');
 		} catch (e) {
 			caught = e;
 		}

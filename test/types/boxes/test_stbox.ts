@@ -21,37 +21,37 @@ const WKT_GEO = 'GEODSTBOX X((1,1),(2,2))';
 
 describe('STBox - Construction', () => {
 	it('fromString X round-trips WKT', () => {
-		const b = STBox.in(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		assert.equal(b.toString(), WKT_X);
 		b.free();
 	});
 
 	it('fromString Z round-trips WKT', () => {
-		const b = STBox.in(WKT_Z);
+		const b = STBox.fromText(WKT_Z);
 		assert.equal(b.toString(), WKT_Z);
 		b.free();
 	});
 
 	it('fromString T round-trips WKT', () => {
-		const b = STBox.in(WKT_T);
+		const b = STBox.fromText(WKT_T);
 		assert.ok(b.toString().includes('2019-09-01'));
 		b.free();
 	});
 
 	it('fromString XT round-trips WKT', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		assert.ok(b.toString().startsWith('STBOX XT'));
 		b.free();
 	});
 
 	it('fromString ZT round-trips WKT', () => {
-		const b = STBox.in(WKT_ZT);
+		const b = STBox.fromText(WKT_ZT);
 		assert.ok(b.toString().startsWith('STBOX ZT'));
 		b.free();
 	});
 
 	it('fromHexWKB round-trips through asHexWKB', () => {
-		const b1 = STBox.in(WKT_XT);
+		const b1 = STBox.fromText(WKT_XT);
 		const hex = b1.asHexWKB();
 		const b2 = STBox.fromHexWKB(hex);
 		assert.equal(b1.eq(b2), true);
@@ -60,7 +60,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('fromBinary round-trips through asBinary', () => {
-		const b1 = STBox.in(WKT_XT);
+		const b1 = STBox.fromText(WKT_XT);
 		const wkb = b1.asWKB();
 		assert.equal(Buffer.from(wkb).toString('hex').toUpperCase(), b1.asHexWKB());
 		const b2 = STBox.fromWKB(wkb);
@@ -70,7 +70,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('asHexWKB round-trips without the SRID and asHexEWKB with it', () => {
-		const b1 = STBox.in(`SRID=4326;${WKT_XT}`);
+		const b1 = STBox.fromText(`SRID=4326;${WKT_XT}`);
 		assert.equal(b1.SRID(), 4326);
 		const hex = b1.asHexWKB();
 		const hexe = b1.asHexEWKB();
@@ -89,7 +89,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('fromEWKB round-trips through asEWKB', () => {
-		const b1 = STBox.in(`SRID=4326;${WKT_XT}`);
+		const b1 = STBox.fromText(`SRID=4326;${WKT_XT}`);
 		const ewkb = b1.asEWKB();
 		assert.equal(Buffer.from(ewkb).toString('hex').toUpperCase(), b1.asHexEWKB());
 		const b2 = STBox.fromEWKB(ewkb);
@@ -100,7 +100,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('copy produces equal but distinct object', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		const c = b.copy();
 		assert.equal(b.eq(c), true);
 		assert.notEqual(b.ptr, c.ptr);
@@ -109,7 +109,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('fromTsTzSpan creates T-only box', () => {
-		const sp = TsTzSpan.in('[2020-01-01, 2020-12-31]');
+		const sp = TsTzSpan.fromText('[2020-01-01, 2020-12-31]');
 		const b = sp.toStbox();
 		assert.equal(b.hasx(), false);
 		assert.equal(b.hast(), true);
@@ -118,7 +118,7 @@ describe('STBox - Construction', () => {
 	});
 
 	it('make builds XT box from explicit bounds', () => {
-		const sp = TsTzSpan.in('[2020-01-01, 2020-06-01]');
+		const sp = TsTzSpan.fromText('[2020-01-01, 2020-06-01]');
 		const b = STBox.make(true, false, false, 0, 1, 2, 1, 2, 0, 0, sp);
 		assert.equal(b.hasx(), true);
 		assert.equal(b.hast(), true);
@@ -130,9 +130,9 @@ describe('STBox - Construction', () => {
 
 describe('STBox - Accessors', () => {
 	it('hasX: X=true, Z=false, T=false', () => {
-		const bx = STBox.in(WKT_X);
-		const bz = STBox.in(WKT_Z);
-		const bt = STBox.in(WKT_T);
+		const bx = STBox.fromText(WKT_X);
+		const bz = STBox.fromText(WKT_Z);
+		const bt = STBox.fromText(WKT_T);
 		assert.equal(bx.hasx(), true);
 		assert.equal(bz.hasx(), true); // Z implies X in MEOS
 		assert.equal(bt.hasx(), false);
@@ -142,10 +142,10 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('hasZ: only Z and ZT boxes have Z', () => {
-		const bx = STBox.in(WKT_X);
-		const bz = STBox.in(WKT_Z);
-		const bxt = STBox.in(WKT_XT);
-		const bzt = STBox.in(WKT_ZT);
+		const bx = STBox.fromText(WKT_X);
+		const bz = STBox.fromText(WKT_Z);
+		const bxt = STBox.fromText(WKT_XT);
+		const bzt = STBox.fromText(WKT_ZT);
 		assert.equal(bx.hasz(), false);
 		assert.equal(bz.hasz(), true);
 		assert.equal(bxt.hasz(), false);
@@ -157,9 +157,9 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('hasT: only T, XT, ZT have T', () => {
-		const bx = STBox.in(WKT_X);
-		const bt = STBox.in(WKT_T);
-		const bxt = STBox.in(WKT_XT);
+		const bx = STBox.fromText(WKT_X);
+		const bt = STBox.fromText(WKT_T);
+		const bxt = STBox.fromText(WKT_XT);
 		assert.equal(bx.hast(), false);
 		assert.equal(bt.hast(), true);
 		assert.equal(bxt.hast(), true);
@@ -169,8 +169,8 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('isGeodetic: false for STBOX, true for GEODSTBOX', () => {
-		const b = STBox.in(WKT_X);
-		const bg = STBox.in(WKT_GEO);
+		const b = STBox.fromText(WKT_X);
+		const bg = STBox.fromText(WKT_GEO);
 		assert.equal(b.isgeodetic(), false);
 		assert.equal(bg.isgeodetic(), true);
 		b.free();
@@ -178,7 +178,7 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('xmin/xmax/ymin/ymax on X box', () => {
-		const b = STBox.in(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		assert.equal(b.xmin(), 1);
 		assert.equal(b.xmax(), 2);
 		assert.equal(b.ymin(), 1);
@@ -187,14 +187,14 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('zmin/zmax on Z box', () => {
-		const b = STBox.in(WKT_Z);
+		const b = STBox.fromText(WKT_Z);
 		assert.equal(b.zmin(), 1);
 		assert.equal(b.zmax(), 2);
 		b.free();
 	});
 
 	it('tmin/tmax are non-zero for T boxes', () => {
-		const b = STBox.in(WKT_T);
+		const b = STBox.fromText(WKT_T);
 		assert.ok(b.tmin() !== 0);
 		assert.ok(b.tmax() !== 0);
 		assert.ok(b.tmax() > b.tmin());
@@ -202,15 +202,15 @@ describe('STBox - Accessors', () => {
 	});
 
 	it('tminInc/tmaxInc are true by default', () => {
-		const b = STBox.in(WKT_T);
+		const b = STBox.fromText(WKT_T);
 		assert.equal(b.tminInc(), true);
 		assert.equal(b.tmaxInc(), true);
 		b.free();
 	});
 
 	it('srid: 0 for plain STBOX, 4326 for GEODSTBOX', () => {
-		const b = STBox.in(WKT_X);
-		const bg = STBox.in(WKT_GEO);
+		const b = STBox.fromText(WKT_X);
+		const bg = STBox.fromText(WKT_GEO);
 		assert.equal(b.SRID(), 0);
 		assert.equal(bg.SRID(), 4326);
 		b.free();
@@ -220,7 +220,7 @@ describe('STBox - Accessors', () => {
 
 describe('STBox - Spatial Reference System', () => {
 	it('setSrid returns new box with updated SRID', () => {
-		const b = STBox.in(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		const r = b.setSRID(5676);
 		assert.equal(r.SRID(), 5676);
 		b.free();
@@ -230,14 +230,14 @@ describe('STBox - Spatial Reference System', () => {
 
 describe('STBox - Conversions', () => {
 	it('toTsTzSpan returns non-zero ptr for T boxes', () => {
-		const b = STBox.in(WKT_T);
+		const b = STBox.fromText(WKT_T);
 		const ptr = b.toTstzspan();
 		assert.ok(ptr.ptr);
 		b.free();
 	});
 
 	it('toGeoPtr returns non-zero ptr for X boxes', () => {
-		const b = STBox.in(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		const ptr = b.toGeo();
 		assert.ok(ptr.ptr);
 		b.free();
@@ -246,7 +246,7 @@ describe('STBox - Conversions', () => {
 
 describe('STBox - Transformations', () => {
 	it('getSpace strips temporal dimension', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		const s = b.getSpace();
 		assert.equal(s.hasx(), true);
 		assert.equal(s.hast(), false);
@@ -255,7 +255,7 @@ describe('STBox - Transformations', () => {
 	});
 
 	it('expandSpace grows spatial bounds', () => {
-		const b = STBox.in(WKT_X); // X((1,1),(2,2))
+		const b = STBox.fromText(WKT_X); // X((1,1),(2,2))
 		const r = b.expandSpace(1);
 		assert.equal(r!.xmin(), 0);
 		assert.equal(r!.xmax(), 3);
@@ -264,7 +264,7 @@ describe('STBox - Transformations', () => {
 	});
 
 	it('round rounds coordinates to given decimal digits', () => {
-		const b = STBox.in('STBOX X((1.1234,1.1234),(2.5678,2.5678))');
+		const b = STBox.fromText('STBOX X((1.1234,1.1234),(2.5678,2.5678))');
 		const r = b.round(2);
 		assert.ok(r.toString().includes('1.12'));
 		b.free();
@@ -274,7 +274,7 @@ describe('STBox - Transformations', () => {
 
 describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	it('shiftTime moves the temporal dimension forward by 1 day', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		const shift = { time: 0, day: 1, month: 0 }; // 1 day
 		const r = b.shiftTime(shift);
 		assert.ok(r.tmin() > b.tmin());
@@ -283,7 +283,7 @@ describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	});
 
 	it('scaleTime stretches the temporal dimension to 2 days', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		const dur = { time: 0, day: 2, month: 0 }; // 2 days
 		const r = b.scaleTime(dur);
 		assert.equal(r.tmin(), b.tmin());
@@ -293,7 +293,7 @@ describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	});
 
 	it('shiftScaleTime shifts by 1 day and scales to 2 days', () => {
-		const b = STBox.in(WKT_XT);
+		const b = STBox.fromText(WKT_XT);
 		const shift = { time: 0, day: 1, month: 0 }; // 1 day
 		const dur = { time: 0, day: 2, month: 0 };   // 2 days
 		const r = b.shiftScaleTime(shift, dur);
@@ -306,48 +306,48 @@ describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 
 describe('STBox - Topological predicates', () => {
 	it('isAdjacent: touching boxes are adjacent', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((2,2),(3,3))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((2,2),(3,3))');
 		assert.equal(a.adjacent(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isAdjacent: overlapping boxes are not adjacent', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((1,1),(3,3))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((1,1),(3,3))');
 		assert.equal(a.adjacent(b), false);
 		a.free();
 		b.free();
 	});
 
 	it('isContainedIn: smaller box contained in larger', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((0,0),(3,3))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((0,0),(3,3))');
 		assert.equal(a.contained(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('contains: larger box contains smaller', () => {
-		const a = STBox.in('STBOX X((0,0),(3,3))');
-		const b = STBox.in('STBOX X((1,1),(2,2))');
+		const a = STBox.fromText('STBOX X((0,0),(3,3))');
+		const b = STBox.fromText('STBOX X((1,1),(2,2))');
 		assert.equal(a.contains(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('overlaps: intersecting boxes overlap', () => {
-		const a = STBox.in('STBOX X((1,1),(3,3))');
-		const b = STBox.in('STBOX X((2,2),(4,4))');
+		const a = STBox.fromText('STBOX X((1,1),(3,3))');
+		const b = STBox.fromText('STBOX X((2,2),(4,4))');
 		assert.equal(a.overlaps(b), true);
 		a.free();
 		b.free();
 	});
 
 	it('isSame: identical boxes are same', () => {
-		const a = STBox.in(WKT_X);
-		const b = STBox.in(WKT_X);
+		const a = STBox.fromText(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		assert.equal(a.same(b), true);
 		a.free();
 		b.free();
@@ -356,8 +356,8 @@ describe('STBox - Topological predicates', () => {
 
 describe('STBox - Position predicates', () => {
 	it('isLeft / isRight on X axis', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((3,1),(4,2))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((3,1),(4,2))');
 		assert.equal(a.left(b), true);
 		assert.equal(b.right(a), true);
 		a.free();
@@ -365,8 +365,8 @@ describe('STBox - Position predicates', () => {
 	});
 
 	it('isBelow / isAbove on Y axis', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((1,3),(2,4))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((1,3),(2,4))');
 		assert.equal(a.below(b), true);
 		assert.equal(b.above(a), true);
 		a.free();
@@ -374,8 +374,8 @@ describe('STBox - Position predicates', () => {
 	});
 
 	it('isBefore / isAfter on T axis', () => {
-		const a = STBox.in('STBOX T([2019-09-01,2019-09-02])');
-		const b = STBox.in('STBOX T([2019-09-03,2019-09-04])');
+		const a = STBox.fromText('STBOX T([2019-09-01,2019-09-02])');
+		const b = STBox.fromText('STBOX T([2019-09-03,2019-09-04])');
 		assert.equal(a.before(b), true);
 		assert.equal(b.after(a), true);
 		a.free();
@@ -383,8 +383,8 @@ describe('STBox - Position predicates', () => {
 	});
 
 	it('isFront / isBehind on Z axis', () => {
-		const a = STBox.in('STBOX Z((1,1,1),(2,2,2))');
-		const b = STBox.in('STBOX Z((1,1,3),(2,2,4))');
+		const a = STBox.fromText('STBOX Z((1,1,1),(2,2,2))');
+		const b = STBox.fromText('STBOX Z((1,1,3),(2,2,4))');
 		assert.equal(a.front(b), true);
 		assert.equal(b.back(a), true);
 		a.free();
@@ -394,16 +394,16 @@ describe('STBox - Position predicates', () => {
 
 describe('STBox - Distance', () => {
 	it('distance is 0 for overlapping boxes', () => {
-		const a = STBox.in('STBOX X((1,1),(3,3))');
-		const b = STBox.in('STBOX X((2,2),(4,4))');
+		const a = STBox.fromText('STBOX X((1,1),(3,3))');
+		const b = STBox.fromText('STBOX X((2,2),(4,4))');
 		assert.equal(a.nad(b), 0);
 		a.free();
 		b.free();
 	});
 
 	it('distance is positive for disjoint boxes', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((5,5),(6,6))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((5,5),(6,6))');
 		assert.ok(a.nad(b) > 0);
 		a.free();
 		b.free();
@@ -412,8 +412,8 @@ describe('STBox - Distance', () => {
 
 describe('STBox - Set operations', () => {
 	it('intersection of overlapping boxes is non-null', () => {
-		const a = STBox.in('STBOX X((1,1),(3,3))');
-		const b = STBox.in('STBOX X((2,2),(4,4))');
+		const a = STBox.fromText('STBOX X((1,1),(3,3))');
+		const b = STBox.fromText('STBOX X((2,2),(4,4))');
 		const r = a.intersection(b);
 		assert.ok(r !== null);
 		r!.free();
@@ -422,16 +422,16 @@ describe('STBox - Set operations', () => {
 	});
 
 	it('intersection of disjoint boxes is null', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((5,5),(6,6))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((5,5),(6,6))');
 		assert.equal(a.intersection(b), null);
 		a.free();
 		b.free();
 	});
 
 	it('union of adjacent boxes covers both', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((2,2),(3,3))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((2,2),(3,3))');
 		const r = a.union(b, false);
 		assert.equal(r.xmin(), 1);
 		assert.equal(r.xmax(), 3);
@@ -443,8 +443,8 @@ describe('STBox - Set operations', () => {
 
 describe('STBox - Comparisons', () => {
 	it('eq: same box is equal', () => {
-		const a = STBox.in(WKT_X);
-		const b = STBox.in(WKT_X);
+		const a = STBox.fromText(WKT_X);
+		const b = STBox.fromText(WKT_X);
 		assert.equal(a.eq(b), true);
 		assert.equal(a.ne(b), false);
 		a.free();
@@ -452,8 +452,8 @@ describe('STBox - Comparisons', () => {
 	});
 
 	it('lt / gt ordering', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((3,3),(4,4))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((3,3),(4,4))');
 		assert.equal(a.lt(b), true);
 		assert.equal(b.gt(a), true);
 		a.free();
@@ -461,9 +461,9 @@ describe('STBox - Comparisons', () => {
 	});
 
 	it('cmp returns -1 / 0 / 1', () => {
-		const a = STBox.in('STBOX X((1,1),(2,2))');
-		const b = STBox.in('STBOX X((3,3),(4,4))');
-		const c = STBox.in('STBOX X((1,1),(2,2))');
+		const a = STBox.fromText('STBOX X((1,1),(2,2))');
+		const b = STBox.fromText('STBOX X((3,3),(4,4))');
+		const c = STBox.fromText('STBOX X((1,1),(2,2))');
 		assert.equal(a.cmp(b), -1);
 		assert.equal(b.cmp(a), 1);
 		assert.equal(a.cmp(c), 0);

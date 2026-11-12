@@ -13,16 +13,16 @@ before(async () => {
 
 describe('generated object layer: the bearing from a point', () => {
 	it('answers the bearing from a point to another point as a number', () => {
-		using origin = Geometry.in('Point(0 0)', -1);
-		using north = Geometry.in('Point(0 1)', -1);
-		using east = Geometry.in('Point(1 0)', -1);
+		using origin = Geometry.fromText('Point(0 0)', 0);
+		using north = Geometry.fromText('Point(0 1)', 0);
+		using east = Geometry.fromText('Point(1 0)', 0);
 		assert.equal(origin.bearing(north), 0);
 		assert.equal(origin.bearing(east), Math.PI / 2);
 	});
 
 	it('answers the bearing from a point to a temporal point as a temporal float', () => {
-		using origin = Geometry.in('Point(0 0)', -1);
-		using t = TGeomPoint.in('{Point(0 1)@2001-01-01 00:00:00+00, Point(1 0)@2001-01-02 00:00:00+00}');
+		using origin = Geometry.fromText('Point(0 0)', 0);
+		using t = TGeomPoint.fromText('{Point(0 1)@2001-01-01 00:00:00+00, Point(1 0)@2001-01-02 00:00:00+00}');
 		const answer = origin.bearing(t);
 		assert.ok(answer instanceof TFloat);
 		using bearing = answer as TFloat;

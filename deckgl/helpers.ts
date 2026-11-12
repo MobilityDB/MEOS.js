@@ -54,7 +54,7 @@ export function atTime(
 	opts: ToTripsOptions = {}
 ): Trip[] {
 	const ownsSpan = typeof period === 'string';
-	const span = ownsSpan ? TsTzSpan.in(period) : period;
+	const span = ownsSpan ? TsTzSpan.fromText(period) : period;
 	try {
 		const restricted = t.atTsTzSpan(span.ptr);
 		if (restricted.inner === 0) return []; // no temporal overlap
