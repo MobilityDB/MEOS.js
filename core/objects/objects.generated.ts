@@ -11672,6 +11672,11 @@ export class STBox extends Box {
 		return F.always_overlaps_stbox_tcbuffer(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: always_overlaps_stbox_tcellindex */
+	private _always_overlaps_stbox_tcellindex(temp: TQuadbin): number {
+		return F.always_overlaps_stbox_tcellindex(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: always_overlaps_stbox_tgeo */
 	private _always_overlaps_stbox_tgeo(temp: TGeo): number {
 		return F.always_overlaps_stbox_tgeo(this.ptr, temp.ptr);
@@ -11685,6 +11690,11 @@ export class STBox extends Box {
 	/** MEOS: always_overlaps_stbox_tpose */
 	private _always_overlaps_stbox_tpose(temp: TPose): number {
 		return F.always_overlaps_stbox_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_stbox_tposechain */
+	private _always_overlaps_stbox_tposechain(temp: TPoseChain): number {
+		return F.always_overlaps_stbox_tposechain(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: always_overlaps_stbox_trgeometry */
@@ -11747,6 +11757,11 @@ export class STBox extends Box {
 		return F.ever_overlaps_stbox_tcbuffer(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: ever_overlaps_stbox_tcellindex */
+	private _ever_overlaps_stbox_tcellindex(temp: TQuadbin): number {
+		return F.ever_overlaps_stbox_tcellindex(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: ever_overlaps_stbox_tgeo */
 	private _ever_overlaps_stbox_tgeo(temp: TGeo): number {
 		return F.ever_overlaps_stbox_tgeo(this.ptr, temp.ptr);
@@ -11760,6 +11775,11 @@ export class STBox extends Box {
 	/** MEOS: ever_overlaps_stbox_tpose */
 	private _ever_overlaps_stbox_tpose(temp: TPose): number {
 		return F.ever_overlaps_stbox_tpose(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_stbox_tposechain */
+	private _ever_overlaps_stbox_tposechain(temp: TPoseChain): number {
+		return F.ever_overlaps_stbox_tposechain(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: ever_overlaps_stbox_trgeometry */
@@ -11933,12 +11953,14 @@ export class STBox extends Box {
 		throw new TypeError(`STBox.after: no overload takes these arguments`);
 	}
 
-	/** MEOS: always_overlaps_stbox_tgeo, always_overlaps_stbox_tcbuffer, always_overlaps_stbox_tnpoint, always_overlaps_stbox_tpose, always_overlaps_stbox_trgeometry, chosen by the arguments' types */
-	alwaysOverlaps(temp: TGeo | TCBuffer | TNPoint | TPose | TRGeometry): number {
+	/** MEOS: always_overlaps_stbox_tgeo, always_overlaps_stbox_tcbuffer, always_overlaps_stbox_tcellindex, always_overlaps_stbox_tnpoint, always_overlaps_stbox_tpose, always_overlaps_stbox_tposechain, always_overlaps_stbox_trgeometry, chosen by the arguments' types */
+	alwaysOverlaps(temp: TGeo | TCBuffer | TQuadbin | TNPoint | TPose | TPoseChain | TRGeometry): number {
+		if (temp instanceof TQuadbin) return this._always_overlaps_stbox_tcellindex(temp as TQuadbin);
 		if (temp instanceof TGeo) return this._always_overlaps_stbox_tgeo(temp as TGeo);
 		if (temp instanceof TCBuffer) return this._always_overlaps_stbox_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TNPoint) return this._always_overlaps_stbox_tnpoint(temp as TNPoint);
 		if (temp instanceof TPose) return this._always_overlaps_stbox_tpose(temp as TPose);
+		if (temp instanceof TPoseChain) return this._always_overlaps_stbox_tposechain(temp as TPoseChain);
 		if (temp instanceof TRGeometry) return this._always_overlaps_stbox_trgeometry(temp as TRGeometry);
 		throw new TypeError(`STBox.alwaysOverlaps: no overload takes these arguments`);
 	}
@@ -12028,12 +12050,14 @@ export class STBox extends Box {
 		return F.stbox_eq(this.ptr, box2.ptr);
 	}
 
-	/** MEOS: ever_overlaps_stbox_tgeo, ever_overlaps_stbox_tcbuffer, ever_overlaps_stbox_tnpoint, ever_overlaps_stbox_tpose, ever_overlaps_stbox_trgeometry, chosen by the arguments' types */
-	everOverlaps(temp: TGeo | TCBuffer | TNPoint | TPose | TRGeometry): number {
+	/** MEOS: ever_overlaps_stbox_tgeo, ever_overlaps_stbox_tcbuffer, ever_overlaps_stbox_tcellindex, ever_overlaps_stbox_tnpoint, ever_overlaps_stbox_tpose, ever_overlaps_stbox_tposechain, ever_overlaps_stbox_trgeometry, chosen by the arguments' types */
+	everOverlaps(temp: TGeo | TCBuffer | TQuadbin | TNPoint | TPose | TPoseChain | TRGeometry): number {
+		if (temp instanceof TQuadbin) return this._ever_overlaps_stbox_tcellindex(temp as TQuadbin);
 		if (temp instanceof TGeo) return this._ever_overlaps_stbox_tgeo(temp as TGeo);
 		if (temp instanceof TCBuffer) return this._ever_overlaps_stbox_tcbuffer(temp as TCBuffer);
 		if (temp instanceof TNPoint) return this._ever_overlaps_stbox_tnpoint(temp as TNPoint);
 		if (temp instanceof TPose) return this._ever_overlaps_stbox_tpose(temp as TPose);
+		if (temp instanceof TPoseChain) return this._ever_overlaps_stbox_tposechain(temp as TPoseChain);
 		if (temp instanceof TRGeometry) return this._ever_overlaps_stbox_trgeometry(temp as TRGeometry);
 		throw new TypeError(`STBox.everOverlaps: no overload takes these arguments`);
 	}
@@ -16574,6 +16598,11 @@ export class TCBuffer extends TSpatial {
 		return F.always_overlaps_tcbuffer_stbox(this.ptr, box.ptr);
 	}
 
+	/** MEOS: always_overlaps_tcbuffer_tcbuffer */
+	private _always_overlaps_tcbuffer_tcbuffer(temp2: TCBuffer): number {
+		return F.always_overlaps_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
+	}
+
 	/** MEOS: atouches_tcbuffer_cbuffer */
 	private _atouches_tcbuffer_cbuffer(cb: CBuffer): number {
 		return F.atouches_tcbuffer_cbuffer(this.ptr, cb.ptr);
@@ -16702,6 +16731,11 @@ export class TCBuffer extends TSpatial {
 	/** MEOS: ever_overlaps_tcbuffer_stbox */
 	private _ever_overlaps_tcbuffer_stbox(box: STBox): number {
 		return F.ever_overlaps_tcbuffer_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tcbuffer_tcbuffer */
+	private _ever_overlaps_tcbuffer_tcbuffer(temp2: TCBuffer): number {
+		return F.ever_overlaps_tcbuffer_tcbuffer(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tcbuffer_cbuffer */
@@ -16923,8 +16957,9 @@ export class TCBuffer extends TSpatial {
 		return super.alwaysNe(cb as Temporal);
 	}
 
-	/** MEOS: always_overlaps_tcbuffer_stbox, chosen by the arguments' types */
-	override alwaysOverlaps(box: STBox | Temporal): number {
+	/** MEOS: always_overlaps_tcbuffer_stbox, always_overlaps_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | TCBuffer | Temporal): number {
+		if (box instanceof TCBuffer) return this._always_overlaps_tcbuffer_tcbuffer(box as TCBuffer);
 		if (box instanceof STBox) return this._always_overlaps_tcbuffer_stbox(box as STBox);
 		return super.alwaysOverlaps(box as Temporal);
 	}
@@ -17024,8 +17059,9 @@ export class TCBuffer extends TSpatial {
 		return super.everNe(cb as Temporal);
 	}
 
-	/** MEOS: ever_overlaps_tcbuffer_stbox, chosen by the arguments' types */
-	override everOverlaps(box: STBox | Temporal): number {
+	/** MEOS: ever_overlaps_tcbuffer_stbox, ever_overlaps_tcbuffer_tcbuffer, chosen by the arguments' types */
+	override everOverlaps(box: STBox | TCBuffer | Temporal): number {
+		if (box instanceof TCBuffer) return this._ever_overlaps_tcbuffer_tcbuffer(box as TCBuffer);
 		if (box instanceof STBox) return this._ever_overlaps_tcbuffer_stbox(box as STBox);
 		return super.everOverlaps(box as Temporal);
 	}
@@ -17363,6 +17399,11 @@ export class TCBufferSeqSet extends TCBuffer {
  */
 export class TCellIndex extends TSpatial {
 
+	/** MEOS: tcellindex_at_stbox */
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tcellindex_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
+	}
+
 	/** MEOS: tcellindex_cell_area */
 	cellArea(): Temporal {
 		return wrapTemporal(F.tcellindex_cell_area(this.ptr)) as Temporal;
@@ -17391,6 +17432,11 @@ export class TCellIndex extends TSpatial {
 	/** MEOS: tcellindex_is_valid_cell */
 	isValidCell(): Temporal {
 		return wrapTemporal(F.tcellindex_is_valid_cell(this.ptr)) as Temporal;
+	}
+
+	/** MEOS: tcellindex_minus_stbox */
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tcellindex_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 }
 
@@ -21961,6 +22007,11 @@ export class TNPoint extends TSpatial {
 		return F.always_overlaps_tnpoint_stbox(this.ptr, box.ptr);
 	}
 
+	/** MEOS: always_overlaps_tnpoint_tnpoint */
+	private _always_overlaps_tnpoint_tnpoint(temp2: TNPoint): number {
+		return F.always_overlaps_tnpoint_tnpoint(this.ptr, temp2.ptr);
+	}
+
 	/** MEOS: contained_rid_tnpoint_bigintset */
 	private _contained_rid_tnpoint_bigintset(s: BigIntSet): boolean {
 		return F.contained_rid_tnpoint_bigintset(this.ptr, s.ptr);
@@ -22014,6 +22065,11 @@ export class TNPoint extends TSpatial {
 	/** MEOS: ever_overlaps_tnpoint_stbox */
 	private _ever_overlaps_tnpoint_stbox(box: STBox): number {
 		return F.ever_overlaps_tnpoint_stbox(this.ptr, box.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tnpoint_tnpoint */
+	private _ever_overlaps_tnpoint_tnpoint(temp2: TNPoint): number {
+		return F.ever_overlaps_tnpoint_tnpoint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tnpoint_geo */
@@ -22135,8 +22191,9 @@ export class TNPoint extends TSpatial {
 		return super.alwaysNe(np as Temporal);
 	}
 
-	/** MEOS: always_overlaps_tnpoint_stbox, chosen by the arguments' types */
-	override alwaysOverlaps(box: STBox | Temporal): number {
+	/** MEOS: always_overlaps_tnpoint_stbox, always_overlaps_tnpoint_tnpoint, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | TNPoint | Temporal): number {
+		if (box instanceof TNPoint) return this._always_overlaps_tnpoint_tnpoint(box as TNPoint);
 		if (box instanceof STBox) return this._always_overlaps_tnpoint_stbox(box as STBox);
 		return super.alwaysOverlaps(box as Temporal);
 	}
@@ -22201,8 +22258,9 @@ export class TNPoint extends TSpatial {
 		return super.everNe(np as Temporal);
 	}
 
-	/** MEOS: ever_overlaps_tnpoint_stbox, chosen by the arguments' types */
-	override everOverlaps(box: STBox | Temporal): number {
+	/** MEOS: ever_overlaps_tnpoint_stbox, ever_overlaps_tnpoint_tnpoint, chosen by the arguments' types */
+	override everOverlaps(box: STBox | TNPoint | Temporal): number {
+		if (box instanceof TNPoint) return this._ever_overlaps_tnpoint_tnpoint(box as TNPoint);
 		if (box instanceof STBox) return this._ever_overlaps_tnpoint_stbox(box as STBox);
 		return super.everOverlaps(box as Temporal);
 	}
@@ -22553,6 +22611,16 @@ export class TPCBox extends Box {
 		return F.after_tpcbox_tpointcloud(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: always_overlaps_tpcbox_tpcpatch */
+	private _always_overlaps_tpcbox_tpcpatch(temp: TPCPatch): number {
+		return F.always_overlaps_tpcbox_tpcpatch(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: always_overlaps_tpcbox_tpcpoint */
+	private _always_overlaps_tpcbox_tpcpoint(temp: TPCPoint): number {
+		return F.always_overlaps_tpcbox_tpcpoint(this.ptr, temp.ptr);
+	}
+
 	/** MEOS: back_tpcbox_tpcbox */
 	private _back_tpcbox_tpcbox(box2: TPCBox): boolean {
 		return F.back_tpcbox_tpcbox(this.ptr, box2.ptr);
@@ -22601,6 +22669,16 @@ export class TPCBox extends Box {
 	/** MEOS: contains_tpcbox_tpointcloud */
 	private _contains_tpcbox_tpointcloud(temp: TSpatial): boolean {
 		return F.contains_tpcbox_tpointcloud(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpcbox_tpcpatch */
+	private _ever_overlaps_tpcbox_tpcpatch(temp: TPCPatch): number {
+		return F.ever_overlaps_tpcbox_tpcpatch(this.ptr, temp.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpcbox_tpcpoint */
+	private _ever_overlaps_tpcbox_tpcpoint(temp: TPCPoint): number {
+		return F.ever_overlaps_tpcbox_tpcpoint(this.ptr, temp.ptr);
 	}
 
 	/** MEOS: front_tpcbox_tpcbox */
@@ -22754,6 +22832,13 @@ export class TPCBox extends Box {
 		throw new TypeError(`TPCBox.after: no overload takes these arguments`);
 	}
 
+	/** MEOS: always_overlaps_tpcbox_tpcpoint, always_overlaps_tpcbox_tpcpatch, chosen by the arguments' types */
+	alwaysOverlaps(temp: TPCPoint | TPCPatch): number {
+		if (temp instanceof TPCPoint) return this._always_overlaps_tpcbox_tpcpoint(temp as TPCPoint);
+		if (temp instanceof TPCPatch) return this._always_overlaps_tpcbox_tpcpatch(temp as TPCPatch);
+		throw new TypeError(`TPCBox.alwaysOverlaps: no overload takes these arguments`);
+	}
+
 	/** MEOS: tpcbox_as_ewkb */
 	asEWKB(variant: number = 0): Uint8Array {
 		return readWkb(_sizeOut => F.tpcbox_as_ewkb(this.ptr, variant, _sizeOut));
@@ -22832,6 +22917,13 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_eq */
 	eq(box2: TPCBox): boolean {
 		return F.tpcbox_eq(this.ptr, box2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpcbox_tpcpoint, ever_overlaps_tpcbox_tpcpatch, chosen by the arguments' types */
+	everOverlaps(temp: TPCPoint | TPCPatch): number {
+		if (temp instanceof TPCPoint) return this._ever_overlaps_tpcbox_tpcpoint(temp as TPCPoint);
+		if (temp instanceof TPCPatch) return this._ever_overlaps_tpcbox_tpcpatch(temp as TPCPatch);
+		throw new TypeError(`TPCBox.everOverlaps: no overload takes these arguments`);
 	}
 
 	/** MEOS: front_tpcbox_tpcbox, front_tpcbox_tpointcloud, chosen by the arguments' types */
@@ -23141,6 +23233,11 @@ export class TPCPatch extends TSpatial {
 		return F.always_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tpcpatch_tpcbox */
+	private _always_overlaps_tpcpatch_tpcbox(box: TPCBox): number {
+		return F.always_overlaps_tpcpatch_tpcbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: ever_eq_tpcpatch_pcpatch */
 	private _ever_eq_tpcpatch_pcpatch(pa: PCPatch): number {
 		return F.ever_eq_tpcpatch_pcpatch(this.ptr, pa.ptr);
@@ -23159,6 +23256,11 @@ export class TPCPatch extends TSpatial {
 	/** MEOS: ever_ne_tpcpatch_tpcpatch */
 	private _ever_ne_tpcpatch_tpcpatch(temp2: TPCPatch): number {
 		return F.ever_ne_tpcpatch_tpcpatch(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpcpatch_tpcbox */
+	private _ever_overlaps_tpcpatch_tpcbox(box: TPCBox): number {
+		return F.ever_overlaps_tpcpatch_tpcbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: teq_tpcpatch_pcpatch */
@@ -23185,9 +23287,20 @@ export class TPCPatch extends TSpatial {
 		return super.alwaysNe(pa as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tpcpatch_tpcbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: TPCBox | Temporal): number {
+		if (box instanceof TPCBox) return this._always_overlaps_tpcpatch_tpcbox(box as TPCBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tpcpatch_at_tpcbox */
 	atTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
 		return wrapTemporalOrNull(F.tpcpatch_at_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
+	}
+
+	/** MEOS: tpcpatch_at_tpcbox_fine */
+	atTpcboxFine(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_at_tpcbox_fine(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tpcpatch_at_value */
@@ -23219,9 +23332,20 @@ export class TPCPatch extends TSpatial {
 		return super.everNe(pa as Temporal);
 	}
 
+	/** MEOS: ever_overlaps_tpcpatch_tpcbox, chosen by the arguments' types */
+	override everOverlaps(box: TPCBox | Temporal): number {
+		if (box instanceof TPCBox) return this._ever_overlaps_tpcpatch_tpcbox(box as TPCBox);
+		return super.everOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tpcpatch_minus_tpcbox */
 	minusTpcbox(box: TPCBox, border_inc: boolean = true): this | null {
 		return wrapTemporalOrNull(F.tpcpatch_minus_tpcbox(this.ptr, box.ptr, border_inc)) as this | null;
+	}
+
+	/** MEOS: tpcpatch_minus_tpcbox_fine */
+	minusTpcboxFine(box: TPCBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tpcpatch_minus_tpcbox_fine(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tpcpatch_minus_value */
@@ -23461,6 +23585,11 @@ export class TPCPoint extends TSpatial {
 		return F.always_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tpcpoint_tpcbox */
+	private _always_overlaps_tpcpoint_tpcbox(box: TPCBox): number {
+		return F.always_overlaps_tpcpoint_tpcbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: ever_eq_tpcpoint_pcpoint */
 	private _ever_eq_tpcpoint_pcpoint(pt: PCPoint): number {
 		return F.ever_eq_tpcpoint_pcpoint(this.ptr, pt.ptr);
@@ -23479,6 +23608,11 @@ export class TPCPoint extends TSpatial {
 	/** MEOS: ever_ne_tpcpoint_tpcpoint */
 	private _ever_ne_tpcpoint_tpcpoint(temp2: TPCPoint): number {
 		return F.ever_ne_tpcpoint_tpcpoint(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tpcpoint_tpcbox */
+	private _ever_overlaps_tpcpoint_tpcbox(box: TPCBox): number {
+		return F.ever_overlaps_tpcpoint_tpcbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: teq_tpcpoint_pcpoint */
@@ -23503,6 +23637,12 @@ export class TPCPoint extends TSpatial {
 		if (pt instanceof TPCPoint) return this._always_ne_tpcpoint_tpcpoint(pt as TPCPoint);
 		if (pt instanceof PCPoint) return this._always_ne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.alwaysNe(pt as Temporal);
+	}
+
+	/** MEOS: always_overlaps_tpcpoint_tpcbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: TPCBox | Temporal): number {
+		if (box instanceof TPCBox) return this._always_overlaps_tpcpoint_tpcbox(box as TPCBox);
+		return super.alwaysOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tpcpoint_at_tpcbox */
@@ -23537,6 +23677,12 @@ export class TPCPoint extends TSpatial {
 		if (pt instanceof TPCPoint) return this._ever_ne_tpcpoint_tpcpoint(pt as TPCPoint);
 		if (pt instanceof PCPoint) return this._ever_ne_tpcpoint_pcpoint(pt as PCPoint);
 		return super.everNe(pt as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tpcpoint_tpcbox, chosen by the arguments' types */
+	override everOverlaps(box: TPCBox | Temporal): number {
+		if (box instanceof TPCBox) return this._ever_overlaps_tpcpoint_tpcbox(box as TPCBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tpcpoint_minus_tpcbox */
@@ -24289,6 +24435,11 @@ export class TPoseChain extends TSpatial {
 		return F.always_ne_tposechain_tposechain(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tposechain_stbox */
+	private _always_overlaps_tposechain_stbox(box: STBox): number {
+		return F.always_overlaps_tposechain_stbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: ever_eq_tposechain_posechain */
 	private _ever_eq_tposechain_posechain(posechain: PoseChain): number {
 		return F.ever_eq_tposechain_posechain(this.ptr, posechain.ptr);
@@ -24307,6 +24458,11 @@ export class TPoseChain extends TSpatial {
 	/** MEOS: ever_ne_tposechain_tposechain */
 	private _ever_ne_tposechain_tposechain(temp2: TPoseChain): number {
 		return F.ever_ne_tposechain_tposechain(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tposechain_stbox */
+	private _ever_overlaps_tposechain_stbox(box: STBox): number {
+		return F.ever_overlaps_tposechain_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: nad_tposechain_geo */
@@ -24398,9 +24554,20 @@ export class TPoseChain extends TSpatial {
 		return super.alwaysNe(posechain as Temporal);
 	}
 
+	/** MEOS: always_overlaps_tposechain_stbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._always_overlaps_tposechain_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
+	}
+
 	/** MEOS: tposechain_as_geopose */
 	asGeopose(precision: number = -1): string {
 		return F.tposechain_as_geopose(this.ptr, precision);
+	}
+
+	/** MEOS: tposechain_at_stbox */
+	atStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tposechain_at_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tposechain_at_value */
@@ -24425,6 +24592,17 @@ export class TPoseChain extends TSpatial {
 		if (posechain instanceof TPoseChain) return this._ever_ne_tposechain_tposechain(posechain as TPoseChain);
 		if (posechain instanceof PoseChain) return this._ever_ne_tposechain_posechain(posechain as PoseChain);
 		return super.everNe(posechain as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tposechain_stbox, chosen by the arguments' types */
+	override everOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._ever_overlaps_tposechain_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
+	}
+
+	/** MEOS: tposechain_minus_stbox */
+	minusStbox(box: STBox, border_inc: boolean = true): this | null {
+		return wrapTemporalOrNull(F.tposechain_minus_stbox(this.ptr, box.ptr, border_inc)) as this | null;
 	}
 
 	/** MEOS: tposechain_minus_value */
@@ -24749,6 +24927,11 @@ export class TQuadbin extends TCellIndex {
 		return F.always_ne_tquadbin_tquadbin(this.ptr, temp2.ptr);
 	}
 
+	/** MEOS: always_overlaps_tcellindex_stbox */
+	private _always_overlaps_tcellindex_stbox(box: STBox): number {
+		return F.always_overlaps_tcellindex_stbox(this.ptr, box.ptr);
+	}
+
 	/** MEOS: ever_eq_tquadbin_quadbin */
 	private _ever_eq_tquadbin_quadbin(cell: Quadbin): number {
 		return F.ever_eq_tquadbin_quadbin(this.ptr, cell.value);
@@ -24772,6 +24955,11 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: ever_ne_tquadbin_tquadbin */
 	private _ever_ne_tquadbin_tquadbin(temp2: TQuadbin): number {
 		return F.ever_ne_tquadbin_tquadbin(this.ptr, temp2.ptr);
+	}
+
+	/** MEOS: ever_overlaps_tcellindex_stbox */
+	private _ever_overlaps_tcellindex_stbox(box: STBox): number {
+		return F.ever_overlaps_tcellindex_stbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: teq_tquadbin_quadbin */
@@ -24806,6 +24994,12 @@ export class TQuadbin extends TCellIndex {
 		if (cell instanceof TQuadbin) return this._always_ne_tquadbin_tquadbin(cell as TQuadbin);
 		if (cell instanceof Quadbin) return this._always_ne_tquadbin_quadbin(cell as Quadbin);
 		return super.alwaysNe(cell as Temporal);
+	}
+
+	/** MEOS: always_overlaps_tcellindex_stbox, chosen by the arguments' types */
+	override alwaysOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._always_overlaps_tcellindex_stbox(box as STBox);
+		return super.alwaysOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tquadbin_at_value */
@@ -24851,6 +25045,12 @@ export class TQuadbin extends TCellIndex {
 		if (cell instanceof TQuadbin) return this._ever_ne_tquadbin_tquadbin(cell as TQuadbin);
 		if (cell instanceof Quadbin) return this._ever_ne_tquadbin_quadbin(cell as Quadbin);
 		return super.everNe(cell as Temporal);
+	}
+
+	/** MEOS: ever_overlaps_tcellindex_stbox, chosen by the arguments' types */
+	override everOverlaps(box: STBox | Temporal): number {
+		if (box instanceof STBox) return this._ever_overlaps_tcellindex_stbox(box as STBox);
+		return super.everOverlaps(box as Temporal);
 	}
 
 	/** MEOS: tcellindex_get_resolution, which answers a TInt for a TQuadbin */
