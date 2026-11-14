@@ -43,7 +43,7 @@ describe('TFloat - Instant', () => {
 	});
 
 	it('fromInstant returns a non-zero pointer', () => {
-		const t = TFloat.fromInstant(1.5, 60_000_000);
+		const t = TFloat.fromInstant(1.5, 60_000_000n);
 		assert.ok(t.inner !== 0);
 		t.free();
 	});
@@ -285,14 +285,14 @@ describe('TFloat - valueAtTimestamp', () => {
 	it('returns value at an exact instant timestamp', () => {
 		// T1 = 2000-01-01 00:01:00+00 = 60_000_000 µs
 		const t = TFloat.fromString(`{3.14@${T1}}`);
-		const v = t.valueAtTimestamp(60_000_000);
+		const v = t.valueAtTimestamp(60_000_000n);
 		assert.ok(v !== null && Math.abs(v - 3.14) < 1e-9);
 		t.free();
 	});
 
 	it('returns null for a timestamp outside the temporal domain', () => {
 		const t = TFloat.fromString(`{1.5@${T1}}`);
-		const v = t.valueAtTimestamp(0); // before T1
+		const v = t.valueAtTimestamp(0n); // before T1
 		assert.equal(v, null);
 		t.free();
 	});

@@ -15,10 +15,10 @@ import { TFloatSeqSet } from '../../../core/types/basic/tfloat/TFloatSeqSet.js';
 import { createTBool, createTInt, createTFloat } from '../../../core/types/temporal/TemporalFactory.js';
 
 // µs offsets from 2000-01-01 UTC
-const T1 = 60_000_000;   // +1 min
-const T2 = 120_000_000;  // +2 min
-const T3 = 180_000_000;  // +3 min
-const T4 = 240_000_000;  // +4 min
+const T1 = 60_000_000n;   // +1 min
+const T2 = 120_000_000n;  // +2 min
+const T3 = 180_000_000n;  // +3 min
+const T4 = 240_000_000n;  // +4 min
 
 before(async () => { await initMeos(); });
 

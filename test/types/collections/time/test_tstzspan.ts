@@ -6,7 +6,7 @@ import { TsTzSpan } from '../../../../core/objects/objects.generated.js';
 import type { Interval } from '../../../../core/objects/objects.generated.js';
 
 /** A distance between times is an Interval: nonzero when any of its fields is. */
-const nonzero = (d: Interval) => d.time !== 0 || d.day !== 0 || d.month !== 0;
+const nonzero = (d: Interval) => d.time !== 0n || d.day !== 0 || d.month !== 0;
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 01:00:00+00'; // +1 h
@@ -45,7 +45,7 @@ describe('TsTzSpan - Construction', () => {
 
 	it('fromTimestamps constructs a valid span', () => {
 		// 1 hour = 3_600_000_000 microseconds
-		const s = TsTzSpan.make(0, 3_600_000_000);
+		const s = TsTzSpan.make(0n, 3_600_000_000n);
 		assert.ok(s.ptr !== 0);
 		s.free();
 	});
@@ -121,7 +121,7 @@ describe('TsTzSpan - Accessors', () => {
 	});
 
 	it('durationMs() = 2 * 3_600_000 for a 2-hour span', () => {
-		assert.equal(s.duration().time / 1000, 2 * 3_600_000);
+		assert.equal(s.duration().time / 1000n, 2n * 3_600_000n);
 	});
 
 	it('hash() returns a number', () => {
@@ -354,7 +354,7 @@ describe('TsTzSpan - Comparisons', () => {
 describe('TsTzSpan - shiftScale', () => {
 	it('shift by 1 hour: [T0,T1) becomes [T1,T2)', () => {
 		const s = TsTzSpan.fromText(`[${T0}, ${T1})`);
-		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
+		const interv = { time: 3600000000n, day: 0, month: 0 }; // 1 hour
 		const r = s.shift(interv);
 		assert.equal(r.toString(), `[${T1}, ${T2})`);
 		s.free();
@@ -363,7 +363,7 @@ describe('TsTzSpan - shiftScale', () => {
 
 	it('scale to 2h: width doubles', () => {
 		const s = TsTzSpan.fromText(`[${T0}, ${T1}]`); // 1h
-		const dur = { time: 7200000000, day: 0, month: 0 };  // 2 hours
+		const dur = { time: 7200000000n, day: 0, month: 0 };  // 2 hours
 		const r = s.scale(dur);
 		// lower stays, upper moves to lower + 2h
 		assert.equal(r.lower(), s.lower());
@@ -374,11 +374,11 @@ describe('TsTzSpan - shiftScale', () => {
 
 	it('shift by 1 hour and scale to 2h: [T0,T1] starts at T1 and lasts 2h', () => {
 		const s = TsTzSpan.fromText(`[${T0}, ${T1}]`); // 1h
-		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
-		const dur = { time: 7200000000, day: 0, month: 0 };    // 2 hours
+		const interv = { time: 3600000000n, day: 0, month: 0 }; // 1 hour
+		const dur = { time: 7200000000n, day: 0, month: 0 };    // 2 hours
 		const r = s.shiftScale(interv, dur);
 		assert.equal(r.lower(), s.upper());
-		assert.equal(r.upper() - r.lower(), 2 * (s.upper() - s.lower()));
+		assert.equal(r.upper() - r.lower(), 2n * (s.upper() - s.lower()));
 		s.free();
 		r.free();
 	});
@@ -387,7 +387,7 @@ describe('TsTzSpan - shiftScale', () => {
 describe('TsTzSpan - expand', () => {
 	it('expands span by 1 hour on each side', () => {
 		const s = TsTzSpan.fromText(`[${T1}, ${T2})`); // [+1h, +2h)
-		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
+		const interv = { time: 3600000000n, day: 0, month: 0 }; // 1 hour
 		const r = s.expand(interv);
 		// lower shrinks by 1h, upper grows by 1h
 		assert.ok(r!.lower() < s.lower());
@@ -400,7 +400,7 @@ describe('TsTzSpan - expand', () => {
 describe('TsTzSpan - tprecision', () => {
 	it('returns a non-zero pointer', () => {
 		const s = TsTzSpan.fromText(`[${T0}, ${T3}]`);
-		const dur = { time: 3600000000, day: 0, month: 0 }; // 1-hour bucket
+		const dur = { time: 3600000000n, day: 0, month: 0 }; // 1-hour bucket
 		const r = s.tprecision(dur, s.lower());
 		assert.ok(r.ptr !== 0);
 		s.free();

@@ -107,7 +107,7 @@ describe('generated object layer: arrays', () => {
 describe('generated object layer: values and buffers', () => {
 	it('carries a scalar-only struct as a value', () => {
 		using t = TFloat.fromText(`1@${T0}`);
-		using shifted = t.shiftTime({ time: 60_000_000, day: 0, month: 0 });
+		using shifted = t.shiftTime({ time: 60_000_000n, day: 0, month: 0 });
 		assert.equal(shifted.toString(), `1@${T1}`);
 	});
 
@@ -189,7 +189,7 @@ describe('generated object layer: byte arrays, scalar arrays and out-parameters'
 		const start = t.startTimestamptz();
 		assert.equal(t.valueAtTimestamptz(start, true), 1);
 		using later = TFloat.fromText(`5@${T2}`);
-		assert.equal(t.valueAtTimestamptz(later.startTimestamptz() + 60_000_000, true), null);
+		assert.equal(t.valueAtTimestamptz(later.startTimestamptz() + 60_000_000n, true), null);
 	});
 
 	it('takes an array of scalars for a counted array argument', () => {

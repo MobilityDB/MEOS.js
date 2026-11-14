@@ -45,7 +45,7 @@ describe('TInt - Instant', () => {
 
 	it('fromInstant constructs a TInt instant', () => {
 		// T1 = +1 min = 60 000 000 µs
-		const t = TInt.fromInstant(99, 60_000_000);
+		const t = TInt.fromInstant(99, 60_000_000n);
 		assert.ok(t.inner !== 0);
 		assert.match(t.toString(), /^99@/);
 		t.free();
@@ -256,14 +256,14 @@ describe('TInt - valueAtTimestamp', () => {
 	it('returns value at an exact instant timestamp', () => {
 		// T1 = 2000-01-01 00:01:00+00 = 60_000_000 µs
 		const t = TInt.fromString(`{42@${T1}}`);
-		const v = t.valueAtTimestamp(60_000_000);
+		const v = t.valueAtTimestamp(60_000_000n);
 		assert.equal(v, 42);
 		t.free();
 	});
 
 	it('returns null for a timestamp before the temporal starts', () => {
 		const t = TInt.fromString(`{5@${T1}}`);
-		const v = t.valueAtTimestamp(0); // T0 is before T1
+		const v = t.valueAtTimestamp(0n); // T0 is before T1
 		assert.equal(v, null);
 		t.free();
 	});

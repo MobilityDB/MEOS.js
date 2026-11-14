@@ -47,7 +47,7 @@ describe('TGeogPoint - Construction', () => {
 	});
 
 	it('fromInstant creates a non-zero pointer', () => {
-		const t = TGeogPoint.fromInstant(PARIS, 60_000_000);
+		const t = TGeogPoint.fromInstant(PARIS, 60_000_000n);
 		assert.ok(t.inner !== 0);
 		t.free();
 	});
@@ -64,15 +64,15 @@ describe('TGeogPoint - Construction', () => {
 
 describe('TGeogPoint - Subtypes', () => {
 	it('TGeogPointInst.fromValue creates instant', () => {
-		const inst = TGeogPointInst.fromValue(PARIS, 0);
+		const inst = TGeogPointInst.fromValue(PARIS, 0n);
 		assert.ok(inst.inner !== 0);
 		assert.ok(inst.startValue().startsWith('POINT'));
 		inst.free();
 	});
 
 	it('TGeogPointSeq.fromInstants creates sequence', () => {
-		const i1 = TGeogPointInst.fromValue(PARIS, 0);
-		const i2 = TGeogPointInst.fromValue(BERLIN, 86_400_000_000);
+		const i1 = TGeogPointInst.fromValue(PARIS, 0n);
+		const i2 = TGeogPointInst.fromValue(BERLIN, 86_400_000_000n);
 		const seq = TGeogPointSeq.fromInstants([i1, i2]);
 		assert.ok(seq.inner !== 0);
 		assert.equal(seq.numInstants(), 2);

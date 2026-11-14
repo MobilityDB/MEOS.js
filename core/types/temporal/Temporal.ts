@@ -397,13 +397,11 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_start_timestamptz
 	 */
 	startTimestamp(): TimestampTz {
-		return Number(
-			call<bigint>(
-				'temporal_start_timestamptz_w',
-				'bigint',
-				[ptrArgType()],
-				[ptrArgVal(this._inner)]
-			)
+		return call<bigint>(
+			'temporal_start_timestamptz_w',
+			'bigint',
+			[ptrArgType()],
+			[ptrArgVal(this._inner)]
 		);
 	}
 
@@ -412,13 +410,11 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_end_timestamptz
 	 */
 	endTimestamp(): TimestampTz {
-		return Number(
-			call<bigint>(
-				'temporal_end_timestamptz_w',
-				'bigint',
-				[ptrArgType()],
-				[ptrArgVal(this._inner)]
-			)
+		return call<bigint>(
+			'temporal_end_timestamptz_w',
+			'bigint',
+			[ptrArgType()],
+			[ptrArgVal(this._inner)]
 		);
 	}
 

@@ -226,7 +226,7 @@ function _takeGBOX(ptr: Ptr): GBOX | null {
 
 /** The MEOS Interval struct, carried as a value. */
 export interface Interval {
-	time: number;
+	time: bigint;
 	day: number;
 	month: number;
 }
@@ -234,7 +234,7 @@ export interface Interval {
 function _readInterval(ptr: Ptr): Interval {
 	const _v = _view(ptr, 16);
 	return {
-		time: Number(_v.getBigInt64(0, true)),
+		time: _v.getBigInt64(0, true),
 		day: _v.getInt32(8, true),
 		month: _v.getInt32(12, true),
 	};
@@ -243,7 +243,7 @@ function _readInterval(ptr: Ptr): Interval {
 function _putInterval(value: Interval): Ptr {
 	const ptr = _alloc(16);
 	const _v = _view(ptr, 16);
-	_v.setBigInt64(0, BigInt(value.time), true);
+	_v.setBigInt64(0, value.time, true);
 	_v.setInt32(8, value.day, true);
 	_v.setInt32(12, value.month, true);
 	return ptr;
@@ -464,7 +464,7 @@ export class Set extends Collection {
 	}
 
 	/** MEOS: set_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.set_hash_extended(this.ptr, seed);
 	}
 
@@ -627,7 +627,7 @@ export class Set extends Collection {
 	static fromWKB(wkb: Uint8Array): Set {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapSet(F.set_from_wkb(_wkb, wkb.length)) as Set;
+			return wrapSet(F.set_from_wkb(_wkb, BigInt(wkb.length))) as Set;
 		} finally {
 			_free(_wkb);
 		}
@@ -645,52 +645,52 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: contains_set_bigint */
-	private _contains_set_bigint(i: number): boolean {
+	private _contains_set_bigint(i: bigint): boolean {
 		return F.contains_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: distance_bigintset_bigintset */
-	private _distance_bigintset_bigintset(s2: BigIntSet): number {
+	private _distance_bigintset_bigintset(s2: BigIntSet): bigint {
 		return F.distance_bigintset_bigintset(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: distance_set_bigint */
-	private _distance_set_bigint(i: number): number {
+	private _distance_set_bigint(i: bigint): bigint {
 		return F.distance_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: intersection_set_bigint */
-	private _intersection_set_bigint(i: number): this | null {
+	private _intersection_set_bigint(i: bigint): this | null {
 		return wrapSetOrNull(F.intersection_set_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_set_bigint */
-	private _left_set_bigint(i: number): boolean {
+	private _left_set_bigint(i: bigint): boolean {
 		return F.left_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: minus_set_bigint */
-	private _minus_set_bigint(i: number): this | null {
+	private _minus_set_bigint(i: bigint): this | null {
 		return wrapSetOrNull(F.minus_set_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_set_bigint */
-	private _overleft_set_bigint(i: number): boolean {
+	private _overleft_set_bigint(i: bigint): boolean {
 		return F.overleft_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: overright_set_bigint */
-	private _overright_set_bigint(i: number): boolean {
+	private _overright_set_bigint(i: bigint): boolean {
 		return F.overright_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: right_set_bigint */
-	private _right_set_bigint(i: number): boolean {
+	private _right_set_bigint(i: bigint): boolean {
 		return F.right_set_bigint(this.ptr, i);
 	}
 
 	/** MEOS: union_set_bigint */
-	private _union_set_bigint(i: number): this | null {
+	private _union_set_bigint(i: bigint): this | null {
 		return wrapSetOrNull(F.union_set_bigint(this.ptr, i)) as this | null;
 	}
 
@@ -700,8 +700,8 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: contains_set_bigint, chosen by the arguments' types */
-	override contains(i: number | Set): boolean {
-		if (typeof i === 'number') return this._contains_set_bigint(i as number);
+	override contains(i: bigint | Set): boolean {
+		if (typeof i === 'bigint') return this._contains_set_bigint(i as bigint);
 		return super.contains(i as Set);
 	}
 
@@ -711,32 +711,32 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: distance_bigintset_bigintset, distance_set_bigint, chosen by the arguments' types */
-	distance(s2: BigIntSet | number): number {
+	distance(s2: BigIntSet | bigint): bigint {
 		if (s2 instanceof BigIntSet) return this._distance_bigintset_bigintset(s2 as BigIntSet);
-		if (typeof s2 === 'number') return this._distance_set_bigint(s2 as number);
+		if (typeof s2 === 'bigint') return this._distance_set_bigint(s2 as bigint);
 		throw new TypeError(`BigIntSet.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: bigintset_end_value */
-	endValue(): number {
+	endValue(): bigint {
 		return F.bigintset_end_value(this.ptr);
 	}
 
 	/** MEOS: intersection_set_bigint, chosen by the arguments' types */
-	override intersection(i: number | Set): this | null {
-		if (typeof i === 'number') return this._intersection_set_bigint(i as number);
+	override intersection(i: bigint | Set): this | null {
+		if (typeof i === 'bigint') return this._intersection_set_bigint(i as bigint);
 		return super.intersection(i as Set);
 	}
 
 	/** MEOS: left_set_bigint, chosen by the arguments' types */
-	override left(i: number | Set): boolean {
-		if (typeof i === 'number') return this._left_set_bigint(i as number);
+	override left(i: bigint | Set): boolean {
+		if (typeof i === 'bigint') return this._left_set_bigint(i as bigint);
 		return super.left(i as Set);
 	}
 
 	/** MEOS: minus_set_bigint, chosen by the arguments' types */
-	override minus(i: number | Set): this | null {
-		if (typeof i === 'number') return this._minus_set_bigint(i as number);
+	override minus(i: bigint | Set): this | null {
+		if (typeof i === 'bigint') return this._minus_set_bigint(i as bigint);
 		return super.minus(i as Set);
 	}
 
@@ -746,60 +746,60 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: overleft_set_bigint, chosen by the arguments' types */
-	override overleft(i: number | Set): boolean {
-		if (typeof i === 'number') return this._overleft_set_bigint(i as number);
+	override overleft(i: bigint | Set): boolean {
+		if (typeof i === 'bigint') return this._overleft_set_bigint(i as bigint);
 		return super.overleft(i as Set);
 	}
 
 	/** MEOS: overright_set_bigint, chosen by the arguments' types */
-	override overright(i: number | Set): boolean {
-		if (typeof i === 'number') return this._overright_set_bigint(i as number);
+	override overright(i: bigint | Set): boolean {
+		if (typeof i === 'bigint') return this._overright_set_bigint(i as bigint);
 		return super.overright(i as Set);
 	}
 
 	/** MEOS: contained_bigint_set */
-	rcontained(i: number): boolean {
+	rcontained(i: bigint): boolean {
 		return F.contained_bigint_set(i, this.ptr);
 	}
 
 	/** MEOS: right_set_bigint, chosen by the arguments' types */
-	override right(i: number | Set): boolean {
-		if (typeof i === 'number') return this._right_set_bigint(i as number);
+	override right(i: bigint | Set): boolean {
+		if (typeof i === 'bigint') return this._right_set_bigint(i as bigint);
 		return super.right(i as Set);
 	}
 
 	/** MEOS: intersection_bigint_set */
-	rintersection(i: number): this | null {
+	rintersection(i: bigint): this | null {
 		return wrapSetOrNull(F.intersection_bigint_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_set */
-	rleft(i: number): boolean {
+	rleft(i: bigint): boolean {
 		return F.left_bigint_set(i, this.ptr);
 	}
 
 	/** MEOS: minus_bigint_set */
-	rminus(i: number): this | null {
+	rminus(i: bigint): this | null {
 		return wrapSetOrNull(F.minus_bigint_set(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_bigint_set */
-	roverleft(i: number): boolean {
+	roverleft(i: bigint): boolean {
 		return F.overleft_bigint_set(i, this.ptr);
 	}
 
 	/** MEOS: overright_bigint_set */
-	roverright(i: number): boolean {
+	roverright(i: bigint): boolean {
 		return F.overright_bigint_set(i, this.ptr);
 	}
 
 	/** MEOS: right_bigint_set */
-	rright(i: number): boolean {
+	rright(i: bigint): boolean {
 		return F.right_bigint_set(i, this.ptr);
 	}
 
 	/** MEOS: union_bigint_set */
-	runion(i: number): this | null {
+	runion(i: bigint): this | null {
 		return wrapSetOrNull(F.union_bigint_set(i, this.ptr)) as this | null;
 	}
 
@@ -809,12 +809,12 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: bigintset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
 		return wrapSet(F.bigintset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
 	/** MEOS: bigintset_start_value */
-	startValue(): number {
+	startValue(): bigint {
 		return F.bigintset_start_value(this.ptr);
 	}
 
@@ -829,18 +829,18 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: union_set_bigint, chosen by the arguments' types */
-	override union(i: number | Set): this | null {
-		if (typeof i === 'number') return this._union_set_bigint(i as number);
+	override union(i: bigint | Set): this | null {
+		if (typeof i === 'bigint') return this._union_set_bigint(i as bigint);
 		return super.union(i as Set);
 	}
 
 	/** MEOS: bigintset_value_n */
-	valueN(n: number): number {
+	valueN(n: number): bigint {
 		return F.bigintset_value_n(this.ptr, n);
 	}
 
 	/** MEOS: bigintset_values */
-	values(): number[] {
+	values(): bigint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.bigintset_values(this.ptr, _count);
@@ -848,8 +848,8 @@ export class BigIntSet extends Set {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: number[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(Number(_v.getBigInt64(_i * 8, true)));
+				const _out: bigint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigInt64(_i * 8, true));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -860,7 +860,7 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: bigint_to_set */
-	static fromBigint(i: number): BigIntSet {
+	static fromBigint(i: bigint): BigIntSet {
 		return wrapSet(F.bigint_to_set(i)) as BigIntSet;
 	}
 
@@ -870,9 +870,9 @@ export class BigIntSet extends Set {
 	}
 
 	/** MEOS: bigintset_make */
-	static make(values: number[]): BigIntSet {
+	static make(values: bigint[]): BigIntSet {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return wrapSet(F.bigintset_make(_values, values.length)) as BigIntSet;
 		} finally {
@@ -1068,7 +1068,7 @@ export class Span extends Collection {
 	}
 
 	/** MEOS: span_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.span_hash_extended(this.ptr, seed);
 	}
 
@@ -1182,7 +1182,7 @@ export class Span extends Collection {
 	static fromWKB(wkb: Uint8Array): Span {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapSpan(F.span_from_wkb(_wkb, wkb.length)) as Span;
+			return wrapSpan(F.span_from_wkb(_wkb, BigInt(wkb.length))) as Span;
 		} finally {
 			_free(_wkb);
 		}
@@ -1195,68 +1195,68 @@ export class Span extends Collection {
 export class BigIntSpan extends Span {
 
 	/** MEOS: adjacent_span_bigint */
-	private _adjacent_span_bigint(i: number): boolean {
+	private _adjacent_span_bigint(i: bigint): boolean {
 		return F.adjacent_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: contains_span_bigint */
-	private _contains_span_bigint(i: number): boolean {
+	private _contains_span_bigint(i: bigint): boolean {
 		return F.contains_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: distance_bigintspan_bigintspan */
-	private _distance_bigintspan_bigintspan(s2: BigIntSpan): number {
+	private _distance_bigintspan_bigintspan(s2: BigIntSpan): bigint {
 		return F.distance_bigintspan_bigintspan(this.ptr, s2.ptr);
 	}
 
 	/** MEOS: distance_span_bigint */
-	private _distance_span_bigint(i: number): number {
+	private _distance_span_bigint(i: bigint): bigint {
 		return F.distance_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: intersection_span_bigint */
-	private _intersection_span_bigint(i: number): this | null {
+	private _intersection_span_bigint(i: bigint): this | null {
 		return wrapSpanOrNull(F.intersection_span_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_span_bigint */
-	private _left_span_bigint(i: number): boolean {
+	private _left_span_bigint(i: bigint): boolean {
 		return F.left_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: minus_span_bigint */
-	private _minus_span_bigint(i: number): SpanSet | null {
+	private _minus_span_bigint(i: bigint): SpanSet | null {
 		return wrapSpanSetOrNull(F.minus_span_bigint(this.ptr, i)) as SpanSet | null;
 	}
 
 	/** MEOS: overleft_span_bigint */
-	private _overleft_span_bigint(i: number): boolean {
+	private _overleft_span_bigint(i: bigint): boolean {
 		return F.overleft_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: overright_span_bigint */
-	private _overright_span_bigint(i: number): boolean {
+	private _overright_span_bigint(i: bigint): boolean {
 		return F.overright_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: right_span_bigint */
-	private _right_span_bigint(i: number): boolean {
+	private _right_span_bigint(i: bigint): boolean {
 		return F.right_span_bigint(this.ptr, i);
 	}
 
 	/** MEOS: union_span_bigint */
-	private _union_span_bigint(i: number): SpanSet {
+	private _union_span_bigint(i: bigint): SpanSet {
 		return wrapSpanSet(F.union_span_bigint(this.ptr, i)) as SpanSet;
 	}
 
 	/** MEOS: adjacent_span_bigint, chosen by the arguments' types */
-	override adjacent(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._adjacent_span_bigint(i as number);
+	override adjacent(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._adjacent_span_bigint(i as bigint);
 		return super.adjacent(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_bins */
-	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
+	bins(vsize: bigint, vorigin: bigint, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.bigintspan_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -1276,116 +1276,116 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: contains_span_bigint, chosen by the arguments' types */
-	override contains(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._contains_span_bigint(i as number);
+	override contains(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._contains_span_bigint(i as bigint);
 		return super.contains(i as Span | SpanSet);
 	}
 
 	/** MEOS: distance_bigintspan_bigintspan, distance_span_bigint, chosen by the arguments' types */
-	distance(s2: BigIntSpan | number): number {
+	distance(s2: BigIntSpan | bigint): bigint {
 		if (s2 instanceof BigIntSpan) return this._distance_bigintspan_bigintspan(s2 as BigIntSpan);
-		if (typeof s2 === 'number') return this._distance_span_bigint(s2 as number);
+		if (typeof s2 === 'bigint') return this._distance_span_bigint(s2 as bigint);
 		throw new TypeError(`BigIntSpan.distance: no overload takes these arguments`);
 	}
 
 	/** MEOS: bigintspan_expand */
-	expand(value: number): this | null {
+	expand(value: bigint): this | null {
 		return wrapSpanOrNull(F.bigintspan_expand(this.ptr, value)) as this | null;
 	}
 
 	/** MEOS: intersection_span_bigint, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): this | null | SpanSet {
-		if (typeof i === 'number') return this._intersection_span_bigint(i as number);
+	override intersection(i: bigint | Span | SpanSet): this | null | SpanSet {
+		if (typeof i === 'bigint') return this._intersection_span_bigint(i as bigint);
 		return super.intersection(i as Span | SpanSet);
 	}
 
 	/** MEOS: left_span_bigint, chosen by the arguments' types */
-	override left(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._left_span_bigint(i as number);
+	override left(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._left_span_bigint(i as bigint);
 		return super.left(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_lower */
-	lower(): number {
+	lower(): bigint {
 		return F.bigintspan_lower(this.ptr);
 	}
 
 	/** MEOS: minus_span_bigint, chosen by the arguments' types */
-	override minus(i: number | Span | SpanSet): SpanSet | null {
-		if (typeof i === 'number') return this._minus_span_bigint(i as number);
+	override minus(i: bigint | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'bigint') return this._minus_span_bigint(i as bigint);
 		return super.minus(i as Span | SpanSet);
 	}
 
 	/** MEOS: nad_bigintspan_tbox */
-	nad(box: TBox): number {
+	nad(box: TBox): bigint {
 		return F.nad_bigintspan_tbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: overleft_span_bigint, chosen by the arguments' types */
-	override overleft(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._overleft_span_bigint(i as number);
+	override overleft(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._overleft_span_bigint(i as bigint);
 		return super.overleft(i as Span | SpanSet);
 	}
 
 	/** MEOS: overright_span_bigint, chosen by the arguments' types */
-	override overright(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._overright_span_bigint(i as number);
+	override overright(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._overright_span_bigint(i as bigint);
 		return super.overright(i as Span | SpanSet);
 	}
 
 	/** MEOS: adjacent_bigint_span */
-	radjacent(i: number): boolean {
+	radjacent(i: bigint): boolean {
 		return F.adjacent_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: contained_bigint_span */
-	rcontained(i: number): boolean {
+	rcontained(i: bigint): boolean {
 		return F.contained_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: right_span_bigint, chosen by the arguments' types */
-	override right(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._right_span_bigint(i as number);
+	override right(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._right_span_bigint(i as bigint);
 		return super.right(i as Span | SpanSet);
 	}
 
 	/** MEOS: intersection_bigint_span */
-	rintersection(i: number): this | null {
+	rintersection(i: bigint): this | null {
 		return wrapSpanOrNull(F.intersection_bigint_span(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_span */
-	rleft(i: number): boolean {
+	rleft(i: bigint): boolean {
 		return F.left_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: minus_bigint_span */
-	rminus(i: number): SpanSet | null {
+	rminus(i: bigint): SpanSet | null {
 		return wrapSpanSetOrNull(F.minus_bigint_span(i, this.ptr)) as SpanSet | null;
 	}
 
 	/** MEOS: overleft_bigint_span */
-	roverleft(i: number): boolean {
+	roverleft(i: bigint): boolean {
 		return F.overleft_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: overright_bigint_span */
-	roverright(i: number): boolean {
+	roverright(i: bigint): boolean {
 		return F.overright_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: right_bigint_span */
-	rright(i: number): boolean {
+	rright(i: bigint): boolean {
 		return F.right_bigint_span(i, this.ptr);
 	}
 
 	/** MEOS: union_bigint_span */
-	runion(i: number): SpanSet {
+	runion(i: bigint): SpanSet {
 		return wrapSpanSet(F.union_bigint_span(i, this.ptr)) as SpanSet;
 	}
 
 	/** MEOS: bigintspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
 		return wrapSpan(F.bigintspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
@@ -1405,23 +1405,23 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: union_span_bigint, chosen by the arguments' types */
-	override union(i: number | Span | SpanSet): SpanSet | null {
-		if (typeof i === 'number') return this._union_span_bigint(i as number);
+	override union(i: bigint | Span | SpanSet): SpanSet | null {
+		if (typeof i === 'bigint') return this._union_span_bigint(i as bigint);
 		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspan_upper */
-	upper(): number {
+	upper(): bigint {
 		return F.bigintspan_upper(this.ptr);
 	}
 
 	/** MEOS: bigintspan_width */
-	width(): number {
+	width(): bigint {
 		return F.bigintspan_width(this.ptr);
 	}
 
 	/** MEOS: bigint_to_span */
-	static fromBigint(i: number): BigIntSpan {
+	static fromBigint(i: bigint): BigIntSpan {
 		return wrapSpan(F.bigint_to_span(i)) as BigIntSpan;
 	}
 
@@ -1431,12 +1431,12 @@ export class BigIntSpan extends Span {
 	}
 
 	/** MEOS: bigintspan_get_bin */
-	static getBin(value: number, vsize: number, vorigin: number = 0): Span {
+	static getBin(value: bigint, vsize: bigint, vorigin: bigint): Span {
 		return wrapSpan(F.bigintspan_get_bin(value, vsize, vorigin)) as Span;
 	}
 
 	/** MEOS: bigintspan_make */
-	static make(lower: number, upper: number, lower_inc: boolean = true, upper_inc: boolean = false): BigIntSpan {
+	static make(lower: bigint, upper: bigint, lower_inc: boolean = true, upper_inc: boolean = false): BigIntSpan {
 		return wrapSpan(F.bigintspan_make(lower, upper, lower_inc, upper_inc)) as BigIntSpan;
 	}
 }
@@ -1633,7 +1633,7 @@ export class SpanSet extends Collection {
 	}
 
 	/** MEOS: spanset_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.spanset_hash_extended(this.ptr, seed);
 	}
 
@@ -1842,7 +1842,7 @@ export class SpanSet extends Collection {
 	static fromWKB(wkb: Uint8Array): SpanSet {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapSpanSet(F.spanset_from_wkb(_wkb, wkb.length)) as SpanSet;
+			return wrapSpanSet(F.spanset_from_wkb(_wkb, BigInt(wkb.length))) as SpanSet;
 		} finally {
 			_free(_wkb);
 		}
@@ -1865,73 +1865,73 @@ export class SpanSet extends Collection {
 export class BigIntSpanSet extends SpanSet {
 
 	/** MEOS: adjacent_spanset_bigint */
-	private _adjacent_spanset_bigint(i: number): boolean {
+	private _adjacent_spanset_bigint(i: bigint): boolean {
 		return F.adjacent_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: contains_spanset_bigint */
-	private _contains_spanset_bigint(i: number): boolean {
+	private _contains_spanset_bigint(i: bigint): boolean {
 		return F.contains_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: distance_bigintspanset_bigintspan */
-	private _distance_bigintspanset_bigintspan(s: BigIntSpan): number {
+	private _distance_bigintspanset_bigintspan(s: BigIntSpan): bigint {
 		return F.distance_bigintspanset_bigintspan(this.ptr, s.ptr);
 	}
 
 	/** MEOS: distance_bigintspanset_bigintspanset */
-	private _distance_bigintspanset_bigintspanset(ss2: BigIntSpanSet): number {
+	private _distance_bigintspanset_bigintspanset(ss2: BigIntSpanSet): bigint {
 		return F.distance_bigintspanset_bigintspanset(this.ptr, ss2.ptr);
 	}
 
 	/** MEOS: distance_spanset_bigint */
-	private _distance_spanset_bigint(i: number): number {
+	private _distance_spanset_bigint(i: bigint): bigint {
 		return F.distance_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: intersection_spanset_bigint */
-	private _intersection_spanset_bigint(i: number): this | null {
+	private _intersection_spanset_bigint(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.intersection_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: left_spanset_bigint */
-	private _left_spanset_bigint(i: number): boolean {
+	private _left_spanset_bigint(i: bigint): boolean {
 		return F.left_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: minus_spanset_bigint */
-	private _minus_spanset_bigint(i: number): this | null {
+	private _minus_spanset_bigint(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.minus_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: overleft_spanset_bigint */
-	private _overleft_spanset_bigint(i: number): boolean {
+	private _overleft_spanset_bigint(i: bigint): boolean {
 		return F.overleft_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: overright_spanset_bigint */
-	private _overright_spanset_bigint(i: number): boolean {
+	private _overright_spanset_bigint(i: bigint): boolean {
 		return F.overright_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: right_spanset_bigint */
-	private _right_spanset_bigint(i: number): boolean {
+	private _right_spanset_bigint(i: bigint): boolean {
 		return F.right_spanset_bigint(this.ptr, i);
 	}
 
 	/** MEOS: union_spanset_bigint */
-	private _union_spanset_bigint(i: number): this | null {
+	private _union_spanset_bigint(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.union_spanset_bigint(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: adjacent_spanset_bigint, chosen by the arguments' types */
-	override adjacent(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._adjacent_spanset_bigint(i as number);
+	override adjacent(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._adjacent_spanset_bigint(i as bigint);
 		return super.adjacent(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspanset_bins */
-	bins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
+	bins(vsize: bigint, vorigin: bigint, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.bigintspanset_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -1951,16 +1951,16 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: contains_spanset_bigint, chosen by the arguments' types */
-	override contains(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._contains_spanset_bigint(i as number);
+	override contains(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._contains_spanset_bigint(i as bigint);
 		return super.contains(i as Span | SpanSet);
 	}
 
 	/** MEOS: distance_bigintspanset_bigintspan, distance_bigintspanset_bigintspanset, distance_spanset_bigint, chosen by the arguments' types */
-	distance(s: BigIntSpan | BigIntSpanSet | number): number {
+	distance(s: BigIntSpan | BigIntSpanSet | bigint): bigint {
 		if (s instanceof BigIntSpan) return this._distance_bigintspanset_bigintspan(s as BigIntSpan);
 		if (s instanceof BigIntSpanSet) return this._distance_bigintspanset_bigintspanset(s as BigIntSpanSet);
-		if (typeof s === 'number') return this._distance_spanset_bigint(s as number);
+		if (typeof s === 'bigint') return this._distance_spanset_bigint(s as bigint);
 		throw new TypeError(`BigIntSpanSet.distance: no overload takes these arguments`);
 	}
 
@@ -1970,93 +1970,93 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: intersection_spanset_bigint, chosen by the arguments' types */
-	override intersection(i: number | Span | SpanSet): this | null {
-		if (typeof i === 'number') return this._intersection_spanset_bigint(i as number);
+	override intersection(i: bigint | Span | SpanSet): this | null {
+		if (typeof i === 'bigint') return this._intersection_spanset_bigint(i as bigint);
 		return super.intersection(i as Span | SpanSet);
 	}
 
 	/** MEOS: left_spanset_bigint, chosen by the arguments' types */
-	override left(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._left_spanset_bigint(i as number);
+	override left(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._left_spanset_bigint(i as bigint);
 		return super.left(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspanset_lower */
-	lower(): number {
+	lower(): bigint {
 		return F.bigintspanset_lower(this.ptr);
 	}
 
 	/** MEOS: minus_spanset_bigint, chosen by the arguments' types */
-	override minus(i: number | Span | SpanSet): this | null {
-		if (typeof i === 'number') return this._minus_spanset_bigint(i as number);
+	override minus(i: bigint | Span | SpanSet): this | null {
+		if (typeof i === 'bigint') return this._minus_spanset_bigint(i as bigint);
 		return super.minus(i as Span | SpanSet);
 	}
 
 	/** MEOS: overleft_spanset_bigint, chosen by the arguments' types */
-	override overleft(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._overleft_spanset_bigint(i as number);
+	override overleft(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._overleft_spanset_bigint(i as bigint);
 		return super.overleft(i as Span | SpanSet);
 	}
 
 	/** MEOS: overright_spanset_bigint, chosen by the arguments' types */
-	override overright(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._overright_spanset_bigint(i as number);
+	override overright(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._overright_spanset_bigint(i as bigint);
 		return super.overright(i as Span | SpanSet);
 	}
 
 	/** MEOS: adjacent_bigint_spanset */
-	radjacent(i: number): boolean {
+	radjacent(i: bigint): boolean {
 		return F.adjacent_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: contained_bigint_spanset */
-	rcontained(i: number): boolean {
+	rcontained(i: bigint): boolean {
 		return F.contained_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: right_spanset_bigint, chosen by the arguments' types */
-	override right(i: number | Span | SpanSet): boolean {
-		if (typeof i === 'number') return this._right_spanset_bigint(i as number);
+	override right(i: bigint | Span | SpanSet): boolean {
+		if (typeof i === 'bigint') return this._right_spanset_bigint(i as bigint);
 		return super.right(i as Span | SpanSet);
 	}
 
 	/** MEOS: intersection_bigint_spanset */
-	rintersection(i: number): this | null {
+	rintersection(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.intersection_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: left_bigint_spanset */
-	rleft(i: number): boolean {
+	rleft(i: bigint): boolean {
 		return F.left_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: minus_bigint_spanset */
-	rminus(i: number): this | null {
+	rminus(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.minus_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: overleft_bigint_spanset */
-	roverleft(i: number): boolean {
+	roverleft(i: bigint): boolean {
 		return F.overleft_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: overright_bigint_spanset */
-	roverright(i: number): boolean {
+	roverright(i: bigint): boolean {
 		return F.overright_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: right_bigint_spanset */
-	rright(i: number): boolean {
+	rright(i: bigint): boolean {
 		return F.right_bigint_spanset(i, this.ptr);
 	}
 
 	/** MEOS: union_bigint_spanset */
-	runion(i: number): this | null {
+	runion(i: bigint): this | null {
 		return wrapSpanSetOrNull(F.union_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
 	/** MEOS: bigintspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
 		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
@@ -2076,23 +2076,23 @@ export class BigIntSpanSet extends SpanSet {
 	}
 
 	/** MEOS: union_spanset_bigint, chosen by the arguments' types */
-	override union(i: number | Span | SpanSet): this | null {
-		if (typeof i === 'number') return this._union_spanset_bigint(i as number);
+	override union(i: bigint | Span | SpanSet): this | null {
+		if (typeof i === 'bigint') return this._union_spanset_bigint(i as bigint);
 		return super.union(i as Span | SpanSet);
 	}
 
 	/** MEOS: bigintspanset_upper */
-	upper(): number {
+	upper(): bigint {
 		return F.bigintspanset_upper(this.ptr);
 	}
 
 	/** MEOS: bigintspanset_width */
-	width(boundspan: boolean = false): number {
+	width(boundspan: boolean = false): bigint {
 		return F.bigintspanset_width(this.ptr, boundspan);
 	}
 
 	/** MEOS: bigint_to_spanset */
-	static fromBigint(i: number): BigIntSpanSet {
+	static fromBigint(i: bigint): BigIntSpanSet {
 		return wrapSpanSet(F.bigint_to_spanset(i)) as BigIntSpanSet;
 	}
 
@@ -2313,7 +2313,7 @@ export class CBuffer extends Value {
 	}
 
 	/** MEOS: cbuffer_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.cbuffer_hash_extended(this.ptr, seed);
 	}
 
@@ -2501,7 +2501,7 @@ export class CBuffer extends Value {
 	static fromWKB(wkb: Uint8Array): CBuffer {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapCBuffer(F.cbuffer_from_wkb(_wkb, wkb.length)) as CBuffer;
+			return wrapCBuffer(F.cbuffer_from_wkb(_wkb, BigInt(wkb.length))) as CBuffer;
 		} finally {
 			_free(_wkb);
 		}
@@ -4719,7 +4719,7 @@ export class Geo extends Value {
 	static fromEWKB(wkb: Uint8Array, srid: number): Geo {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapGeo(F.geo_from_ewkb(_wkb, wkb.length, srid)) as Geo;
+			return wrapGeo(F.geo_from_ewkb(_wkb, BigInt(wkb.length), srid)) as Geo;
 		} finally {
 			_free(_wkb);
 		}
@@ -5779,7 +5779,7 @@ export class H3Index {
 	}
 
 	/** MEOS: h3index_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.h3index_hash_extended(this.value, seed);
 	}
 
@@ -5832,7 +5832,7 @@ export class H3Index {
 	static fromWKB(wkb: Uint8Array): H3Index {
 		const _wkb = _bytes(wkb);
 		try {
-			return new H3Index(F.h3index_from_wkb(_wkb, wkb.length));
+			return new H3Index(F.h3index_from_wkb(_wkb, BigInt(wkb.length)));
 		} finally {
 			_free(_wkb);
 		}
@@ -7009,7 +7009,7 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.jsonb_hash_extended(this.ptr, seed);
 	}
 
@@ -7214,7 +7214,7 @@ export class Jsonb extends Value {
 	}
 
 	/** MEOS: jsonb_to_int64 */
-	toInt64(): number {
+	toInt64(): bigint {
 		return F.jsonb_to_int64(this.ptr);
 	}
 
@@ -7760,7 +7760,7 @@ export class NPoint extends Value {
 	}
 
 	/** MEOS: npoint_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.npoint_hash_extended(this.ptr, seed);
 	}
 
@@ -7800,7 +7800,7 @@ export class NPoint extends Value {
 	}
 
 	/** MEOS: npoint_route */
-	route(): number {
+	route(): bigint {
 		return F.npoint_route(this.ptr);
 	}
 
@@ -7888,14 +7888,14 @@ export class NPoint extends Value {
 	static fromWKB(wkb: Uint8Array): NPoint {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapNPoint(F.npoint_from_wkb(_wkb, wkb.length)) as NPoint;
+			return wrapNPoint(F.npoint_from_wkb(_wkb, BigInt(wkb.length))) as NPoint;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: npoint_make */
-	static make(rid: number, pos: number): NPoint {
+	static make(rid: bigint, pos: number): NPoint {
 		return wrapNPoint(F.npoint_make(rid, pos)) as NPoint;
 	}
 }
@@ -8121,7 +8121,7 @@ export class NSegment extends Value {
 	}
 
 	/** MEOS: nsegment_route */
-	route(): number {
+	route(): bigint {
 		return F.nsegment_route(this.ptr);
 	}
 
@@ -8179,14 +8179,14 @@ export class NSegment extends Value {
 	static fromWKB(wkb: Uint8Array): NSegment {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapNSegment(F.nsegment_from_wkb(_wkb, wkb.length)) as NSegment;
+			return wrapNSegment(F.nsegment_from_wkb(_wkb, BigInt(wkb.length))) as NSegment;
 		} finally {
 			_free(_wkb);
 		}
 	}
 
 	/** MEOS: nsegment_make */
-	static make(rid: number, pos1: number = 0, pos2: number = 1): NSegment {
+	static make(rid: bigint, pos1: number = 0, pos2: number = 1): NSegment {
 		return wrapNSegment(F.nsegment_make(rid, pos1, pos2)) as NSegment;
 	}
 }
@@ -8293,7 +8293,7 @@ export class PCPatch extends Value {
 	}
 
 	/** MEOS: pcpatch_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.pcpatch_hash_extended(this.ptr, seed);
 	}
 
@@ -8669,7 +8669,7 @@ export class PCPoint extends Value {
 	}
 
 	/** MEOS: pcpoint_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.pcpoint_hash_extended(this.ptr, seed);
 	}
 
@@ -9084,7 +9084,7 @@ export class Pose extends Value {
 	}
 
 	/** MEOS: pose_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.pose_hash_extended(this.ptr, seed);
 	}
 
@@ -9292,7 +9292,7 @@ export class Pose extends Value {
 	static fromWKB(wkb: Uint8Array): Pose {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapPose(F.pose_from_wkb(_wkb, wkb.length)) as Pose;
+			return wrapPose(F.pose_from_wkb(_wkb, BigInt(wkb.length))) as Pose;
 		} finally {
 			_free(_wkb);
 		}
@@ -9453,7 +9453,7 @@ export class PoseChain extends Value {
 	}
 
 	/** MEOS: posechain_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.posechain_hash_extended(this.ptr, seed);
 	}
 
@@ -9631,7 +9631,7 @@ export class PoseChain extends Value {
 	static fromWKB(wkb: Uint8Array): PoseChain {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapPoseChain(F.posechain_from_wkb(_wkb, wkb.length)) as PoseChain;
+			return wrapPoseChain(F.posechain_from_wkb(_wkb, BigInt(wkb.length))) as PoseChain;
 		} finally {
 			_free(_wkb);
 		}
@@ -10042,7 +10042,7 @@ export class Quadbin {
 	}
 
 	/** MEOS: quadbin_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.quadbin_hash_extended(this.value, seed);
 	}
 
@@ -10130,7 +10130,7 @@ export class Quadbin {
 	static fromWKB(wkb: Uint8Array): Quadbin {
 		const _wkb = _bytes(wkb);
 		try {
-			return new Quadbin(F.quadbin_from_wkb(_wkb, wkb.length));
+			return new Quadbin(F.quadbin_from_wkb(_wkb, BigInt(wkb.length)));
 		} finally {
 			_free(_wkb);
 		}
@@ -10334,17 +10334,17 @@ export class RTree extends Value {
 	}
 
 	/** MEOS: rtree_insert */
-	insert(box: Ptr, id: number): boolean {
+	insert(box: Ptr, id: bigint): boolean {
 		return F.rtree_insert(this.ptr, box, id);
 	}
 
 	/** MEOS: rtree_insert_temporal */
-	insertTemporal(temp: Temporal, id: number): boolean {
+	insertTemporal(temp: Temporal, id: bigint): boolean {
 		return F.rtree_insert_temporal(this.ptr, temp.ptr, id);
 	}
 
 	/** MEOS: rtree_insert_temporal_split */
-	insertTemporalSplit(temp: Temporal, id: number, maxboxes: number): boolean {
+	insertTemporalSplit(temp: Temporal, id: bigint, maxboxes: number): boolean {
 		return F.rtree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
 	}
 
@@ -10354,9 +10354,9 @@ export class RTree extends Value {
 	}
 
 	/** MEOS: rtree_load */
-	load(boxes: Ptr, ids: number[]): boolean {
+	load(boxes: Ptr, ids: bigint[]): boolean {
 		const _ids = _alloc(Math.max(ids.length, 1) * 8);
-		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return F.rtree_load(this.ptr, boxes, _ids, ids.length);
 		} finally {
@@ -10365,7 +10365,7 @@ export class RTree extends Value {
 	}
 
 	/** MEOS: rtree_mem_size */
-	memSize(): number {
+	memSize(): bigint {
 		return F.rtree_mem_size(this.ptr);
 	}
 
@@ -10441,12 +10441,12 @@ export class RTreeNNCursor extends Value {
 	}
 
 	/** MEOS: rtree_nn_cursor_next */
-	next(): [number, number] | null {
+	next(): [bigint, number] | null {
 		const _id_out = _alloc(8);
 		const _dist_out = _alloc(8);
 		try {
 			if (!F.rtree_nn_cursor_next(this.ptr, _id_out, _dist_out)) return null;
-			return [((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
+			return [((_v: DataView) => _v.getBigInt64(0, true))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
 		} finally {
 			_free(_id_out);
 			_free(_dist_out);
@@ -10520,7 +10520,7 @@ export class RaQuet extends Value {
 	}
 
 	/** MEOS: raquet_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.raquet_hash_extended(this.ptr, seed);
 	}
 
@@ -10578,7 +10578,7 @@ export class RaQuet extends Value {
 	static fromWKB(wkb: Uint8Array): RaQuet {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapRaQuet(F.raquet_from_wkb(_wkb, wkb.length)) as RaQuet;
+			return wrapRaQuet(F.raquet_from_wkb(_wkb, BigInt(wkb.length))) as RaQuet;
 		} finally {
 			_free(_wkb);
 		}
@@ -10588,14 +10588,14 @@ export class RaQuet extends Value {
 	static make(quadbin: Quadbin, width: number, height: number, pixtype: string, nodata: number, has_nodata: boolean, pixels: Uint8Array): RaQuet {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapRaQuet(F.raquet_make(quadbin.value, width, height, F.meospixtype_from_string(pixtype), nodata, has_nodata, _pixels, pixels.length)) as RaQuet;
+			return wrapRaQuet(F.raquet_make(quadbin.value, width, height, F.meospixtype_from_string(pixtype), nodata, has_nodata, _pixels, BigInt(pixels.length))) as RaQuet;
 		} finally {
 			_free(_pixels);
 		}
 	}
 
 	/** MEOS: raquet_pixtype_size */
-	static pixtypeSize(pixtype: string): number {
+	static pixtypeSize(pixtype: string): bigint {
 		return F.raquet_pixtype_size(F.meospixtype_from_string(pixtype));
 	}
 
@@ -10608,7 +10608,7 @@ export class RaQuet extends Value {
 	static readBytes(data: Uint8Array, quadbin: Quadbin): RaQuet | null {
 		const _data = _bytes(data);
 		try {
-			return wrapRaQuetOrNull(F.raquet_read_bytes(_data, data.length, quadbin.value)) as RaQuet | null;
+			return wrapRaQuetOrNull(F.raquet_read_bytes(_data, BigInt(data.length), quadbin.value)) as RaQuet | null;
 		} finally {
 			_free(_data);
 		}
@@ -11009,7 +11009,7 @@ export class Raster extends Value {
 	static fromWKB(wkb: Uint8Array): Raster | null {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapRasterOrNull(F.raster_from_wkb(_wkb, wkb.length)) as Raster | null;
+			return wrapRasterOrNull(F.raster_from_wkb(_wkb, BigInt(wkb.length))) as Raster | null;
 		} finally {
 			_free(_wkb);
 		}
@@ -11019,7 +11019,7 @@ export class Raster extends Value {
 	static make(width: number, height: number, upperleftx: number, upperlefty: number, scalex: number, scaley: number, skewx: number, skewy: number, srid: number, pixeltype: string, nodataval: number, has_nodata: boolean, pixels: Uint8Array): Raster | null {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapRasterOrNull(F.raster_make(width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata, _pixels, pixels.length)) as Raster | null;
+			return wrapRasterOrNull(F.raster_make(width, height, upperleftx, upperlefty, scalex, scaley, skewx, skewy, srid, pixeltype, nodataval, has_nodata, _pixels, BigInt(pixels.length))) as Raster | null;
 		} finally {
 			_free(_pixels);
 		}
@@ -11059,7 +11059,7 @@ export class Raster extends Value {
 	static tileValueQuadbin(traj: Temporal, pixels: Uint8Array, width: number, height: number, quadbin: Quadbin, pixtype: string, nodata: number, has_nodata: boolean): Temporal | null {
 		const _pixels = _bytes(pixels);
 		try {
-			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, pixels.length, width, height, quadbin.value, F.meospixtype_from_string(pixtype), nodata, has_nodata)) as Temporal | null;
+			return wrapTemporalOrNull(F.raster_tile_value_quadbin(traj.ptr, _pixels, BigInt(pixels.length), width, height, quadbin.value, F.meospixtype_from_string(pixtype), nodata, has_nodata)) as Temporal | null;
 		} finally {
 			_free(_pixels);
 		}
@@ -11240,7 +11240,7 @@ export class S2Cell {
 	}
 
 	/** MEOS: s2cell_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.s2cell_hash_extended(this.value, seed);
 	}
 
@@ -11308,7 +11308,7 @@ export class S2Cell {
 	static fromWKB(wkb: Uint8Array): S2Cell {
 		const _wkb = _bytes(wkb);
 		try {
-			return new S2Cell(F.s2cell_from_wkb(_wkb, wkb.length));
+			return new S2Cell(F.s2cell_from_wkb(_wkb, BigInt(wkb.length)));
 		} finally {
 			_free(_wkb);
 		}
@@ -11497,12 +11497,12 @@ export class SPNNCursor extends Value {
 	}
 
 	/** MEOS: sptree_nn_cursor_next */
-	next(): [number, number] | null {
+	next(): [bigint, number] | null {
 		const _id_out = _alloc(8);
 		const _dist_out = _alloc(8);
 		try {
 			if (!F.sptree_nn_cursor_next(this.ptr, _id_out, _dist_out)) return null;
-			return [((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
+			return [((_v: DataView) => _v.getBigInt64(0, true))(_view(_id_out, 8)), ((_v: DataView) => _v.getFloat64(0, true))(_view(_dist_out, 8))];
 		} finally {
 			_free(_id_out);
 			_free(_dist_out);
@@ -11531,17 +11531,17 @@ export class SPTree extends Value {
 	}
 
 	/** MEOS: sptree_insert */
-	insert(box: Ptr, id: number): boolean {
+	insert(box: Ptr, id: bigint): boolean {
 		return F.sptree_insert(this.ptr, box, id);
 	}
 
 	/** MEOS: sptree_insert_temporal */
-	insertTemporal(temp: Temporal, id: number): boolean {
+	insertTemporal(temp: Temporal, id: bigint): boolean {
 		return F.sptree_insert_temporal(this.ptr, temp.ptr, id);
 	}
 
 	/** MEOS: sptree_insert_temporal_split */
-	insertTemporalSplit(temp: Temporal, id: number, maxboxes: number): boolean {
+	insertTemporalSplit(temp: Temporal, id: bigint, maxboxes: number): boolean {
 		return F.sptree_insert_temporal_split(this.ptr, temp.ptr, id, maxboxes);
 	}
 
@@ -11551,9 +11551,9 @@ export class SPTree extends Value {
 	}
 
 	/** MEOS: sptree_load */
-	load(boxes: Ptr, ids: number[]): boolean {
+	load(boxes: Ptr, ids: bigint[]): boolean {
 		const _ids = _alloc(Math.max(ids.length, 1) * 8);
-		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_ids, Math.max(ids.length, 1) * 8); ids.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return F.sptree_load(this.ptr, boxes, _ids, ids.length);
 		} finally {
@@ -11562,7 +11562,7 @@ export class SPTree extends Value {
 	}
 
 	/** MEOS: sptree_mem_size */
-	memSize(): number {
+	memSize(): bigint {
 		return F.sptree_mem_size(this.ptr);
 	}
 
@@ -12105,7 +12105,7 @@ export class STBox extends Box {
 	}
 
 	/** MEOS: stbox_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.stbox_hash_extended(this.ptr, seed);
 	}
 
@@ -12541,7 +12541,7 @@ export class STBox extends Box {
 	static fromWKB(wkb: Uint8Array): STBox {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapSTBox(F.stbox_from_wkb(_wkb, wkb.length)) as STBox;
+			return wrapSTBox(F.stbox_from_wkb(_wkb, BigInt(wkb.length))) as STBox;
 		} finally {
 			_free(_wkb);
 		}
@@ -12592,7 +12592,7 @@ export class SkipList extends Value {
 	static deserialize(bytes: Uint8Array): SkipList {
 		const _bytes_ = _bytes(bytes);
 		try {
-			return wrapSkipList(F.taggstate_deserialize(_bytes_, bytes.length)) as SkipList;
+			return wrapSkipList(F.taggstate_deserialize(_bytes_, BigInt(bytes.length))) as SkipList;
 		} finally {
 			_free(_bytes_);
 		}
@@ -12935,7 +12935,7 @@ export class Temporal extends MeosObject {
 	}
 
 	/** MEOS: temporal_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.temporal_hash_extended(this.ptr, seed);
 	}
 
@@ -13372,7 +13372,7 @@ export class Temporal extends MeosObject {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
 				const _o1: TimestampTz[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -13395,7 +13395,7 @@ export class Temporal extends MeosObject {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
 				const _out: TimestampTz[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(Number(_v.getBigInt64(_i * 8, true)));
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigInt64(_i * 8, true));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -13479,7 +13479,7 @@ export class Temporal extends MeosObject {
 	static fromWKB(wkb: Uint8Array): Temporal {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapTemporal(F.temporal_from_wkb(_wkb, wkb.length)) as Temporal;
+			return wrapTemporal(F.temporal_from_wkb(_wkb, BigInt(wkb.length))) as Temporal;
 		} finally {
 			_free(_wkb);
 		}
@@ -14102,371 +14102,371 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: add_tbigint_bigint */
-	private _add_tbigint_bigint(i: number): this {
+	private _add_tbigint_bigint(i: bigint): this {
 		return wrapTemporal(F.add_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: always_eq_tbigint_bigint */
-	private _always_eq_tbigint_bigint(i: number): number {
+	private _always_eq_tbigint_bigint(i: bigint): number {
 		return F.always_eq_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: always_ge_tbigint_bigint */
-	private _always_ge_tbigint_bigint(i: number): number {
+	private _always_ge_tbigint_bigint(i: bigint): number {
 		return F.always_ge_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: always_gt_tbigint_bigint */
-	private _always_gt_tbigint_bigint(i: number): number {
+	private _always_gt_tbigint_bigint(i: bigint): number {
 		return F.always_gt_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: always_le_tbigint_bigint */
-	private _always_le_tbigint_bigint(i: number): number {
+	private _always_le_tbigint_bigint(i: bigint): number {
 		return F.always_le_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: always_lt_tbigint_bigint */
-	private _always_lt_tbigint_bigint(i: number): number {
+	private _always_lt_tbigint_bigint(i: bigint): number {
 		return F.always_lt_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: always_ne_tbigint_bigint */
-	private _always_ne_tbigint_bigint(i: number): number {
+	private _always_ne_tbigint_bigint(i: bigint): number {
 		return F.always_ne_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: div_tbigint_bigint */
-	private _div_tbigint_bigint(i: number): this {
+	private _div_tbigint_bigint(i: bigint): this {
 		return wrapTemporal(F.div_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: ever_eq_tbigint_bigint */
-	private _ever_eq_tbigint_bigint(i: number): number {
+	private _ever_eq_tbigint_bigint(i: bigint): number {
 		return F.ever_eq_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: ever_ge_tbigint_bigint */
-	private _ever_ge_tbigint_bigint(i: number): number {
+	private _ever_ge_tbigint_bigint(i: bigint): number {
 		return F.ever_ge_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: ever_gt_tbigint_bigint */
-	private _ever_gt_tbigint_bigint(i: number): number {
+	private _ever_gt_tbigint_bigint(i: bigint): number {
 		return F.ever_gt_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: ever_le_tbigint_bigint */
-	private _ever_le_tbigint_bigint(i: number): number {
+	private _ever_le_tbigint_bigint(i: bigint): number {
 		return F.ever_le_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: ever_lt_tbigint_bigint */
-	private _ever_lt_tbigint_bigint(i: number): number {
+	private _ever_lt_tbigint_bigint(i: bigint): number {
 		return F.ever_lt_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: ever_ne_tbigint_bigint */
-	private _ever_ne_tbigint_bigint(i: number): number {
+	private _ever_ne_tbigint_bigint(i: bigint): number {
 		return F.ever_ne_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: mul_tbigint_bigint */
-	private _mul_tbigint_bigint(i: number): this {
+	private _mul_tbigint_bigint(i: bigint): this {
 		return wrapTemporal(F.mul_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: nad_tbigint_bigint */
-	private _nad_tbigint_bigint(i: number): number {
+	private _nad_tbigint_bigint(i: bigint): bigint {
 		return F.nad_tbigint_bigint(this.ptr, i);
 	}
 
 	/** MEOS: nad_tbigint_bigintspan */
-	private _nad_tbigint_bigintspan(s: BigIntSpan): number {
+	private _nad_tbigint_bigintspan(s: BigIntSpan): bigint {
 		return F.nad_tbigint_bigintspan(this.ptr, s.ptr);
 	}
 
 	/** MEOS: nad_tbigint_tbigint */
-	private _nad_tbigint_tbigint(temp2: TBigInt): number {
+	private _nad_tbigint_tbigint(temp2: TBigInt): bigint {
 		return F.nad_tbigint_tbigint(this.ptr, temp2.ptr);
 	}
 
 	/** MEOS: nad_tbigint_tbox */
-	private _nad_tbigint_tbox(box: TBox): number {
+	private _nad_tbigint_tbox(box: TBox): bigint {
 		return F.nad_tbigint_tbox(this.ptr, box.ptr);
 	}
 
 	/** MEOS: sub_tbigint_bigint */
-	private _sub_tbigint_bigint(i: number): this {
+	private _sub_tbigint_bigint(i: bigint): this {
 		return wrapTemporal(F.sub_tbigint_bigint(this.ptr, i)) as this;
 	}
 
 	/** MEOS: teq_tbigint_bigint */
-	private _teq_tbigint_bigint(i: number): Temporal {
+	private _teq_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.teq_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: tge_tbigint_bigint */
-	private _tge_tbigint_bigint(i: number): Temporal {
+	private _tge_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.tge_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: tgt_tbigint_bigint */
-	private _tgt_tbigint_bigint(i: number): Temporal {
+	private _tgt_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.tgt_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: tle_tbigint_bigint */
-	private _tle_tbigint_bigint(i: number): Temporal {
+	private _tle_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.tle_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: tlt_tbigint_bigint */
-	private _tlt_tbigint_bigint(i: number): Temporal {
+	private _tlt_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.tlt_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: tne_tbigint_bigint */
-	private _tne_tbigint_bigint(i: number): Temporal {
+	private _tne_tbigint_bigint(i: bigint): Temporal {
 		return wrapTemporal(F.tne_tbigint_bigint(this.ptr, i)) as Temporal;
 	}
 
 	/** MEOS: add_tbigint_bigint, chosen by the arguments' types */
-	override add(i: number | TNumber): this | null {
-		if (typeof i === 'number') return this._add_tbigint_bigint(i as number);
+	override add(i: bigint | TNumber): this | null {
+		if (typeof i === 'bigint') return this._add_tbigint_bigint(i as bigint);
 		return super.add(i as TNumber);
 	}
 
 	/** MEOS: always_eq_tbigint_bigint, chosen by the arguments' types */
-	override alwaysEq(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_eq_tbigint_bigint(i as number);
+	override alwaysEq(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_eq_tbigint_bigint(i as bigint);
 		return super.alwaysEq(i as Temporal);
 	}
 
 	/** MEOS: always_ge_tbigint_bigint, chosen by the arguments' types */
-	override alwaysGe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_ge_tbigint_bigint(i as number);
+	override alwaysGe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_ge_tbigint_bigint(i as bigint);
 		return super.alwaysGe(i as Temporal);
 	}
 
 	/** MEOS: always_gt_tbigint_bigint, chosen by the arguments' types */
-	override alwaysGt(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_gt_tbigint_bigint(i as number);
+	override alwaysGt(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_gt_tbigint_bigint(i as bigint);
 		return super.alwaysGt(i as Temporal);
 	}
 
 	/** MEOS: always_le_tbigint_bigint, chosen by the arguments' types */
-	override alwaysLe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_le_tbigint_bigint(i as number);
+	override alwaysLe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_le_tbigint_bigint(i as bigint);
 		return super.alwaysLe(i as Temporal);
 	}
 
 	/** MEOS: always_lt_tbigint_bigint, chosen by the arguments' types */
-	override alwaysLt(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_lt_tbigint_bigint(i as number);
+	override alwaysLt(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_lt_tbigint_bigint(i as bigint);
 		return super.alwaysLt(i as Temporal);
 	}
 
 	/** MEOS: always_ne_tbigint_bigint, chosen by the arguments' types */
-	override alwaysNe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._always_ne_tbigint_bigint(i as number);
+	override alwaysNe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._always_ne_tbigint_bigint(i as bigint);
 		return super.alwaysNe(i as Temporal);
 	}
 
 	/** MEOS: tbigint_at_value */
-	atValue(i: number): this | null {
+	atValue(i: bigint): this | null {
 		return wrapTemporalOrNull(F.tbigint_at_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: div_tbigint_bigint, chosen by the arguments' types */
-	override div(i: number | TNumber): this | null {
-		if (typeof i === 'number') return this._div_tbigint_bigint(i as number);
+	override div(i: bigint | TNumber): this | null {
+		if (typeof i === 'bigint') return this._div_tbigint_bigint(i as bigint);
 		return super.div(i as TNumber);
 	}
 
 	/** MEOS: tbigint_end_value */
-	endValue(): number {
+	endValue(): bigint {
 		return F.tbigint_end_value(this.ptr);
 	}
 
 	/** MEOS: ever_eq_tbigint_bigint, chosen by the arguments' types */
-	override everEq(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_eq_tbigint_bigint(i as number);
+	override everEq(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_eq_tbigint_bigint(i as bigint);
 		return super.everEq(i as Temporal);
 	}
 
 	/** MEOS: ever_ge_tbigint_bigint, chosen by the arguments' types */
-	override everGe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_ge_tbigint_bigint(i as number);
+	override everGe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_ge_tbigint_bigint(i as bigint);
 		return super.everGe(i as Temporal);
 	}
 
 	/** MEOS: ever_gt_tbigint_bigint, chosen by the arguments' types */
-	override everGt(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_gt_tbigint_bigint(i as number);
+	override everGt(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_gt_tbigint_bigint(i as bigint);
 		return super.everGt(i as Temporal);
 	}
 
 	/** MEOS: ever_le_tbigint_bigint, chosen by the arguments' types */
-	override everLe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_le_tbigint_bigint(i as number);
+	override everLe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_le_tbigint_bigint(i as bigint);
 		return super.everLe(i as Temporal);
 	}
 
 	/** MEOS: ever_lt_tbigint_bigint, chosen by the arguments' types */
-	override everLt(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_lt_tbigint_bigint(i as number);
+	override everLt(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_lt_tbigint_bigint(i as bigint);
 		return super.everLt(i as Temporal);
 	}
 
 	/** MEOS: ever_ne_tbigint_bigint, chosen by the arguments' types */
-	override everNe(i: number | Temporal): number {
-		if (typeof i === 'number') return this._ever_ne_tbigint_bigint(i as number);
+	override everNe(i: bigint | Temporal): number {
+		if (typeof i === 'bigint') return this._ever_ne_tbigint_bigint(i as bigint);
 		return super.everNe(i as Temporal);
 	}
 
 	/** MEOS: tbigint_max_value */
-	maxValue(): number {
+	maxValue(): bigint {
 		return F.tbigint_max_value(this.ptr);
 	}
 
 	/** MEOS: tbigint_minus_value */
-	minusValue(i: number): this | null {
+	minusValue(i: bigint): this | null {
 		return wrapTemporalOrNull(F.tbigint_minus_value(this.ptr, i)) as this | null;
 	}
 
 	/** MEOS: tbigint_min_value */
-	minValue(): number {
+	minValue(): bigint {
 		return F.tbigint_min_value(this.ptr);
 	}
 
 	/** MEOS: mul_tbigint_bigint, chosen by the arguments' types */
-	override mul(i: number | TNumber): this | null {
-		if (typeof i === 'number') return this._mul_tbigint_bigint(i as number);
+	override mul(i: bigint | TNumber): this | null {
+		if (typeof i === 'bigint') return this._mul_tbigint_bigint(i as bigint);
 		return super.mul(i as TNumber);
 	}
 
 	/** MEOS: nad_tbigint_bigint, nad_tbigint_bigintspan, nad_tbigint_tbox, nad_tbigint_tbigint, chosen by the arguments' types */
-	nad(i: number | BigIntSpan | TBox | TBigInt): number {
+	nad(i: bigint | BigIntSpan | TBox | TBigInt): bigint {
 		if (i instanceof BigIntSpan) return this._nad_tbigint_bigintspan(i as BigIntSpan);
 		if (i instanceof TBigInt) return this._nad_tbigint_tbigint(i as TBigInt);
 		if (i instanceof TBox) return this._nad_tbigint_tbox(i as TBox);
-		if (typeof i === 'number') return this._nad_tbigint_bigint(i as number);
+		if (typeof i === 'bigint') return this._nad_tbigint_bigint(i as bigint);
 		throw new TypeError(`TBigInt.nad: no overload takes these arguments`);
 	}
 
 	/** MEOS: add_bigint_tbigint */
-	radd(i: number): this {
+	radd(i: bigint): this {
 		return wrapTemporal(F.add_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: always_eq_bigint_tbigint */
-	ralwaysEq(i: number): number {
+	ralwaysEq(i: bigint): number {
 		return F.always_eq_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: always_ge_bigint_tbigint */
-	ralwaysGe(i: number): number {
+	ralwaysGe(i: bigint): number {
 		return F.always_ge_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: always_gt_bigint_tbigint */
-	ralwaysGt(i: number): number {
+	ralwaysGt(i: bigint): number {
 		return F.always_gt_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: always_le_bigint_tbigint */
-	ralwaysLe(i: number): number {
+	ralwaysLe(i: bigint): number {
 		return F.always_le_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: always_lt_bigint_tbigint */
-	ralwaysLt(i: number): number {
+	ralwaysLt(i: bigint): number {
 		return F.always_lt_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: always_ne_bigint_tbigint */
-	ralwaysNe(i: number): number {
+	ralwaysNe(i: bigint): number {
 		return F.always_ne_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: div_bigint_tbigint */
-	rdiv(i: number): this {
+	rdiv(i: bigint): this {
 		return wrapTemporal(F.div_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: ever_eq_bigint_tbigint */
-	reverEq(i: number): number {
+	reverEq(i: bigint): number {
 		return F.ever_eq_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: ever_ge_bigint_tbigint */
-	reverGe(i: number): number {
+	reverGe(i: bigint): number {
 		return F.ever_ge_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: ever_gt_bigint_tbigint */
-	reverGt(i: number): number {
+	reverGt(i: bigint): number {
 		return F.ever_gt_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: ever_le_bigint_tbigint */
-	reverLe(i: number): number {
+	reverLe(i: bigint): number {
 		return F.ever_le_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: ever_lt_bigint_tbigint */
-	reverLt(i: number): number {
+	reverLt(i: bigint): number {
 		return F.ever_lt_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: ever_ne_bigint_tbigint */
-	reverNe(i: number): number {
+	reverNe(i: bigint): number {
 		return F.ever_ne_bigint_tbigint(i, this.ptr);
 	}
 
 	/** MEOS: mul_bigint_tbigint */
-	rmul(i: number): this {
+	rmul(i: bigint): this {
 		return wrapTemporal(F.mul_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: sub_bigint_tbigint */
-	rsub(i: number): this {
+	rsub(i: bigint): this {
 		return wrapTemporal(F.sub_bigint_tbigint(i, this.ptr)) as this;
 	}
 
 	/** MEOS: teq_bigint_tbigint */
-	rteq(i: number): Temporal {
+	rteq(i: bigint): Temporal {
 		return wrapTemporal(F.teq_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tge_bigint_tbigint */
-	rtge(i: number): Temporal {
+	rtge(i: bigint): Temporal {
 		return wrapTemporal(F.tge_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tgt_bigint_tbigint */
-	rtgt(i: number): Temporal {
+	rtgt(i: bigint): Temporal {
 		return wrapTemporal(F.tgt_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tle_bigint_tbigint */
-	rtle(i: number): Temporal {
+	rtle(i: bigint): Temporal {
 		return wrapTemporal(F.tle_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tlt_bigint_tbigint */
-	rtlt(i: number): Temporal {
+	rtlt(i: bigint): Temporal {
 		return wrapTemporal(F.tlt_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tne_bigint_tbigint */
-	rtne(i: number): Temporal {
+	rtne(i: bigint): Temporal {
 		return wrapTemporal(F.tne_bigint_tbigint(i, this.ptr)) as Temporal;
 	}
 
 	/** MEOS: tbigint_scale_value */
-	scaleValue(width: number): this {
+	scaleValue(width: bigint): this {
 		return wrapTemporal(F.tbigint_scale_value(this.ptr, width)) as this;
 	}
 
@@ -14476,41 +14476,41 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_shift_scale_value */
-	shiftScaleValue(shift: number, width: number): this {
+	shiftScaleValue(shift: bigint, width: bigint): this {
 		return wrapTemporal(F.tbigint_shift_scale_value(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: tbigint_shift_value */
-	shiftValue(shift: number): this {
+	shiftValue(shift: bigint): this {
 		return wrapTemporal(F.tbigint_shift_value(this.ptr, shift)) as this;
 	}
 
 	/** MEOS: tbigint_start_value */
-	startValue(): number {
+	startValue(): bigint {
 		return F.tbigint_start_value(this.ptr);
 	}
 
 	/** MEOS: sub_tbigint_bigint, chosen by the arguments' types */
-	override sub(i: number | TNumber): this | null {
-		if (typeof i === 'number') return this._sub_tbigint_bigint(i as number);
+	override sub(i: bigint | TNumber): this | null {
+		if (typeof i === 'bigint') return this._sub_tbigint_bigint(i as bigint);
 		return super.sub(i as TNumber);
 	}
 
 	/** MEOS: teq_tbigint_bigint, chosen by the arguments' types */
-	override teq(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._teq_tbigint_bigint(i as number);
+	override teq(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._teq_tbigint_bigint(i as bigint);
 		return super.teq(i as Temporal);
 	}
 
 	/** MEOS: tge_tbigint_bigint, chosen by the arguments' types */
-	override tge(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._tge_tbigint_bigint(i as number);
+	override tge(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._tge_tbigint_bigint(i as bigint);
 		return super.tge(i as Temporal);
 	}
 
 	/** MEOS: tgt_tbigint_bigint, chosen by the arguments' types */
-	override tgt(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._tgt_tbigint_bigint(i as number);
+	override tgt(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._tgt_tbigint_bigint(i as bigint);
 		return super.tgt(i as Temporal);
 	}
 
@@ -14542,20 +14542,20 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tle_tbigint_bigint, chosen by the arguments' types */
-	override tle(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._tle_tbigint_bigint(i as number);
+	override tle(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._tle_tbigint_bigint(i as bigint);
 		return super.tle(i as Temporal);
 	}
 
 	/** MEOS: tlt_tbigint_bigint, chosen by the arguments' types */
-	override tlt(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._tlt_tbigint_bigint(i as number);
+	override tlt(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._tlt_tbigint_bigint(i as bigint);
 		return super.tlt(i as Temporal);
 	}
 
 	/** MEOS: tne_tbigint_bigint, chosen by the arguments' types */
-	override tne(i: number | Temporal): Temporal | null {
-		if (typeof i === 'number') return this._tne_tbigint_bigint(i as number);
+	override tne(i: bigint | Temporal): Temporal | null {
+		if (typeof i === 'bigint') return this._tne_tbigint_bigint(i as bigint);
 		return super.tne(i as Temporal);
 	}
 
@@ -14605,7 +14605,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_unnest */
-	unnest(): [SpanSet[], number[]] {
+	unnest(): [SpanSet[], bigint[]] {
 		const _values = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -14616,8 +14616,8 @@ export class TBigInt extends TNumber {
 			try {
 				const _o0: SpanSet[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapSpanSet(Number(_v.getBigUint64(_i * 8, true))) as SpanSet); }
-				const _o1: number[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -14630,23 +14630,23 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value */
-	value(): number {
+	value(): bigint {
 		return F.tbigint_value(this.ptr);
 	}
 
 	/** MEOS: tbigint_value_at_timestamptz */
-	valueAtTimestamptz(t: TimestampTz, strict: boolean): number | null {
+	valueAtTimestamptz(t: TimestampTz, strict: boolean): bigint | null {
 		const _value = _alloc(8);
 		try {
 			if (!F.tbigint_value_at_timestamptz(this.ptr, t, strict, _value)) return null;
-			return ((_v: DataView) => Number(_v.getBigInt64(0, true)))(_view(_value, 8));
+			return ((_v: DataView) => _v.getBigInt64(0, true))(_view(_value, 8));
 		} finally {
 			_free(_value);
 		}
 	}
 
 	/** MEOS: tbigint_value_bins */
-	valueBins(vsize: number, vorigin: number = 0, border_inc: boolean = true): Span[] {
+	valueBins(vsize: bigint, vorigin: bigint, border_inc: boolean = true): Span[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigint_value_bins(this.ptr, vsize, vorigin, border_inc, _count);
@@ -14666,7 +14666,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_boxes */
-	valueBoxes(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
+	valueBoxes(vsize: bigint, vorigin: bigint, border_inc: boolean = true): TBox[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigint_value_boxes(this.ptr, vsize, vorigin, border_inc, _count);
@@ -14686,12 +14686,12 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_n */
-	valueN(n: number): number {
+	valueN(n: bigint): bigint {
 		return F.tbigint_value_n(this.ptr, n);
 	}
 
 	/** MEOS: tbigint_values */
-	values(): number[] {
+	values(): bigint[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigint_values(this.ptr, _count);
@@ -14699,8 +14699,8 @@ export class TBigInt extends TNumber {
 			try {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
-				const _out: number[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(Number(_v.getBigInt64(_i * 8, true)));
+				const _out: bigint[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigInt64(_i * 8, true));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -14721,7 +14721,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_split */
-	valueSplit(vsize: number, vorigin: number = 0, border_inc: boolean = true): [Temporal[], number[]] {
+	valueSplit(vsize: bigint, vorigin: bigint, border_inc: boolean = true): [Temporal[], bigint[]] {
 		const _bins = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -14732,8 +14732,8 @@ export class TBigInt extends TNumber {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: number[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1];
 			} finally {
 				if (_a0) _free(_a0);
@@ -14746,7 +14746,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_time_boxes */
-	valueTimeBoxes(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
+	valueTimeBoxes(vsize: bigint, duration: Interval, vorigin: bigint, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -14768,7 +14768,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_value_time_split */
-	valueTimeSplit(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], number[], TimestampTz[]] {
+	valueTimeSplit(vsize: bigint, duration: Interval, vorigin: bigint, torigin: TimestampTz, border_inc: boolean = true): [Temporal[], bigint[], TimestampTz[]] {
 		const _duration = _putInterval(duration);
 		const _value_bins = _alloc(8);
 		const _time_bins = _alloc(8);
@@ -14782,10 +14782,10 @@ export class TBigInt extends TNumber {
 			try {
 				const _o0: Temporal[] = [];
 				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
-				const _o1: number[] = [];
-				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(Number(_v.getBigInt64(_i * 8, true))); }
+				const _o1: bigint[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigInt64(_i * 8, true)); }
 				const _o2: TimestampTz[] = [];
-				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1, _o2];
 			} finally {
 				if (_a0) _free(_a0);
@@ -14801,7 +14801,7 @@ export class TBigInt extends TNumber {
 	}
 
 	/** MEOS: tbigint_from_base_temp */
-	static fromBaseTemp(i: number, temp: Temporal): TBigInt {
+	static fromBaseTemp(i: bigint, temp: Temporal): TBigInt {
 		return wrapTemporal(F.tbigint_from_base_temp(i, temp.ptr)) as TBigInt;
 	}
 
@@ -14822,7 +14822,7 @@ export class TBigInt extends TNumber {
 export class TBigIntInst extends TBigInt {
 
 	/** MEOS: tbigintinst_make */
-	static make(i: number, t: TimestampTz): TBigIntInst {
+	static make(i: bigint, t: TimestampTz): TBigIntInst {
 		return wrapTemporal(F.tbigintinst_make(i, t)) as TBigIntInst;
 	}
 }
@@ -14833,12 +14833,12 @@ export class TBigIntInst extends TBigInt {
 export class TBigIntSeq extends TBigInt {
 
 	/** MEOS: tbigintseq_from_base_tstzset */
-	static fromBaseTstzset(i: number, s: Set): TBigIntSeq {
+	static fromBaseTstzset(i: bigint, s: Set): TBigIntSeq {
 		return wrapTemporal(F.tbigintseq_from_base_tstzset(i, s.ptr)) as TBigIntSeq;
 	}
 
 	/** MEOS: tbigintseq_from_base_tstzspan */
-	static fromBaseTstzspan(i: number, s: Span): TBigIntSeq {
+	static fromBaseTstzspan(i: bigint, s: Span): TBigIntSeq {
 		return wrapTemporal(F.tbigintseq_from_base_tstzspan(i, s.ptr)) as TBigIntSeq;
 	}
 }
@@ -14849,7 +14849,7 @@ export class TBigIntSeq extends TBigInt {
 export class TBigIntSeqSet extends TBigInt {
 
 	/** MEOS: tbigintseqset_from_base_tstzspanset */
-	static fromBaseTstzspanset(i: number, ss: SpanSet): TBigIntSeqSet {
+	static fromBaseTstzspanset(i: bigint, ss: SpanSet): TBigIntSeqSet {
 		return wrapTemporal(F.tbigintseqset_from_base_tstzspanset(i, ss.ptr)) as TBigIntSeqSet;
 	}
 }
@@ -15488,7 +15488,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbigintbox_expand */
-	expandBigint(i: number): this | null {
+	expandBigint(i: bigint): this | null {
 		return wrapTBoxOrNull(F.tbigintbox_expand(this.ptr, i)) as this | null;
 	}
 
@@ -15528,7 +15528,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbox_hash_extended */
-	hashExtended(seed: number): number {
+	hashExtended(seed: bigint): bigint {
 		return F.tbox_hash_extended(this.ptr, seed);
 	}
 
@@ -15649,7 +15649,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbigintbox_shift_scale */
-	shiftScaleBigint(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
+	shiftScaleBigint(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
 		return wrapTBox(F.tbigintbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
 	}
 
@@ -15824,7 +15824,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbigintbox_value_tiles */
-	valueTilesBigint(vsize: number, vorigin: number = 0, border_inc: boolean = true): TBox[] {
+	valueTilesBigint(vsize: bigint, vorigin: bigint, border_inc: boolean = true): TBox[] {
 		const _count = _alloc(4);
 		try {
 			const _arr = F.tbigintbox_value_tiles(this.ptr, vsize, vorigin, border_inc, _count);
@@ -15884,7 +15884,7 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: tbigintbox_value_time_tiles */
-	valueTimeTilesBigint(vsize: number, duration: Interval, vorigin: number, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
+	valueTimeTilesBigint(vsize: bigint, duration: Interval, vorigin: bigint, torigin: TimestampTz, border_inc: boolean = true): TBox[] {
 		const _duration = _putInterval(duration);
 		const _count = _alloc(4);
 		try {
@@ -15970,17 +15970,17 @@ export class TBox extends Box {
 	}
 
 	/** MEOS: bigint_to_tbox */
-	static fromBigint(i: number): TBox {
+	static fromBigint(i: bigint): TBox {
 		return wrapTBox(F.bigint_to_tbox(i)) as TBox;
 	}
 
 	/** MEOS: bigint_timestamptz_to_tbox */
-	static fromBigintTimestamptz(i: number, t: TimestampTz): TBox {
+	static fromBigintTimestamptz(i: bigint, t: TimestampTz): TBox {
 		return wrapTBox(F.bigint_timestamptz_to_tbox(i, t)) as TBox;
 	}
 
 	/** MEOS: bigint_tstzspan_to_tbox */
-	static fromBigintTstzspan(i: number, s: Span): TBox {
+	static fromBigintTstzspan(i: bigint, s: Span): TBox {
 		return wrapTBox(F.bigint_tstzspan_to_tbox(i, s.ptr)) as TBox;
 	}
 
@@ -16043,7 +16043,7 @@ export class TBox extends Box {
 	static fromWKB(wkb: Uint8Array): TBox {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapTBox(F.tbox_from_wkb(_wkb, wkb.length)) as TBox;
+			return wrapTBox(F.tbox_from_wkb(_wkb, BigInt(wkb.length))) as TBox;
 		} finally {
 			_free(_wkb);
 		}
@@ -18180,7 +18180,7 @@ export class TFloat extends TNumber {
 				const _o1: number[] = [];
 				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getFloat64(_i * 8, true)); }
 				const _o2: TimestampTz[] = [];
-				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1, _o2];
 			} finally {
 				if (_a0) _free(_a0);
@@ -18750,7 +18750,7 @@ export class TGeo extends TSpatial {
 				const _o1: Geo[] = [];
 				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(wrapGeo(Number(_v.getBigUint64(_i * 8, true))) as Geo); }
 				const _o2: TimestampTz[] = [];
-				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1, _o2];
 			} finally {
 				if (_a0) _free(_a0);
@@ -18989,7 +18989,7 @@ export class TPoint extends TGeo {
 	}
 
 	/** MEOS: tpoint_as_mvtgeom */
-	asMVTGeom(bounds: STBox, extent: number = 4096, buffer: number = 256, clip_geom: boolean = true): [Geo, number[]] | null {
+	asMVTGeom(bounds: STBox, extent: number = 4096, buffer: number = 256, clip_geom: boolean = true): [Geo, bigint[]] | null {
 		const _timesarr = _alloc(8);
 		const _count = _alloc(4);
 		try {
@@ -18998,8 +18998,8 @@ export class TPoint extends TGeo {
 			const _n = _view(_count, 4).getInt32(0, true);
 			const _a0 = Number(_view(_timesarr, 8).getBigUint64(0, true));
 			try {
-				const _o0: number[] = [];
-				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(Number(_v.getBigInt64(_i * 8, true))); }
+				const _o0: bigint[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(_v.getBigInt64(_i * 8, true)); }
 				return [wrapGeo(_r) as Geo, _o0];
 			} finally {
 				if (_a0) _free(_a0);
@@ -20651,11 +20651,11 @@ export class TH3IndexSeq extends TH3Index {
 	}
 
 	/** MEOS: th3indexseq_make */
-	static make(values: H3Index[], times: number[], lower_inc: boolean, upper_inc: boolean): TH3IndexSeq {
+	static make(values: H3Index[], times: bigint[], lower_inc: boolean, upper_inc: boolean): TH3IndexSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
 		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
-		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return wrapTemporal(F.th3indexseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TH3IndexSeq;
 		} finally {
@@ -21387,7 +21387,7 @@ export class TInt extends TNumber {
 				const _o1: number[] = [];
 				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 4); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getInt32(_i * 4, true)); }
 				const _o2: TimestampTz[] = [];
-				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(Number(_v.getBigInt64(_i * 8, true))); }
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(_v.getBigInt64(_i * 8, true)); }
 				return [_o0, _o1, _o2];
 			} finally {
 				if (_a0) _free(_a0);
@@ -22023,7 +22023,7 @@ export class TNPoint extends TSpatial {
 	}
 
 	/** MEOS: contains_rid_tnpoint_bigint */
-	private _contains_rid_tnpoint_bigint(rid: number): boolean {
+	private _contains_rid_tnpoint_bigint(rid: bigint): boolean {
 		return F.contains_rid_tnpoint_bigint(this.ptr, rid);
 	}
 
@@ -22118,7 +22118,7 @@ export class TNPoint extends TSpatial {
 	}
 
 	/** MEOS: same_rid_tnpoint_bigint */
-	private _same_rid_tnpoint_bigint(rid: number): boolean {
+	private _same_rid_tnpoint_bigint(rid: bigint): boolean {
 		return F.same_rid_tnpoint_bigint(this.ptr, rid);
 	}
 
@@ -22226,11 +22226,11 @@ export class TNPoint extends TSpatial {
 	}
 
 	/** MEOS: contains_rid_tnpoint_bigint, contains_rid_tnpoint_bigintset, contains_rid_tnpoint_npoint, contains_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	containsRid(rid: number | BigIntSet | NPoint | TNPoint): boolean {
+	containsRid(rid: bigint | BigIntSet | NPoint | TNPoint): boolean {
 		if (rid instanceof BigIntSet) return this._contains_rid_tnpoint_bigintset(rid as BigIntSet);
 		if (rid instanceof TNPoint) return this._contains_rid_tnpoint_tnpoint(rid as TNPoint);
 		if (rid instanceof NPoint) return this._contains_rid_tnpoint_npoint(rid as NPoint);
-		if (typeof rid === 'number') return this._contains_rid_tnpoint_bigint(rid as number);
+		if (typeof rid === 'bigint') return this._contains_rid_tnpoint_bigint(rid as bigint);
 		throw new TypeError(`TNPoint.containsRid: no overload takes these arguments`);
 	}
 
@@ -22335,12 +22335,12 @@ export class TNPoint extends TSpatial {
 	}
 
 	/** MEOS: contained_rid_bigint_tnpoint */
-	rcontainedRid(rid: number): boolean {
+	rcontainedRid(rid: bigint): boolean {
 		return F.contained_rid_bigint_tnpoint(rid, this.ptr);
 	}
 
 	/** MEOS: tnpoint_route */
-	route(): number {
+	route(): bigint {
 		return F.tnpoint_route(this.ptr);
 	}
 
@@ -22350,16 +22350,16 @@ export class TNPoint extends TSpatial {
 	}
 
 	/** MEOS: same_rid_bigint_tnpoint */
-	rsameRid(rid: number): boolean {
+	rsameRid(rid: bigint): boolean {
 		return F.same_rid_bigint_tnpoint(rid, this.ptr);
 	}
 
 	/** MEOS: same_rid_tnpoint_bigint, same_rid_tnpoint_bigintset, same_rid_tnpoint_npoint, same_rid_tnpoint_tnpoint, chosen by the arguments' types */
-	sameRid(rid: number | BigIntSet | NPoint | TNPoint): boolean {
+	sameRid(rid: bigint | BigIntSet | NPoint | TNPoint): boolean {
 		if (rid instanceof BigIntSet) return this._same_rid_tnpoint_bigintset(rid as BigIntSet);
 		if (rid instanceof TNPoint) return this._same_rid_tnpoint_tnpoint(rid as TNPoint);
 		if (rid instanceof NPoint) return this._same_rid_tnpoint_npoint(rid as NPoint);
-		if (typeof rid === 'number') return this._same_rid_tnpoint_bigint(rid as number);
+		if (typeof rid === 'bigint') return this._same_rid_tnpoint_bigint(rid as bigint);
 		throw new TypeError(`TNPoint.sameRid: no overload takes these arguments`);
 	}
 
@@ -23191,7 +23191,7 @@ export class TPCBox extends Box {
 	static fromWKB(wkb: Uint8Array): TPCBox {
 		const _wkb = _bytes(wkb);
 		try {
-			return wrapTPCBox(F.tpcbox_from_wkb(_wkb, wkb.length)) as TPCBox;
+			return wrapTPCBox(F.tpcbox_from_wkb(_wkb, BigInt(wkb.length))) as TPCBox;
 		} finally {
 			_free(_wkb);
 		}
@@ -23354,7 +23354,7 @@ export class TPCPatch extends TSpatial {
 	}
 
 	/** MEOS: tpcpatch_npoints */
-	npoints(): number {
+	npoints(): bigint {
 		return F.tpcpatch_npoints(this.ptr);
 	}
 
@@ -25270,11 +25270,11 @@ export class TQuadbinSeq extends TQuadbin {
 	}
 
 	/** MEOS: tquadbinseq_make */
-	static make(values: Quadbin[], times: number[], lower_inc: boolean, upper_inc: boolean): TQuadbinSeq {
+	static make(values: Quadbin[], times: bigint[], lower_inc: boolean, upper_inc: boolean): TQuadbinSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
 		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
-		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return wrapTemporal(F.tquadbinseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TQuadbinSeq;
 		} finally {
@@ -26524,11 +26524,11 @@ export class TS2CellSeq extends TS2Cell {
 	}
 
 	/** MEOS: ts2cellseq_make */
-	static make(values: S2Cell[], times: number[], lower_inc: boolean, upper_inc: boolean): TS2CellSeq {
+	static make(values: S2Cell[], times: bigint[], lower_inc: boolean, upper_inc: boolean): TS2CellSeq {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
 		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigUint64(_i * 8, _x.value, true)); }
 		const _times = _alloc(Math.max(times.length, 1) * 8);
-		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_times, Math.max(times.length, 1) * 8); times.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return wrapTemporal(F.ts2cellseq_make(_values, _times, values.length, lower_inc, upper_inc)) as TS2CellSeq;
 		} finally {
@@ -27119,7 +27119,7 @@ export class Text extends Value {
 	}
 
 	/** MEOS: text_hash_extended */
-	static hashExtended(txt: string, seed: number, collid: number): number {
+	static hashExtended(txt: string, seed: bigint, collid: number): bigint {
 		return F.text_hash_extended(txt, seed, collid);
 	}
 
@@ -27609,7 +27609,7 @@ export class TsTzSet extends Set {
 				const _n = _view(_count, 4).getInt32(0, true);
 				const _v = _view(_arr, _n * 8);
 				const _out: TimestampTz[] = [];
-				for (let _i = 0; _i < _n; _i++) _out.push(Number(_v.getBigInt64(_i * 8, true)));
+				for (let _i = 0; _i < _n; _i++) _out.push(_v.getBigInt64(_i * 8, true));
 				return _out;
 			} finally {
 				_free(_arr);
@@ -27630,9 +27630,9 @@ export class TsTzSet extends Set {
 	}
 
 	/** MEOS: tstzset_make */
-	static make(values: number[]): TsTzSet {
+	static make(values: bigint[]): TsTzSet {
 		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, BigInt(_x), true)); }
+		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setBigInt64(_i * 8, _x, true)); }
 		try {
 			return wrapSet(F.tstzset_make(_values, values.length)) as TsTzSet;
 		} finally {
