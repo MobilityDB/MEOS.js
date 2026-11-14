@@ -44,11 +44,11 @@ describe('BigIntSpanSet - Construction', () => {
 	});
 
 	it('fromSpan wraps a single BigIntSpan', () => {
-		const s = BigIntSpan.make(1, 8);
+		const s = BigIntSpan.make(1n, 8n);
 		const ss = s.toSpanset();
 		assert.equal(ss.numSpans(), 1);
-		assert.equal(ss.lower(), 1);
-		assert.equal(ss.upper(), 8);
+		assert.equal(ss.lower(), 1n);
+		assert.equal(ss.upper(), 8n);
 		s.free();
 		ss.free();
 	});
@@ -73,22 +73,22 @@ describe('BigIntSpanSet - Accessors', () => {
 
 	it('lower and upper return outer bounds', () => {
 		const ss = BigIntSpanSet.fromText(WKT_AB);
-		assert.equal(ss.lower(), 1);
-		assert.equal(ss.upper(), 12);
+		assert.equal(ss.lower(), 1n);
+		assert.equal(ss.upper(), 12n);
 		ss.free();
 	});
 
 	it('width (sum of spans)', () => {
 		const ss = BigIntSpanSet.fromText(WKT_AB);
 		// [1,5) = 4 wide, [8,12) = 4 wide → total = 8
-		assert.equal(ss.width(), 8);
+		assert.equal(ss.width(), 8n);
 		ss.free();
 	});
 
 	it('width (bounding span)', () => {
 		const ss = BigIntSpanSet.fromText(WKT_AB);
 		// bounding [1,12) = 11 wide
-		assert.equal(ss.width(true), 11);
+		assert.equal(ss.width(true), 11n);
 		ss.free();
 	});
 
@@ -96,8 +96,8 @@ describe('BigIntSpanSet - Accessors', () => {
 		const ss = BigIntSpanSet.fromText(WKT_AB);
 		const s = ss.spanN(1);
 		assert.ok(s!.ptr !== 0);
-		assert.equal(s!.lower(), 1);
-		assert.equal(s!.upper(), 5);
+		assert.equal(s!.lower(), 1n);
+		assert.equal(s!.upper(), 5n);
 		ss.free();
 		s!.free();
 	});
@@ -107,7 +107,7 @@ describe('BigIntSpanSet - Distance', () => {
 	it('distance to BigIntSpan returns 0 when overlapping', () => {
 		const ss = BigIntSpanSet.fromText(WKT_AB);
 		const s = BigIntSpan.fromText('[3, 6)');
-		assert.equal(ss.distance(s), 0);
+		assert.equal(ss.distance(s), 0n);
 		ss.free();
 		s.free();
 	});
@@ -123,7 +123,7 @@ describe('BigIntSpanSet - Distance', () => {
 	it('distance to BigIntSpanSet returns 0 when overlapping', () => {
 		const ss1 = BigIntSpanSet.fromText(WKT_AB);
 		const ss2 = BigIntSpanSet.fromText('{[3, 6)}');
-		assert.equal(ss1.distance(ss2), 0);
+		assert.equal(ss1.distance(ss2), 0n);
 		ss1.free();
 		ss2.free();
 	});
@@ -170,17 +170,17 @@ describe('BigIntSpanSet - Comparisons', () => {
 describe('BigIntSpanSet - shiftScale', () => {
 	it('shift only', () => {
 		const ss = BigIntSpanSet.fromText('{[1, 5), [8, 12)}');
-		const r = ss.shiftScale(10, 0, true, false);
-		assert.equal(r.lower(), 11);
+		const r = ss.shiftScale(10n, 0n, true, false);
+		assert.equal(r.lower(), 11n);
 		ss.free();
 		r.free();
 	});
 
 	it('scale only: width adjusts', () => {
 		const ss = BigIntSpanSet.fromText('{[0, 10)}');
-		const r = ss.shiftScale(0, 20, false, true);
-		assert.equal(r.lower(), 0);
-		assert.equal(r.width(), 21); // BigInt half-open: width 20 → span [0, 21)
+		const r = ss.shiftScale(0n, 20n, false, true);
+		assert.equal(r.lower(), 0n);
+		assert.equal(r.width(), 21n); // BigInt half-open: width 20 → span [0, 21)
 		ss.free();
 		r.free();
 	});

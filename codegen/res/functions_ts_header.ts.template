@@ -3,8 +3,9 @@ import { getModule } from '../runtime/meos.js';
 // WASM linear memory address, held as a JS number (safe up to 2^53).
 export type Ptr = number;
 
-// PostgreSQL TimestampTz - microseconds since 2000-01-01 UTC
-export type TimestampTz = number;
+// PostgreSQL TimestampTz - microseconds since 2000-01-01 UTC, an integer of
+// 64 bits and thus a bigint, as every integer of 64 bits the binding passes
+export type TimestampTz = bigint;
 
 // PostgreSQL DateADT - days since 2000-01-01
 export type DateADT = number;

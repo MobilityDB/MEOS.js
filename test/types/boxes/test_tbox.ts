@@ -299,7 +299,7 @@ describe('TBox - Accessors', () => {
 
 	it('tmin returns 0 for MEOS epoch (2000-01-01)', () => {
 		const b = TBox.fromText(WKT_T);
-		assert.equal(b.tmin(), 0);
+		assert.equal(b.tmin(), 0n);
 		b.free();
 	});
 
@@ -536,7 +536,7 @@ describe('TBox - Conversions', () => {
 	it('toTsTzSpan bounds match original T dimension', () => {
 		const b = TBox.fromText(WKT_T);
 		const span = new TsTzSpan(b.toTstzspan().ptr);
-		assert.equal(span.lower(), 0);
+		assert.equal(span.lower(), 0n);
 		assert.ok(span.upper() > 0);
 		b.free();
 	});
@@ -585,9 +585,9 @@ describe('TBox - Math', () => {
 	});
 
 	it('expandBigint grows bigint X bounds symmetrically', () => {
-		const xs = BigIntSpan.make(4, 8);
+		const xs = BigIntSpan.make(4n, 8n);
 		const b = xs.toTbox();
-		const e = b.expandBigint(2);
+		const e = b.expandBigint(2n);
 		assert.equal(e!.xmin(), 2);
 		assert.equal(e!.xmax(), 9);
 		xs.free();
@@ -625,9 +625,9 @@ describe('TBox - Math', () => {
 	});
 
 	it('shiftScaleBigint shifts bigint X bounds forward', () => {
-		const xs = BigIntSpan.make(1, 5);
+		const xs = BigIntSpan.make(1n, 5n);
 		const b = xs.toTbox();
-		const s = b.shiftScaleBigint(3, 0, true, false);
+		const s = b.shiftScaleBigint(3n, 0n, true, false);
 		assert.equal(s.xmin(), 4);
 		assert.equal(s.xmax(), 7);
 		xs.free();
@@ -648,7 +648,7 @@ describe('TBox - Math', () => {
 describe('TBox - expandTime', () => {
 	it('expands the T dimension on each side', () => {
 		const b = TBox.fromText(`TBOX T([${T0}, ${T1}])`);
-		const interv = { time: 0, day: 1, month: 0 }; // 1 day
+		const interv = { time: 0n, day: 1, month: 0 }; // 1 day
 		const r = b.expandTime(interv);
 		assert.ok(r!.tmin() < b.tmin());
 		assert.ok(r!.tmax() > b.tmax());
@@ -660,7 +660,7 @@ describe('TBox - expandTime', () => {
 describe('TBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	it('shifts T dimension forward by 1 day', () => {
 		const b = TBox.fromText(`TBOX T([${T0}, ${T1}])`);
-		const shift = { time: 0, day: 1, month: 0 }; // 1 day
+		const shift = { time: 0n, day: 1, month: 0 }; // 1 day
 		const r = b.shiftTime(shift);
 		assert.ok(r.tmin() > b.tmin());
 		b.free();
@@ -669,7 +669,7 @@ describe('TBox - shiftTime, scaleTime and shiftScaleTime', () => {
 
 	it('scales T dimension to 2 days', () => {
 		const b = TBox.fromText(`TBOX T([${T0}, ${T1}])`);
-		const dur = { time: 0, day: 2, month: 0 }; // 2 days
+		const dur = { time: 0n, day: 2, month: 0 }; // 2 days
 		const r = b.scaleTime(dur);
 		assert.ok(r.tmax() > b.tmax());
 		b.free();
@@ -678,8 +678,8 @@ describe('TBox - shiftTime, scaleTime and shiftScaleTime', () => {
 
 	it('shifts T by 1 day and scales it to 2 days', () => {
 		const b = TBox.fromText(`TBOX T([${T0}, ${T1}])`);
-		const shift = { time: 0, day: 1, month: 0 }; // 1 day
-		const dur = { time: 0, day: 2, month: 0 };   // 2 days
+		const shift = { time: 0n, day: 1, month: 0 }; // 1 day
+		const dur = { time: 0n, day: 2, month: 0 };   // 2 days
 		const r = b.shiftScaleTime(shift, dur);
 		assert.ok(r.tmin() > b.tmin());
 		assert.ok(r.tmax() > b.tmax());

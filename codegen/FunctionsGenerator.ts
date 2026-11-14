@@ -264,7 +264,13 @@ class TypeMap {
 			this.ownTypes.set(slot.typedef, is64Kind(kind) ? 'bigint' : 'number');
 			return { kind, name: slot.typedef, ts: slot.typedef };
 		}
-		return { kind, name: base, ts: TS_KEPT_ALIASES.has(base) ? base : 'number' };
+		// An integer of 64 bits is a bigint, so no value above 2^53 is rounded; one of
+		// 32 bits or fewer is a number, which holds it exactly. A name PostgreSQL
+		// declares keeps its alias, which the header declares by the same rule.
+		return {
+			kind, name: base,
+			ts: TS_KEPT_ALIASES.has(base) ? base : (is64Kind(kind) ? 'bigint' : 'number'),
+		};
 	}
 
 	/** Maps the type a pointer slot points to, for the bool+result idiom. */
@@ -296,13 +302,11 @@ const isTimestamp = (m: Mapped) =>
 
 /**
  * The expression a TypeScript wrapper returns for a 64-bit value, which ccall
- * hands back as a signed BigInt: read as unsigned when the width is, kept a
- * BigInt for a type of its own over 64 bits, and a number otherwise, as every
- * other integer the binding returns is.
+ * hands back as a signed BigInt: read as unsigned when the width is, and kept a
+ * BigInt, as every integer of 64 bits the binding passes is.
  */
 function from64(m: Mapped, expr: string): string {
-	const v = m.kind === 'uint64' ? `BigInt.asUintN(64, ${expr})` : expr;
-	return types.ownTypes.get(m.ts) === 'bigint' ? v : `Number(${v})`;
+	return m.kind === 'uint64' ? `BigInt.asUintN(64, ${expr})` : expr;
 }
 
 // -------------------------------------------------------------------------
@@ -708,12 +712,11 @@ function tsType(m: Mapped): string {
  *
  * ccall expects:
  *   bool        				-> 1 / 0      (not true/false)
- *   64-bit integer held as number 	-> BigInt(n)  (ccall bigint arg)
- *   everything else 			-> pass through unchanged
+ *   everything else, a 64-bit integer held as a bigint among them
+ *   					-> pass through unchanged
  */
 function toCallArg(name: string, m: Mapped): string {
 	if (m.kind === 'bool') return `${name} ? 1 : 0`;
-	if (is64(m) && types.ownTypes.get(m.ts) !== 'bigint') return `BigInt(${name})`;
 	return name;
 }
 

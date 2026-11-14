@@ -45,7 +45,7 @@ describe('TBool - Instant', () => {
 	});
 
 	it('fromInstant constructs a TBool instant', () => {
-		const t = TBool.fromInstant(true, 60_000_000);
+		const t = TBool.fromInstant(true, 60_000_000n);
 		assert.ok(t.inner !== 0);
 		assert.match(t.toString(), /^t@/);
 		t.free();
@@ -251,7 +251,7 @@ describe('TBool - valueAtTimestamp', () => {
 	it('returns true at T1 for a true instant', () => {
 		// T1 = 2000-01-01 00:01:00+00 = 60_000_000 µs
 		const t = TBool.fromString(`t@${T1}`);
-		const v = t.valueAtTimestamp(60_000_000);
+		const v = t.valueAtTimestamp(60_000_000n);
 		assert.equal(v, true);
 		t.free();
 	});
@@ -259,14 +259,14 @@ describe('TBool - valueAtTimestamp', () => {
 	it('returns false at T2 for a false instant', () => {
 		// T2 = 2000-01-01 00:02:00+00 = 120_000_000 µs
 		const t = TBool.fromString(`f@${T2}`);
-		const v = t.valueAtTimestamp(120_000_000);
+		const v = t.valueAtTimestamp(120_000_000n);
 		assert.equal(v, false);
 		t.free();
 	});
 
 	it('returns null for a timestamp outside the domain', () => {
 		const t = TBool.fromString(`t@${T1}`);
-		const v = t.valueAtTimestamp(0); // T0 is before the instant
+		const v = t.valueAtTimestamp(0n); // T0 is before the instant
 		assert.equal(v, null);
 		t.free();
 	});

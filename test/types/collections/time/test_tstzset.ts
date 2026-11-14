@@ -6,7 +6,7 @@ import { TsTzSet } from '../../../../core/objects/objects.generated.js';
 import type { Interval } from '../../../../core/objects/objects.generated.js';
 
 /** A distance between times is an Interval: nonzero when any of its fields is. */
-const nonzero = (d: Interval) => d.time !== 0 || d.day !== 0 || d.month !== 0;
+const nonzero = (d: Interval) => d.time !== 0n || d.day !== 0 || d.month !== 0;
 
 // These timestamps correspond to 2001-01-01, 2001-01-02, 2001-01-03 UTC.
 // In MEOS TimestampTz = microseconds since 2000-01-01 UTC.
@@ -78,8 +78,8 @@ describe('TsTzSet - Accessors', () => {
 		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
 		const start = s.startValue();
 		const end = s.endValue();
-		assert.equal(typeof start, 'number');
-		assert.equal(typeof end, 'number');
+		assert.equal(typeof start, 'bigint');
+		assert.equal(typeof end, 'bigint');
 		assert.ok(start < end);
 		s.free();
 	});
@@ -290,7 +290,7 @@ describe('TsTzSet - Comparisons', () => {
 describe('TsTzSet - shiftScale', () => {
 	it('shift by 1 day: all timestamps advance by 1 day', () => {
 		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
-		const interv = { time: 0, day: 1, month: 0 }; // 1 day
+		const interv = { time: 0n, day: 1, month: 0 }; // 1 day
 		const r = s.shift(interv);
 		assert.ok(r.ptr !== 0);
 		assert.ok(r.startValue() > s.startValue());
@@ -300,8 +300,8 @@ describe('TsTzSet - shiftScale', () => {
 
 	it('shift by 1 day and scale to 2 days: the set starts 1 day later', () => {
 		const s = TsTzSet.fromText(`{${TS1}, ${TS2}}`);
-		const interv = { time: 0, day: 1, month: 0 }; // 1 day
-		const dur = { time: 0, day: 2, month: 0 };    // 2 days
+		const interv = { time: 0n, day: 1, month: 0 }; // 1 day
+		const dur = { time: 0n, day: 2, month: 0 };    // 2 days
 		const r = s.shiftScale(interv, dur);
 		assert.ok(r.startValue() > s.startValue());
 		s.free();
@@ -312,7 +312,7 @@ describe('TsTzSet - shiftScale', () => {
 describe('TsTzSet - tprecision', () => {
 	it('returns a non-zero pointer', () => {
 		const s = TsTzSet.fromText(`{${TS1}, ${TS2}, ${TS3}}`);
-		const dur = { time: 0, day: 1, month: 0 }; // 1-day bucket
+		const dur = { time: 0n, day: 1, month: 0 }; // 1-day bucket
 		const r = s.tprecision(dur, s.startValue());
 		assert.ok(r.ptr !== 0);
 		s.free();

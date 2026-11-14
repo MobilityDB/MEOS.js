@@ -44,7 +44,7 @@ describe('TGeomPoint - Construction', () => {
 	});
 
 	it('fromInstant creates a non-zero pointer', () => {
-		const t = TGeomPoint.fromInstant('POINT(1 2)', 60_000_000);
+		const t = TGeomPoint.fromInstant('POINT(1 2)', 60_000_000n);
 		assert.ok(t.inner !== 0);
 		t.free();
 	});
@@ -71,15 +71,15 @@ describe('TGeomPoint - Construction', () => {
 
 describe('TGeomPoint - Subtypes', () => {
 	it('TGeomPointInst.fromValue creates instant', () => {
-		const inst = TGeomPointInst.fromValue('POINT(5 5)', 0);
+		const inst = TGeomPointInst.fromValue('POINT(5 5)', 0n);
 		assert.ok(inst.inner !== 0);
 		assert.ok(inst.startValue().includes('POINT'));
 		inst.free();
 	});
 
 	it('TGeomPointSeq.fromInstants creates sequence', () => {
-		const i1 = TGeomPointInst.fromValue('POINT(0 0)', 0);
-		const i2 = TGeomPointInst.fromValue('POINT(1 1)', 86_400_000_000);
+		const i1 = TGeomPointInst.fromValue('POINT(0 0)', 0n);
+		const i2 = TGeomPointInst.fromValue('POINT(1 1)', 86_400_000_000n);
 		const seq = TGeomPointSeq.fromInstants([i1, i2]);
 		assert.ok(seq.inner !== 0);
 		assert.equal(seq.numInstants(), 2);

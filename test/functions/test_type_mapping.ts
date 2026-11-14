@@ -11,6 +11,7 @@ import {
 	s2cell_in,
 	s2cell_out,
 	timestamptz_in,
+	timestamptz_out,
 	time_in,
 	time_out,
 	numeric_in,
@@ -56,12 +57,18 @@ describe('cell ids keep all 64 bits', () => {
 
 describe('64-bit times cross as BigInt', () => {
 	it('a TimestampTz result is the number of microseconds', () => {
-		assert.equal(timestamptz_in('2000-01-01 00:00:01+00', -1), 1000000);
+		assert.equal(timestamptz_in('2000-01-01 00:00:01+00', -1), 1000000n);
+	});
+
+	it('a TimestampTz above 2^53 microseconds round-trips exactly', () => {
+		// 2^53 + 1 is the first integer a number rounds, here in 2285
+		const t = 2n ** 53n + 1n;
+		assert.equal(timestamptz_in(timestamptz_out(t), -1), t);
 	});
 
 	it('a TimeADT result and argument round-trip', () => {
 		const t = time_in('12:34:56', -1);
-		assert.equal(t, (12 * 3600 + 34 * 60 + 56) * 1000000);
+		assert.equal(t, BigInt((12 * 3600 + 34 * 60 + 56) * 1000000));
 		assert.equal(time_out(t), '12:34:56');
 	});
 });

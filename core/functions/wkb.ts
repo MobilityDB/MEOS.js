@@ -61,11 +61,11 @@ export function readWkb(write: (sizeOut: Ptr) => Ptr): Uint8Array {
  * Copies `wkb` into the WASM heap, calls `read(ptr, size)` on it, then frees
  * the copy. `read` is a MEOS `*_from_wkb` reader, which copies what it reads.
  */
-export function withWkb<T>(wkb: Uint8Array, read: (ptr: Ptr, size: number) => T): T {
+export function withWkb<T>(wkb: Uint8Array, read: (ptr: Ptr, size: bigint) => T): T {
 	const mod = getModule();
 	const ptr: Ptr = mod.allocate(wkb, mod.ALLOC_NORMAL) as Ptr;
 	try {
-		return read(ptr, wkb.length);
+		return read(ptr, BigInt(wkb.length));
 	} finally {
 		(mod._meos_free as (p: bigint) => void)(BigInt(ptr));
 	}

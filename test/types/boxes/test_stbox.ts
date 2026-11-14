@@ -195,8 +195,8 @@ describe('STBox - Accessors', () => {
 
 	it('tmin/tmax are non-zero for T boxes', () => {
 		const b = STBox.fromText(WKT_T);
-		assert.ok(b.tmin() !== 0);
-		assert.ok(b.tmax() !== 0);
+		assert.ok(b.tmin() !== 0n);
+		assert.ok(b.tmax() !== 0n);
 		assert.ok(b.tmax() > b.tmin());
 		b.free();
 	});
@@ -275,7 +275,7 @@ describe('STBox - Transformations', () => {
 describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 	it('shiftTime moves the temporal dimension forward by 1 day', () => {
 		const b = STBox.fromText(WKT_XT);
-		const shift = { time: 0, day: 1, month: 0 }; // 1 day
+		const shift = { time: 0n, day: 1, month: 0 }; // 1 day
 		const r = b.shiftTime(shift);
 		assert.ok(r.tmin() > b.tmin());
 		b.free();
@@ -284,7 +284,7 @@ describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 
 	it('scaleTime stretches the temporal dimension to 2 days', () => {
 		const b = STBox.fromText(WKT_XT);
-		const dur = { time: 0, day: 2, month: 0 }; // 2 days
+		const dur = { time: 0n, day: 2, month: 0 }; // 2 days
 		const r = b.scaleTime(dur);
 		assert.equal(r.tmin(), b.tmin());
 		assert.ok(r.tmax() > b.tmax());
@@ -294,8 +294,8 @@ describe('STBox - shiftTime, scaleTime and shiftScaleTime', () => {
 
 	it('shiftScaleTime shifts by 1 day and scales to 2 days', () => {
 		const b = STBox.fromText(WKT_XT);
-		const shift = { time: 0, day: 1, month: 0 }; // 1 day
-		const dur = { time: 0, day: 2, month: 0 };   // 2 days
+		const shift = { time: 0n, day: 1, month: 0 }; // 1 day
+		const dur = { time: 0n, day: 2, month: 0 };   // 2 days
 		const r = b.shiftScaleTime(shift, dur);
 		assert.ok(r.tmin() > b.tmin());
 		assert.ok(r.tmax() > b.tmax());

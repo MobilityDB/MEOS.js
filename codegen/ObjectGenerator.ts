@@ -300,7 +300,7 @@ const ELEMENT_READERS: Record<string, { ts: string; width: number; read: string;
 	'int16_t': { ts: 'number', width: 2, read: '_v.getInt16({o}, true)', write: '_v.setInt16({o}, {x}, true)' },
 	'uint16_t': { ts: 'number', width: 2, read: '_v.getUint16({o}, true)', write: '_v.setUint16({o}, {x}, true)' },
 	'uint32_t': { ts: 'number', width: 4, read: '_v.getUint32({o}, true)', write: '_v.setUint32({o}, {x}, true)' },
-	'int64_t': { ts: 'number', width: 8, read: 'Number(_v.getBigInt64({o}, true))', write: '_v.setBigInt64({o}, BigInt({x}), true)' },
+	'int64_t': { ts: 'bigint', width: 8, read: '_v.getBigInt64({o}, true)', write: '_v.setBigInt64({o}, {x}, true)' },
 	'uint64_t': { ts: 'bigint', width: 8, read: '_v.getBigUint64({o}, true)', write: '_v.setBigUint64({o}, {x}, true)' },
 	'bool': { ts: 'boolean', width: 1, read: '_v.getUint8({o}) !== 0', write: '_v.setUint8({o}, {x} ? 1 : 0)' },
 	'uint8_t': { ts: 'number', width: 1, read: '_v.getUint8({o})', write: '_v.setUint8({o}, {x})' },
@@ -552,7 +552,9 @@ class Generator {
 				continue;
 			}
 			if (lengthOf.has(p.name)) {
-				args.set(p.name, `${safe(lengthOf.get(p.name)!)}.length`);
+				// A length of 64 bits (size_t) is a bigint in the flat layer.
+				const len = `${safe(lengthOf.get(p.name)!)}.length`;
+				args.set(p.name, p.ts === 'bigint' ? `BigInt(${len})` : len);
 				continue;
 			}
 			const arr = inputArrays.get(p.name);

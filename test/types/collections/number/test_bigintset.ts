@@ -60,22 +60,22 @@ describe('BigIntSet - Accessors', () => {
 
 	it('startValue returns smallest element', () => {
 		const s = BigIntSet.fromText('{1, 3, 7, 15}');
-		assert.equal(s.startValue(), 1);
+		assert.equal(s.startValue(), 1n);
 		s.free();
 	});
 
 	it('endValue returns largest element', () => {
 		const s = BigIntSet.fromText('{1, 3, 7, 15}');
-		assert.equal(s.endValue(), 15);
+		assert.equal(s.endValue(), 15n);
 		s.free();
 	});
 
 	it('valueN returns the element at a 1-based index, as MEOS counts', () => {
 		const s = BigIntSet.fromText('{1, 3, 7, 15}');
-		assert.equal(s.valueN(1), 1);
-		assert.equal(s.valueN(2), 3);
-		assert.equal(s.valueN(3), 7);
-		assert.equal(s.valueN(4), 15);
+		assert.equal(s.valueN(1), 1n);
+		assert.equal(s.valueN(2), 3n);
+		assert.equal(s.valueN(3), 7n);
+		assert.equal(s.valueN(4), 15n);
 		s.free();
 	});
 
@@ -124,7 +124,7 @@ describe('BigIntSet - Distance', () => {
 	it('distance is 0 for sets with shared element', () => {
 		const a = BigIntSet.fromText('{1, 3, 7}');
 		const b = BigIntSet.fromText('{7, 15}');
-		assert.equal(a.distance(b), 0);
+		assert.equal(a.distance(b), 0n);
 		a.free();
 		b.free();
 	});
@@ -200,18 +200,18 @@ describe('BigIntSet - Comparisons', () => {
 describe('BigIntSet - shiftScale', () => {
 	it('shift only: all elements shift by 10', () => {
 		const s = BigIntSet.fromText('{1, 3, 7}');
-		const r = s.shiftScale(10, 0, true, false);
-		assert.equal(r.startValue(), 11);
-		assert.equal(r.endValue(), 17);
+		const r = s.shiftScale(10n, 0n, true, false);
+		assert.equal(r.startValue(), 11n);
+		assert.equal(r.endValue(), 17n);
 		s.free();
 		r.free();
 	});
 
 	it('scale only: elements are scaled', () => {
 		const s = BigIntSet.fromText('{0, 10}');
-		const r = s.shiftScale(0, 20, false, true);
-		assert.equal(r.startValue(), 0);
-		assert.equal(r.endValue(), 21); // BigInt spans +1 for half-open: bounding [0,11)→[0,22) → last element 21
+		const r = s.shiftScale(0n, 20n, false, true);
+		assert.equal(r.startValue(), 0n);
+		assert.equal(r.endValue(), 21n); // BigInt spans +1 for half-open: bounding [0,11)→[0,22) → last element 21
 		s.free();
 		r.free();
 	});

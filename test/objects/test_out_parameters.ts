@@ -74,7 +74,7 @@ describe('generated object layer: a value MEOS answers beside the arrays it fill
 		const [geom, times] = answer;
 		assert.ok(geom instanceof Geo);
 		assert.equal(geom.asText(6), 'LINESTRING(0 4096,410 3686,819 3891)');
-		assert.deepEqual(times, [978307200, 978393600, 978480000]);
+		assert.deepEqual(times, [978307200n, 978393600n, 978480000n]);
 		geom.free();
 	});
 

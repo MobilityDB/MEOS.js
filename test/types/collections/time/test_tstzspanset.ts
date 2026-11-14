@@ -6,7 +6,7 @@ import { TsTzSpan, TsTzSpanSet } from '../../../../core/objects/objects.generate
 import type { Interval } from '../../../../core/objects/objects.generated.js';
 
 /** A distance between times is an Interval: nonzero when any of its fields is. */
-const nonzero = (d: Interval) => d.time !== 0 || d.day !== 0 || d.month !== 0;
+const nonzero = (d: Interval) => d.time !== 0n || d.day !== 0 || d.month !== 0;
 
 const T0 = '2000-01-01 00:00:00+00';
 const T1 = '2000-01-01 01:00:00+00'; // +1 h
@@ -165,11 +165,11 @@ describe('TsTzSpanSet - Accessors', () => {
 	});
 
 	it('durationMs(false) = sum of individual span durations (2 * 1h = 7200000 ms)', () => {
-		assert.equal(ss.duration(false).time / 1000, 2 * 3_600_000);
+		assert.equal(ss.duration(false).time / 1000n, 2n * 3_600_000n);
 	});
 
 	it('durationMs(true) = bounding span duration (3h = 10800000 ms)', () => {
-		assert.equal(ss.duration(true).time / 1000, 3 * 3_600_000);
+		assert.equal(ss.duration(true).time / 1000n, 3n * 3_600_000n);
 	});
 
 	it('hash() returns a number', () => {
@@ -434,7 +434,7 @@ describe('TsTzSpanSet - Comparisons', () => {
 describe('TsTzSpanSet - shiftScale', () => {
 	it('shift by 1 hour: each span moves forward 1 hour', () => {
 		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
-		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
+		const interv = { time: 3600000000n, day: 0, month: 0 }; // 1 hour
 		const r = ss.shift(interv);
 		assert.ok(r.ptr !== 0);
 		assert.ok(r.lower() > ss.lower());
@@ -444,7 +444,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 
 	it('scale to 4h total duration: upper bound extends', () => {
 		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1})}`); // 1h span
-		const dur = { time: 14400000000, day: 0, month: 0 };       // 4 hours
+		const dur = { time: 14400000000n, day: 0, month: 0 };       // 4 hours
 		const r = ss.scale(dur);
 		assert.ok(r.upper() > ss.upper());
 		r.free();
@@ -453,8 +453,8 @@ describe('TsTzSpanSet - shiftScale', () => {
 
 	it('shift by 1 hour and scale to 4h: the span set starts 1 hour later', () => {
 		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T1}), [${T2}, ${T3})}`);
-		const interv = { time: 3600000000, day: 0, month: 0 }; // 1 hour
-		const dur = { time: 14400000000, day: 0, month: 0 };    // 4 hours
+		const interv = { time: 3600000000n, day: 0, month: 0 }; // 1 hour
+		const dur = { time: 14400000000n, day: 0, month: 0 };    // 4 hours
 		const r = ss.shiftScale(interv, dur);
 		assert.ok(r.lower() > ss.lower());
 		r.free();
@@ -465,7 +465,7 @@ describe('TsTzSpanSet - shiftScale', () => {
 describe('TsTzSpanSet - tprecision', () => {
 	it('returns a non-zero pointer', () => {
 		const ss = TsTzSpanSet.fromText(`{[${T0}, ${T3})}`);
-		const dur = { time: 3600000000, day: 0, month: 0 }; // 1-hour bucket
+		const dur = { time: 3600000000n, day: 0, month: 0 }; // 1-hour bucket
 		const r = ss.tprecision(dur, ss.lower());
 		assert.ok(r.ptr !== 0);
 		ss.free();

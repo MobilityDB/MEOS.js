@@ -22,13 +22,13 @@ describe('BigIntSpan - Construction', () => {
 	});
 
 	it('fromBounds constructs a valid span', () => {
-		const s = BigIntSpan.make(1, 10);
+		const s = BigIntSpan.make(1n, 10n);
 		assert.equal(s.toString(), '[1, 10)');
 		s.free();
 	});
 
 	it('fromBounds with inclusive upper normalises to half-open', () => {
-		const s = BigIntSpan.make(1, 10, true, true);
+		const s = BigIntSpan.make(1n, 10n, true, true);
 		assert.equal(s.toString(), '[1, 11)');
 		s.free();
 	});
@@ -67,8 +67,8 @@ describe('BigIntSpan - Construction', () => {
 describe('BigIntSpan - Accessors', () => {
 	it('lower and upper return integer bounds', () => {
 		const s = BigIntSpan.fromText('[1, 10)');
-		assert.equal(s.lower(), 1);
-		assert.equal(s.upper(), 10);
+		assert.equal(s.lower(), 1n);
+		assert.equal(s.upper(), 10n);
 		s.free();
 	});
 
@@ -81,7 +81,7 @@ describe('BigIntSpan - Accessors', () => {
 
 	it('width returns upper - lower', () => {
 		const s = BigIntSpan.fromText('[1, 10)');
-		assert.equal(s.width(), 9);
+		assert.equal(s.width(), 9n);
 		s.free();
 	});
 
@@ -180,7 +180,7 @@ describe('BigIntSpan - Distance', () => {
 	it('distance is 0 for overlapping spans', () => {
 		const a = BigIntSpan.fromText('[1, 5)');
 		const b = BigIntSpan.fromText('[3, 8)');
-		assert.equal(a.distance(b), 0);
+		assert.equal(a.distance(b), 0n);
 		a.free();
 		b.free();
 	});
@@ -188,7 +188,7 @@ describe('BigIntSpan - Distance', () => {
 	it('distance between disjoint spans', () => {
 		const a = BigIntSpan.fromText('[1, 5)');
 		const b = BigIntSpan.fromText('[8, 12)');
-		assert.equal(a.distance(b), 4);
+		assert.equal(a.distance(b), 4n);
 		a.free();
 		b.free();
 	});
@@ -200,8 +200,8 @@ describe('BigIntSpan - Set operations', () => {
 		const b = BigIntSpan.fromText('[4, 12)');
 		const r = a.intersection(b) as BigIntSpan | null;
 		assert.ok(r !== null);
-		assert.equal(r!.lower(), 4);
-		assert.equal(r!.upper(), 8);
+		assert.equal(r!.lower(), 4n);
+		assert.equal(r!.upper(), 8n);
 		a.free(); b.free(); r!.free();
 	});
 
@@ -273,36 +273,36 @@ describe('BigIntSpan - Comparisons', () => {
 describe('BigIntSpan - expand / shiftScale', () => {
 	it('expand grows the span on each side', () => {
 		const s = BigIntSpan.fromText('[5, 10)');
-		const e = s.expand(3);
-		assert.equal(e!.lower(), 2);
-		assert.equal(e!.upper(), 13);
+		const e = s.expand(3n);
+		assert.equal(e!.lower(), 2n);
+		assert.equal(e!.upper(), 13n);
 		s.free();
 		e!.free();
 	});
 
 	it('shift only: lower moves by shift amount', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(10, 0, true, false);
-		assert.equal(r.lower(), 11);
-		assert.equal(r.upper(), 15);
+		const r = s.shiftScale(10n, 0n, true, false);
+		assert.equal(r.lower(), 11n);
+		assert.equal(r.upper(), 15n);
 		s.free();
 		r.free();
 	});
 
 	it('scale only: width is adjusted', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(0, 8, false, true);
-		assert.equal(r.lower(), 1);
-		assert.equal(r.width(), 9);
+		const r = s.shiftScale(0n, 8n, false, true);
+		assert.equal(r.lower(), 1n);
+		assert.equal(r.width(), 9n);
 		s.free();
 		r.free();
 	});
 
 	it('shift and scale together', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(10, 8, true, true);
-		assert.equal(r.lower(), 11);
-		assert.equal(r.width(), 9);
+		const r = s.shiftScale(10n, 8n, true, true);
+		assert.equal(r.lower(), 11n);
+		assert.equal(r.width(), 9n);
 		s.free();
 		r.free();
 	});
