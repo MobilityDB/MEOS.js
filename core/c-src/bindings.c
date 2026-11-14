@@ -985,6 +985,11 @@ SpanSet * date_to_spanset_w(DateADT d) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int32 date_to_unix_days_w(DateADT d) {
+  return date_to_unix_days(d);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Set * dateset_to_tstzset_w(const Set * s) {
   return dateset_to_tstzset(s);
 }
@@ -1080,6 +1085,16 @@ SpanSet * intspanset_to_floatspanset_w(const SpanSet * ss) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Interval * interval_from_parts_w(int32 months, int32 days, int64_t us) {
+  return interval_from_parts(months, days, us);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int interval_to_parts_w(const Interval * interv, int32 * months, int32 * days, int64_t * us) {
+  return (int) interval_to_parts(interv, months, days, us);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Span * set_to_span_w(const Set * s) {
   return set_to_span(s);
 }
@@ -1097,6 +1112,11 @@ SpanSet * span_to_spanset_w(const Span * s) {
 EMSCRIPTEN_KEEPALIVE
 Set * text_to_set_w(const char * txt) {
   return text_to_set(cstring_to_text(txt));
+}
+
+EMSCRIPTEN_KEEPALIVE
+int64_t timestamp_to_unix_us_w(long long ts) {
+  return timestamp_to_unix_us((Timestamp) ts);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1132,6 +1152,16 @@ Span * tstzspan_to_datespan_w(const Span * s) {
 EMSCRIPTEN_KEEPALIVE
 SpanSet * tstzspanset_to_datespanset_w(const SpanSet * ss) {
   return tstzspanset_to_datespanset(ss);
+}
+
+EMSCRIPTEN_KEEPALIVE
+DateADT unix_days_to_date_w(int32 days) {
+  return unix_days_to_date(days);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long unix_us_to_timestamp_w(int64_t us) {
+  return unix_us_to_timestamp(us);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -11164,6 +11194,11 @@ int always_overlaps_tcbuffer_stbox_w(const Temporal * temp, const STBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_overlaps_tcbuffer_tcbuffer(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_eq_cbuffer_tcbuffer_w(const Cbuffer * cb, const Temporal * temp) {
   return ever_eq_cbuffer_tcbuffer(cb, temp);
 }
@@ -11201,6 +11236,11 @@ int ever_overlaps_stbox_tcbuffer_w(const STBox * box, const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 int ever_overlaps_tcbuffer_stbox_w(const Temporal * temp, const STBox * box) {
   return ever_overlaps_tcbuffer_stbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tcbuffer_tcbuffer_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_overlaps_tcbuffer_tcbuffer(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -11704,6 +11744,36 @@ Temporal * tcellindex_cell_to_boundary_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tcellindex_cell_area_w(const Temporal * temp) {
   return tcellindex_cell_area(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_at_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return tcellindex_at_stbox(temp, box, (bool) border_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tcellindex_minus_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return tcellindex_minus_stbox(temp, box, (bool) border_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tcellindex_stbox_w(const Temporal * temp, const STBox * box) {
+  return ever_overlaps_tcellindex_stbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tcellindex_stbox_w(const Temporal * temp, const STBox * box) {
+  return always_overlaps_tcellindex_stbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_stbox_tcellindex_w(const STBox * box, const Temporal * temp) {
+  return ever_overlaps_stbox_tcellindex(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_stbox_tcellindex_w(const STBox * box, const Temporal * temp) {
+  return always_overlaps_stbox_tcellindex(box, temp);
 }
 
 
@@ -14125,6 +14195,11 @@ int always_overlaps_tnpoint_stbox_w(const Temporal * temp, const STBox * box) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tnpoint_tnpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return always_overlaps_tnpoint_tnpoint(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_eq_npoint_tnpoint_w(const Npoint * np, const Temporal * temp) {
   return ever_eq_npoint_tnpoint(np, temp);
 }
@@ -14162,6 +14237,11 @@ int ever_overlaps_stbox_tnpoint_w(const STBox * box, const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 int ever_overlaps_tnpoint_stbox_w(const Temporal * temp, const STBox * box) {
   return ever_overlaps_tnpoint_stbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tnpoint_tnpoint_w(const Temporal * temp1, const Temporal * temp2) {
+  return ever_overlaps_tnpoint_tnpoint(temp1, temp2);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -15281,6 +15361,16 @@ Temporal * tpcpatch_minus_tpcbox_w(const Temporal * temp, const TPCBox * box, in
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_at_tpcbox_fine_w(const Temporal * temp, const TPCBox * box, int border_inc) {
+  return tpcpatch_at_tpcbox_fine(temp, box, (bool) border_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpatch_minus_tpcbox_fine_w(const Temporal * temp, const TPCBox * box, int border_inc) {
+  return tpcpatch_minus_tpcbox_fine(temp, box, (bool) border_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint32_t tpcpatch_pcid_w(const Temporal * temp) {
   return tpcpatch_pcid(temp);
 }
@@ -15366,6 +15456,26 @@ int always_ne_tpcpoint_tpcpoint_w(const Temporal * temp1, const Temporal * temp2
 }
 
 EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tpcbox_tpcpoint_w(const TPCBox * box, const Temporal * temp) {
+  return ever_overlaps_tpcbox_tpcpoint(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tpcpoint_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return ever_overlaps_tpcpoint_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tpcbox_tpcpoint_w(const TPCBox * box, const Temporal * temp) {
+  return always_overlaps_tpcbox_tpcpoint(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tpcpoint_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return always_overlaps_tpcpoint_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_eq_pcpatch_tpcpatch_w(const Pcpatch * pa, const Temporal * temp) {
   return ever_eq_pcpatch_tpcpatch(pa, temp);
 }
@@ -15423,6 +15533,26 @@ int always_ne_tpcpatch_pcpatch_w(const Temporal * temp, const Pcpatch * pa) {
 EMSCRIPTEN_KEEPALIVE
 int always_ne_tpcpatch_tpcpatch_w(const Temporal * temp1, const Temporal * temp2) {
   return always_ne_tpcpatch_tpcpatch(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tpcbox_tpcpatch_w(const TPCBox * box, const Temporal * temp) {
+  return ever_overlaps_tpcbox_tpcpatch(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tpcpatch_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return ever_overlaps_tpcpatch_tpcbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tpcbox_tpcpatch_w(const TPCBox * box, const Temporal * temp) {
+  return always_overlaps_tpcbox_tpcpatch(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tpcpatch_tpcbox_w(const Temporal * temp, const TPCBox * box) {
+  return always_overlaps_tpcpatch_tpcbox(temp, box);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -17071,8 +17201,18 @@ Temporal * tposechain_translate_w(const Temporal * temp, double deltax, double d
 }
 
 EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_at_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return tposechain_at_stbox(temp, box, (bool) border_inc);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tposechain_at_value_w(const Temporal * temp, const PoseChain * pc) {
   return tposechain_at_value(temp, pc);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tposechain_minus_stbox_w(const Temporal * temp, const STBox * box, int border_inc) {
+  return tposechain_minus_stbox(temp, box, (bool) border_inc);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -17176,6 +17316,16 @@ int always_ne_tposechain_tposechain_w(const Temporal * temp1, const Temporal * t
 }
 
 EMSCRIPTEN_KEEPALIVE
+int always_overlaps_stbox_tposechain_w(const STBox * box, const Temporal * temp) {
+  return always_overlaps_stbox_tposechain(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int always_overlaps_tposechain_stbox_w(const Temporal * temp, const STBox * box) {
+  return always_overlaps_tposechain_stbox(temp, box);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int ever_eq_posechain_tposechain_w(const PoseChain * posechain, const Temporal * temp) {
   return ever_eq_posechain_tposechain(posechain, temp);
 }
@@ -17203,6 +17353,16 @@ int ever_ne_tposechain_posechain_w(const Temporal * temp, const PoseChain * pose
 EMSCRIPTEN_KEEPALIVE
 int ever_ne_tposechain_tposechain_w(const Temporal * temp1, const Temporal * temp2) {
   return ever_ne_tposechain_tposechain(temp1, temp2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_stbox_tposechain_w(const STBox * box, const Temporal * temp) {
+  return ever_overlaps_stbox_tposechain(box, temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int ever_overlaps_tposechain_stbox_w(const Temporal * temp, const STBox * box) {
+  return ever_overlaps_tposechain_stbox(temp, box);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -18410,8 +18570,8 @@ Temporal * trgeometry_from_mfjson_w(const char * mfjson) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * trgeometry_out_w(const Temporal * temp, size_t * size_out) {
-  return trgeometry_out(temp, size_out);
+char * trgeometry_out_w(const Temporal * temp, int maxdd, size_t * size_out) {
+  return trgeometry_out(temp, maxdd, size_out);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -20466,6 +20626,11 @@ Numeric time_extract_w(TimeADT time, const char * units) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TimeADT time_from_parts_w(int64_t us) {
+  return time_from_parts(us);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int time_ge_w(TimeADT time1, TimeADT time2) {
   return (int) time_ge(time1, time2);
 }
@@ -20533,6 +20698,11 @@ TimeADT time_smaller_w(TimeADT time1, TimeADT time2) {
 EMSCRIPTEN_KEEPALIVE
 Interval * time_to_interval_w(TimeADT time) {
   return time_to_interval(time);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int time_to_parts_w(TimeADT time, int64_t * us) {
+  return (int) time_to_parts(time, us);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -20631,6 +20801,11 @@ TimeTzADT * timetz_copy_w(const TimeTzADT * timetz) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+TimeTzADT * timetz_from_parts_w(int64_t us, int32 offset) {
+  return timetz_from_parts(us, offset);
+}
+
+EMSCRIPTEN_KEEPALIVE
 char * timetz_out_w(const TimeTzADT * timetz, size_t * size_out) {
   return timetz_out(timetz, size_out);
 }
@@ -20653,6 +20828,11 @@ TimeTzADT * timetz_scale_w(const TimeTzADT * timetz, int32 typmod) {
 EMSCRIPTEN_KEEPALIVE
 TimeTzADT * timetz_smaller_w(const TimeTzADT * timetz1, const TimeTzADT * timetz2) {
   return timetz_smaller(timetz1, timetz2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int timetz_to_parts_w(const TimeTzADT * timetz, int64_t * us, int32 * offset) {
+  return (int) timetz_to_parts(timetz, us, offset);
 }
 
 EMSCRIPTEN_KEEPALIVE
