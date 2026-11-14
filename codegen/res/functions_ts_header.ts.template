@@ -119,33 +119,103 @@ export function readString(write: (sizeOut: Ptr) => Ptr): string {
 	}
 }
 
-/** Duration as total microseconds (month ≈ 30 days). */
-export function temporal_duration_us(temp: Ptr, ignoreGaps: boolean): number {
-	const _r = call<number>(
-		'temporal_duration_us_w', 'number',
-		[ptrArgType(), 'number'],
-		[ptrArgVal(temp), ignoreGaps ? 1 : 0]
-	);
-	checkMeosError();
-	return _r;
+// --- Casts of the time types of JavaScript through the MEOS conversions ---
+//
+// Each cast calls the generated wrapper of a MEOS conversion and builds the
+// JavaScript value with its constructor, as the casts of PyMEOS-CFFI, JMEOS,
+// GoMEOS and MEOS.NET do, under the same names. A Date counts milliseconds from
+// the Unix epoch, coarser than MEOS's microseconds: a timestamp read as a Date
+// drops the microseconds below a millisecond toward the past, as MobilityNebula
+// reads its milliseconds, and a Date read as a timestamp is exact. JavaScript
+// holds an interval, a time and a time with time zone in no type of its own, so
+// they cast to and from their parts.
+
+/** The parts of an interval: months, days and microseconds. */
+export interface IntervalParts { months: number; days: number; microseconds: bigint; }
+
+/** The parts of a time with time zone: its microseconds from midnight and its
+ * offset in seconds east of UTC. */
+export interface TimetzParts { microseconds: bigint; offsetSeconds: number; }
+
+/** Calls `fill` with a slot of `bytes` bytes MEOS writes, reads it, frees it. */
+function withSlot<T>(bytes: number, fill: (slot: Ptr) => void, read: (v: DataView) => T): T {
+	const mod = getModule();
+	const slot: Ptr = mod.allocate(new Uint8Array(bytes), mod.ALLOC_NORMAL) as Ptr;
+	try {
+		fill(slot);
+		// Read the heap after the call: a growth during it replaces the view
+		const heap = mod.HEAPU8;
+		return read(new DataView(heap.buffer, heap.byteOffset + slot, bytes));
+	} finally {
+		(mod._meos_free as (p: bigint) => void)(BigInt(slot));
+	}
 }
 
-/** An Interval* a MEOS function answers, as total microseconds (month ≈ 30 days); frees it. */
-export function interval_us_free(iv: Ptr): number {
-	const _r = call<number>('interval_us_free_w', 'number', [ptrArgType()], [ptrArgVal(iv)]);
-	checkMeosError();
-	return _r;
+/** Floor division of a bigint by a positive bigint. */
+const floorDiv = (a: bigint, b: bigint): bigint => (a - (((a % b) + b) % b)) / b;
+
+/** A Date as a timestamptz, through unix_us_to_timestamptz. */
+export function datetime_to_timestamptz(d: Date): TimestampTz {
+	return unix_us_to_timestamptz(BigInt(d.getTime()) * 1000n);
 }
 
-/** Duration of a TsTzSpanSet as total microseconds (month ≈ 30 days). */
-export function tstzspanset_duration_us(ss: Ptr, boundSpan: boolean): number {
-	const _r = call<number>(
-		'tstzspanset_duration_us_w', 'number',
-		[ptrArgType(), 'number'],
-		[ptrArgVal(ss), boundSpan ? 1 : 0]
-	);
-	checkMeosError();
-	return _r;
+/** A timestamptz as a Date, through timestamptz_to_unix_us, the microseconds
+ * below a millisecond dropped toward the past. */
+export function timestamptz_to_datetime(ts: TimestampTz): Date {
+	return new Date(Number(floorDiv(timestamptz_to_unix_us(ts), 1000n)));
+}
+
+/** The clock of a Date in UTC as a timestamp, through unix_us_to_timestamp. */
+export function datetime_to_timestamp(d: Date): bigint {
+	return unix_us_to_timestamp(BigInt(d.getTime()) * 1000n);
+}
+
+/** A timestamp as a Date whose UTC clock reads it, through timestamp_to_unix_us,
+ * the microseconds below a millisecond dropped toward the past. */
+export function timestamp_to_datetime(ts: bigint): Date {
+	return new Date(Number(floorDiv(timestamp_to_unix_us(ts), 1000n)));
+}
+
+/** The date of a Date in UTC as a date, through unix_days_to_date. */
+export function date_to_date_adt(d: Date): DateADT {
+	return unix_days_to_date(Math.floor(d.getTime() / 86_400_000));
+}
+
+/** A date as the Date of its midnight UTC, through date_to_unix_days. */
+export function date_adt_to_date(d: DateADT): Date {
+	return new Date(date_to_unix_days(d) * 86_400_000);
+}
+
+/** Parts as an interval, through interval_from_parts. */
+export function timedelta_to_interval(p: IntervalParts): Ptr {
+	return interval_from_parts(p.months, p.days, p.microseconds);
+}
+
+/** An interval as its parts, through interval_to_parts. */
+export function interval_to_timedelta(interv: Ptr): IntervalParts {
+	return withSlot(16, slot => interval_to_parts(interv, slot, slot + 4, slot + 8),
+		v => ({ months: v.getInt32(0, true), days: v.getInt32(4, true), microseconds: v.getBigInt64(8, true) }));
+}
+
+/** Microseconds from midnight as a time, through time_from_parts. */
+export function time_to_time_adt(microseconds: bigint): bigint {
+	return time_from_parts(microseconds);
+}
+
+/** A time as its microseconds from midnight, through time_to_parts. */
+export function time_adt_to_time(t: bigint): bigint {
+	return withSlot(8, slot => time_to_parts(t, slot), v => v.getBigInt64(0, true));
+}
+
+/** Parts as a time with time zone, through timetz_from_parts. */
+export function timetz_to_timetz_adt(p: TimetzParts): Ptr {
+	return timetz_from_parts(p.microseconds, p.offsetSeconds);
+}
+
+/** A time with time zone as its parts, through timetz_to_parts. */
+export function timetz_adt_to_timetz(timetz: Ptr): TimetzParts {
+	return withSlot(16, slot => timetz_to_parts(timetz, slot, slot + 8),
+		v => ({ microseconds: v.getBigInt64(0, true), offsetSeconds: v.getInt32(8, true) }));
 }
 
 /**

@@ -120,56 +120,7 @@ const char *meos_ping() { return "pong"; }
 EMSCRIPTEN_KEEPALIVE
 void meos_free(void *ptr) { free(ptr); }
 
-/* --- Hand-written wrappers (special logic) --- */
-/*
- * temporal_duration returns a PostgreSQL Interval*.
- * Converted to total microseconds so JS receives a plain number.
- * Month approximated as 30 days (same as JMEOS).
- */
-EMSCRIPTEN_KEEPALIVE
-double temporal_duration_us_w(Temporal *temp, int ignore_gaps) {
-  Interval *iv = temporal_duration(temp, (bool) ignore_gaps);
-  if (!iv) return 0.0;
-  double us = (double) iv->time
-            + (double) iv->day   * 86400000000.0
-            + (double) iv->month * 30.0 * 86400000000.0;
-  free(iv);
-  return us;
-}
-
-/*
- * interval_us_free_w: an Interval* a MEOS function answers (the distance of
- * two timestamptz values, sets, spans or span sets), as total microseconds
- * with the formula of temporal_duration_us_w, freeing the interval.
- */
-EMSCRIPTEN_KEEPALIVE
-double interval_us_free_w(Interval *iv) {
-  if (!iv) return 0.0;
-  double us = (double) iv->time
-            + (double) iv->day   * 86400000000.0
-            + (double) iv->month * 30.0 * 86400000000.0;
-  free(iv);
-  return us;
-}
-
 EMSCRIPTEN_KEEPALIVE
 int meos_pointer_size() { return (int) sizeof(void *); }
-
-/*
- * tstzspanset_duration_us: converts the Interval* returned by
- * tstzspanset_duration to total microseconds (same formula as temporal_duration_us_w).
- * boundSpan=false -> sum of span durations (gaps ignored).
- * boundSpan=true  -> duration of the bounding span (gaps included).
- */
-EMSCRIPTEN_KEEPALIVE
-double tstzspanset_duration_us_w(const SpanSet *ss, int bound_span) {
-    Interval *iv = tstzspanset_duration(ss, (bool) bound_span);
-    if (!iv) return 0.0;
-    double us = (double) iv->time
-              + (double) iv->day   * 86400000000.0
-              + (double) iv->month * 30.0 * 86400000000.0;
-    free(iv);
-    return us;
-}
 
 /* --- Generated wrappers --- */

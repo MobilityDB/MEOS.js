@@ -37,6 +37,8 @@ import {
 	temporal_scale_time,
 	temporal_shift_scale_time,
 	interval_in,
+	interval_to_timedelta,
+	temporal_duration,
 	meos_free,
 	temporal_set_interp,
 	temporal_as_tinstant,
@@ -419,11 +421,9 @@ export abstract class Temporal<V> {
 	}
 
 	/**
-	 * Returns the total duration as a number of milliseconds.
-	 *
-	 * Uses the hand-written temporal_duration_us_w wrapper which converts
-	 * the MEOS Interval* return value to a plain int64 (total microseconds).
-	 * The result is divided by 1000 to return milliseconds.
+	 * Returns the total duration as a number of milliseconds, through the parts
+	 * of the interval MEOS answers (interval_to_timedelta); an interval with
+	 * months, which has no fixed length, is refused.
 	 *
 	 * Pass ignoreGaps=true to sum only sequence durations, ignoring the time
 	 * gaps between sequences in a SequenceSet.
@@ -431,14 +431,15 @@ export abstract class Temporal<V> {
 	 * MEOS: temporal_duration
 	 */
 	durationMs(ignoreGaps = false): number {
-		return (
-			call<number>(
-				'temporal_duration_us_w',
-				'number',
-				[ptrArgType(), 'number'],
-				[ptrArgVal(this._inner), ignoreGaps ? 1 : 0]
-			) / 1000
-		);
+		const interv = temporal_duration(this._inner, ignoreGaps);
+		try {
+			const p = interval_to_timedelta(interv);
+			if (p.months !== 0)
+				throw new RangeError(`a duration in milliseconds cannot state an interval of ${p.months} months`);
+			return Number(BigInt(p.days) * 86_400_000_000n + p.microseconds) / 1000;
+		} finally {
+			meos_free(interv);
+		}
 	}
 
 	// -------------------------------------------------------------------------
