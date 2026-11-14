@@ -94,9 +94,9 @@ interface Idl {
  * Every other public function is generated: a `char *` with its size is read
  * for that size, a NULL a string parameter accepts comes from the catalog's
  * `shape.nullable`, a `text *` MEOS writes beside a `bool` is a string or null,
- * and an index is MEOS's own, 1-based. The template keeps only helpers that are
- * no MEOS function (temporal_duration_us, interval_us_free,
- * tstzspanset_duration_us), which the classes of core/types call.
+ * and an index is MEOS's own, 1-based. The template holds the casts of the time
+ * types of JavaScript, each a generated wrapper of a MEOS conversion and the
+ * constructor of a JavaScript value.
  */
 const MANUAL_FUNCTIONS = new Set([
 	'meos_initialize',
