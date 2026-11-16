@@ -104,6 +104,9 @@ interface Shape {
 	nullableResult?: string;
 }
 interface Encoding {
+	/** `host` for the time types a binding casts to its language's own,
+	 *  `none` for a type no binding carries; absent for every other type. */
+	bindingScope?: string;
 	encodings?: string[];
 	encoders?: Record<string, string>;
 	decoders?: Record<string, string>;
@@ -1867,6 +1870,18 @@ function main(): void {
 	const sigs = emittedSignatures(idl);
 	const model = new Model(idl);
 	const gen = new Generator(model, sigs);
+	// A type the catalog marks bindingScope (host: the time types a binding
+	// casts to its language's own; none: a type no binding carries) has no
+	// class, as #check_scope_classes of MEOS-API refuses one in the model, so a
+	// class over one stops the generation rather than reaching the object layer.
+	const scoped = model.classes()
+		.filter(c => idl.typeEncodings?.[model.ctype.get(c) ?? '']?.bindingScope)
+		.map(c => `${c} (${model.ctype.get(c)}, bindingScope ${idl.typeEncodings![model.ctype.get(c)!].bindingScope})`)
+		.sort();
+	if (scoped.length) {
+		console.error(`ObjectGenerator: classes over types out of the object layer: ${scoped.join('; ')}`);
+		process.exit(1);
+	}
 
 	const BANNER = '/* AUTO-GENERATED - DO NOT ' + 'EDIT. Run: npm run generate */\n';
 	const classes = model.classes();
