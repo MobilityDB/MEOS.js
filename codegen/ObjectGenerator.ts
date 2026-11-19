@@ -145,6 +145,19 @@ interface FullIdl extends Idl {
 	macros?: { name: string; value: unknown }[];
 	typeEncodings?: Record<string, Encoding>;
 	sourceCommit?: string;
+	aggregates?: CatalogAggregate[];
+}
+
+/**
+ * An aggregate of the catalog's `aggregates`: its SQL name, the name an engine
+ * holding one function per name takes in place of it (`altSqlName`), and the
+ * MEOS functions of its transition and final steps.
+ */
+interface CatalogAggregate {
+	sqlName: string;
+	altSqlName?: string;
+	transition?: { meos?: string };
+	final?: { meos?: string };
 }
 
 // -------------------------------------------------------------------------
@@ -346,6 +359,12 @@ const DEFERRAL_KINDS: Record<string, string> = {
 		'A method of the class or an ancestor already has the name the operator would take.',
 	'name taken by an ancestor':
 		'An ancestor already has a method of this name with other parameters, and TypeScript has no overloading by argument type.',
+	'aggregate served by several transitions':
+		'Several transition functions serve one aggregate name over values of the class, and nothing in the values tells them apart.',
+	'aggregate state not threadable':
+		'The transition and the final function of the aggregate do not pass one state pointer from call to call.',
+	'aggregate argument or result needs marshalling':
+		'An argument of the transition or the result of the final function has no rule of this generator.',
 };
 
 /** A struct carried as a value: its catalog size and each field's offset and reader. */
@@ -1284,6 +1303,85 @@ class Generator {
 	}
 
 	/** One class: #emit_class of MEOS.NET. */
+	/**
+	 * The aggregates over the values of a class, one static method each: the
+	 * catalog's `aggregates` whose transition takes the class's C type after its
+	 * state, named as an engine holding one function per name calls them, the
+	 * aggregate's `altSqlName` or else its `sqlName`, as MobilityDuck registers
+	 * one. The method threads the transition over the values from a NULL state,
+	 * as MEOS's C callers do, and answers the final function's result; the final
+	 * function frees the state. An aggregate two transitions serve under one name
+	 * over this class has no method of its own: its overloads take the same
+	 * values and nothing tells them apart.
+	 */
+	private aggregateMethods(cls: string): Emitted[] {
+		const ctype = this.m.ctype.get(cls);
+		if (!ctype) return [];
+		const byName = new Map<string, { agg: CatalogAggregate; transition: string; final: string }[]>();
+		for (const agg of this.m.idl.aggregates ?? []) {
+			const transition = agg.transition?.meos, final = agg.final?.meos;
+			const sig = transition && this.sigs.get(transition);
+			if (!transition || !final || !sig || sig.params.length < 2) continue;
+			if (this.m.classForCtype(sig.params[1].canonical) !== cls) continue;
+			const name = agg.altSqlName ?? agg.sqlName;
+			const seen = byName.get(name) ?? [];
+			if (!seen.some(s => s.transition === transition)) seen.push({ agg, transition, final });
+			byName.set(name, seen);
+		}
+		const out: Emitted[] = [];
+		for (const [name, overloads] of byName) {
+			if (overloads.length > 1) {
+				this.defer(cls, name, 'aggregate served by several transitions',
+					overloads.map(o => o.transition).join(', '));
+				continue;
+			}
+			const { transition, final } = overloads[0];
+			const tsig = this.sigs.get(transition)!, fsig = this.sigs.get(final);
+			const state = tsig.params[0];
+			if (state.ts !== 'Ptr' || tsig.ret !== 'Ptr' || !fsig || fsig.params.length !== 1) {
+				this.defer(cls, name, 'aggregate state not threadable',
+					`${transition} and ${final ?? 'no final'} do not pass one state pointer`);
+				continue;
+			}
+			// The value crosses as #param passes the transition's own argument.
+			const item = this.param(tsig.params[1]);
+			if (!item || item.setup) {
+				this.defer(cls, name, 'aggregate argument or result needs marshalling', `${transition} value`);
+				continue;
+			}
+			const params: Emitted['params'] = [{ name: 'values', ts: `${item.ts}[]` }];
+			const itemArg = item.arg.replace(new RegExp(`\\b${tsig.params[1].tsName}\\b`), '_v');
+			const args = ['_state', itemArg], setup: string[] = [], teardown: string[] = [];
+			let ok = true;
+			for (const p of tsig.params.slice(2)) {
+				const mapped = this.param(p);
+				if (!mapped) { ok = false; break; }
+				params.push({ name: p.tsName, ts: mapped.ts });
+				args.push(mapped.arg);
+				if (mapped.setup) setup.push(mapped.setup);
+				if (mapped.teardown) teardown.push(mapped.teardown);
+			}
+			const ret = ok ? this.returned(fsig, true) : undefined;
+			if (!ok || !ret) {
+				this.defer(cls, name, 'aggregate argument or result needs marshalling',
+					`${transition} / ${final}`);
+				continue;
+			}
+			const loop = `for (const _v of values) _state = F.${transition}(${args.join(', ')});`;
+			const body = [
+				...setup,
+				'let _state: Ptr = 0;',
+				...(teardown.length
+					? ['try {', `\t${loop}`, '} finally {', ...teardown.map(t => `\t${t}`), '}']
+					: [loop]),
+				`return ${ret.wrap.replace('$', `F.${final}(_state)`)};`,
+			];
+			out.push({ fn: transition, name, isStatic: true, params, ret: ret.ts, body,
+				doc: `Aggregate ${name}: MEOS ${transition} over the values, then ${final}` });
+		}
+		return out;
+	}
+
 	emitClass(cls: string): string {
 		const parent = this.m.parent.get(cls) || 'MeosObject';
 		const entries = (this.m.om.classes[cls]?.methods ?? []).filter(e => !e.ooExclude);
@@ -1300,6 +1398,13 @@ class Generator {
 			if (!this.compatible(cls, m)) {
 				this.defer(cls, m.name, 'name taken by an ancestor',
 					`${m.fn} ${this.sigKey(m)} beside the inherited ${this.inheritedSig(cls, m.name, m.isStatic)}`);
+				continue;
+			}
+			own.push(m);
+		}
+		for (const m of this.aggregateMethods(cls)) {
+			if (own.some(o => o.name === m.name) || !this.compatible(cls, m)) {
+				this.defer(cls, m.name, 'name taken by a method', `aggregate over ${m.fn}`);
 				continue;
 			}
 			own.push(m);
