@@ -73,6 +73,8 @@ interface LatticeNode {
 	kind: string;
 	parent: string | null;
 	temptypes?: string[];
+	/** The prefixes of the class's functions, a leaf's its SQL type name (`tint`). */
+	prefixes?: string[];
 	doc?: string;
 }
 interface CompanionNode {
@@ -156,6 +158,8 @@ interface FullIdl extends Idl {
 interface CatalogAggregate {
 	sqlName: string;
 	altSqlName?: string;
+	/** The SQL types of its arguments, the values' first. */
+	args?: string[];
 	transition?: { meos?: string };
 	final?: { meos?: string };
 }
@@ -1308,12 +1312,28 @@ class Generator {
 	 * catalog's `aggregates` whose transition takes the class's C type after its
 	 * state, named as an engine holding one function per name calls them, the
 	 * aggregate's `altSqlName` or else its `sqlName`, as MobilityDuck registers
-	 * one. The method threads the transition over the values from a NULL state,
+	 * one. Its class is the leaf whose prefix is the SQL type of the aggregate's
+	 * values (`tint` names TInt), as the object model reads a function's class off
+	 * its prefix, so each transition of tMinAgg is a method of its own class
+	 * (TInt.tMinAgg, TFloat.tMinAgg), and otherwise the class of the C type the
+	 * transition takes its values as (#aggregateClass). The method threads the
+	 * transition over the values from a NULL state,
 	 * as MEOS's C callers do, and answers the final function's result; the final
 	 * function frees the state. An aggregate two transitions serve under one name
 	 * over this class has no method of its own: its overloads take the same
 	 * values and nothing tells them apart.
 	 */
+	/**
+	 * The class of an aggregate: the leaf of the lattice whose prefix is the SQL
+	 * type of its values, else the class of the C type its transition takes them as.
+	 */
+	private aggregateClass(agg: CatalogAggregate, valueCtype: string): string | undefined {
+		const sql = agg.args?.[0];
+		const leaf = sql && Object.entries(this.m.om.lattice)
+			.find(([, n]) => n.kind === 'leaf' && (n.prefixes ?? []).includes(sql));
+		return leaf ? leaf[0] : this.m.classForCtype(valueCtype);
+	}
+
 	private aggregateMethods(cls: string): Emitted[] {
 		const ctype = this.m.ctype.get(cls);
 		if (!ctype) return [];
@@ -1322,7 +1342,7 @@ class Generator {
 			const transition = agg.transition?.meos, final = agg.final?.meos;
 			const sig = transition && this.sigs.get(transition);
 			if (!transition || !final || !sig || sig.params.length < 2) continue;
-			if (this.m.classForCtype(sig.params[1].canonical) !== cls) continue;
+			if (this.aggregateClass(agg, sig.params[1].canonical) !== cls) continue;
 			const name = agg.altSqlName ?? agg.sqlName;
 			const seen = byName.get(name) ?? [];
 			if (!seen.some(s => s.transition === transition)) seen.push({ agg, transition, final });
@@ -1349,7 +1369,9 @@ class Generator {
 				this.defer(cls, name, 'aggregate argument or result needs marshalling', `${transition} value`);
 				continue;
 			}
-			const params: Emitted['params'] = [{ name: 'values', ts: `${item.ts}[]` }];
+			// A value of an ancestor's C type is taken as this class's own.
+			const valueTs = this.m.ancestors(cls).includes(item.ts) ? cls : item.ts;
+			const params: Emitted['params'] = [{ name: 'values', ts: `${valueTs}[]` }];
 			const itemArg = item.arg.replace(new RegExp(`\\b${tsig.params[1].tsName}\\b`), '_v');
 			const args = ['_state', itemArg], setup: string[] = [], teardown: string[] = [];
 			let ok = true;
