@@ -83,49 +83,6 @@ export abstract class MeosObject {
 	}
 }
 
-/** The MEOS BandStats struct, carried as a value. */
-export interface BandStats {
-	count: number;
-	sum: number;
-	mean: number;
-	stddev: number;
-	min: number;
-	max: number;
-}
-
-function _readBandStats(ptr: Ptr): BandStats {
-	const _v = _view(ptr, 48);
-	return {
-		count: _v.getUint32(0, true),
-		sum: _v.getFloat64(8, true),
-		mean: _v.getFloat64(16, true),
-		stddev: _v.getFloat64(24, true),
-		min: _v.getFloat64(32, true),
-		max: _v.getFloat64(40, true),
-	};
-}
-
-function _putBandStats(value: BandStats): Ptr {
-	const ptr = _alloc(48);
-	const _v = _view(ptr, 48);
-	_v.setUint32(0, value.count, true);
-	_v.setFloat64(8, value.sum, true);
-	_v.setFloat64(16, value.mean, true);
-	_v.setFloat64(24, value.stddev, true);
-	_v.setFloat64(32, value.min, true);
-	_v.setFloat64(40, value.max, true);
-	return ptr;
-}
-
-function _takeBandStats(ptr: Ptr): BandStats | null {
-	if (!ptr) return null;
-	try {
-		return _readBandStats(ptr);
-	} finally {
-		_free(ptr);
-	}
-}
-
 /** The MEOS BOX3D struct, carried as a value. */
 export interface BOX3D {
 	xmin: number;
@@ -398,6 +355,48 @@ function _writePCDimensionSpecArray(values: PCDimensionSpec[], strs: Ptr[]): Ptr
 }
 
 /**
+ * Base values a binding holds as instances: those MEOS passes by reference, and the grid cells, which it passes by value.
+ */
+export class Value extends MeosObject {
+}
+
+/**
+ * What a raster band's pixels amount to, taken in one pass: how many pixels hold a value and their sum, mean, standard deviation, least and greatest, the record PostGIS's ST_SummaryStats states. Raster.summaryStats answers one and the summaryStats aggregate gathers one over rasters; MEOS registers it in no enum, so it names no temptype.
+ */
+export class BandStats extends Value {
+
+	/** MEOS: bandstats_count */
+	count(): bigint {
+		return F.bandstats_count(this.ptr);
+	}
+
+	/** MEOS: bandstats_max */
+	max(): number {
+		return F.bandstats_max(this.ptr);
+	}
+
+	/** MEOS: bandstats_mean */
+	mean(): number {
+		return F.bandstats_mean(this.ptr);
+	}
+
+	/** MEOS: bandstats_min */
+	min(): number {
+		return F.bandstats_min(this.ptr);
+	}
+
+	/** MEOS: bandstats_stddev */
+	stddev(): number {
+		return F.bandstats_stddev(this.ptr);
+	}
+
+	/** MEOS: bandstats_sum */
+	sum(): number {
+		return F.bandstats_sum(this.ptr);
+	}
+}
+
+/**
  * The Collection class of the MEOS object model.
  */
 export class Collection extends MeosObject {
@@ -491,6 +490,66 @@ export class Set extends Collection {
 	/** MEOS: set_mem_size */
 	memSize(): number {
 		return F.set_mem_size(this.ptr);
+	}
+
+	/** MEOS: set_merge_each_n_spans */
+	mergeEachNSpans(elems_per_span: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.set_merge_each_n_spans(this.ptr, elems_per_span, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: set_merge_n_spans */
+	mergeNSpans(span_count: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.set_merge_n_spans(this.ptr, span_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: set_merge_query_spans */
+	mergeQuerySpans(query: Span): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.set_merge_query_spans(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
 	}
 
 	/** MEOS: minus_set_set */
@@ -1671,6 +1730,66 @@ export class SpanSet extends Collection {
 		return F.spanset_mem_size(this.ptr);
 	}
 
+	/** MEOS: spanset_merge_each_n_spans */
+	mergeEachNSpans(elems_per_span: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.spanset_merge_each_n_spans(this.ptr, elems_per_span, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: spanset_merge_n_spans */
+	mergeNSpans(span_count: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.spanset_merge_n_spans(this.ptr, span_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: spanset_merge_query_spans */
+	mergeQuerySpans(query: Span): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.spanset_merge_query_spans(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
 	/** MEOS: minus_spanset_span, minus_spanset_spanset, chosen by the arguments' types */
 	minus(s: Span | SpanSet): this | null {
 		if (s instanceof Span) return this._minus_spanset_span(s as Span);
@@ -2106,12 +2225,6 @@ export class BigIntSpanSet extends SpanSet {
  * Bounding-box family.
  */
 export class Box extends MeosObject {
-}
-
-/**
- * Base values a binding holds as instances: those MEOS passes by reference, and the grid cells, which it passes by value.
- */
-export class Value extends MeosObject {
 }
 
 /**
@@ -4236,7 +4349,7 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asGeoJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
+	asGeoJSON(option: number = 9, precision: number = 15, srs: string | null = null): string {
 		return F.geo_as_geojson(this.ptr, option, precision, srs);
 	}
 
@@ -4245,9 +4358,19 @@ export class Geo extends Value {
 		return F.geo_as_hexewkb(this.ptr, endian);
 	}
 
+	/** MEOS: geo_as_hexwkb */
+	asHexWKB(endian: string | null = null): string {
+		return F.geo_as_hexwkb(this.ptr, endian);
+	}
+
 	/** MEOS: geo_as_text */
 	asText(precision: number = 15): string {
 		return F.geo_as_text(this.ptr, precision);
+	}
+
+	/** MEOS: geo_as_wkb */
+	asWKB(endian: string | null = null): Uint8Array {
+		return readWkb(_sizeOut => F.geo_as_wkb(this.ptr, endian, _sizeOut));
 	}
 
 	/** MEOS: bearing_point_point, bearing_point_tpoint, chosen by the arguments' types */
@@ -4337,6 +4460,66 @@ export class Geo extends Value {
 		return F.geo_mem_size(this.ptr);
 	}
 
+	/** MEOS: geo_merge_each_n_stboxes */
+	mergeEachNStboxes(elem_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.geo_merge_each_n_stboxes(this.ptr, elem_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: geo_merge_n_stboxes */
+	mergeNStboxes(box_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.geo_merge_n_stboxes(this.ptr, box_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: geo_merge_query_stboxes */
+	mergeQueryStboxes(query: STBox): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.geo_merge_query_stboxes(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
 	/** MEOS: minus_geo_set */
 	minus(s: GeoSet): Set | null {
 		return wrapSetOrNull(F.minus_geo_set(this.ptr, s.ptr)) as Set | null;
@@ -4378,8 +4561,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_points */
-	points(): Geo {
-		return wrapGeo(F.geo_points(this.ptr)) as Geo;
+	points(): this | null {
+		return wrapGeoOrNull(F.geo_points(this.ptr)) as this | null;
 	}
 
 	/** MEOS: geo_reverse */
@@ -4443,8 +4626,8 @@ export class Geo extends Value {
 	}
 
 	/** MEOS: geo_set_srid */
-	setSRID(srid: number): Geo {
-		return wrapGeo(F.geo_set_srid(this.ptr, srid)) as Geo;
+	setSRID(srid: number): this {
+		return wrapGeo(F.geo_set_srid(this.ptr, srid)) as this;
 	}
 
 	/** MEOS: geo_shortestline */
@@ -4930,7 +5113,7 @@ export class GeogSet extends GeoSet {
 export class Geography extends Geo {
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
+	asMFJSON(option: number = 9, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -5010,13 +5193,33 @@ export class Geography extends Geo {
 	}
 
 	/** MEOS: geog_array_union */
-	static arrayUnion(gsarr: Geo[]): Geo {
+	static arrayUnion(gsarr: Geo[]): Geo | null {
 		const _gsarr = _ptrArray(gsarr.map(x => x.ptr));
 		try {
-			return wrapGeo(F.geog_array_union(_gsarr, gsarr.length)) as Geo;
+			return wrapGeoOrNull(F.geog_array_union(_gsarr, gsarr.length)) as Geo | null;
 		} finally {
 			_free(_gsarr);
 		}
+	}
+
+	/** MEOS: geog_from_ewkb */
+	static fromEWKB(wkb: Uint8Array): Geo {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapGeo(F.geog_from_ewkb(_wkb, BigInt(wkb.length))) as Geo;
+		} finally {
+			_free(_wkb);
+		}
+	}
+
+	/** MEOS: geog_from_ewkt */
+	static fromEWKT(ewkt: string): Geo {
+		return wrapGeo(F.geog_from_ewkt(ewkt)) as Geo;
+	}
+
+	/** MEOS: geog_from_geojson */
+	static fromGeoJSON(geojson: string): Geo {
+		return wrapGeo(F.geog_from_geojson(geojson)) as Geo;
 	}
 
 	/** MEOS: geog_from_hexewkb */
@@ -5024,9 +5227,19 @@ export class Geography extends Geo {
 		return wrapGeo(F.geog_from_hexewkb(hexwkb)) as Geo;
 	}
 
-	/** MEOS: geo_from_geojson */
+	/** MEOS: geog_from_hexewkb */
+	static fromHexWKB(hexwkb: string): Geo {
+		return Geography.fromHexEWKB(hexwkb);
+	}
+
+	/** MEOS: geog_from_geojson */
 	static fromMFJSON(geojson: string): Geo {
-		return Geo.fromGeoJSON(geojson);
+		return Geography.fromGeoJSON(geojson);
+	}
+
+	/** MEOS: geog_from_ewkb */
+	static fromWKB(wkb: Uint8Array): Geo {
+		return Geography.fromEWKB(wkb);
 	}
 }
 
@@ -5348,7 +5561,7 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geo_as_geojson */
-	asMFJSON(option: number = 0, precision: number = 15, srs: string | null = null): string {
+	asMFJSON(option: number = 9, precision: number = 15, srs: string | null = null): string {
 		return this.asGeoJSON(option, precision, srs);
 	}
 
@@ -5650,8 +5863,8 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_unary_union */
-	unaryUnion(): Geo {
-		return wrapGeo(F.geom_unary_union(this.ptr)) as Geo;
+	unaryUnion(): this | null {
+		return wrapGeoOrNull(F.geom_unary_union(this.ptr)) as this | null;
 	}
 
 	/** MEOS: union_geo_set, which answers a GeomSet for a Geometry */
@@ -5665,10 +5878,10 @@ export class Geometry extends Geo {
 	}
 
 	/** MEOS: geom_array_union */
-	static arrayUnion(gsarr: Geo[]): Geo {
+	static arrayUnion(gsarr: Geo[]): Geo | null {
 		const _gsarr = _ptrArray(gsarr.map(x => x.ptr));
 		try {
-			return wrapGeo(F.geom_array_union(_gsarr, gsarr.length)) as Geo;
+			return wrapGeoOrNull(F.geom_array_union(_gsarr, gsarr.length)) as Geo | null;
 		} finally {
 			_free(_gsarr);
 		}
@@ -5684,14 +5897,29 @@ export class Geometry extends Geo {
 		}
 	}
 
+	/** MEOS: geom_from_ewkt */
+	static fromEWKT(ewkt: string): Geo {
+		return wrapGeo(F.geom_from_ewkt(ewkt)) as Geo;
+	}
+
 	/** MEOS: geom_from_hexewkb */
 	static fromHexEWKB(hexwkb: string): Geo {
 		return wrapGeo(F.geom_from_hexewkb(hexwkb)) as Geo;
 	}
 
+	/** MEOS: geom_from_hexewkb */
+	static fromHexWKB(hexwkb: string): Geo {
+		return Geometry.fromHexEWKB(hexwkb);
+	}
+
 	/** MEOS: geo_from_geojson */
 	static fromMFJSON(geojson: string): Geo {
 		return Geo.fromGeoJSON(geojson);
+	}
+
+	/** MEOS: geo_from_ewkb */
+	static fromWKB(wkb: Uint8Array, srid: number): Geo {
+		return Geo.fromEWKB(wkb, srid);
 	}
 }
 
@@ -7218,11 +7446,6 @@ export class Jsonb extends Value {
 		return F.jsonb_to_int64(this.ptr);
 	}
 
-	/** MEOS: jsonb_to_numeric */
-	toNumeric(): Numeric {
-		return wrapNumeric(F.jsonb_to_numeric(this.ptr)) as Numeric;
-	}
-
 	/** MEOS: jsonb_to_set */
 	toSet(): Set {
 		return wrapSet(F.jsonb_to_set(this.ptr)) as Set;
@@ -8192,27 +8415,6 @@ export class NSegment extends Value {
 }
 
 /**
- * PostgreSQL's arbitrary-precision number, the value jsonb_to_numeric and the extract functions of the time types answer and numeric_in and numeric_out read and write. MEOS registers it in no enum, so it names no temptype.
- */
-export class Numeric extends Value {
-
-	/** The text MEOS writes this value as (MEOS: numeric_out). */
-	override toString(): string {
-		return this.asText();
-	}
-
-	/** MEOS: numeric_out */
-	asText(): string {
-		return F.numeric_out(this.ptr);
-	}
-
-	/** MEOS: numeric_in */
-	static fromText(str: string, typmod: number): Numeric {
-		return wrapNumeric(F.numeric_in(str, typmod)) as Numeric;
-	}
-}
-
-/**
  * The PCPatch class of the MEOS object model.
  */
 export class PCPatch extends Value {
@@ -8233,13 +8435,18 @@ export class PCPatch extends Value {
 	}
 
 	/** MEOS: pcpatch_as_hexwkb */
-	asHexWKB(): string {
-		return F.pcpatch_as_hexwkb(this.ptr);
+	asHexWKB(variant: number = 0): string {
+		return F.pcpatch_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: pcpatch_hex_out */
 	asText(maxdd: number = 15): string {
 		return F.pcpatch_hex_out(this.ptr, maxdd);
+	}
+
+	/** MEOS: pcpatch_as_wkb */
+	asWKB(variant: number = 0): Uint8Array {
+		return readWkb(_sizeOut => F.pcpatch_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: pcpatch_cmp */
@@ -8400,6 +8607,16 @@ export class PCPatch extends Value {
 	/** MEOS: pcpatch_hex_in */
 	static fromText(str: string): PCPatch {
 		return wrapPCPatch(F.pcpatch_hex_in(str)) as PCPatch;
+	}
+
+	/** MEOS: pcpatch_from_wkb */
+	static fromWKB(wkb: Uint8Array): PCPatch {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapPCPatch(F.pcpatch_from_wkb(_wkb, BigInt(wkb.length))) as PCPatch;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: pcpatch_make */
@@ -8565,13 +8782,18 @@ export class PCPoint extends Value {
 	}
 
 	/** MEOS: pcpoint_as_hexwkb */
-	asHexWKB(): string {
-		return F.pcpoint_as_hexwkb(this.ptr);
+	asHexWKB(variant: number = 0): string {
+		return F.pcpoint_as_hexwkb(this.ptr, variant);
 	}
 
 	/** MEOS: pcpoint_hex_out */
 	asText(maxdd: number = 15): string {
 		return F.pcpoint_hex_out(this.ptr, maxdd);
+	}
+
+	/** MEOS: pcpoint_as_wkb */
+	asWKB(variant: number = 0): Uint8Array {
+		return readWkb(_sizeOut => F.pcpoint_as_wkb(this.ptr, variant, _sizeOut));
 	}
 
 	/** MEOS: pcpoint_cmp */
@@ -8736,6 +8958,16 @@ export class PCPoint extends Value {
 	/** MEOS: pcpoint_hex_in */
 	static fromText(str: string): PCPoint {
 		return wrapPCPoint(F.pcpoint_hex_in(str)) as PCPoint;
+	}
+
+	/** MEOS: pcpoint_from_wkb */
+	static fromWKB(wkb: Uint8Array): PCPoint {
+		const _wkb = _bytes(wkb);
+		try {
+			return wrapPCPoint(F.pcpoint_from_wkb(_wkb, BigInt(wkb.length))) as PCPoint;
+		} finally {
+			_free(_wkb);
+		}
 	}
 
 	/** MEOS: pcpoint_make */
@@ -10464,6 +10696,11 @@ export class RTreeNNCursor extends Value {
  */
 export class RaQuet extends Value {
 
+	/** MEOS: raquet_as_coveragejson */
+	asCoveragejson(): string {
+		return F.raquet_as_coveragejson(this.ptr);
+	}
+
 	/** MEOS: raquet_as_hexwkb */
 	asHexWKB(variant: number = 0): string {
 		return F.raquet_as_hexwkb(this.ptr, variant);
@@ -10574,6 +10811,16 @@ export class RaQuet extends Value {
 		return wrapRaQuet(F.raquet_from_hexwkb(hexwkb)) as RaQuet;
 	}
 
+	/** MEOS: raquet_from_row */
+	static fromRow(block: Quadbin, data: Uint8Array, metadata: string, band: number): RaQuet | null {
+		const _data = _bytes(data);
+		try {
+			return wrapRaQuetOrNull(F.raquet_from_row(block.value, _data, BigInt(data.length), metadata, band)) as RaQuet | null;
+		} finally {
+			_free(_data);
+		}
+	}
+
 	/** MEOS: raquet_from_wkb */
 	static fromWKB(wkb: Uint8Array): RaQuet {
 		const _wkb = _bytes(wkb);
@@ -10677,9 +10924,54 @@ export class Raster extends Value {
 		return wrapRasterOrNull(F.raster_add_band_raster(this.ptr, fromrast.ptr, fromband, toindex)) as Raster | null;
 	}
 
+	/** MEOS: raster_as_coveragejson */
+	asCoveragejson(): string {
+		return F.raster_as_coveragejson(this.ptr);
+	}
+
+	/** MEOS: raster_as_gdal */
+	asGdal(format: string, options: Text[], srid: number): Uint8Array {
+		const _options = _ptrArray(options.map(x => x.ptr));
+		try {
+			return readWkb(_sizeOut => F.raster_as_gdal(this.ptr, format, _options, options.length, srid, _sizeOut));
+		} finally {
+			_free(_options);
+		}
+	}
+
 	/** MEOS: raster_as_hexwkb */
 	asHexWKB(variant: number = 0): string {
 		return F.raster_as_hexwkb(this.ptr, variant);
+	}
+
+	/** MEOS: raster_as_jpeg */
+	asJpeg(options: Text[]): Uint8Array {
+		const _options = _ptrArray(options.map(x => x.ptr));
+		try {
+			return readWkb(_sizeOut => F.raster_as_jpeg(this.ptr, _options, options.length, _sizeOut));
+		} finally {
+			_free(_options);
+		}
+	}
+
+	/** MEOS: raster_as_png */
+	asPng(options: Text[]): Uint8Array {
+		const _options = _ptrArray(options.map(x => x.ptr));
+		try {
+			return readWkb(_sizeOut => F.raster_as_png(this.ptr, _options, options.length, _sizeOut));
+		} finally {
+			_free(_options);
+		}
+	}
+
+	/** MEOS: raster_as_tiff */
+	asTiff(options: Text[], srid: number): Uint8Array {
+		const _options = _ptrArray(options.map(x => x.ptr));
+		try {
+			return readWkb(_sizeOut => F.raster_as_tiff(this.ptr, _options, options.length, srid, _sizeOut));
+		} finally {
+			_free(_options);
+		}
 	}
 
 	/** MEOS: raster_as_wkb */
@@ -10874,19 +11166,26 @@ export class Raster extends Value {
 	}
 
 	/** MEOS: raster_set_values */
-	setValues(band: number, x: number, y: number, width: number, height: number, values: number[], nodata: boolean[], noset: boolean[], nosetheight: number, count: number, keepnodata: boolean): Raster | null {
-		const _values = _alloc(Math.max(values.length, 1) * 8);
-		{ const _v = _view(_values, Math.max(values.length, 1) * 8); values.forEach((_x, _i) => _v.setFloat64(_i * 8, _x, true)); }
-		const _nodata = _alloc(Math.max(nodata.length, 1) * 1);
-		{ const _v = _view(_nodata, Math.max(nodata.length, 1) * 1); nodata.forEach((_x, _i) => _v.setUint8(_i * 1, _x ? 1 : 0)); }
-		const _noset = _alloc(Math.max(noset.length, 1) * 1);
-		{ const _v = _view(_noset, Math.max(noset.length, 1) * 1); noset.forEach((_x, _i) => _v.setUint8(_i * 1, _x ? 1 : 0)); }
+	setValues(band: number, x: number, y: number, values: (number | null)[][], noset: (boolean | null)[][] | null, keepnodata: boolean): Raster | null {
+		const _valuesRows = values ? values.length : 0;
+		const _valuesCols = _valuesRows ? values![0].length : 0;
+		if (values && (_valuesRows === 0 || _valuesCols === 0)) throw new Error('An array of values of a block of pixels has one or two dimensions, not 0');
+		if (values && values.some(_r => _r.length !== _valuesCols)) throw new Error('multidimensional arrays must have array expressions with matching dimensions');
+		const _values = values ? _alloc(_valuesRows * _valuesCols * 8) : 0;
+		const _valuesNulls = values ? _alloc(_valuesRows * _valuesCols) : 0;
+		if (values) { const _v = _view(_values, _valuesRows * _valuesCols * 8); const _n = _view(_valuesNulls, _valuesRows * _valuesCols); values.flat().forEach((_x, _i) => { if (_x === null) { _n.setUint8(_i, 1); } else { _v.setFloat64(_i * 8, _x, true); } }); }
+		const _nosetRows = noset ? noset.length : 0;
+		const _nosetCols = _nosetRows ? noset![0].length : 0;
+		if (noset && (_nosetRows === 0 || _nosetCols === 0)) throw new Error('An array of values of a block of pixels has one or two dimensions, not 0');
+		if (noset && noset.some(_r => _r.length !== _nosetCols)) throw new Error('multidimensional arrays must have array expressions with matching dimensions');
+		const _noset = noset ? _alloc(_nosetRows * _nosetCols * 1) : 0;
+		if (noset) { const _v = _view(_noset, _nosetRows * _nosetCols * 1); noset.flat().forEach((_x, _i) => { if (_x === null) { _v.setUint8(_i * 1, false ? 1 : 0); } else { _v.setUint8(_i * 1, _x ? 1 : 0); } }); }
 		try {
-			return wrapRasterOrNull(F.raster_set_values(this.ptr, band, x, y, width, height, _values, _nodata, _noset, values.length, nosetheight, count, keepnodata)) as Raster | null;
+			return wrapRasterOrNull(F.raster_set_values(this.ptr, band, x, y, _valuesCols, _valuesRows, _values, _valuesNulls, _noset, _nosetCols, _nosetRows, _valuesRows * _valuesCols, keepnodata)) as Raster | null;
 		} finally {
-			_free(_values);
-			_free(_nodata);
-			_free(_noset);
+			if (_values) _free(_values);
+			if (_valuesNulls) _free(_valuesNulls);
+			if (_noset) _free(_noset);
 		}
 	}
 
@@ -10919,7 +11218,7 @@ export class Raster extends Value {
 
 	/** MEOS: raster_summary_stats */
 	summaryStats(band: number = 1, exclude_nodata: boolean = true): BandStats {
-		return _takeBandStats(F.raster_summary_stats(this.ptr, band, exclude_nodata))!;
+		return wrapBandStats(F.raster_summary_stats(this.ptr, band, exclude_nodata)) as BandStats;
 	}
 
 	/** MEOS: raster_to_stbox */
@@ -10990,6 +11289,21 @@ export class Raster extends Value {
 		return F.raster_width(this.ptr);
 	}
 
+	/** MEOS: araster_tile_value */
+	static aTileValue(traj: Temporal, rq: RaQuet, vspan: Span): number {
+		return F.araster_tile_value(traj.ptr, rq.ptr, vspan.ptr);
+	}
+
+	/** MEOS: araster_tile_value_array */
+	static aTileValueArray(traj: Temporal, rqarr: RaQuet[], vspan: Span): number {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		try {
+			return F.araster_tile_value_array(traj.ptr, _rqarr, rqarr.length, vspan.ptr);
+		} finally {
+			_free(_rqarr);
+		}
+	}
+
 	/** MEOS: raster_at_value */
 	static atValue(traj: Temporal, rast: Raster, band: number, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_at_value(traj.ptr, rast.ptr, band, vspan.ptr)) as Temporal | null;
@@ -10998,6 +11312,51 @@ export class Raster extends Value {
 	/** MEOS: raster_at_value_gdal */
 	static atValueGdal(traj: Temporal, path: string, band: number, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_at_value_gdal(traj.ptr, path, band, vspan.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: araster_value */
+	static aValue(traj: Temporal, rast: Raster, band: number, vspan: Span): number {
+		return F.araster_value(traj.ptr, rast.ptr, band, vspan.ptr);
+	}
+
+	/** MEOS: araster_value_gdal */
+	static aValueGdal(traj: Temporal, path: string, band: number, vspan: Span): number {
+		return F.araster_value_gdal(traj.ptr, path, band, vspan.ptr);
+	}
+
+	/** MEOS: eraster_tile_value */
+	static eTileValue(traj: Temporal, rq: RaQuet, vspan: Span): number {
+		return F.eraster_tile_value(traj.ptr, rq.ptr, vspan.ptr);
+	}
+
+	/** MEOS: eraster_tile_value_array */
+	static eTileValueArray(traj: Temporal, rqarr: RaQuet[], vspan: Span): number {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		try {
+			return F.eraster_tile_value_array(traj.ptr, _rqarr, rqarr.length, vspan.ptr);
+		} finally {
+			_free(_rqarr);
+		}
+	}
+
+	/** MEOS: eraster_value */
+	static eValue(traj: Temporal, rast: Raster, band: number, vspan: Span): number {
+		return F.eraster_value(traj.ptr, rast.ptr, band, vspan.ptr);
+	}
+
+	/** MEOS: eraster_value_gdal */
+	static eValueGdal(traj: Temporal, path: string, band: number, vspan: Span): number {
+		return F.eraster_value_gdal(traj.ptr, path, band, vspan.ptr);
+	}
+
+	/** MEOS: raster_from_gdal */
+	static fromGdal(data: Uint8Array, srid: number): Raster | null {
+		const _data = _bytes(data);
+		try {
+			return wrapRasterOrNull(F.raster_from_gdal(_data, BigInt(data.length), srid)) as Raster | null;
+		} finally {
+			_free(_data);
+		}
 	}
 
 	/** MEOS: raster_from_hexwkb */
@@ -11038,6 +11397,36 @@ export class Raster extends Value {
 	/** MEOS: raster_minus_value_gdal */
 	static minusValueGdal(traj: Temporal, path: string, band: number, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_minus_value_gdal(traj.ptr, path, band, vspan.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: raster_tile_at_value */
+	static tileAtValue(traj: Temporal, rq: RaQuet, vspan: Span): Temporal | null {
+		return wrapTemporalOrNull(F.raster_tile_at_value(traj.ptr, rq.ptr, vspan.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: raster_tile_at_value_array */
+	static tileAtValueArray(traj: Temporal, rqarr: RaQuet[], vspan: Span): Temporal | null {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		try {
+			return wrapTemporalOrNull(F.raster_tile_at_value_array(traj.ptr, _rqarr, rqarr.length, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rqarr);
+		}
+	}
+
+	/** MEOS: raster_tile_minus_value */
+	static tileMinusValue(traj: Temporal, rq: RaQuet, vspan: Span): Temporal | null {
+		return wrapTemporalOrNull(F.raster_tile_minus_value(traj.ptr, rq.ptr, vspan.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: raster_tile_minus_value_array */
+	static tileMinusValueArray(traj: Temporal, rqarr: RaQuet[], vspan: Span): Temporal | null {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		try {
+			return wrapTemporalOrNull(F.raster_tile_minus_value_array(traj.ptr, _rqarr, rqarr.length, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rqarr);
+		}
 	}
 
 	/** MEOS: raster_tile_value */
@@ -13014,6 +13403,66 @@ export class Temporal extends MeosObject {
 		return wrapTemporalOrNull(F.temporal_merge(this.ptr, temp2.ptr)) as this | null;
 	}
 
+	/** MEOS: temporal_merge_each_n_spans */
+	mergeEachNSpans(elem_count: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.temporal_merge_each_n_spans(this.ptr, elem_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: temporal_merge_n_spans */
+	mergeNSpans(span_count: number): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.temporal_merge_n_spans(this.ptr, span_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: temporal_merge_query_spans */
+	mergeQuerySpans(query: Span): Span[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.temporal_merge_query_spans(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 24);
+				const _out: Span[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSpan(_copy(_arr + _i * 24, 24)) as Span);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
 	/** MEOS: temporal_min_instant */
 	minInstant(): this {
 		return wrapTemporal(F.temporal_min_instant(this.ptr)) as this;
@@ -13919,6 +14368,66 @@ export class TNumber extends Temporal {
 		if (s instanceof TBox) return this._left_tnumber_tbox(s as TBox);
 		if (s instanceof TNumber) return this._left_tnumber_tnumber(s as TNumber);
 		throw new TypeError(`TNumber.left: no overload takes these arguments`);
+	}
+
+	/** MEOS: tnumber_merge_each_n_tboxes */
+	mergeEachNTboxes(elem_count: number): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tnumber_merge_each_n_tboxes(this.ptr, elem_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tnumber_merge_n_tboxes */
+	mergeNTboxes(box_count: number): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tnumber_merge_n_tboxes(this.ptr, box_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tnumber_merge_query_tboxes */
+	mergeQueryTboxes(query: TBox): TBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tnumber_merge_query_tboxes(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 56);
+				const _out: TBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapTBox(_copy(_arr + _i * 56, 56)) as TBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tnumber_minus_span */
@@ -17627,6 +18136,11 @@ export class TFloat extends TNumber {
 		return super.alwaysNe(d as Temporal);
 	}
 
+	/** MEOS: tfloat_as_coveragejson */
+	asCoveragejson(traj: Temporal): string {
+		return F.tfloat_as_coveragejson(this.ptr, traj.ptr);
+	}
+
 	/** MEOS: tfloat_at_value */
 	atValue(d: number): this | null {
 		return wrapTemporalOrNull(F.tfloat_at_value(this.ptr, d)) as this | null;
@@ -18586,6 +19100,66 @@ export class TGeo extends TSpatial {
 	/** MEOS: tgeo_force3d */
 	force3d(zvalue: number = 0.0): this {
 		return wrapTemporal(F.tgeo_force3d(this.ptr, zvalue)) as this;
+	}
+
+	/** MEOS: tgeo_merge_each_n_stboxes */
+	mergeEachNStboxes(elem_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tgeo_merge_each_n_stboxes(this.ptr, elem_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeo_merge_n_stboxes */
+	mergeNStboxes(box_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tgeo_merge_n_stboxes(this.ptr, box_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: tgeo_merge_query_stboxes */
+	mergeQueryStboxes(query: STBox): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.tgeo_merge_query_stboxes(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
 	}
 
 	/** MEOS: tgeo_minus_geom */
@@ -25717,6 +26291,66 @@ export class TRGeometry extends TSpatial {
 		return F.trgeometry_length(this.ptr);
 	}
 
+	/** MEOS: trgeometry_merge_each_n_stboxes */
+	mergeEachNStboxes(elem_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.trgeometry_merge_each_n_stboxes(this.ptr, elem_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: trgeometry_merge_n_stboxes */
+	mergeNStboxes(box_count: number): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.trgeometry_merge_n_stboxes(this.ptr, box_count, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
+	/** MEOS: trgeometry_merge_query_stboxes */
+	mergeQueryStboxes(query: STBox): STBox[] {
+		const _count = _alloc(4);
+		try {
+			const _arr = F.trgeometry_merge_query_stboxes(this.ptr, query.ptr, _count);
+			if (!_arr) return [];
+			try {
+				const _n = _view(_count, 4).getInt32(0, true);
+				const _v = _view(_arr, _n * 80);
+				const _out: STBox[] = [];
+				for (let _i = 0; _i < _n; _i++) _out.push(wrapSTBox(_copy(_arr + _i * 80, 80)) as STBox);
+				return _out;
+			} finally {
+				_free(_arr);
+			}
+		} finally {
+			_free(_count);
+		}
+	}
+
 	/** MEOS: trgeometry_minus_geom */
 	minusGeom(gs: Geo): this | null {
 		return wrapTemporalOrNull(F.trgeometry_minus_geom(this.ptr, gs.ptr)) as this | null;
@@ -28363,6 +28997,16 @@ export class TsTzSpanSet extends SpanSet {
 	}
 }
 
+/** The value at `ptr` as the BandStats class its runtime type names. */
+export function wrapBandStats(ptr: Ptr): BandStats {
+	return new BandStats(ptr);
+}
+
+/** As wrapBandStats, answering null for a null pointer. */
+export function wrapBandStatsOrNull(ptr: Ptr): BandStats | null {
+	return ptr ? wrapBandStats(ptr) : null;
+}
+
 /** The value at `ptr` as the CBuffer class its runtime type names. */
 export function wrapCBuffer(ptr: Ptr): CBuffer {
 	return new CBuffer(ptr);
@@ -28431,16 +29075,6 @@ export function wrapNSegment(ptr: Ptr): NSegment {
 /** As wrapNSegment, answering null for a null pointer. */
 export function wrapNSegmentOrNull(ptr: Ptr): NSegment | null {
 	return ptr ? wrapNSegment(ptr) : null;
-}
-
-/** The value at `ptr` as the Numeric class its runtime type names. */
-export function wrapNumeric(ptr: Ptr): Numeric {
-	return new Numeric(ptr);
-}
-
-/** As wrapNumeric, answering null for a null pointer. */
-export function wrapNumericOrNull(ptr: Ptr): Numeric | null {
-	return ptr ? wrapNumeric(ptr) : null;
 }
 
 /** The value at `ptr` as the PCPatch class its runtime type names. */

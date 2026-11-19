@@ -102,6 +102,22 @@ interface Shape {
 	inputArrays?: { param: string; lengthFrom: { kind: string; name: string }; element: { canonical: string } }[];
 	outputArrays?: { param: string; lengthFrom?: { kind: string; name: string } }[];
 	nullableResult?: string;
+	/** The pointer parameters MEOS takes NULL for. */
+	nullable?: string[];
+}
+/**
+ * The layout of a block of rows a SQL signature takes (`sqlSignatures[].inputShape`):
+ * the C parameters its elements, row by row, its rows, its columns and its count
+ * fill, and either the C array true for its NULL elements or the value a NULL
+ * element passes.
+ */
+interface BlockLayout {
+	values: string;
+	nulls?: string;
+	rows?: string;
+	columns?: string;
+	count?: string;
+	nullElement?: string;
 }
 interface Encoding {
 	/** `host` for the time types a binding casts to its language's own,
@@ -481,6 +497,21 @@ class Generator {
 		for (const a of shape.inputArrays ?? [])
 			if (a.lengthFrom.kind === 'param' && !lengthOf.has(a.lengthFrom.name)) lengthOf.set(a.lengthFrom.name, a.param);
 
+		// A block of rows a signature's layout states (`sqlSignatures[].inputShape`), as
+		// #sig_call_block of MobilityDuck's tools/codegen_duck_udfs.py reads one: one
+		// argument to the caller, a list of rows of the same length, and to MEOS its
+		// elements row by row, its rows, its columns, its count and its NULL flags,
+		// the parameters other than its elements taking no argument of their own.
+		const blockOf = new Map<string, BlockLayout>();
+		const blockPart = new Set<string>();
+		for (const s of (f as IdlFunction & { sqlSignatures?: { inputShape?: Record<string, BlockLayout> }[] })
+			.sqlSignatures ?? [])
+			for (const lay of Object.values(s.inputShape ?? {})) {
+				blockOf.set(lay.values, lay);
+				for (const part of [lay.nulls, lay.rows, lay.columns, lay.count])
+					if (part) blockPart.add(part);
+			}
+
 		// An answered array's length, which MEOS writes through the parameter the
 		// shape names.
 		const arrayReturn = shape.arrayReturn;
@@ -499,6 +530,40 @@ class Generator {
 			&& clean(sig.retCanonical) === 'uint8_t *');
 
 		for (const p of params) {
+			if (blockPart.has(p.name)) continue;
+			const block = blockOf.get(p.name);
+			if (block) {
+				const scalar = ELEMENT_READERS[this.resolve(clean(p.canonical).replace(/\s*\*$/, ''))];
+				if (!scalar)
+					return this.defer(cls, oo, 'argument needs a class',
+						`block ${p.name} of type ${clean(p.canonical)} has no element writer`);
+				const v = p.tsName, t = temp(p.name), w = scalar.width;
+				const optional = (shape.nullable ?? []).includes(p.name);
+				decl.push({ name: v, ts: `(${scalar.ts} | null)[][]${optional ? ' | null' : ''}` });
+				const nullValue = block.nullElement === undefined ? undefined
+					: scalar.ts === 'boolean' ? String(block.nullElement === 'true') : block.nullElement;
+				setup.push(
+					`const ${t}Rows = ${v} ? ${v}.length : 0;`,
+					`const ${t}Cols = ${t}Rows ? ${v}![0].length : 0;`,
+					`if (${v} && (${t}Rows === 0 || ${t}Cols === 0)) throw new Error('An array of values of a block of pixels has one or two dimensions, not 0');`,
+					`if (${v} && ${v}.some(_r => _r.length !== ${t}Cols)) throw new Error('multidimensional arrays must have array expressions with matching dimensions');`,
+					`const ${t} = ${v} ? _alloc(${t}Rows * ${t}Cols * ${w}) : 0;`);
+				if (block.nulls) setup.push(`const ${t}Nulls = ${v} ? _alloc(${t}Rows * ${t}Cols) : 0;`);
+				const onNull = block.nulls ? `_n.setUint8(_i, 1);`
+					: `${scalar.write.replace('{o}', `_i * ${w}`).replace('{x}', nullValue ?? '0')};`;
+				setup.push(
+					`if (${v}) { const _v = _view(${t}, ${t}Rows * ${t}Cols * ${w});` +
+					(block.nulls ? ` const _n = _view(${t}Nulls, ${t}Rows * ${t}Cols);` : '') +
+					` ${v}.flat().forEach((_x, _i) => { if (_x === null) { ${onNull} } else { ${scalar.write.replace('{o}', `_i * ${w}`).replace('{x}', '_x')}; } }); }`);
+				teardown.push(`if (${t}) _free(${t});`);
+				if (block.nulls) teardown.push(`if (${t}Nulls) _free(${t}Nulls);`);
+				args.set(p.name, t);
+				if (block.nulls) args.set(block.nulls, `${t}Nulls`);
+				if (block.rows) args.set(block.rows, `${t}Rows`);
+				if (block.columns) args.set(block.columns, `${t}Cols`);
+				if (block.count) args.set(block.count, `${t}Rows * ${t}Cols`);
+				continue;
+			}
 			if (p.name === countOut && clean(p.canonical) === 'int *') {
 				setup.push(`const _count = _alloc(4);`);
 				teardown.push(`_free(_count);`);
