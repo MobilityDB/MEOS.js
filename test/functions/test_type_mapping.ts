@@ -14,8 +14,6 @@ import {
 	timestamptz_out,
 	time_in,
 	time_out,
-	numeric_in,
-	numeric_out,
 	intset_in,
 	set_hash,
 	meos_free,
@@ -70,14 +68,6 @@ describe('64-bit times cross as BigInt', () => {
 		const t = time_in('12:34:56', -1);
 		assert.equal(t, BigInt((12 * 3600 + 34 * 60 + 56) * 1000000));
 		assert.equal(time_out(t), '12:34:56');
-	});
-});
-
-describe('a Numeric is a pointer', () => {
-	it('numeric_in and numeric_out round-trip through a Ptr', () => {
-		const n = numeric_in('12345.678', -1);
-		assert.equal(numeric_out(n), '12345.678');
-		meos_free(n);
 	});
 });
 
