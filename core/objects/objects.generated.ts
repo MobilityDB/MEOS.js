@@ -691,6 +691,20 @@ export class Set extends Collection {
 			_free(_wkb);
 		}
 	}
+
+	/** Aggregate setUnionAgg: MEOS set_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: Set[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.set_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
+	}
+
+	/** Aggregate tCount: MEOS tstzset_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: Set[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tstzset_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
 }
 
 /**
@@ -1245,6 +1259,20 @@ export class Span extends Collection {
 		} finally {
 			_free(_wkb);
 		}
+	}
+
+	/** Aggregate spanUnionAgg: MEOS span_union_transfn over the values, then spanset_union_finalfn */
+	static spanUnionAgg(values: Span[]): SpanSet | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.span_union_transfn(_state, _v.ptr);
+		return wrapSpanSetOrNull(F.spanset_union_finalfn(_state)) as SpanSet | null;
+	}
+
+	/** Aggregate tCount: MEOS tstzspan_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: Span[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tstzspan_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -1976,6 +2004,20 @@ export class SpanSet extends Collection {
 			_free(_spans);
 		}
 	}
+
+	/** Aggregate spansetUnionAgg: MEOS spanset_union_transfn over the values, then spanset_union_finalfn */
+	static spansetUnionAgg(values: SpanSet[]): SpanSet | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.spanset_union_transfn(_state, _v.ptr);
+		return wrapSpanSetOrNull(F.spanset_union_finalfn(_state)) as SpanSet | null;
+	}
+
+	/** Aggregate tCount: MEOS tstzspanset_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: SpanSet[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tstzspanset_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
 }
 
 /**
@@ -2623,6 +2665,13 @@ export class CBuffer extends Value {
 	/** MEOS: cbuffer_make */
 	static make(point: Geo, radius: number): CBuffer {
 		return wrapCBuffer(F.cbuffer_make(point.ptr, radius)) as CBuffer;
+	}
+
+	/** Aggregate setUnionAgg: MEOS cbuffer_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: CBuffer[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.cbuffer_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
 	}
 }
 
@@ -4926,6 +4975,13 @@ export class Geo extends Value {
 		} finally {
 			_free(_gsarr);
 		}
+	}
+
+	/** Aggregate setUnionAgg: MEOS geo_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: Geo[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.geo_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
 	}
 
 	/** MEOS: geo_typename */
@@ -7487,6 +7543,13 @@ export class Jsonb extends Value {
 			_free(_values);
 		}
 	}
+
+	/** Aggregate setUnionAgg: MEOS jsonb_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: Jsonb[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.jsonb_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
+	}
 }
 
 /**
@@ -8121,6 +8184,13 @@ export class NPoint extends Value {
 	static make(rid: bigint, pos: number): NPoint {
 		return wrapNPoint(F.npoint_make(rid, pos)) as NPoint;
 	}
+
+	/** Aggregate setUnionAgg: MEOS npoint_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: NPoint[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.npoint_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
+	}
 }
 
 /**
@@ -8639,6 +8709,13 @@ export class PCPatch extends Value {
 			_free(_values);
 		}
 	}
+
+	/** Aggregate setUnionAgg: MEOS pcpatch_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: PCPatch[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.pcpatch_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
+	}
 }
 
 /**
@@ -8979,6 +9056,13 @@ export class PCPoint extends Value {
 		} finally {
 			_free(_values);
 		}
+	}
+
+	/** Aggregate setUnionAgg: MEOS pcpoint_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: PCPoint[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.pcpoint_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
 	}
 }
 
@@ -9554,6 +9638,13 @@ export class Pose extends Value {
 	static makePoint3dYpr(gs: Geo, yaw: number, pitch: number, roll: number): Pose {
 		return wrapPose(F.pose_make_point3d_ypr(gs.ptr, yaw, pitch, roll)) as Pose;
 	}
+
+	/** Aggregate setUnionAgg: MEOS pose_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: Pose[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.pose_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
+	}
 }
 
 /**
@@ -9877,6 +9968,13 @@ export class PoseChain extends Value {
 		} finally {
 			_free(_poses);
 		}
+	}
+
+	/** Aggregate setUnionAgg: MEOS posechain_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: PoseChain[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.posechain_union_transfn(_state, _v.ptr);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
 	}
 }
 
@@ -11397,6 +11495,27 @@ export class Raster extends Value {
 	/** MEOS: raster_minus_value_gdal */
 	static minusValueGdal(traj: Temporal, path: string, band: number, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_minus_value_gdal(traj.ptr, path, band, vspan.ptr)) as Temporal | null;
+	}
+
+	/** Aggregate rasterUnion: MEOS raster_union_transfn over the values, then raster_union_finalfn */
+	static rasterUnion(values: Raster[], band: number, uniontype: string | null): Raster | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.raster_union_transfn(_state, _v.ptr, band, uniontype);
+		return wrapRasterOrNull(F.raster_union_finalfn(_state)) as Raster | null;
+	}
+
+	/** Aggregate sameAlignmentAgg: MEOS raster_same_alignment_transfn over the values, then raster_same_alignment_finalfn */
+	static sameAlignmentAgg(values: Raster[]): boolean {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.raster_same_alignment_transfn(_state, _v.ptr);
+		return F.raster_same_alignment_finalfn(_state);
+	}
+
+	/** Aggregate summaryStatsAgg: MEOS raster_summary_stats_transfn over the values, then raster_summary_stats_finalfn */
+	static summaryStatsAgg(values: Raster[], band: number, exclude_nodata: boolean): BandStats | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.raster_summary_stats_transfn(_state, _v.ptr, band, exclude_nodata);
+		return wrapBandStatsOrNull(F.raster_summary_stats_finalfn(_state)) as BandStats | null;
 	}
 
 	/** MEOS: raster_tile_at_value */
@@ -13919,6 +14038,25 @@ export class Temporal extends MeosObject {
 		return wrapSet(F.temporal_valueset(this.ptr)) as Set;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: Temporal[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Temporal {
 		return wrapTemporal(F.temporal_from_hexwkb(hexwkb)) as Temporal;
@@ -13934,6 +14072,13 @@ export class Temporal extends MeosObject {
 		}
 	}
 
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_merge_array */
 	static mergeArray(temparr: Temporal[]): Temporal {
 		const _temparr = _ptrArray(temparr.map(x => x.ptr));
@@ -13942,6 +14087,79 @@ export class Temporal extends MeosObject {
 		} finally {
 			_free(_temparr);
 		}
+	}
+
+	/** Aggregate reachabilityFilterAgg: MEOS temporal_reachability_filter_transfn over the values, then temporal_reachability_filter_finalfn */
+	static reachabilityFilterAgg(values: Temporal[], maxspeed: number): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_reachability_filter_transfn(_state, _v.ptr, maxspeed);
+		return wrapTemporalOrNull(F.temporal_reachability_filter_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAndAgg: MEOS tbool_tand_transfn over the values, then temporal_tagg_finalfn */
+	static tAndAgg(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbool_tand_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAvg: MEOS tnumber_tavg_transfn over the values, then tnumber_tavg_finalfn */
+	static tAvg(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tnumber_tavg_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tdensity: MEOS tpcpatch_tdensity_transfn over the values, then temporal_tagg_finalfn */
+	static tdensity(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tpcpatch_tdensity_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tnpoints: MEOS tpcpatch_tnpoints_transfn over the values, then temporal_tagg_finalfn */
+	static tnpoints(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tpcpatch_tnpoints_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tOrAgg: MEOS tbool_tor_transfn over the values, then temporal_tagg_finalfn */
+	static tOrAgg(values: Temporal[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbool_tor_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wAvgAgg: MEOS tnumber_wavg_transfn over the values, then tnumber_tavg_finalfn */
+	static wAvgAgg(values: Temporal[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tnumber_wavg_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: Temporal[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -27795,6 +28013,13 @@ export class Text extends Value {
 	/** MEOS: right_text_set */
 	static right(txt: string, s: TextSet): boolean {
 		return F.right_text_set(txt, s.ptr);
+	}
+
+	/** Aggregate setUnionAgg: MEOS text_union_transfn over the values, then set_union_finalfn */
+	static setUnionAgg(values: string[]): Set | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.text_union_transfn(_state, _v);
+		return wrapSetOrNull(F.set_union_finalfn(_state)) as Set | null;
 	}
 
 	/** MEOS: teq_text_ttext */
