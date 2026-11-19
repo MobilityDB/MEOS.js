@@ -6,7 +6,7 @@
 # Versions:
 #   emsdk 5.0.6       |  MobilityDB master
 #   PROJ 9.8.1        |  SQLite 3.46.1      |  JSON-C 0.18
-#   H3 4.2.1
+#   H3, the release MobilityDB names (H3_REQUIRED_VERSION)
 
 # Track upstream MobilityDB master. The committed codegen/res/meos-idl.json is a
 # snapshot of the MEOS-API catalog for that surface; refresh it (see README) when
@@ -193,6 +193,13 @@ RUN mkdir -p build && cd build \
     && emmake make -j"$(nproc)" \
     && emmake make install
 
+# MOBILITYDB SOURCE (separate stage so /app/ changes don't invalidate the clone)
+FROM base AS mobilitydb_src
+ARG MOBILITYDB_REPO
+ARG MOBILITYDB_BRANCH
+
+RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB
+
 # COMPILING H3 WITH EMSCRIPTEN (Uber libh3, required by the temporal H3 index family)
 # BUILD_GENERATORS=OFF: the lib's generated coordinate tables are committed in the
 # release tarball; only the standalone generator TOOLS would need native execution,
@@ -201,9 +208,15 @@ RUN mkdir -p build && cd build \
 # exists regardless of the generators); copy it and libh3.a into a clean prefix.
 FROM base AS h3
 
-RUN curl -fL "https://github.com/uber/h3/archive/refs/tags/v4.2.1.tar.gz" \
+# MobilityDB supports one H3 release, H3_REQUIRED_VERSION of its top-level
+# CMakeLists.txt, and its configure refuses any other, so the release built is the
+# one the cloned MobilityDB names.
+COPY --from=mobilitydb_src /root/MobilityDB/CMakeLists.txt /root/mobilitydb-CMakeLists.txt
+RUN version="$(sed -n 's/^ *set(H3_REQUIRED_VERSION "\([0-9.]*\)").*/\1/p' /root/mobilitydb-CMakeLists.txt)" \
+    && test -n "$version" \
+    && curl -fL "https://github.com/uber/h3/archive/refs/tags/v${version}.tar.gz" \
         | tar xz -C /root \
-    && mv /root/h3-4.2.1 /root/h3
+    && mv "/root/h3-${version}" /root/h3
 
 WORKDIR /root/h3
 RUN mkdir -p build && cd build \
@@ -220,16 +233,9 @@ RUN mkdir -p build && cd build \
         -DENABLE_LINTING=OFF \
         -DCMAKE_C_FLAGS=-sMEMORY64=1 \
     && emmake make -j"$(nproc)" h3 \
-    && mkdir -p /root/h3-install/lib /root/h3-install/include \
+    && mkdir -p /root/h3-install/lib /root/h3-install/include/h3 \
     && cp /root/h3/build/lib/libh3.a /root/h3-install/lib/ \
-    && cp /root/h3/build/src/h3lib/include/h3api.h /root/h3-install/include/
-
-# MOBILITYDB SOURCE (separate stage so /app/ changes don't invalidate the clone)
-FROM base AS mobilitydb_src
-ARG MOBILITYDB_REPO
-ARG MOBILITYDB_BRANCH
-
-RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB
+    && cp /root/h3/build/src/h3lib/include/h3api.h /root/h3-install/include/h3/
 
 # BUILDING WASM
 FROM base AS builder
@@ -266,7 +272,7 @@ RUN INCLUDES="-I/root/json-c-install/include -I/root/json-c-install/include/json
         -DALL=ON \
         -DCMAKE_INSTALL_PREFIX=/root/meos-install \
         -DH3_LIBRARY=/root/h3-install/lib/libh3.a \
-        -DH3_INCLUDE_DIR=/root/h3-install/include \
+        -DH3_INCLUDE_DIR=/root/h3-install/include/h3 \
         -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_BUILD_TYPE=Release \
         -DPROJ_INCLUDE_DIRS=/root/PROJ/src \
