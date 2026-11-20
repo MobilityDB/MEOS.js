@@ -14038,25 +14038,6 @@ export class Temporal extends MeosObject {
 		return wrapSet(F.temporal_valueset(this.ptr)) as Set;
 	}
 
-	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
-	static appendInstantAgg(values: Temporal[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
-		const _maxt = _putInterval(maxt);
-		let _state: Ptr = 0;
-		try {
-			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
-		} finally {
-			_free(_maxt);
-		}
-		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
-	static appendSequenceAgg(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
-	}
-
 	/** MEOS: temporal_from_hexwkb */
 	static fromHexWKB(hexwkb: string): Temporal {
 		return wrapTemporal(F.temporal_from_hexwkb(hexwkb)) as Temporal;
@@ -14072,13 +14053,6 @@ export class Temporal extends MeosObject {
 		}
 	}
 
-	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
-	static mergeAgg(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
 	/** MEOS: temporal_merge_array */
 	static mergeArray(temparr: Temporal[]): Temporal {
 		const _temparr = _ptrArray(temparr.map(x => x.ptr));
@@ -14087,79 +14061,6 @@ export class Temporal extends MeosObject {
 		} finally {
 			_free(_temparr);
 		}
-	}
-
-	/** Aggregate reachabilityFilterAgg: MEOS temporal_reachability_filter_transfn over the values, then temporal_reachability_filter_finalfn */
-	static reachabilityFilterAgg(values: Temporal[], maxspeed: number): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.temporal_reachability_filter_transfn(_state, _v.ptr, maxspeed);
-		return wrapTemporalOrNull(F.temporal_reachability_filter_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tAndAgg: MEOS tbool_tand_transfn over the values, then temporal_tagg_finalfn */
-	static tAndAgg(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.tbool_tand_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tAvg: MEOS tnumber_tavg_transfn over the values, then tnumber_tavg_finalfn */
-	static tAvg(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.tnumber_tavg_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
-	static tCount(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tdensity: MEOS tpcpatch_tdensity_transfn over the values, then temporal_tagg_finalfn */
-	static tdensity(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.tpcpatch_tdensity_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tnpoints: MEOS tpcpatch_tnpoints_transfn over the values, then temporal_tagg_finalfn */
-	static tnpoints(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.tpcpatch_tnpoints_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate tOrAgg: MEOS tbool_tor_transfn over the values, then temporal_tagg_finalfn */
-	static tOrAgg(values: Temporal[]): Temporal | null {
-		let _state: Ptr = 0;
-		for (const _v of values) _state = F.tbool_tor_transfn(_state, _v.ptr);
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate wAvgAgg: MEOS tnumber_wavg_transfn over the values, then tnumber_tavg_finalfn */
-	static wAvgAgg(values: Temporal[], interv: Interval): Temporal | null {
-		const _interv = _putInterval(interv);
-		let _state: Ptr = 0;
-		try {
-			for (const _v of values) _state = F.tnumber_wavg_transfn(_state, _v.ptr, _interv);
-		} finally {
-			_free(_interv);
-		}
-		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
-	}
-
-	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
-	static wCount(values: Temporal[], interv: Interval): Temporal | null {
-		const _interv = _putInterval(interv);
-		let _state: Ptr = 0;
-		try {
-			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
-		} finally {
-			_free(_interv);
-		}
-		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -15527,6 +15428,25 @@ export class TBigInt extends TNumber {
 		}
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TBigInt[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tbigint_from_base_temp */
 	static fromBaseTemp(i: bigint, temp: Temporal): TBigInt {
 		return wrapTemporal(F.tbigint_from_base_temp(i, temp.ptr)) as TBigInt;
@@ -15540,6 +15460,108 @@ export class TBigInt extends TNumber {
 	/** MEOS: tbigint_in */
 	static fromText(str: string): TBigInt {
 		return wrapTemporal(F.tbigint_in(str)) as TBigInt;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAvg: MEOS tnumber_tavg_transfn over the values, then tnumber_tavg_finalfn */
+	static tAvg(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tnumber_tavg_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMaxAgg: MEOS tbigint_tmax_transfn over the values, then temporal_tagg_finalfn */
+	static tMaxAgg(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbigint_tmax_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMinAgg: MEOS tbigint_tmin_transfn over the values, then temporal_tagg_finalfn */
+	static tMinAgg(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbigint_tmin_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tSum: MEOS tbigint_tsum_transfn over the values, then temporal_tagg_finalfn */
+	static tSum(values: TBigInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbigint_tsum_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wAvgAgg: MEOS tnumber_wavg_transfn over the values, then tnumber_tavg_finalfn */
+	static wAvgAgg(values: TBigInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tnumber_wavg_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TBigInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMax: MEOS tbigint_wmax_transfn over the values, then temporal_tagg_finalfn */
+	static wMax(values: TBigInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tbigint_wmax_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMin: MEOS tbigint_wmin_transfn over the values, then temporal_tagg_finalfn */
+	static wMin(values: TBigInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tbigint_wmin_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wSum: MEOS tbigint_wsum_transfn over the values, then temporal_tagg_finalfn */
+	static wSum(values: TBigInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tbigint_wsum_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -15847,6 +15869,25 @@ export class TBool extends TAlpha {
 		return wrapSpanSetOrNull(F.tbool_when_true(this.ptr)) as SpanSet | null;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TBool[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TBool[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tbool_from_base_temp */
 	static fromBaseTemp(b: boolean, temp: Temporal): TBool {
 		return wrapTemporal(F.tbool_from_base_temp(b, temp.ptr)) as TBool;
@@ -15860,6 +15901,34 @@ export class TBool extends TAlpha {
 	/** MEOS: tbool_in */
 	static fromText(str: string): TBool {
 		return wrapTemporal(F.tbool_in(str)) as TBool;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TBool[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAndAgg: MEOS tbool_tand_transfn over the values, then temporal_tagg_finalfn */
+	static tAndAgg(values: TBool[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbool_tand_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TBool[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tOrAgg: MEOS tbool_tor_transfn over the values, then temporal_tagg_finalfn */
+	static tOrAgg(values: TBool[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tbool_tor_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -18052,6 +18121,25 @@ export class TCBuffer extends TSpatial {
 		return super.valueset() as CBufferSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TCBuffer[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TCBuffer[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tcbuffer_from_base_temp */
 	static fromBaseTemp(cb: CBuffer, temp: Temporal): TCBuffer {
 		return wrapTemporal(F.tcbuffer_from_base_temp(cb.ptr, temp.ptr)) as TCBuffer;
@@ -18080,6 +18168,32 @@ export class TCBuffer extends TSpatial {
 	/** MEOS: tcbuffer_in */
 	static fromText(str: string): TCBuffer {
 		return wrapTemporal(F.tcbuffer_in(str)) as TCBuffer;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TCBuffer[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TCBuffer[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TCBuffer[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -18927,6 +19041,25 @@ export class TFloat extends TNumber {
 		}
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TFloat[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tfloat_from_base_temp */
 	static fromBaseTemp(d: number, temp: Temporal): TFloat {
 		return wrapTemporal(F.tfloat_from_base_temp(d, temp.ptr)) as TFloat;
@@ -18940,6 +19073,115 @@ export class TFloat extends TNumber {
 	/** MEOS: tfloat_in */
 	static fromText(str: string): TFloat {
 		return wrapTemporal(F.tfloat_in(str)) as TFloat;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate reachabilityFilterAgg: MEOS temporal_reachability_filter_transfn over the values, then temporal_reachability_filter_finalfn */
+	static reachabilityFilterAgg(values: TFloat[], maxspeed: number): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_reachability_filter_transfn(_state, _v.ptr, maxspeed);
+		return wrapTemporalOrNull(F.temporal_reachability_filter_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAvg: MEOS tnumber_tavg_transfn over the values, then tnumber_tavg_finalfn */
+	static tAvg(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tnumber_tavg_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMaxAgg: MEOS tfloat_tmax_transfn over the values, then temporal_tagg_finalfn */
+	static tMaxAgg(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tfloat_tmax_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMinAgg: MEOS tfloat_tmin_transfn over the values, then temporal_tagg_finalfn */
+	static tMinAgg(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tfloat_tmin_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tSum: MEOS tfloat_tsum_transfn over the values, then temporal_tagg_finalfn */
+	static tSum(values: TFloat[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tfloat_tsum_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wAvgAgg: MEOS tnumber_wavg_transfn over the values, then tnumber_tavg_finalfn */
+	static wAvgAgg(values: TFloat[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tnumber_wavg_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TFloat[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMax: MEOS tfloat_wmax_transfn over the values, then temporal_tagg_finalfn */
+	static wMax(values: TFloat[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tfloat_wmax_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMin: MEOS tfloat_wmin_transfn over the values, then temporal_tagg_finalfn */
+	static wMin(values: TFloat[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tfloat_wmin_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wSum: MEOS tfloat_wsum_transfn over the values, then temporal_tagg_finalfn */
+	static wSum(values: TFloat[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tfloat_wsum_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -20163,6 +20405,25 @@ export class TGeogPoint extends TPoint {
 		return super.valueset() as GeogSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TGeogPoint[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TGeogPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Temporal {
 		return Temporal.fromWKB(wkb);
@@ -20186,6 +20447,39 @@ export class TGeogPoint extends TPoint {
 	/** MEOS: tgeogpoint_in */
 	static fromText(str: string): TGeogPoint {
 		return wrapTemporal(F.tgeogpoint_in(str)) as TGeogPoint;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TGeogPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate reachabilityFilterAgg: MEOS temporal_reachability_filter_transfn over the values, then temporal_reachability_filter_finalfn */
+	static reachabilityFilterAgg(values: TGeogPoint[], maxspeed: number): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_reachability_filter_transfn(_state, _v.ptr, maxspeed);
+		return wrapTemporalOrNull(F.temporal_reachability_filter_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TGeogPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TGeogPoint[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -20317,6 +20611,25 @@ export class TGeography extends TGeo {
 		return super.valueset() as GeogSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TGeography[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TGeography[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Temporal {
 		return Temporal.fromWKB(wkb);
@@ -20340,6 +20653,32 @@ export class TGeography extends TGeo {
 	/** MEOS: tgeography_in */
 	static fromText(str: string): TGeography {
 		return wrapTemporal(F.tgeography_in(str)) as TGeography;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TGeography[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TGeography[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TGeography[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -20642,6 +20981,25 @@ export class TGeomPoint extends TPoint {
 		return super.valueset() as GeomSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TGeomPoint[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TGeomPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Temporal {
 		return Temporal.fromWKB(wkb);
@@ -20665,6 +21023,46 @@ export class TGeomPoint extends TPoint {
 	/** MEOS: tgeompoint_in */
 	static fromText(str: string): TGeomPoint {
 		return wrapTemporal(F.tgeompoint_in(str)) as TGeomPoint;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TGeomPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate reachabilityFilterAgg: MEOS temporal_reachability_filter_transfn over the values, then temporal_reachability_filter_finalfn */
+	static reachabilityFilterAgg(values: TGeomPoint[], maxspeed: number): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_reachability_filter_transfn(_state, _v.ptr, maxspeed);
+		return wrapTemporalOrNull(F.temporal_reachability_filter_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCentroid: MEOS tpoint_tcentroid_transfn over the values, then tpoint_tcentroid_finalfn */
+	static tCentroid(values: TGeomPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tpoint_tcentroid_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tpoint_tcentroid_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TGeomPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TGeomPoint[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -20953,6 +21351,25 @@ export class TGeometry extends TGeo {
 		return super.valueset() as GeomSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TGeometry[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Temporal {
 		return Temporal.fromWKB(wkb);
@@ -20976,6 +21393,32 @@ export class TGeometry extends TGeo {
 	/** MEOS: tgeometry_in */
 	static fromText(str: string): TGeometry {
 		return wrapTemporal(F.tgeometry_in(str)) as TGeometry;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TGeometry[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -21385,6 +21828,25 @@ export class TH3Index extends TCellIndex {
 		return wrapTemporal(F.th3index_vertex_to_latlng(this.ptr)) as Temporal;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TH3Index[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TH3Index[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: th3index_from_base_temp */
 	static fromBaseTemp(value: H3Index, temp: Temporal): TH3Index {
 		return wrapTemporal(F.th3index_from_base_temp(value.value, temp.ptr)) as TH3Index;
@@ -21413,6 +21875,32 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: th3index_in */
 	static fromText(str: string): TH3Index {
 		return wrapTemporal(F.th3index_in(str)) as TH3Index;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TH3Index[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TH3Index[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TH3Index[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -22194,6 +22682,25 @@ export class TInt extends TNumber {
 		}
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TInt[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tint_from_base_temp */
 	static fromBaseTemp(i: number, temp: Temporal): TInt {
 		return wrapTemporal(F.tint_from_base_temp(i, temp.ptr)) as TInt;
@@ -22207,6 +22714,108 @@ export class TInt extends TNumber {
 	/** MEOS: tint_in */
 	static fromText(str: string): TInt {
 		return wrapTemporal(F.tint_in(str)) as TInt;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tAvg: MEOS tnumber_tavg_transfn over the values, then tnumber_tavg_finalfn */
+	static tAvg(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tnumber_tavg_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMaxAgg: MEOS tint_tmax_transfn over the values, then temporal_tagg_finalfn */
+	static tMaxAgg(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tint_tmax_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMinAgg: MEOS tint_tmin_transfn over the values, then temporal_tagg_finalfn */
+	static tMinAgg(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tint_tmin_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tSum: MEOS tint_tsum_transfn over the values, then temporal_tagg_finalfn */
+	static tSum(values: TInt[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tint_tsum_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wAvgAgg: MEOS tnumber_wavg_transfn over the values, then tnumber_tavg_finalfn */
+	static wAvgAgg(values: TInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tnumber_wavg_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.tnumber_tavg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMax: MEOS tint_wmax_transfn over the values, then temporal_tagg_finalfn */
+	static wMax(values: TInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tint_wmax_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wMin: MEOS tint_wmin_transfn over the values, then temporal_tagg_finalfn */
+	static wMin(values: TInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tint_wmin_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wSum: MEOS tint_wsum_transfn over the values, then temporal_tagg_finalfn */
+	static wSum(values: TInt[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.tint_wsum_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -22710,6 +23319,25 @@ export class TJsonb extends TAlpha {
 		return super.valueset() as JsonbSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TJsonb[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TJsonb[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tjsonb_from_base_temp */
 	static fromBaseTemp(jsonb: Jsonb, temp: Temporal): TJsonb {
 		return wrapTemporal(F.tjsonb_from_base_temp(jsonb.ptr, temp.ptr)) as TJsonb;
@@ -22723,6 +23351,32 @@ export class TJsonb extends TAlpha {
 	/** MEOS: tjsonb_in */
 	static fromText(str: string): TJsonb {
 		return wrapTemporal(F.tjsonb_in(str)) as TJsonb;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TJsonb[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TJsonb[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TJsonb[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -23294,6 +23948,25 @@ export class TNPoint extends TSpatial {
 		return super.valueset() as NPointSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TNPoint[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TNPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tnpoint_from_base_temp */
 	static fromBaseTemp(np: NPoint, temp: Temporal): TNPoint {
 		return wrapTemporal(F.tnpoint_from_base_temp(np.ptr, temp.ptr)) as TNPoint;
@@ -23322,6 +23995,39 @@ export class TNPoint extends TSpatial {
 	/** MEOS: tnpoint_in */
 	static fromText(str: string): TNPoint {
 		return wrapTemporal(F.tnpoint_in(str)) as TNPoint;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TNPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCentroid: MEOS tnpoint_tcentroid_transfn over the values, then tpoint_tcentroid_finalfn */
+	static tCentroid(values: TNPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tnpoint_tcentroid_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.tpoint_tcentroid_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TNPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TNPoint[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -24278,6 +24984,25 @@ export class TPCPatch extends TSpatial {
 		return super.valueset() as PCPatchSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TPCPatch[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TPCPatch[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tpcpatch_from_base_temp */
 	static fromBaseTemp(pa: PCPatch, temp: Temporal): TPCPatch {
 		return wrapTemporal(F.tpcpatch_from_base_temp(pa.ptr, temp.ptr)) as TPCPatch;
@@ -24306,6 +25031,46 @@ export class TPCPatch extends TSpatial {
 	/** MEOS: tpcpatch_in */
 	static fromText(str: string): TPCPatch {
 		return wrapTemporal(F.tpcpatch_in(str)) as TPCPatch;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TPCPatch[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TPCPatch[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tdensity: MEOS tpcpatch_tdensity_transfn over the values, then temporal_tagg_finalfn */
+	static tdensity(values: TPCPatch[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tpcpatch_tdensity_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tnpoints: MEOS tpcpatch_tnpoints_transfn over the values, then temporal_tagg_finalfn */
+	static tnpoints(values: TPCPatch[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.tpcpatch_tnpoints_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TPCPatch[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -24605,6 +25370,25 @@ export class TPCPoint extends TSpatial {
 		return super.valueset() as PCPointSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TPCPoint[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TPCPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tpcpoint_from_base_temp */
 	static fromBaseTemp(pt: PCPoint, temp: Temporal): TPCPoint {
 		return wrapTemporal(F.tpcpoint_from_base_temp(pt.ptr, temp.ptr)) as TPCPoint;
@@ -24633,6 +25417,32 @@ export class TPCPoint extends TSpatial {
 	/** MEOS: tpcpoint_in */
 	static fromText(str: string): TPCPoint {
 		return wrapTemporal(F.tpcpoint_in(str)) as TPCPoint;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TPCPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TPCPoint[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TPCPoint[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -25161,6 +25971,25 @@ export class TPose extends TSpatial {
 		return wrapTemporalOrNull(F.tpose_yaw(this.ptr)) as Temporal | null;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TPose[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TPose[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tpose_from_base_temp */
 	static fromBaseTemp(pose: Pose, temp: Temporal): TPose {
 		return wrapTemporal(F.tpose_from_base_temp(pose.ptr, temp.ptr)) as TPose;
@@ -25194,6 +26023,32 @@ export class TPose extends TSpatial {
 	/** MEOS: tpose_in */
 	static fromText(str: string): TPose {
 		return wrapTemporal(F.tpose_in(str)) as TPose;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TPose[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TPose[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TPose[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -25577,6 +26432,25 @@ export class TPoseChain extends TSpatial {
 		return super.valueset() as PoseChainSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TPoseChain[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TPoseChain[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tposechain_from_base_temp */
 	static fromBaseTemp(pc: PoseChain, temp: Temporal): TPoseChain {
 		return wrapTemporal(F.tposechain_from_base_temp(pc.ptr, temp.ptr)) as TPoseChain;
@@ -25610,6 +26484,32 @@ export class TPoseChain extends TSpatial {
 	/** MEOS: tposechain_in */
 	static fromText(str: string): TPoseChain {
 		return wrapTemporal(F.tposechain_in(str)) as TPoseChain;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TPoseChain[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TPoseChain[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TPoseChain[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -26004,6 +26904,25 @@ export class TQuadbin extends TCellIndex {
 		return super.valueset() as QuadbinSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TQuadbin[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TQuadbin[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: tquadbin_from_base_temp */
 	static fromBaseTemp(value: Quadbin, temp: Temporal): TQuadbin {
 		return wrapTemporal(F.tquadbin_from_base_temp(value.value, temp.ptr)) as TQuadbin;
@@ -26032,6 +26951,32 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_in */
 	static fromText(str: string): TQuadbin {
 		return wrapTemporal(F.tquadbin_in(str)) as TQuadbin;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TQuadbin[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TQuadbin[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TQuadbin[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -26944,6 +27889,25 @@ export class TRGeometry extends TSpatial {
 		return wrapTemporalOrNull(F.trgeometry_yaw(this.ptr)) as Temporal | null;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TRGeometry[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TRGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: temporal_from_wkb */
 	static fromEWKB(wkb: Uint8Array): Temporal {
 		return Temporal.fromWKB(wkb);
@@ -26967,6 +27931,32 @@ export class TRGeometry extends TSpatial {
 	/** MEOS: trgeometry_in */
 	static fromText(str: string): TRGeometry {
 		return wrapTemporal(F.trgeometry_in(str)) as TRGeometry;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TRGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TRGeometry[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TRGeometry[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -27318,6 +28308,25 @@ export class TS2Cell extends TCellIndex {
 		return super.valueset() as S2CellSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TS2Cell[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TS2Cell[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: ts2cell_from_base_temp */
 	static fromBaseTemp(value: S2Cell, temp: Temporal): TS2Cell {
 		return wrapTemporal(F.ts2cell_from_base_temp(value.value, temp.ptr)) as TS2Cell;
@@ -27346,6 +28355,32 @@ export class TS2Cell extends TCellIndex {
 	/** MEOS: ts2cell_in */
 	static fromText(str: string): TS2Cell {
 		return wrapTemporal(F.ts2cell_in(str)) as TS2Cell;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TS2Cell[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TS2Cell[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate wCount: MEOS temporal_wcount_transfn over the values, then temporal_tagg_finalfn */
+	static wCount(values: TS2Cell[], interv: Interval): Temporal | null {
+		const _interv = _putInterval(interv);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_wcount_transfn(_state, _v.ptr, _interv);
+		} finally {
+			_free(_interv);
+		}
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
@@ -27816,6 +28851,25 @@ export class TText extends TAlpha {
 		return super.valueset() as TextSet;
 	}
 
+	/** Aggregate appendInstantAgg: MEOS temporal_app_tinst_transfn over the values, then temporal_append_finalfn */
+	static appendInstantAgg(values: TText[], interp: string, maxdist: number, maxt: Interval): Temporal | null {
+		const _maxt = _putInterval(maxt);
+		let _state: Ptr = 0;
+		try {
+			for (const _v of values) _state = F.temporal_app_tinst_transfn(_state, _v.ptr, F.interptype_from_string(interp), maxdist, _maxt);
+		} finally {
+			_free(_maxt);
+		}
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate appendSequenceAgg: MEOS temporal_app_tseq_transfn over the values, then temporal_append_finalfn */
+	static appendSequenceAgg(values: TText[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_app_tseq_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_append_finalfn(_state)) as Temporal | null;
+	}
+
 	/** MEOS: ttext_from_base_temp */
 	static fromBaseTemp(txt: string, temp: Temporal): TText {
 		return wrapTemporal(F.ttext_from_base_temp(txt, temp.ptr)) as TText;
@@ -27829,6 +28883,34 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_in */
 	static fromText(str: string): TText {
 		return wrapTemporal(F.ttext_in(str)) as TText;
+	}
+
+	/** Aggregate mergeAgg: MEOS temporal_merge_transfn over the values, then temporal_tagg_finalfn */
+	static mergeAgg(values: TText[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_merge_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tCount: MEOS temporal_tcount_transfn over the values, then temporal_tagg_finalfn */
+	static tCount(values: TText[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.temporal_tcount_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMaxAgg: MEOS ttext_tmax_transfn over the values, then temporal_tagg_finalfn */
+	static tMaxAgg(values: TText[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.ttext_tmax_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
+	}
+
+	/** Aggregate tMinAgg: MEOS ttext_tmin_transfn over the values, then temporal_tagg_finalfn */
+	static tMinAgg(values: TText[]): Temporal | null {
+		let _state: Ptr = 0;
+		for (const _v of values) _state = F.ttext_tmin_transfn(_state, _v.ptr);
+		return wrapTemporalOrNull(F.temporal_tagg_finalfn(_state)) as Temporal | null;
 	}
 }
 
