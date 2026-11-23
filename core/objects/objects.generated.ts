@@ -365,6 +365,21 @@ export class Value extends MeosObject {
  */
 export class BandStats extends Value {
 
+	/** The text MEOS writes this value as (MEOS: bandstats_out). */
+	override toString(): string {
+		return this.asText();
+	}
+
+	/** MEOS: bandstats_out */
+	asText(): string {
+		return F.bandstats_out(this.ptr);
+	}
+
+	/** MEOS: bandstats_copy */
+	copy(): BandStats {
+		return wrapBandStats(F.bandstats_copy(this.ptr)) as BandStats;
+	}
+
 	/** MEOS: bandstats_count */
 	count(): bigint {
 		return F.bandstats_count(this.ptr);
@@ -393,6 +408,11 @@ export class BandStats extends Value {
 	/** MEOS: bandstats_sum */
 	sum(): number {
 		return F.bandstats_sum(this.ptr);
+	}
+
+	/** MEOS: bandstats_in */
+	static fromText(str: string): BandStats {
+		return wrapBandStats(F.bandstats_in(str)) as BandStats;
 	}
 }
 
@@ -8418,6 +8438,11 @@ export class NSegment extends Value {
 		return F.nsegment_route(this.ptr);
 	}
 
+	/** MEOS: nsegment_sortkey */
+	sortkey(): Uint8Array {
+		return readWkb(_sizeOut => F.nsegment_sortkey(this.ptr, _sizeOut));
+	}
+
 	/** MEOS: nsegment_srid */
 	SRID(): number {
 		return F.nsegment_srid(this.ptr);
@@ -8662,6 +8687,11 @@ export class PCPatch extends Value {
 	/** MEOS: pcpatch_to_tpcbox */
 	toTpcbox(): TPCBox {
 		return wrapTPCBox(F.pcpatch_to_tpcbox(this.ptr)) as TPCBox;
+	}
+
+	/** MEOS: pcpatch_transform */
+	transform(pcid: number): this {
+		return wrapPCPatch(F.pcpatch_transform(this.ptr, pcid)) as this;
 	}
 
 	/** MEOS: union_pcpatch_set */
@@ -9022,6 +9052,11 @@ export class PCPoint extends Value {
 		return wrapTPCBoxOrNull(F.pcpoint_to_tpcbox(this.ptr)) as TPCBox | null;
 	}
 
+	/** MEOS: pcpoint_transform */
+	transform(pcid: number): this {
+		return wrapPCPoint(F.pcpoint_transform(this.ptr, pcid)) as this;
+	}
+
 	/** MEOS: union_pcpoint_set */
 	union(s: PCPointSet): Set | null {
 		return wrapSetOrNull(F.union_pcpoint_set(this.ptr, s.ptr)) as Set | null;
@@ -9202,7 +9237,7 @@ export class Pcschema extends Value {
 	}
 
 	/** MEOS: meos_pc_schema_from_dims */
-	static fromDims(pcid: number, srid: number, compression: string, dims: PCDimensionSpec[]): Pcschema {
+	static fromDims(pcid: number, srid: number, compression: string | null, dims: PCDimensionSpec[]): Pcschema {
 		const _dimsStrs: Ptr[] = [];
 		const _dims = _writePCDimensionSpecArray(dims, _dimsStrs);
 		try {
@@ -10894,6 +10929,11 @@ export class RaQuet extends Value {
 		return new Quadbin(F.raquet_quadbin(this.ptr));
 	}
 
+	/** MEOS: raquet_sortkey */
+	sortkey(): Uint8Array {
+		return readWkb(_sizeOut => F.raquet_sortkey(this.ptr, _sizeOut));
+	}
+
 	/** MEOS: raquet_to_stbox */
 	toStbox(): STBox {
 		return wrapSTBox(F.raquet_to_stbox(this.ptr)) as STBox;
@@ -11167,6 +11207,16 @@ export class Raster extends Value {
 		}
 	}
 
+	/** MEOS: raster_hash */
+	hash(): number {
+		return F.raster_hash(this.ptr);
+	}
+
+	/** MEOS: raster_hash_extended */
+	hashExtended(seed: bigint): bigint {
+		return F.raster_hash_extended(this.ptr, seed);
+	}
+
 	/** MEOS: raster_height */
 	height(): number {
 		return F.raster_height(this.ptr);
@@ -11402,6 +11452,18 @@ export class Raster extends Value {
 		}
 	}
 
+	/** MEOS: araster_tile_value_series */
+	static aTileValueSeries(traj: Temporal, rqarr: RaQuet[], spans: Span[], vspan: Span): number {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return F.araster_tile_value_series(traj.ptr, _rqarr, _spans, rqarr.length, vspan.ptr);
+		} finally {
+			_free(_rqarr);
+			_free(_spans);
+		}
+	}
+
 	/** MEOS: raster_at_value */
 	static atValue(traj: Temporal, rast: Raster, band: number, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_at_value(traj.ptr, rast.ptr, band, vspan.ptr)) as Temporal | null;
@@ -11412,6 +11474,18 @@ export class Raster extends Value {
 		return wrapTemporalOrNull(F.raster_at_value_gdal(traj.ptr, path, band, vspan.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: raster_at_value_series */
+	static atValueSeries(traj: Temporal, rasts: Raster[], spans: Span[], band: number, vspan: Span): Temporal | null {
+		const _rasts = _ptrArray(rasts.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_at_value_series(traj.ptr, _rasts, _spans, rasts.length, band, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rasts);
+			_free(_spans);
+		}
+	}
+
 	/** MEOS: araster_value */
 	static aValue(traj: Temporal, rast: Raster, band: number, vspan: Span): number {
 		return F.araster_value(traj.ptr, rast.ptr, band, vspan.ptr);
@@ -11420,6 +11494,18 @@ export class Raster extends Value {
 	/** MEOS: araster_value_gdal */
 	static aValueGdal(traj: Temporal, path: string, band: number, vspan: Span): number {
 		return F.araster_value_gdal(traj.ptr, path, band, vspan.ptr);
+	}
+
+	/** MEOS: araster_value_series */
+	static aValueSeries(traj: Temporal, rasts: Raster[], spans: Span[], band: number, vspan: Span): number {
+		const _rasts = _ptrArray(rasts.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return F.araster_value_series(traj.ptr, _rasts, _spans, rasts.length, band, vspan.ptr);
+		} finally {
+			_free(_rasts);
+			_free(_spans);
+		}
 	}
 
 	/** MEOS: eraster_tile_value */
@@ -11437,6 +11523,18 @@ export class Raster extends Value {
 		}
 	}
 
+	/** MEOS: eraster_tile_value_series */
+	static eTileValueSeries(traj: Temporal, rqarr: RaQuet[], spans: Span[], vspan: Span): number {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return F.eraster_tile_value_series(traj.ptr, _rqarr, _spans, rqarr.length, vspan.ptr);
+		} finally {
+			_free(_rqarr);
+			_free(_spans);
+		}
+	}
+
 	/** MEOS: eraster_value */
 	static eValue(traj: Temporal, rast: Raster, band: number, vspan: Span): number {
 		return F.eraster_value(traj.ptr, rast.ptr, band, vspan.ptr);
@@ -11445,6 +11543,18 @@ export class Raster extends Value {
 	/** MEOS: eraster_value_gdal */
 	static eValueGdal(traj: Temporal, path: string, band: number, vspan: Span): number {
 		return F.eraster_value_gdal(traj.ptr, path, band, vspan.ptr);
+	}
+
+	/** MEOS: eraster_value_series */
+	static eValueSeries(traj: Temporal, rasts: Raster[], spans: Span[], band: number, vspan: Span): number {
+		const _rasts = _ptrArray(rasts.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return F.eraster_value_series(traj.ptr, _rasts, _spans, rasts.length, band, vspan.ptr);
+		} finally {
+			_free(_rasts);
+			_free(_spans);
+		}
 	}
 
 	/** MEOS: raster_from_gdal */
@@ -11497,6 +11607,18 @@ export class Raster extends Value {
 		return wrapTemporalOrNull(F.raster_minus_value_gdal(traj.ptr, path, band, vspan.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: raster_minus_value_series */
+	static minusValueSeries(traj: Temporal, rasts: Raster[], spans: Span[], band: number, vspan: Span): Temporal | null {
+		const _rasts = _ptrArray(rasts.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_minus_value_series(traj.ptr, _rasts, _spans, rasts.length, band, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rasts);
+			_free(_spans);
+		}
+	}
+
 	/** Aggregate rasterUnion: MEOS raster_union_transfn over the values, then raster_union_finalfn */
 	static rasterUnion(values: Raster[], band: number, uniontype: string | null): Raster | null {
 		let _state: Ptr = 0;
@@ -11533,6 +11655,18 @@ export class Raster extends Value {
 		}
 	}
 
+	/** MEOS: raster_tile_at_value_series */
+	static tileAtValueSeries(traj: Temporal, rqarr: RaQuet[], spans: Span[], vspan: Span): Temporal | null {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_tile_at_value_series(traj.ptr, _rqarr, _spans, rqarr.length, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rqarr);
+			_free(_spans);
+		}
+	}
+
 	/** MEOS: raster_tile_minus_value */
 	static tileMinusValue(traj: Temporal, rq: RaQuet, vspan: Span): Temporal | null {
 		return wrapTemporalOrNull(F.raster_tile_minus_value(traj.ptr, rq.ptr, vspan.ptr)) as Temporal | null;
@@ -11545,6 +11679,18 @@ export class Raster extends Value {
 			return wrapTemporalOrNull(F.raster_tile_minus_value_array(traj.ptr, _rqarr, rqarr.length, vspan.ptr)) as Temporal | null;
 		} finally {
 			_free(_rqarr);
+		}
+	}
+
+	/** MEOS: raster_tile_minus_value_series */
+	static tileMinusValueSeries(traj: Temporal, rqarr: RaQuet[], spans: Span[], vspan: Span): Temporal | null {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_tile_minus_value_series(traj.ptr, _rqarr, _spans, rqarr.length, vspan.ptr)) as Temporal | null;
+		} finally {
+			_free(_rqarr);
+			_free(_spans);
 		}
 	}
 
@@ -11573,6 +11719,18 @@ export class Raster extends Value {
 		}
 	}
 
+	/** MEOS: raster_tile_value_series */
+	static tileValueSeries(traj: Temporal, rqarr: RaQuet[], spans: Span[]): Temporal | null {
+		const _rqarr = _ptrArray(rqarr.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_tile_value_series(traj.ptr, _rqarr, _spans, rqarr.length)) as Temporal | null;
+		} finally {
+			_free(_rqarr);
+			_free(_spans);
+		}
+	}
+
 	/** MEOS: raster_value */
 	static value(traj: Temporal, rast: Raster, band: number, exclude_nodata: boolean, resample: string): Temporal | null {
 		return wrapTemporalOrNull(F.raster_value(traj.ptr, rast.ptr, band, exclude_nodata, resample)) as Temporal | null;
@@ -11581,6 +11739,18 @@ export class Raster extends Value {
 	/** MEOS: raster_value_gdal */
 	static valueGdal(traj: Temporal, path: string, band: number = 1): Temporal | null {
 		return wrapTemporalOrNull(F.raster_value_gdal(traj.ptr, path, band)) as Temporal | null;
+	}
+
+	/** MEOS: raster_value_series */
+	static valueSeries(traj: Temporal, rasts: Raster[], spans: Span[], band: number): Temporal | null {
+		const _rasts = _ptrArray(rasts.map(x => x.ptr));
+		const _spans = _structArray(spans.map(x => x.ptr), 24);
+		try {
+			return wrapTemporalOrNull(F.raster_value_series(traj.ptr, _rasts, _spans, rasts.length, band)) as Temporal | null;
+		} finally {
+			_free(_rasts);
+			_free(_spans);
+		}
 	}
 }
 
@@ -24580,11 +24750,6 @@ export class TPCBox extends Box {
 		throw new TypeError(`TPCBox.same: no overload takes these arguments`);
 	}
 
-	/** MEOS: tpcbox_set_srid */
-	setSRID(srid: number): this | null {
-		return wrapTPCBoxOrNull(F.tpcbox_set_srid(this.ptr, srid)) as this | null;
-	}
-
 	/** MEOS: tpcbox_sortkey */
 	sortkey(): Uint8Array {
 		return readWkb(_sizeOut => F.tpcbox_sortkey(this.ptr, _sizeOut));
@@ -24618,6 +24783,11 @@ export class TPCBox extends Box {
 	/** MEOS: tpcbox_to_stbox */
 	toStbox(): STBox {
 		return wrapSTBox(F.tpcbox_to_stbox(this.ptr)) as STBox;
+	}
+
+	/** MEOS: tpcbox_transform */
+	transform(pcid: number): this | null {
+		return wrapTPCBoxOrNull(F.tpcbox_transform(this.ptr, pcid)) as this | null;
 	}
 
 	/** MEOS: union_tpcbox_tpcbox */
@@ -25240,6 +25410,26 @@ export class TPCPoint extends TSpatial {
 	override everOverlaps(box: TPCBox | Temporal): number {
 		if (box instanceof TPCBox) return this._ever_overlaps_tpcpoint_tpcbox(box as TPCBox);
 		return super.everOverlaps(box as Temporal);
+	}
+
+	/** MEOS: tpcpoint_get_dim */
+	getDim(name: string): Temporal | null {
+		return wrapTemporalOrNull(F.tpcpoint_get_dim(this.ptr, name)) as Temporal | null;
+	}
+
+	/** MEOS: tpcpoint_get_x */
+	getX(): Temporal | null {
+		return wrapTemporalOrNull(F.tpcpoint_get_x(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tpcpoint_get_y */
+	getY(): Temporal | null {
+		return wrapTemporalOrNull(F.tpcpoint_get_y(this.ptr)) as Temporal | null;
+	}
+
+	/** MEOS: tpcpoint_get_z */
+	getZ(): Temporal | null {
+		return wrapTemporalOrNull(F.tpcpoint_get_z(this.ptr)) as Temporal | null;
 	}
 
 	/** MEOS: tpcpoint_minus_tpcbox */
