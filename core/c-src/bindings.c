@@ -8500,7 +8500,7 @@ char * geom_relate_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, size_t * 
 }
 
 EMSCRIPTEN_KEEPALIVE
-int geom_relate_pattern_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, char * patt) {
+int geom_relate_pattern_w(const GSERIALIZED * gs1, const GSERIALIZED * gs2, const char * patt) {
   return (int) geom_relate_pattern(gs1, gs2, patt);
 }
 
@@ -13878,6 +13878,11 @@ int nsegment_ne_w(const Nsegment * ns1, const Nsegment * ns2) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+uint8_t * nsegment_sortkey_w(const Nsegment * ns, size_t * size) {
+  return nsegment_sortkey(ns, size);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Set * npointset_in_w(const char * str) {
   return npointset_in(str);
 }
@@ -14495,6 +14500,11 @@ TPCBox * pcpoint_to_tpcbox_w(const Pcpoint * pt) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Pcpoint * pcpoint_transform_w(const Pcpoint * pt, uint32_t pcid) {
+  return pcpoint_transform(pt, pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
 PCSCHEMA * meos_pc_schema_w(uint32_t pcid) {
   return meos_pc_schema(pcid);
 }
@@ -14687,6 +14697,11 @@ GSERIALIZED * pcpatch_to_geom_w(const Pcpatch * pa) {
 EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * pcpatch_to_geog_w(const Pcpatch * pa) {
   return pcpatch_to_geog(pa);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Pcpatch * pcpatch_transform_w(const Pcpatch * pa, uint32_t pcid) {
+  return pcpatch_transform(pa, pcid);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -14889,6 +14904,11 @@ Set * pcpatch_union_transfn_w(Set * state, const Pcpatch * pa) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Set * pointcloudset_transform_w(const Set * s, uint32_t pcid) {
+  return pointcloudset_transform(s, pcid);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * tpcbox_as_ewkb_w(const TPCBox * box, uint8_t variant, size_t * size_out) {
   return tpcbox_as_ewkb(box, variant, size_out);
 }
@@ -14951,6 +14971,11 @@ TPCBox * pcpatch_to_tpcbox_w(const Pcpatch * pa) {
 EMSCRIPTEN_KEEPALIVE
 TPCBox * tpointcloud_to_tpcbox_w(const Temporal * temp) {
   return tpointcloud_to_tpcbox(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpointcloud_transform_w(const Temporal * temp, uint32_t pcid) {
+  return tpointcloud_transform(temp, pcid);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -15094,8 +15119,8 @@ TPCBox * tpcbox_round_w(const TPCBox * box, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TPCBox * tpcbox_set_srid_w(const TPCBox * box, int32_t srid) {
-  return tpcbox_set_srid(box, srid);
+TPCBox * tpcbox_transform_w(const TPCBox * box, uint32_t pcid) {
+  return tpcbox_transform(box, pcid);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -15331,6 +15356,26 @@ Pcpoint * tpcpoint_end_value_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Pcpoint * tpcpoint_value_w(const Temporal * temp) {
   return tpcpoint_value(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_get_x_w(const Temporal * temp) {
+  return tpcpoint_get_x(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_get_y_w(const Temporal * temp) {
+  return tpcpoint_get_y(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_get_z_w(const Temporal * temp) {
+  return tpcpoint_get_z(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * tpcpoint_get_dim_w(const Temporal * temp, const char * name) {
+  return tpcpoint_get_dim(temp, name);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -18354,6 +18399,21 @@ double bandstats_max_w(const BandStats * stats) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+BandStats * bandstats_in_w(const char * str) {
+  return bandstats_in(str);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char * bandstats_out_w(const BandStats * stats, size_t * size_out) {
+  return bandstats_out(stats, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+BandStats * bandstats_copy_w(const BandStats * stats) {
+  return bandstats_copy(stats);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Raster * raster_clip_w(const Raster * rast, const int * bands, int nbands, const GSERIALIZED * gs, const double * nodata, int nnodata, int crop, int touched) {
   return raster_clip(rast, bands, nbands, gs, nodata, nnodata, (bool) crop, (bool) touched);
 }
@@ -18599,6 +18659,26 @@ STBox * raster_to_stbox_w(const Raster * rast) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int raster_eq_w(const Raster * rast1, const Raster * rast2) {
+  return (int) raster_eq(rast1, rast2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+int raster_ne_w(const Raster * rast1, const Raster * rast2) {
+  return (int) raster_ne(rast1, rast2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint32_t raster_hash_w(const Raster * rast) {
+  return raster_hash(rast);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint64_t raster_hash_extended_w(const Raster * rast, uint64_t seed) {
+  return raster_hash_extended(rast, seed);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int raquet_cmp_w(const Raquet * rq1, const Raquet * rq2) {
   return raquet_cmp(rq1, rq2);
 }
@@ -18631,6 +18711,11 @@ int raquet_ge_w(const Raquet * rq1, const Raquet * rq2) {
 EMSCRIPTEN_KEEPALIVE
 int raquet_gt_w(const Raquet * rq1, const Raquet * rq2) {
   return (int) raquet_gt(rq1, rq2);
+}
+
+EMSCRIPTEN_KEEPALIVE
+uint8_t * raquet_sortkey_w(const Raquet * rq, size_t * size) {
+  return raquet_sortkey(rq, size);
 }
 
 EMSCRIPTEN_KEEPALIVE

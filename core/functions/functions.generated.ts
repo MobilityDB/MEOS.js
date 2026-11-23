@@ -16375,6 +16375,12 @@ export function nsegment_ne(ns1: Ptr, ns2: Ptr): boolean {
 	return _r;
 }
 
+export function nsegment_sortkey(ns: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('nsegment_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(ns), ptrArgVal(size)]);
+	checkMeosError();
+	return _r;
+}
+
 export function npointset_in(str: string): Ptr {
 	const _r = callPtr('npointset_in_w', ['string'], [str]);
 	checkMeosError();
@@ -17106,6 +17112,12 @@ export function pcpoint_to_tpcbox(pt: Ptr): Ptr {
 	return _r;
 }
 
+export function pcpoint_transform(pt: Ptr, pcid: number): Ptr {
+	const _r = callPtr('pcpoint_transform_w', [ptrArgType(), 'number'], [ptrArgVal(pt), pcid]);
+	checkMeosError();
+	return _r;
+}
+
 export function meos_pc_schema(pcid: number): Ptr {
 	const _r = callPtr('meos_pc_schema_w', ['number'], [pcid]);
 	checkMeosError();
@@ -17117,7 +17129,7 @@ export function meos_pc_schema_register(pcid: number, schema: Ptr): void {
 	checkMeosError();
 }
 
-export function meos_pc_schema_from_dims(pcid: number, srid: number, compression: string, dims: Ptr, ndims: number): Ptr {
+export function meos_pc_schema_from_dims(pcid: number, srid: number, compression: string | null, dims: Ptr, ndims: number): Ptr {
 	const _r = callPtr('meos_pc_schema_from_dims_w', ['number', 'number', 'string', ptrArgType(), 'number'], [pcid, srid, compression, ptrArgVal(dims), ndims]);
 	checkMeosError();
 	return _r;
@@ -17327,6 +17339,12 @@ export function pcpatch_to_geom(pa: Ptr): Ptr {
 
 export function pcpatch_to_geog(pa: Ptr): Ptr {
 	const _r = callPtr('pcpatch_to_geog_w', [ptrArgType()], [ptrArgVal(pa)]);
+	checkMeosError();
+	return _r;
+}
+
+export function pcpatch_transform(pa: Ptr, pcid: number): Ptr {
+	const _r = callPtr('pcpatch_transform_w', [ptrArgType(), 'number'], [ptrArgVal(pa), pcid]);
 	checkMeosError();
 	return _r;
 }
@@ -17565,6 +17583,12 @@ export function pcpatch_union_transfn(state: Ptr, pa: Ptr): Ptr {
 	return _r;
 }
 
+export function pointcloudset_transform(s: Ptr, pcid: number): Ptr {
+	const _r = callPtr('pointcloudset_transform_w', [ptrArgType(), 'number'], [ptrArgVal(s), pcid]);
+	checkMeosError();
+	return _r;
+}
+
 export function tpcbox_as_ewkb(box: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('tpcbox_as_ewkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(box), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -17631,6 +17655,12 @@ export function pcpatch_to_tpcbox(pa: Ptr): Ptr {
 
 export function tpointcloud_to_tpcbox(temp: Ptr): Ptr {
 	const _r = callPtr('tpointcloud_to_tpcbox_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpointcloud_transform(temp: Ptr, pcid: number): Ptr {
+	const _r = callPtr('tpointcloud_transform_w', [ptrArgType(), 'number'], [ptrArgVal(temp), pcid]);
 	checkMeosError();
 	return _r;
 }
@@ -17779,8 +17809,8 @@ export function tpcbox_round(box: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
-export function tpcbox_set_srid(box: Ptr, srid: number): Ptr {
-	const _r = callPtr('tpcbox_set_srid_w', [ptrArgType(), 'number'], [ptrArgVal(box), srid]);
+export function tpcbox_transform(box: Ptr, pcid: number): Ptr {
+	const _r = callPtr('tpcbox_transform_w', [ptrArgType(), 'number'], [ptrArgVal(box), pcid]);
 	checkMeosError();
 	return _r;
 }
@@ -18063,6 +18093,30 @@ export function tpcpoint_end_value(temp: Ptr): Ptr {
 
 export function tpcpoint_value(temp: Ptr): Ptr {
 	const _r = callPtr('tpcpoint_value_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_get_x(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_get_x_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_get_y(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_get_y_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_get_z(temp: Ptr): Ptr {
+	const _r = callPtr('tpcpoint_get_z_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpcpoint_get_dim(temp: Ptr, name: string): Ptr {
+	const _r = callPtr('tpcpoint_get_dim_w', [ptrArgType(), 'string'], [ptrArgVal(temp), name]);
 	checkMeosError();
 	return _r;
 }
@@ -21588,6 +21642,22 @@ export function bandstats_max(stats: Ptr): number {
 	return _r;
 }
 
+export function bandstats_in(str: string): Ptr {
+	const _r = callPtr('bandstats_in_w', ['string'], [str]);
+	checkMeosError();
+	return _r;
+}
+
+export function bandstats_out(stats: Ptr): string {
+	return readString(_sizeOut => callPtr('bandstats_out_w', [ptrArgType(), ptrArgType()], [ptrArgVal(stats), ptrArgVal(_sizeOut)]));
+}
+
+export function bandstats_copy(stats: Ptr): Ptr {
+	const _r = callPtr('bandstats_copy_w', [ptrArgType()], [ptrArgVal(stats)]);
+	checkMeosError();
+	return _r;
+}
+
 export function raster_clip(rast: Ptr, bands: Ptr, nbands: number, gs: Ptr, nodata: Ptr, nnodata: number, crop: boolean, touched: boolean): Ptr {
 	const _r = callPtr('raster_clip_w', [ptrArgType(), ptrArgType(), 'number', ptrArgType(), ptrArgType(), 'number', 'number', 'number'], [ptrArgVal(rast), ptrArgVal(bands), nbands, ptrArgVal(gs), ptrArgVal(nodata), nnodata, crop ? 1 : 0, touched ? 1 : 0]);
 	checkMeosError();
@@ -21878,6 +21948,30 @@ export function raster_to_stbox(rast: Ptr): Ptr {
 	return _r;
 }
 
+export function raster_eq(rast1: Ptr, rast2: Ptr): boolean {
+	const _r = call<number>('raster_eq_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_ne(rast1: Ptr, rast2: Ptr): boolean {
+	const _r = call<number>('raster_ne_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(rast1), ptrArgVal(rast2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_hash(rast: Ptr): number {
+	const _r = (call<number>('raster_hash_w', 'number', [ptrArgType()], [ptrArgVal(rast)])) >>> 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raster_hash_extended(rast: Ptr, seed: bigint): bigint {
+	const _r = BigInt.asUintN(64, call<bigint>('raster_hash_extended_w', 'bigint', [ptrArgType(), 'bigint'], [ptrArgVal(rast), seed]));
+	checkMeosError();
+	return _r;
+}
+
 export function raquet_cmp(rq1: Ptr, rq2: Ptr): number {
 	const _r = call<number>('raquet_cmp_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(rq1), ptrArgVal(rq2)]);
 	checkMeosError();
@@ -21916,6 +22010,12 @@ export function raquet_ge(rq1: Ptr, rq2: Ptr): boolean {
 
 export function raquet_gt(rq1: Ptr, rq2: Ptr): boolean {
 	const _r = call<number>('raquet_gt_w', 'number', [ptrArgType(), ptrArgType()], [ptrArgVal(rq1), ptrArgVal(rq2)]) !== 0;
+	checkMeosError();
+	return _r;
+}
+
+export function raquet_sortkey(rq: Ptr, size: Ptr): Ptr {
+	const _r = callPtr('raquet_sortkey_w', [ptrArgType(), ptrArgType()], [ptrArgVal(rq), ptrArgVal(size)]);
 	checkMeosError();
 	return _r;
 }
