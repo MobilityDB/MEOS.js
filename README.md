@@ -118,6 +118,21 @@ npm install
 npm test
 ```
 
+### Build a release
+
+A release links the library of the MobilityDB commit whose surface its committed wrappers describe,
+so the module binds exactly that surface. The build names the commit:
+
+```bash
+docker build --build-arg MOBILITYDB_COMMIT=<sha> --output type=local,dest=./wasm --target wasm .
+npm test
+npm pack
+```
+
+| Release | MobilityDB commit |
+|---|---|
+| 2.0.0 | `844cef8be5128f5ba15a60353c137d4086666f2e` |
+
 ## Using from JavaScript
 
 MEOS.js is written in TypeScript for maintainability but ships as **plain JavaScript** (ES2022 / ESM) with bundled type declarations. You can use it from any JavaScript project without TypeScript in your toolchain.

@@ -1,6 +1,6 @@
 {
   "name": "meos.js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
   "description": "JavaScript/TypeScript bindings for MobilityDB MEOS via WebAssembly",
   "main": "./dist/core/index.js",
