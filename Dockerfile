@@ -3,6 +3,10 @@
 # Usage:
 #   docker build --output type=local,dest=./wasm --target wasm .
 #
+# A release builds the module from the MobilityDB commit the committed wrappers
+# were generated from, so the library it links is the surface they bind:
+#   docker build --build-arg MOBILITYDB_COMMIT=<sha> --output type=local,dest=./wasm --target wasm .
+#
 # Versions:
 #   emsdk 5.0.6       |  MobilityDB master
 #   PROJ 9.8.1        |  SQLite 3.46.1      |  JSON-C 0.18
@@ -13,6 +17,8 @@
 # the MEOS surface changes.
 ARG MOBILITYDB_REPO=https://github.com/MobilityDB/MobilityDB.git
 ARG MOBILITYDB_BRANCH=master
+# A commit of that branch to build instead of its tip; empty builds the tip
+ARG MOBILITYDB_COMMIT=
 
 # EMSCRIPTEN & EVERY NEEDED TOOL
 FROM emscripten/emsdk:5.0.6 AS base
@@ -197,8 +203,14 @@ RUN mkdir -p build && cd build \
 FROM base AS mobilitydb_src
 ARG MOBILITYDB_REPO
 ARG MOBILITYDB_BRANCH
+ARG MOBILITYDB_COMMIT
 
-RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB
+RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB \
+    && cd /root/MobilityDB \
+    && if [ -n "${MOBILITYDB_COMMIT}" ]; then \
+         git fetch --depth 1 origin "${MOBILITYDB_COMMIT}" && git checkout --quiet FETCH_HEAD; \
+       fi \
+    && echo "MobilityDB $(git rev-parse HEAD)"
 
 # COMPILING H3 WITH EMSCRIPTEN (Uber libh3, required by the temporal H3 index family)
 # BUILD_GENERATORS=OFF: the lib's generated coordinate tables are committed in the
