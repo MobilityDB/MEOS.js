@@ -21,6 +21,10 @@
     "./deckgl/layer": {
       "types": "./dist/deckgl/layer.d.ts",
       "import": "./dist/deckgl/layer.js"
+    },
+    "./viewer": {
+      "types": "./dist/viewer/index.d.ts",
+      "import": "./dist/viewer/index.js"
     }
   },
   "files": [
