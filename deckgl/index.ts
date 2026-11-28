@@ -7,7 +7,7 @@
  */
 
 // Adapter (pure data-shape transform).
-export type { MfjsonSource, Trip, ToTripsOptions, TripCollection } from './adapter.js';
+export type { CoordsSource, MfjsonSource, Trip, ToTripsOptions, TripCollection } from './adapter.js';
 export { tgeompointToTrips, tgeompointsToTrips, mfjsonDatetimeToMs } from './adapter.js';
 
 // Helpers (MEOS temporal logic -> trips).

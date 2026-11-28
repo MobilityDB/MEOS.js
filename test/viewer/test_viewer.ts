@@ -76,6 +76,33 @@ describe('tgeompointsFromCollection', () => {
 	});
 });
 
+/** The documents a server answering the binary format, as MobilityAPI does, gives for these points */
+function binaryCollection(points: TGeomPoint[]): (url: string, accept?: string) => Promise<unknown> {
+	const json = collection(points);
+	return async (url, accept) => {
+		const m = /^\/collections\/c\/items\/(\d+)\/tgsequence$/.exec(url);
+		if (m && accept?.startsWith('application/octet-stream')) return points[Number(m[1]) - 1].asBinary();
+		return json(url);
+	};
+}
+
+describe('tgeompointsFromCollection - binary', () => {
+	it('reads the same members from the binary format as from MF-JSON', async () => {
+		using a = TGeomPoint.fromString(SEQ);
+		using b = TGeomPoint.fromString(SEQSET);
+		const fromJson = await tgeompointsFromCollection('', 'c', collection([a, b]));
+		const fromBinary = await tgeompointsFromCollection('', 'c', binaryCollection([a, b]));
+		assert.deepEqual(fromBinary.map(p => p.asText()), fromJson.map(p => p.asText()));
+		assert.deepEqual(fromBinary.map(p => p.numInstants()), [3, 2, 2]);
+	});
+
+	it('keeps an instant whole, having no sequences', async () => {
+		using a = TGeomPoint.fromString(`SRID=4326;POINT(4.35 50.85)@${T0}`);
+		const [read] = await tgeompointsFromCollection('', 'c', binaryCollection([a]));
+		assert.equal(read.asText(), a.asText());
+	});
+});
+
 describe('positionAt', () => {
 	it('answers the instants of a sequence and its interpolation between them', () => {
 		using t = TGeomPoint.fromString(SEQ);
