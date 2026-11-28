@@ -613,10 +613,10 @@ describe('TBox - Math', () => {
 		r.free();
 	});
 
-	it('shiftScaleInt shifts integer X bounds forward', () => {
+	it('shiftValueInt shifts integer X bounds forward', () => {
 		const xs = IntSpan.make(1, 5);
 		const b = xs.toTbox();
-		const s = b.shiftScaleInt(3, 0, true, false);
+		const s = b.shiftValueInt(3);
 		assert.equal(s.xmin(), 4);
 		assert.equal(s.xmax(), 7);
 		xs.free();
@@ -624,10 +624,10 @@ describe('TBox - Math', () => {
 		s.free();
 	});
 
-	it('shiftScaleBigint shifts bigint X bounds forward', () => {
+	it('shiftValueBigint shifts bigint X bounds forward', () => {
 		const xs = BigIntSpan.make(1n, 5n);
 		const b = xs.toTbox();
-		const s = b.shiftScaleBigint(3n, 0n, true, false);
+		const s = b.shiftValueBigint(3n);
 		assert.equal(s.xmin(), 4);
 		assert.equal(s.xmax(), 7);
 		xs.free();
@@ -635,9 +635,9 @@ describe('TBox - Math', () => {
 		s.free();
 	});
 
-	it('shiftScaleFloat shifts float X bounds forward', () => {
+	it('shiftValueFloat shifts float X bounds forward', () => {
 		const b = TBox.fromText('TBOX X([1.0, 5.0])');
-		const s = b.shiftScaleFloat(2.0, 0, true, false);
+		const s = b.shiftValueFloat(2.0);
 		assert.ok(Math.abs(s.xmin() - 3.0) < 1e-9);
 		assert.ok(Math.abs(s.xmax() - 7.0) < 1e-9);
 		b.free();

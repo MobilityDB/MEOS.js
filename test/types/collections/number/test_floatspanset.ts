@@ -475,7 +475,7 @@ describe('FloatSpanSet - Math methods', () => {
 
 	it('shiftScale shifts spanset forward', () => {
 		const ss = FloatSpanSet.fromText('{[1, 4)}');
-		const shifted = ss.shiftScale(1.0, 0, true, false);
+		const shifted = ss.shift(1.0);
 		assert.ok(Math.abs(lower(shifted) - 2.0) < 1e-9);
 		assert.ok(Math.abs(upper(shifted) - 5.0) < 1e-9);
 		ss.free();

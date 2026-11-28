@@ -319,7 +319,7 @@ describe('IntSet - Comparisons', () => {
 describe('IntSet - shiftScale', () => {
 	it('shift by 2 moves values forward', () => {
 		const s = IntSet.fromText(`{${V1}}`); // {2}
-		const shifted = s.shiftScale(2, 0, true, false);
+		const shifted = s.shift(2);
 		assert.equal(shifted.startValue(), V1 + 2); // {4}
 		s.free();
 		shifted.free();

@@ -319,7 +319,7 @@ describe('DateSet - Comparisons', () => {
 describe('DateSet - shiftScale', () => {
 	it('shift by 10 days moves dates forward', () => {
 		const s = DateSet.fromText(`{${D_A}}`); // day 0
-		const shifted = s.shiftScale(10, 0, true, false);
+		const shifted = s.shift(10);
 		assert.equal(shifted.startValue(), 10); // now day 10
 		s.free();
 		shifted.free();

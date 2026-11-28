@@ -348,7 +348,7 @@ describe('FloatSet - Math methods', () => {
 
 	it('shiftScale shifts values forward', () => {
 		const s = FloatSet.fromText(`{${V1}}`);
-		const shifted = s.shiftScale(1.0, 0, true, false);
+		const shifted = s.shift(1.0);
 		assert.ok(Math.abs(shifted.startValue() - (V1 + 1.0)) < 1e-9);
 		s.free();
 		shifted.free();

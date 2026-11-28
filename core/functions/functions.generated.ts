@@ -792,14 +792,6 @@ export function meos_full_version(): string {
 	return readString(_sizeOut => callPtr('meos_full_version_w', [ptrArgType()], [ptrArgVal(_sizeOut)]));
 }
 
-export function mobilitydb_version(): string {
-	return readString(_sizeOut => callPtr('mobilitydb_version_w', [ptrArgType()], [ptrArgVal(_sizeOut)]));
-}
-
-export function mobilitydb_full_version(): string {
-	return readString(_sizeOut => callPtr('mobilitydb_full_version_w', [ptrArgType()], [ptrArgVal(_sizeOut)]));
-}
-
 export function bigintset_in(str: string): Ptr {
 	const _r = callPtr('bigintset_in_w', ['string'], [str]);
 	checkMeosError();
@@ -1124,6 +1116,12 @@ export function date_to_unix_days(d: DateADT): number {
 	return _r;
 }
 
+export function dateset_origins(s: Ptr, zone: string): Ptr {
+	const _r = callPtr('dateset_origins_w', [ptrArgType(), 'string'], [ptrArgVal(s), zone]);
+	checkMeosError();
+	return _r;
+}
+
 export function dateset_to_tstzset(s: Ptr): Ptr {
 	const _r = callPtr('dateset_to_tstzset_w', [ptrArgType()], [ptrArgVal(s)]);
 	checkMeosError();
@@ -1298,6 +1296,12 @@ export function timestamptz_to_spanset(t: TimestampTz): Ptr {
 	return _r;
 }
 
+export function timestamptz_to_unix_ms(t: TimestampTz): bigint {
+	const _r = call<bigint>('timestamptz_to_unix_ms_w', 'bigint', ['bigint'], [t]);
+	checkMeosError();
+	return _r;
+}
+
 export function timestamptz_to_unix_us(t: TimestampTz): bigint {
 	const _r = call<bigint>('timestamptz_to_unix_us_w', 'bigint', ['bigint'], [t]);
 	checkMeosError();
@@ -1324,6 +1328,12 @@ export function tstzspanset_to_datespanset(ss: Ptr): Ptr {
 
 export function unix_days_to_date(days: number): DateADT {
 	const _r = call<DateADT>('unix_days_to_date_w', 'number', ['number'], [days]);
+	checkMeosError();
+	return _r;
+}
+
+export function unix_ms_to_timestamptz(ms: bigint): TimestampTz {
+	const _r = call<bigint>('unix_ms_to_timestamptz_w', 'bigint', ['bigint'], [ms]);
 	checkMeosError();
 	return _r;
 }
@@ -1838,38 +1848,110 @@ export function tstzspanset_upper(ss: Ptr): TimestampTz {
 	return _r;
 }
 
-export function bigintset_shift_scale(s: Ptr, shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintset_scale(s: Ptr, width: bigint): Ptr {
+	const _r = callPtr('bigintset_scale_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), width]);
 	checkMeosError();
 	return _r;
 }
 
-export function bigintspan_shift_scale(s: Ptr, shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintspan_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintset_shift_scale(s: Ptr, shift: bigint, width: bigint): Ptr {
+	const _r = callPtr('bigintset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(s), shift, width]);
 	checkMeosError();
 	return _r;
 }
 
-export function bigintspanset_shift_scale(ss: Ptr, shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('bigintspanset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(ss), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintset_shift(s: Ptr, shift: bigint): Ptr {
+	const _r = callPtr('bigintset_shift_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), shift]);
 	checkMeosError();
 	return _r;
 }
 
-export function dateset_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('dateset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintspan_scale(s: Ptr, width: bigint): Ptr {
+	const _r = callPtr('bigintspan_scale_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), width]);
 	checkMeosError();
 	return _r;
 }
 
-export function datespan_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('datespan_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintspan_shift_scale(s: Ptr, shift: bigint, width: bigint): Ptr {
+	const _r = callPtr('bigintspan_shift_scale_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(s), shift, width]);
 	checkMeosError();
 	return _r;
 }
 
-export function datespanset_shift_scale(ss: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('datespanset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(ss), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function bigintspan_shift(s: Ptr, shift: bigint): Ptr {
+	const _r = callPtr('bigintspan_shift_w', [ptrArgType(), 'bigint'], [ptrArgVal(s), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function bigintspanset_scale(ss: Ptr, width: bigint): Ptr {
+	const _r = callPtr('bigintspanset_scale_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function bigintspanset_shift_scale(ss: Ptr, shift: bigint, width: bigint): Ptr {
+	const _r = callPtr('bigintspanset_shift_scale_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(ss), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function bigintspanset_shift(ss: Ptr, shift: bigint): Ptr {
+	const _r = callPtr('bigintspanset_shift_w', [ptrArgType(), 'bigint'], [ptrArgVal(ss), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function dateset_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('dateset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function dateset_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('dateset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function dateset_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('dateset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespan_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('datespan_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespan_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('datespan_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespan_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('datespan_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespanset_scale(ss: Ptr, width: number): Ptr {
+	const _r = callPtr('datespanset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(ss), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespanset_shift_scale(ss: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('datespanset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(ss), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function datespanset_shift(ss: Ptr, shift: number): Ptr {
+	const _r = callPtr('datespanset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(ss), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -1898,8 +1980,20 @@ export function floatset_radians(s: Ptr): Ptr {
 	return _r;
 }
 
-export function floatset_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('floatset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function floatset_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('floatset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function floatset_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('floatset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function floatset_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('floatset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -1934,8 +2028,20 @@ export function floatspan_round(s: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
-export function floatspan_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('floatspan_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function floatspan_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('floatspan_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function floatspan_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('floatspan_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function floatspan_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('floatspan_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -1970,26 +2076,74 @@ export function floatspanset_round(ss: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
-export function floatspanset_shift_scale(ss: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('floatspanset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(ss), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function floatspanset_scale(ss: Ptr, width: number): Ptr {
+	const _r = callPtr('floatspanset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(ss), width]);
 	checkMeosError();
 	return _r;
 }
 
-export function intset_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('intset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function floatspanset_shift_scale(ss: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('floatspanset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(ss), shift, width]);
 	checkMeosError();
 	return _r;
 }
 
-export function intspan_shift_scale(s: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('intspan_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(s), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function floatspanset_shift(ss: Ptr, shift: number): Ptr {
+	const _r = callPtr('floatspanset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(ss), shift]);
 	checkMeosError();
 	return _r;
 }
 
-export function intspanset_shift_scale(ss: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('intspanset_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(ss), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function intset_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('intset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intset_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('intset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intset_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('intset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspan_scale(s: Ptr, width: number): Ptr {
+	const _r = callPtr('intspan_scale_w', [ptrArgType(), 'number'], [ptrArgVal(s), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspan_shift_scale(s: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('intspan_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(s), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspan_shift(s: Ptr, shift: number): Ptr {
+	const _r = callPtr('intspan_shift_w', [ptrArgType(), 'number'], [ptrArgVal(s), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspanset_scale(ss: Ptr, width: number): Ptr {
+	const _r = callPtr('intspanset_scale_w', [ptrArgType(), 'number'], [ptrArgVal(ss), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspanset_shift_scale(ss: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('intspanset_shift_scale_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(ss), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function intspanset_shift(ss: Ptr, shift: number): Ptr {
+	const _r = callPtr('intspanset_shift_w', [ptrArgType(), 'number'], [ptrArgVal(ss), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -5086,14 +5240,38 @@ export function tbox_round(box: Ptr, maxdd: number): Ptr {
 	return _r;
 }
 
-export function tfloatbox_shift_scale(box: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('tfloatbox_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(box), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function tfloatbox_scale_value(box: Ptr, width: number): Ptr {
+	const _r = callPtr('tfloatbox_scale_value_w', [ptrArgType(), 'number'], [ptrArgVal(box), width]);
 	checkMeosError();
 	return _r;
 }
 
-export function tintbox_shift_scale(box: Ptr, shift: number, width: number, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('tintbox_shift_scale_w', [ptrArgType(), 'number', 'number', 'number', 'number'], [ptrArgVal(box), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function tfloatbox_shift_scale_value(box: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('tfloatbox_shift_scale_value_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(box), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function tfloatbox_shift_value(box: Ptr, shift: number): Ptr {
+	const _r = callPtr('tfloatbox_shift_value_w', [ptrArgType(), 'number'], [ptrArgVal(box), shift]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_scale_value(box: Ptr, width: number): Ptr {
+	const _r = callPtr('tintbox_scale_value_w', [ptrArgType(), 'number'], [ptrArgVal(box), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_shift_scale_value(box: Ptr, shift: number, width: number): Ptr {
+	const _r = callPtr('tintbox_shift_scale_value_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(box), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function tintbox_shift_value(box: Ptr, shift: number): Ptr {
+	const _r = callPtr('tintbox_shift_value_w', [ptrArgType(), 'number'], [ptrArgVal(box), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -5122,8 +5300,20 @@ export function tbigintbox_expand(box: Ptr, i: bigint): Ptr {
 	return _r;
 }
 
-export function tbigintbox_shift_scale(box: Ptr, shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): Ptr {
-	const _r = callPtr('tbigintbox_shift_scale_w', [ptrArgType(), 'bigint', 'bigint', 'number', 'number'], [ptrArgVal(box), shift, width, hasshift ? 1 : 0, haswidth ? 1 : 0]);
+export function tbigintbox_scale_value(box: Ptr, width: bigint): Ptr {
+	const _r = callPtr('tbigintbox_scale_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(box), width]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigintbox_shift_scale_value(box: Ptr, shift: bigint, width: bigint): Ptr {
+	const _r = callPtr('tbigintbox_shift_scale_value_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(box), shift, width]);
+	checkMeosError();
+	return _r;
+}
+
+export function tbigintbox_shift_value(box: Ptr, shift: bigint): Ptr {
+	const _r = callPtr('tbigintbox_shift_value_w', [ptrArgType(), 'bigint'], [ptrArgVal(box), shift]);
 	checkMeosError();
 	return _r;
 }
@@ -5540,6 +5730,12 @@ export function temporal_from_wkb(wkb: Ptr, size: bigint): Ptr {
 
 export function temporal_out(temp: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('temporal_out_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), maxdd, ptrArgVal(_sizeOut)]));
+}
+
+export function temparr_out(temparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('temparr_out_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temparr), count, maxdd]);
+	checkMeosError();
+	return _r;
 }
 
 export function tfloat_from_mfjson(str: string): Ptr {
@@ -6312,6 +6508,24 @@ export function float_round(d: number, maxdd: number): number {
 
 export function temparr_round(temparr: Ptr, count: number, maxdd: number): Ptr {
 	const _r = callPtr('temparr_round_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temparr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_occurrence(temp: Ptr, ref: TimestampTz, origin: TimestampTz): Ptr {
+	const _r = callPtr('temporal_occurrence_w', [ptrArgType(), 'bigint', 'bigint'], [ptrArgVal(temp), ref, origin]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_occurrence_origins(temp: Ptr, ref: TimestampTz, origins: Ptr, s: Ptr): Ptr {
+	const _r = callPtr('temporal_occurrence_origins_w', [ptrArgType(), 'bigint', ptrArgType(), ptrArgType()], [ptrArgVal(temp), ref, ptrArgVal(origins), ptrArgVal(s)]);
+	checkMeosError();
+	return _r;
+}
+
+export function temporal_occurrences(temp: Ptr, ref: TimestampTz, origins: Ptr, s: Ptr, occ_origins: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('temporal_occurrences_w', [ptrArgType(), 'bigint', ptrArgType(), ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ref, ptrArgVal(origins), ptrArgVal(s), ptrArgVal(occ_origins), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -9554,6 +9768,18 @@ export function geo_as_ewkb(gs: Ptr, endian: string | null, size: Ptr): Ptr {
 	return _r;
 }
 
+export function geoarr_as_ewkt(geoarr: Ptr, count: number, precision: number): Ptr {
+	const _r = callPtr('geoarr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(geoarr), count, precision]);
+	checkMeosError();
+	return _r;
+}
+
+export function geoarr_as_text(geoarr: Ptr, count: number, precision: number): Ptr {
+	const _r = callPtr('geoarr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(geoarr), count, precision]);
+	checkMeosError();
+	return _r;
+}
+
 export function geo_as_ewkt(gs: Ptr, precision: number): string {
 	return readString(_sizeOut => callPtr('geo_as_ewkt_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(gs), precision, ptrArgVal(_sizeOut)]));
 }
@@ -10942,6 +11168,18 @@ export function tspatial_as_text(temp: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('tspatial_as_text_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(temp), maxdd, ptrArgVal(_sizeOut)]));
 }
 
+export function tspatialarr_as_ewkt(temparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('tspatialarr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temparr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function tspatialarr_as_text(temparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('tspatialarr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(temparr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
 export function tgeo_from_base_temp(gs: Ptr, temp: Ptr): Ptr {
 	const _r = callPtr('tgeo_from_base_temp_w', [ptrArgType(), ptrArgType()], [ptrArgVal(gs), ptrArgVal(temp)]);
 	checkMeosError();
@@ -11140,6 +11378,12 @@ export function tgeo_end_value(temp: Ptr): Ptr {
 	return _r;
 }
 
+export function tgeo_space_time_volume(temp: Ptr, spheroid: boolean): number {
+	const _r = call<number>('tgeo_space_time_volume_w', 'number', [ptrArgType(), 'number'], [ptrArgVal(temp), spheroid ? 1 : 0]);
+	checkMeosError();
+	return _r;
+}
+
 export function tgeo_start_value(temp: Ptr): Ptr {
 	const _r = callPtr('tgeo_start_value_w', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
@@ -11220,6 +11464,12 @@ export function tpoint_get_y(temp: Ptr): Ptr {
 
 export function tpoint_get_z(temp: Ptr): Ptr {
 	const _r = callPtr('tpoint_get_z_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tpoint_coords(temp: Ptr, ycoords: Ptr, zcoords: Ptr, times: Ptr, count: Ptr): Ptr {
+	const _r = callPtr('tpoint_coords_w', [ptrArgType(), ptrArgType(), ptrArgType(), ptrArgType(), ptrArgType()], [ptrArgVal(temp), ptrArgVal(ycoords), ptrArgVal(zcoords), ptrArgVal(times), ptrArgVal(count)]);
 	checkMeosError();
 	return _r;
 }
@@ -12635,6 +12885,18 @@ export function cbuffer_as_text(cb: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('cbuffer_as_text_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(cb), maxdd, ptrArgVal(_sizeOut)]));
 }
 
+export function cbufferarr_as_ewkt(cbarr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('cbufferarr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(cbarr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function cbufferarr_as_text(cbarr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('cbufferarr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(cbarr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
 export function cbuffer_as_wkb(cb: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('cbuffer_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(cb), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -13049,6 +13311,12 @@ export function tcbuffer_points(temp: Ptr): Ptr {
 
 export function tcbuffer_radius(temp: Ptr): Ptr {
 	const _r = callPtr('tcbuffer_radius_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function tcbuffer_space_time_volume(temp: Ptr): number {
+	const _r = call<number>('tcbuffer_space_time_volume_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }
@@ -16033,6 +16301,18 @@ export function npoint_as_text(np: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('npoint_as_text_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(np), maxdd, ptrArgVal(_sizeOut)]));
 }
 
+export function npointarr_as_ewkt(nparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('npointarr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(nparr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function npointarr_as_text(nparr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('npointarr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(nparr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
 export function npoint_as_wkb(np: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('npoint_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(np), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -19010,6 +19290,18 @@ export function pose_as_text(pose: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('pose_as_text_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pose), maxdd, ptrArgVal(_sizeOut)]));
 }
 
+export function posearr_as_ewkt(posearr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('posearr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(posearr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function posearr_as_text(posearr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('posearr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(posearr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
 export function pose_as_wkb(pose: Ptr, variant: number, size_out: Ptr): Ptr {
 	const _r = callPtr('pose_as_wkb_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pose), variant, ptrArgVal(size_out)]);
 	checkMeosError();
@@ -19932,6 +20224,18 @@ export function posechain_out(pc: Ptr, maxdd: number): string {
 
 export function posechain_as_text(pc: Ptr, maxdd: number): string {
 	return readString(_sizeOut => callPtr('posechain_as_text_w', [ptrArgType(), 'number', ptrArgType()], [ptrArgVal(pc), maxdd, ptrArgVal(_sizeOut)]));
+}
+
+export function posechainarr_as_ewkt(posechainarr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('posechainarr_as_ewkt_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(posechainarr), count, maxdd]);
+	checkMeosError();
+	return _r;
+}
+
+export function posechainarr_as_text(posechainarr: Ptr, count: number, maxdd: number): Ptr {
+	const _r = callPtr('posechainarr_as_text_w', [ptrArgType(), 'number', 'number'], [ptrArgVal(posechainarr), count, maxdd]);
+	checkMeosError();
+	return _r;
 }
 
 export function posechain_as_ewkb(pc: Ptr, variant: number, size_out: Ptr): Ptr {
@@ -22329,6 +22633,12 @@ export function trgeometry_pitch(temp: Ptr): Ptr {
 
 export function trgeometry_roll(temp: Ptr): Ptr {
 	const _r = callPtr('trgeometry_roll_w', [ptrArgType()], [ptrArgVal(temp)]);
+	checkMeosError();
+	return _r;
+}
+
+export function trgeometry_space_time_volume(temp: Ptr): number {
+	const _r = call<number>('trgeometry_space_time_volume_w', 'number', [ptrArgType()], [ptrArgVal(temp)]);
 	checkMeosError();
 	return _r;
 }

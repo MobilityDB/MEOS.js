@@ -198,7 +198,8 @@ FROM base AS mobilitydb_src
 ARG MOBILITYDB_REPO
 ARG MOBILITYDB_BRANCH
 
-RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB
+RUN git clone --depth 1 --branch ${MOBILITYDB_BRANCH} ${MOBILITYDB_REPO} /root/MobilityDB \
+    && git -C /root/MobilityDB log -1 --format='MobilityDB commit %H (%cI)'
 
 # COMPILING H3 WITH EMSCRIPTEN (Uber libh3, required by the temporal H3 index family)
 # BUILD_GENERATORS=OFF: the lib's generated coordinate tables are committed in the

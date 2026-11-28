@@ -650,16 +650,6 @@ char * meos_full_version_w(size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-char * mobilitydb_version_w(size_t * size_out) {
-  return mobilitydb_version(size_out);
-}
-
-EMSCRIPTEN_KEEPALIVE
-char * mobilitydb_full_version_w(size_t * size_out) {
-  return mobilitydb_full_version(size_out);
-}
-
-EMSCRIPTEN_KEEPALIVE
 Set * bigintset_in_w(const char * str) {
   return bigintset_in(str);
 }
@@ -940,6 +930,11 @@ int32 date_to_unix_days_w(DateADT d) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+Set * dateset_origins_w(const Set * s, const char * zone) {
+  return dateset_origins(s, cstring_to_text(zone));
+}
+
+EMSCRIPTEN_KEEPALIVE
 Set * dateset_to_tstzset_w(const Set * s) {
   return dateset_to_tstzset(s);
 }
@@ -1085,6 +1080,11 @@ SpanSet * timestamptz_to_spanset_w(long long t) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+int64_t timestamptz_to_unix_ms_w(long long t) {
+  return timestamptz_to_unix_ms((TimestampTz) t);
+}
+
+EMSCRIPTEN_KEEPALIVE
 int64_t timestamptz_to_unix_us_w(long long t) {
   return timestamptz_to_unix_us((TimestampTz) t);
 }
@@ -1107,6 +1107,11 @@ SpanSet * tstzspanset_to_datespanset_w(const SpanSet * ss) {
 EMSCRIPTEN_KEEPALIVE
 DateADT unix_days_to_date_w(int32 days) {
   return unix_days_to_date(days);
+}
+
+EMSCRIPTEN_KEEPALIVE
+long long unix_ms_to_timestamptz_w(int64_t ms) {
+  return unix_ms_to_timestamptz(ms);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1555,33 +1560,93 @@ long long tstzspanset_upper_w(const SpanSet * ss) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * bigintset_shift_scale_w(const Set * s, int64_t shift, int64_t width, int hasshift, int haswidth) {
-  return bigintset_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Set * bigintset_scale_w(const Set * s, int64_t width) {
+  return bigintset_scale(s, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * bigintspan_shift_scale_w(const Span * s, int64_t shift, int64_t width, int hasshift, int haswidth) {
-  return bigintspan_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Set * bigintset_shift_scale_w(const Set * s, int64_t shift, int64_t width) {
+  return bigintset_shift_scale(s, shift, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * bigintspanset_shift_scale_w(const SpanSet * ss, int64_t shift, int64_t width, int hasshift, int haswidth) {
-  return bigintspanset_shift_scale(ss, shift, width, (bool) hasshift, (bool) haswidth);
+Set * bigintset_shift_w(const Set * s, int64_t shift) {
+  return bigintset_shift(s, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * dateset_shift_scale_w(const Set * s, int shift, int width, int hasshift, int haswidth) {
-  return dateset_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Span * bigintspan_scale_w(const Span * s, int64_t width) {
+  return bigintspan_scale(s, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * datespan_shift_scale_w(const Span * s, int shift, int width, int hasshift, int haswidth) {
-  return datespan_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Span * bigintspan_shift_scale_w(const Span * s, int64_t shift, int64_t width) {
+  return bigintspan_shift_scale(s, shift, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * datespanset_shift_scale_w(const SpanSet * ss, int shift, int width, int hasshift, int haswidth) {
-  return datespanset_shift_scale(ss, shift, width, (bool) hasshift, (bool) haswidth);
+Span * bigintspan_shift_w(const Span * s, int64_t shift) {
+  return bigintspan_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * bigintspanset_scale_w(const SpanSet * ss, int64_t width) {
+  return bigintspanset_scale(ss, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * bigintspanset_shift_scale_w(const SpanSet * ss, int64_t shift, int64_t width) {
+  return bigintspanset_shift_scale(ss, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * bigintspanset_shift_w(const SpanSet * ss, int64_t shift) {
+  return bigintspanset_shift(ss, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * dateset_scale_w(const Set * s, int width) {
+  return dateset_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * dateset_shift_scale_w(const Set * s, int shift, int width) {
+  return dateset_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * dateset_shift_w(const Set * s, int shift) {
+  return dateset_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * datespan_scale_w(const Span * s, int width) {
+  return datespan_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * datespan_shift_scale_w(const Span * s, int shift, int width) {
+  return datespan_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * datespan_shift_w(const Span * s, int shift) {
+  return datespan_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * datespanset_scale_w(const SpanSet * ss, int width) {
+  return datespanset_scale(ss, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * datespanset_shift_scale_w(const SpanSet * ss, int shift, int width) {
+  return datespanset_shift_scale(ss, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * datespanset_shift_w(const SpanSet * ss, int shift) {
+  return datespanset_shift(ss, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1605,8 +1670,18 @@ Set * floatset_radians_w(const Set * s) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * floatset_shift_scale_w(const Set * s, double shift, double width, int hasshift, int haswidth) {
-  return floatset_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Set * floatset_scale_w(const Set * s, double width) {
+  return floatset_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * floatset_shift_scale_w(const Set * s, double shift, double width) {
+  return floatset_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * floatset_shift_w(const Set * s, double shift) {
+  return floatset_shift(s, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1635,8 +1710,18 @@ Span * floatspan_round_w(const Span * s, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * floatspan_shift_scale_w(const Span * s, double shift, double width, int hasshift, int haswidth) {
-  return floatspan_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+Span * floatspan_scale_w(const Span * s, double width) {
+  return floatspan_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * floatspan_shift_scale_w(const Span * s, double shift, double width) {
+  return floatspan_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * floatspan_shift_w(const Span * s, double shift) {
+  return floatspan_shift(s, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -1665,23 +1750,63 @@ SpanSet * floatspanset_round_w(const SpanSet * ss, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * floatspanset_shift_scale_w(const SpanSet * ss, double shift, double width, int hasshift, int haswidth) {
-  return floatspanset_shift_scale(ss, shift, width, (bool) hasshift, (bool) haswidth);
+SpanSet * floatspanset_scale_w(const SpanSet * ss, double width) {
+  return floatspanset_scale(ss, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Set * intset_shift_scale_w(const Set * s, int shift, int width, int hasshift, int haswidth) {
-  return intset_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+SpanSet * floatspanset_shift_scale_w(const SpanSet * ss, double shift, double width) {
+  return floatspanset_shift_scale(ss, shift, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-Span * intspan_shift_scale_w(const Span * s, int shift, int width, int hasshift, int haswidth) {
-  return intspan_shift_scale(s, shift, width, (bool) hasshift, (bool) haswidth);
+SpanSet * floatspanset_shift_w(const SpanSet * ss, double shift) {
+  return floatspanset_shift(ss, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
-SpanSet * intspanset_shift_scale_w(const SpanSet * ss, int shift, int width, int hasshift, int haswidth) {
-  return intspanset_shift_scale(ss, shift, width, (bool) hasshift, (bool) haswidth);
+Set * intset_scale_w(const Set * s, int width) {
+  return intset_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intset_shift_scale_w(const Set * s, int shift, int width) {
+  return intset_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * intset_shift_w(const Set * s, int shift) {
+  return intset_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * intspan_scale_w(const Span * s, int width) {
+  return intspan_scale(s, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * intspan_shift_scale_w(const Span * s, int shift, int width) {
+  return intspan_shift_scale(s, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Span * intspan_shift_w(const Span * s, int shift) {
+  return intspan_shift(s, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * intspanset_scale_w(const SpanSet * ss, int width) {
+  return intspanset_scale(ss, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * intspanset_shift_scale_w(const SpanSet * ss, int shift, int width) {
+  return intspanset_shift_scale(ss, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+SpanSet * intspanset_shift_w(const SpanSet * ss, int shift) {
+  return intspanset_shift(ss, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4293,13 +4418,33 @@ TBox * tbox_round_w(const TBox * box, int maxdd) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tfloatbox_shift_scale_w(const TBox * box, double shift, double width, int hasshift, int haswidth) {
-  return tfloatbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
+TBox * tfloatbox_scale_value_w(const TBox * box, double width) {
+  return tfloatbox_scale_value(box, width);
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tintbox_shift_scale_w(const TBox * box, int shift, int width, int hasshift, int haswidth) {
-  return tintbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
+TBox * tfloatbox_shift_scale_value_w(const TBox * box, double shift, double width) {
+  return tfloatbox_shift_scale_value(box, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tfloatbox_shift_value_w(const TBox * box, double shift) {
+  return tfloatbox_shift_value(box, shift);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tintbox_scale_value_w(const TBox * box, int width) {
+  return tintbox_scale_value(box, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tintbox_shift_scale_value_w(const TBox * box, int shift, int width) {
+  return tintbox_shift_scale_value(box, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tintbox_shift_value_w(const TBox * box, int shift) {
+  return tintbox_shift_value(box, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4323,8 +4468,18 @@ TBox * tbigintbox_expand_w(const TBox * box, int64_t i) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-TBox * tbigintbox_shift_scale_w(const TBox * box, int64_t shift, int64_t width, int hasshift, int haswidth) {
-  return tbigintbox_shift_scale(box, shift, width, (bool) hasshift, (bool) haswidth);
+TBox * tbigintbox_scale_value_w(const TBox * box, int64_t width) {
+  return tbigintbox_scale_value(box, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tbigintbox_shift_scale_value_w(const TBox * box, int64_t shift, int64_t width) {
+  return tbigintbox_shift_scale_value(box, shift, width);
+}
+
+EMSCRIPTEN_KEEPALIVE
+TBox * tbigintbox_shift_value_w(const TBox * box, int64_t shift) {
+  return tbigintbox_shift_value(box, shift);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -4675,6 +4830,11 @@ Temporal * temporal_from_wkb_w(const uint8_t * wkb, size_t size) {
 EMSCRIPTEN_KEEPALIVE
 char * temporal_out_w(const Temporal * temp, int maxdd, size_t * size_out) {
   return temporal_out(temp, maxdd, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** temparr_out_w(const Temporal ** temparr, int count, int maxdd) {
+  return temparr_out(temparr, count, maxdd);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -5342,6 +5502,21 @@ double float_round_w(double d, int maxdd) {
 EMSCRIPTEN_KEEPALIVE
 Temporal ** temparr_round_w(const Temporal ** temparr, int count, int maxdd) {
   return temparr_round(temparr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal * temporal_occurrence_w(const Temporal * temp, long long ref, long long origin) {
+  return temporal_occurrence(temp, (TimestampTz) ref, (TimestampTz) origin);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Set * temporal_occurrence_origins_w(const Temporal * temp, long long ref, const Set * origins, const Span * s) {
+  return temporal_occurrence_origins(temp, (TimestampTz) ref, origins, s);
+}
+
+EMSCRIPTEN_KEEPALIVE
+Temporal ** temporal_occurrences_w(const Temporal * temp, long long ref, const Set * origins, const Span * s, TimestampTz ** occ_origins, int * count) {
+  return temporal_occurrences(temp, (TimestampTz) ref, origins, s, occ_origins, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -8048,6 +8223,16 @@ uint8_t * geo_as_ewkb_w(const GSERIALIZED * gs, const char * endian, size_t * si
 }
 
 EMSCRIPTEN_KEEPALIVE
+char ** geoarr_as_ewkt_w(const GSERIALIZED ** geoarr, int count, int precision) {
+  return geoarr_as_ewkt(geoarr, count, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** geoarr_as_text_w(const GSERIALIZED ** geoarr, int count, int precision) {
+  return geoarr_as_text(geoarr, count, precision);
+}
+
+EMSCRIPTEN_KEEPALIVE
 char * geo_as_ewkt_w(const GSERIALIZED * gs, int precision, size_t * size_out) {
   return geo_as_ewkt(gs, precision, size_out);
 }
@@ -9257,6 +9442,16 @@ char * tspatial_as_text_w(const Temporal * temp, int maxdd, size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char ** tspatialarr_as_ewkt_w(const Temporal ** temparr, int count, int maxdd) {
+  return tspatialarr_as_ewkt(temparr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** tspatialarr_as_text_w(const Temporal ** temparr, int count, int maxdd) {
+  return tspatialarr_as_text(temparr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 Temporal * tgeo_from_base_temp_w(const GSERIALIZED * gs, const Temporal * temp) {
   return tgeo_from_base_temp(gs, temp);
 }
@@ -9426,6 +9621,11 @@ GSERIALIZED * tgeo_end_value_w(const Temporal * temp) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+double tgeo_space_time_volume_w(const Temporal * temp, int spheroid) {
+  return tgeo_space_time_volume(temp, (bool) spheroid);
+}
+
+EMSCRIPTEN_KEEPALIVE
 GSERIALIZED * tgeo_start_value_w(const Temporal * temp) {
   return tgeo_start_value(temp);
 }
@@ -9499,6 +9699,11 @@ Temporal * tpoint_get_y_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * tpoint_get_z_w(const Temporal * temp) {
   return tpoint_get_z(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double * tpoint_coords_w(const Temporal * temp, double ** ycoords, double ** zcoords, TimestampTz ** times, int * count) {
+  return tpoint_coords(temp, ycoords, zcoords, times, count);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -10685,6 +10890,16 @@ char * cbuffer_as_text_w(const Cbuffer * cb, int maxdd, size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char ** cbufferarr_as_ewkt_w(const Cbuffer ** cbarr, int count, int maxdd) {
+  return cbufferarr_as_ewkt(cbarr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** cbufferarr_as_text_w(const Cbuffer ** cbarr, int count, int maxdd) {
+  return cbufferarr_as_text(cbarr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * cbuffer_as_wkb_w(const Cbuffer * cb, uint8_t variant, size_t * size_out) {
   return cbuffer_as_wkb(cb, variant, size_out);
 }
@@ -11034,6 +11249,11 @@ Set * tcbuffer_points_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Set * tcbuffer_radius_w(const Temporal * temp) {
   return tcbuffer_radius(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double tcbuffer_space_time_volume_w(const Temporal * temp) {
+  return tcbuffer_space_time_volume(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -13580,6 +13800,16 @@ char * npoint_as_hexwkb_w(const Npoint * np, uint8_t variant, size_t * size_out)
 EMSCRIPTEN_KEEPALIVE
 char * npoint_as_text_w(const Npoint * np, int maxdd, size_t * size_out) {
   return npoint_as_text(np, maxdd, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** npointarr_as_ewkt_w(const Npoint ** nparr, int count, int maxdd) {
+  return npointarr_as_ewkt(nparr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** npointarr_as_text_w(const Npoint ** nparr, int count, int maxdd) {
+  return npointarr_as_text(nparr, count, maxdd);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -16131,6 +16361,16 @@ char * pose_as_text_w(const Pose * pose, int maxdd, size_t * size_out) {
 }
 
 EMSCRIPTEN_KEEPALIVE
+char ** posearr_as_ewkt_w(const Pose ** posearr, int count, int maxdd) {
+  return posearr_as_ewkt(posearr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** posearr_as_text_w(const Pose ** posearr, int count, int maxdd) {
+  return posearr_as_text(posearr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
 uint8_t * pose_as_wkb_w(const Pose * pose, uint8_t variant, size_t * size_out) {
   return pose_as_wkb(pose, variant, size_out);
 }
@@ -16919,6 +17159,16 @@ char * posechain_out_w(const PoseChain * pc, int maxdd, size_t * size_out) {
 EMSCRIPTEN_KEEPALIVE
 char * posechain_as_text_w(const PoseChain * pc, int maxdd, size_t * size_out) {
   return posechain_as_text(pc, maxdd, size_out);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** posechainarr_as_ewkt_w(const PoseChain ** posechainarr, int count, int maxdd) {
+  return posechainarr_as_ewkt(posechainarr, count, maxdd);
+}
+
+EMSCRIPTEN_KEEPALIVE
+char ** posechainarr_as_text_w(const PoseChain ** posechainarr, int count, int maxdd) {
+  return posechainarr_as_text(posechainarr, count, maxdd);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -18984,6 +19234,11 @@ Temporal * trgeometry_pitch_w(const Temporal * temp) {
 EMSCRIPTEN_KEEPALIVE
 Temporal * trgeometry_roll_w(const Temporal * temp) {
   return trgeometry_roll(temp);
+}
+
+EMSCRIPTEN_KEEPALIVE
+double trgeometry_space_time_volume_w(const Temporal * temp) {
+  return trgeometry_space_time_volume(temp);
 }
 
 EMSCRIPTEN_KEEPALIVE
