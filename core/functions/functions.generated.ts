@@ -88,6 +88,20 @@ export function meos_free(ptr: Ptr): void {
 	call<void>('meos_free', null, [ptrArgType()], [ptrArgVal(ptr)]);
 }
 
+/**
+ * A copy of `bytes` in the WASM heap, at least one byte long, freed with
+ * `meos_free`: `_malloc`, the allocator `meos_free` and MEOS share, then a copy
+ * through HEAPU8.
+ */
+export function heapCopy(bytes: Uint8Array): Ptr {
+	const mod = getModule();
+	const ptr = Number(mod._malloc(BigInt(Math.max(bytes.length, 1))));
+	if (!ptr) throw new RangeError('the WASM heap cannot hold ' + bytes.length + ' more bytes');
+	// Read the heap after the allocation: a growth during it replaces the view
+	mod.HEAPU8.set(bytes, ptr);
+	return ptr;
+}
+
 const UTF8 = new TextDecoder();
 
 /**
@@ -102,7 +116,7 @@ const UTF8 = new TextDecoder();
 export function readString(write: (sizeOut: Ptr) => Ptr): string {
 	const mod = getModule();
 	// size_t is 8 bytes in wasm64
-	const sizeOut: Ptr = mod.allocate(new Uint8Array(8), mod.ALLOC_NORMAL) as Ptr;
+	const sizeOut: Ptr = heapCopy(new Uint8Array(8));
 	let str: Ptr = 0;
 	try {
 		str = write(sizeOut);
@@ -141,7 +155,7 @@ export interface TimetzParts { microseconds: bigint; offsetSeconds: number; }
 /** Calls `fill` with a slot of `bytes` bytes MEOS writes, reads it, frees it. */
 function withSlot<T>(bytes: number, fill: (slot: Ptr) => void, read: (v: DataView) => T): T {
 	const mod = getModule();
-	const slot: Ptr = mod.allocate(new Uint8Array(bytes), mod.ALLOC_NORMAL) as Ptr;
+	const slot: Ptr = heapCopy(new Uint8Array(bytes));
 	try {
 		fill(slot);
 		// Read the heap after the call: a growth during it replaces the view

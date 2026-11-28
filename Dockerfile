@@ -387,7 +387,8 @@ RUN mkdir -p /app/wasm \
         -o /app/wasm/meos.js \
         -s MODULARIZE=1 \
         -s EXPORT_NAME="createMeosModule" \
-        -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","UTF8ToString","allocate","ALLOC_NORMAL","HEAPU8"]' \
+        -s EXPORTED_FUNCTIONS='["_malloc"]' \
+        -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","UTF8ToString","HEAPU8"]' \
         -s ALLOW_MEMORY_GROWTH=1 \
         -s STACK_SIZE=8MB \
         -s ENVIRONMENT='web,node' \

@@ -27,7 +27,7 @@
  *
  *****************************************************************************/
 
-import type { Ptr } from './functions.generated.js';
+import { heapCopy, type Ptr } from './functions.generated.js';
 import { getModule } from '../runtime/meos.js';
 
 /**
@@ -36,12 +36,12 @@ import { getModule } from '../runtime/meos.js';
  * `write(sizeOut)` receives the address of a `size_t` the writer fills with the
  * length of the buffer it returns. The bytes are copied out of the WASM heap
  * into a `Uint8Array` the caller owns, and both the size slot and the MEOS
- * buffer are freed with `_meos_free`, the allocator `allocate()` and MEOS share.
+ * buffer are freed with `_meos_free`, the allocator `heapCopy` and MEOS share.
  */
 export function readWkb(write: (sizeOut: Ptr) => Ptr): Uint8Array {
 	const mod = getModule();
 	// size_t is 8 bytes in wasm64
-	const sizeOut: Ptr = mod.allocate(new Uint8Array(8), mod.ALLOC_NORMAL) as Ptr;
+	const sizeOut: Ptr = heapCopy(new Uint8Array(8));
 	let wkb: Ptr = 0;
 	try {
 		wkb = write(sizeOut);
@@ -63,7 +63,7 @@ export function readWkb(write: (sizeOut: Ptr) => Ptr): Uint8Array {
  */
 export function withWkb<T>(wkb: Uint8Array, read: (ptr: Ptr, size: bigint) => T): T {
 	const mod = getModule();
-	const ptr: Ptr = mod.allocate(wkb, mod.ALLOC_NORMAL) as Ptr;
+	const ptr: Ptr = heapCopy(wkb);
 	try {
 		return read(ptr, BigInt(wkb.length));
 	} finally {

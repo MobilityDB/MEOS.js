@@ -1966,8 +1966,7 @@ function _byte(ptr: Ptr, offset: number): number {
 
 /** \`size\` zeroed bytes of the WASM heap, freed with _free. */
 function _alloc(size: number): Ptr {
-	const mod = getModule();
-	return mod.allocate(new Uint8Array(size), mod.ALLOC_NORMAL) as Ptr;
+	return F.heapCopy(new Uint8Array(size));
 }
 
 /** Frees memory MEOS or _alloc allocated. */
@@ -1980,8 +1979,7 @@ function _ptrArray(ptrs: Ptr[]): Ptr {
 	const bytes = new Uint8Array(Math.max(ptrs.length, 1) * 8);
 	const view = new DataView(bytes.buffer);
 	ptrs.forEach((p, i) => view.setBigUint64(i * 8, BigInt(p), true));
-	const mod = getModule();
-	return mod.allocate(bytes, mod.ALLOC_NORMAL) as Ptr;
+	return F.heapCopy(bytes);
 }
 
 /** The caller's bytes copied into the heap, freed with _free. */

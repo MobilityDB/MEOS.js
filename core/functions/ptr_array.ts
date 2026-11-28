@@ -1,17 +1,14 @@
-import type { Ptr } from './functions.generated.js';
+import { heapCopy, type Ptr } from './functions.generated.js';
 import { getModule } from '../runtime/meos.js';
 
 /**
  * Builds a temporary wasm64 pointer array, calls `fn(arrPtr, count)`,
  * then frees the array.
  *
- * Uses Module.allocate() (which calls _malloc and copies bytes via HEAPU8),
- * writing each Ptr as a 64-bit little-endian value. The buffer is freed with
- * _meos_free (which calls libc free, same allocator as _malloc).
- *
- * This approach requires no extra C helpers in the WASM binary — only the
- * `allocate` / `ALLOC_NORMAL` / `_meos_free` exports that the module already
- * provides.
+ * The array is copied into the heap by heapCopy (_malloc, then a copy through
+ * HEAPU8), each Ptr a 64-bit little-endian value, and freed with _meos_free
+ * (libc free, the allocator of _malloc). It needs no C helper in the WASM
+ * binary, only the `_malloc` and `_meos_free` exports.
  */
 export function withPtrArray<T>(ptrs: Ptr[], fn: (arr: Ptr, count: number) => T): T {
 	const mod = getModule();
@@ -23,8 +20,7 @@ export function withPtrArray<T>(ptrs: Ptr[], fn: (arr: Ptr, count: number) => T)
 		view.setBigUint64(i * 8, BigInt(ptrs[i]), /* littleEndian */ true);
 	}
 
-	// allocate() copies bytes into WASM heap via HEAPU8 and returns a Number pointer
-	const arrPtr: Ptr = mod.allocate(bytes, mod.ALLOC_NORMAL) as Ptr;
+	const arrPtr: Ptr = heapCopy(bytes);
 	try {
 		return fn(arrPtr, ptrs.length);
 	} finally {
