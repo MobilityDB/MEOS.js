@@ -901,9 +901,19 @@ export class BigIntSet extends Set {
 		return F.same_rid_bigintset_tnpoint(this.ptr, temp.ptr);
 	}
 
+	/** MEOS: bigintset_scale */
+	scale(width: bigint): this {
+		return wrapSet(F.bigintset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: bigintset_shift */
+	shift(shift: bigint): this {
+		return wrapSet(F.bigintset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: bigintset_shift_scale */
-	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
-		return wrapSet(F.bigintset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: bigint, width: bigint): this {
+		return wrapSet(F.bigintset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: bigintset_start_value */
@@ -1491,9 +1501,19 @@ export class BigIntSpan extends Span {
 		return wrapSpanSet(F.union_bigint_span(i, this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: bigintspan_scale */
+	scale(width: bigint): this {
+		return wrapSpan(F.bigintspan_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: bigintspan_shift */
+	shift(shift: bigint): this {
+		return wrapSpan(F.bigintspan_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: bigintspan_shift_scale */
-	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpan(F.bigintspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: bigint, width: bigint): this {
+		return wrapSpan(F.bigintspan_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: bigintspan_to_floatspan */
@@ -2236,9 +2256,19 @@ export class BigIntSpanSet extends SpanSet {
 		return wrapSpanSetOrNull(F.union_bigint_spanset(i, this.ptr)) as this | null;
 	}
 
+	/** MEOS: bigintspanset_scale */
+	scale(width: bigint): this {
+		return wrapSpanSet(F.bigintspanset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: bigintspanset_shift */
+	shift(shift: bigint): this {
+		return wrapSpanSet(F.bigintspanset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: bigintspanset_shift_scale */
-	shiftScale(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: bigint, width: bigint): this {
+		return wrapSpanSet(F.bigintspanset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: spanset_span, which answers a BigIntSpan for a BigIntSpanSet */
@@ -2951,6 +2981,11 @@ export class DateSet extends Set {
 		return super.minus(d as Set);
 	}
 
+	/** MEOS: dateset_origins */
+	origins(zone: string): Set {
+		return wrapSet(F.dateset_origins(this.ptr, zone)) as Set;
+	}
+
 	/** MEOS: overafter_set_date */
 	overafter(d: DateADT): boolean {
 		return F.overafter_set_date(this.ptr, d);
@@ -3001,9 +3036,19 @@ export class DateSet extends Set {
 		return wrapSetOrNull(F.union_date_set(d, this.ptr)) as this | null;
 	}
 
+	/** MEOS: dateset_scale */
+	scale(width: number): this {
+		return wrapSet(F.dateset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: dateset_shift */
+	shift(shift: number): this {
+		return wrapSet(F.dateset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: dateset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSet(F.dateset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSet(F.dateset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: dateset_start_value */
@@ -3247,9 +3292,19 @@ export class DateSpan extends Span {
 		return wrapSpanSet(F.union_date_span(d, this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: datespan_scale */
+	scale(width: number): this {
+		return wrapSpan(F.datespan_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: datespan_shift */
+	shift(shift: number): this {
+		return wrapSpan(F.datespan_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: datespan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpan(F.datespan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpan(F.datespan_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: span_to_spanset, which answers a DateSpanSet for a DateSpan */
@@ -3498,9 +3553,19 @@ export class DateSpanSet extends SpanSet {
 		return wrapSpanSetOrNull(F.union_date_spanset(d, this.ptr)) as this | null;
 	}
 
+	/** MEOS: datespanset_scale */
+	scale(width: number): this {
+		return wrapSpanSet(F.datespanset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: datespanset_shift */
+	shift(shift: number): this {
+		return wrapSpanSet(F.datespanset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: datespanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpanSet(F.datespanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpanSet(F.datespanset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: spanset_span, which answers a DateSpan for a DateSpanSet */
@@ -3724,9 +3789,19 @@ export class FloatSet extends Set {
 		return wrapSetOrNull(F.union_float_set(d, this.ptr)) as this | null;
 	}
 
+	/** MEOS: floatset_scale */
+	scale(width: number): this {
+		return wrapSet(F.floatset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: floatset_shift */
+	shift(shift: number): this {
+		return wrapSet(F.floatset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: floatset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSet(F.floatset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSet(F.floatset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: floatset_start_value */
@@ -4022,9 +4097,19 @@ export class FloatSpan extends Span {
 		return wrapSpanSet(F.union_float_span(d, this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: floatspan_scale */
+	scale(width: number): this {
+		return wrapSpan(F.floatspan_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: floatspan_shift */
+	shift(shift: number): this {
+		return wrapSpan(F.floatspan_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: floatspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpan(F.floatspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpan(F.floatspan_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: floatspan_to_bigintspan */
@@ -4300,9 +4385,19 @@ export class FloatSpanSet extends SpanSet {
 		return wrapSpanSetOrNull(F.union_float_spanset(d, this.ptr)) as this | null;
 	}
 
+	/** MEOS: floatspanset_scale */
+	scale(width: number): this {
+		return wrapSpanSet(F.floatspanset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: floatspanset_shift */
+	shift(shift: number): this {
+		return wrapSpanSet(F.floatspanset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: floatspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpanSet(F.floatspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpanSet(F.floatspanset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: spanset_span, which answers a FloatSpan for a FloatSpanSet */
@@ -6453,9 +6548,19 @@ export class IntSet extends Set {
 		return wrapSetOrNull(F.union_int_set(i, this.ptr)) as this | null;
 	}
 
+	/** MEOS: intset_scale */
+	scale(width: number): this {
+		return wrapSet(F.intset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: intset_shift */
+	shift(shift: number): this {
+		return wrapSet(F.intset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: intset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSet(F.intset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSet(F.intset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: intset_start_value */
@@ -6726,9 +6831,19 @@ export class IntSpan extends Span {
 		return wrapSpanSet(F.union_int_span(i, this.ptr)) as SpanSet;
 	}
 
+	/** MEOS: intspan_scale */
+	scale(width: number): this {
+		return wrapSpan(F.intspan_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: intspan_shift */
+	shift(shift: number): this {
+		return wrapSpan(F.intspan_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: intspan_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpan(F.intspan_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpan(F.intspan_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: intspan_to_bigintspan */
@@ -6979,9 +7094,19 @@ export class IntSpanSet extends SpanSet {
 		return wrapSpanSetOrNull(F.union_int_spanset(i, this.ptr)) as this | null;
 	}
 
+	/** MEOS: intspanset_scale */
+	scale(width: number): this {
+		return wrapSpanSet(F.intspanset_scale(this.ptr, width)) as this;
+	}
+
+	/** MEOS: intspanset_shift */
+	shift(shift: number): this {
+		return wrapSpanSet(F.intspanset_shift(this.ptr, shift)) as this;
+	}
+
 	/** MEOS: intspanset_shift_scale */
-	shiftScale(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapSpanSet(F.intspanset_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	shiftScale(shift: number, width: number): this {
+		return wrapSpanSet(F.intspanset_shift_scale(this.ptr, shift, width)) as this;
 	}
 
 	/** MEOS: spanset_span, which answers a IntSpan for a IntSpanSet */
@@ -13812,6 +13937,41 @@ export class Temporal extends MeosObject {
 		return F.temporal_num_timestamps(this.ptr);
 	}
 
+	/** MEOS: temporal_occurrence */
+	occurrence(ref: TimestampTz, origin: TimestampTz): this {
+		return wrapTemporal(F.temporal_occurrence(this.ptr, ref, origin)) as this;
+	}
+
+	/** MEOS: temporal_occurrence_origins */
+	occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): Set | null {
+		return wrapSetOrNull(F.temporal_occurrence_origins(this.ptr, ref, origins.ptr, s.ptr)) as Set | null;
+	}
+
+	/** MEOS: temporal_occurrences */
+	occurrences(ref: TimestampTz, origins: Set, s: Span): [Temporal[], TimestampTz[]] {
+		const _occ_origins = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.temporal_occurrences(this.ptr, ref, origins.ptr, s.ptr, _occ_origins, _count);
+			if (!_a0) return [[], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_occ_origins, 8).getBigUint64(0, true));
+			try {
+				const _o0: Temporal[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(wrapTemporal(Number(_v.getBigUint64(_i * 8, true))) as Temporal); }
+				const _o1: TimestampTz[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getBigInt64(_i * 8, true)); }
+				return [_o0, _o1];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+			}
+		} finally {
+			_free(_occ_origins);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: overafter_temporal_tstzspan */
 	overafter(s: TsTzSpan): boolean {
 		return F.overafter_temporal_tstzspan(this.ptr, s.ptr);
@@ -15153,6 +15313,11 @@ export class TBigInt extends TNumber {
 		throw new TypeError(`TBigInt.nad: no overload takes these arguments`);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TBigInt */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: add_bigint_tbigint */
 	radd(i: bigint): this {
 		return wrapTemporal(F.add_bigint_tbigint(i, this.ptr)) as this;
@@ -15870,6 +16035,11 @@ export class TBool extends TAlpha {
 	/** MEOS: tbool_minus_value */
 	minusValue(b: boolean): this | null {
 		return wrapTemporalOrNull(F.tbool_minus_value(this.ptr, b)) as this | null;
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TBool */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: always_eq_bool_tbool */
@@ -16614,19 +16784,19 @@ export class TBox extends Box {
 		}
 	}
 
-	/** MEOS: tbigintbox_shift_scale */
-	shiftScaleBigint(shift: bigint, width: bigint, hasshift: boolean, haswidth: boolean): this {
-		return wrapTBox(F.tbigintbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	/** MEOS: tbigintbox_scale_value */
+	scaleValueBigint(width: bigint): this {
+		return wrapTBox(F.tbigintbox_scale_value(this.ptr, width)) as this;
 	}
 
-	/** MEOS: tfloatbox_shift_scale */
-	shiftScaleFloat(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapTBox(F.tfloatbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	/** MEOS: tfloatbox_scale_value */
+	scaleValueFloat(width: number): this {
+		return wrapTBox(F.tfloatbox_scale_value(this.ptr, width)) as this;
 	}
 
-	/** MEOS: tintbox_shift_scale */
-	shiftScaleInt(shift: number, width: number, hasshift: boolean, haswidth: boolean): this {
-		return wrapTBox(F.tintbox_shift_scale(this.ptr, shift, width, hasshift, haswidth)) as this;
+	/** MEOS: tintbox_scale_value */
+	scaleValueInt(width: number): this {
+		return wrapTBox(F.tintbox_scale_value(this.ptr, width)) as this;
 	}
 
 	/** MEOS: tbox_shift_scale_time */
@@ -16641,6 +16811,21 @@ export class TBox extends Box {
 		}
 	}
 
+	/** MEOS: tbigintbox_shift_scale_value */
+	shiftScaleValueBigint(shift: bigint, width: bigint): this {
+		return wrapTBox(F.tbigintbox_shift_scale_value(this.ptr, shift, width)) as this;
+	}
+
+	/** MEOS: tfloatbox_shift_scale_value */
+	shiftScaleValueFloat(shift: number, width: number): this {
+		return wrapTBox(F.tfloatbox_shift_scale_value(this.ptr, shift, width)) as this;
+	}
+
+	/** MEOS: tintbox_shift_scale_value */
+	shiftScaleValueInt(shift: number, width: number): this {
+		return wrapTBox(F.tintbox_shift_scale_value(this.ptr, shift, width)) as this;
+	}
+
 	/** MEOS: tbox_shift_time */
 	shiftTime(shift: Interval): this {
 		const _shift = _putInterval(shift);
@@ -16649,6 +16834,21 @@ export class TBox extends Box {
 		} finally {
 			_free(_shift);
 		}
+	}
+
+	/** MEOS: tbigintbox_shift_value */
+	shiftValueBigint(shift: bigint): this {
+		return wrapTBox(F.tbigintbox_shift_value(this.ptr, shift)) as this;
+	}
+
+	/** MEOS: tfloatbox_shift_value */
+	shiftValueFloat(shift: number): this {
+		return wrapTBox(F.tfloatbox_shift_value(this.ptr, shift)) as this;
+	}
+
+	/** MEOS: tintbox_shift_value */
+	shiftValueInt(shift: number): this {
+		return wrapTBox(F.tintbox_shift_value(this.ptr, shift)) as this;
 	}
 
 	/** MEOS: tbox_sortkey */
@@ -18079,6 +18279,11 @@ export class TCBuffer extends TSpatial {
 		throw new TypeError(`TCBuffer.nai: no overload takes these arguments`);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TCBuffer */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: tcbuffer_points */
 	points(): Set {
 		return wrapSet(F.tcbuffer_points(this.ptr)) as Set;
@@ -18105,6 +18310,11 @@ export class TCBuffer extends TSpatial {
 		if (cb instanceof TCBuffer) return this._shortestline_tcbuffer_tcbuffer(cb as TCBuffer);
 		if (cb instanceof CBuffer) return this._shortestline_tcbuffer_cbuffer(cb as CBuffer);
 		throw new TypeError(`TCBuffer.shortestline: no overload takes these arguments`);
+	}
+
+	/** MEOS: tcbuffer_space_time_volume */
+	spaceTimeVolume(): number {
+		return F.tcbuffer_space_time_volume(this.ptr);
 	}
 
 	/** MEOS: tcbuffer_start_value */
@@ -18758,6 +18968,11 @@ export class TFloat extends TNumber {
 		if (d instanceof TBox) return this._nad_tfloat_tbox(d as TBox);
 		if (typeof d === 'number') return this._nad_tfloat_float(d as number);
 		throw new TypeError(`TFloat.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TFloat */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: add_float_tfloat */
@@ -19969,6 +20184,11 @@ export class TGeo extends TSpatial {
 		}
 	}
 
+	/** MEOS: tgeo_space_time_volume */
+	spaceTimeVolume(spheroid: boolean): number {
+		return F.tgeo_space_time_volume(this.ptr, spheroid);
+	}
+
 	/** MEOS: tgeo_split_each_n_stboxes */
 	splitEachNStboxes(elem_count: number): STBox[] {
 		const _count = _alloc(4);
@@ -20229,6 +20449,43 @@ export class TPoint extends TGeo {
 		return wrapTemporalOrNull(F.bearing_tpoint_point(this.ptr, gs.ptr)) as Temporal | null;
 	}
 
+	/** MEOS: tpoint_coords */
+	coords(): [number[], number[], number[], TimestampTz[]] {
+		const _ycoords = _alloc(8);
+		const _zcoords = _alloc(8);
+		const _times = _alloc(8);
+		const _count = _alloc(4);
+		try {
+			const _a0 = F.tpoint_coords(this.ptr, _ycoords, _zcoords, _times, _count);
+			if (!_a0) return [[], [], [], []];
+			const _n = _view(_count, 4).getInt32(0, true);
+			const _a1 = Number(_view(_ycoords, 8).getBigUint64(0, true));
+			const _a2 = Number(_view(_zcoords, 8).getBigUint64(0, true));
+			const _a3 = Number(_view(_times, 8).getBigUint64(0, true));
+			try {
+				const _o0: number[] = [];
+				if (_a0) { const _arr = _a0; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o0.push(_v.getFloat64(_i * 8, true)); }
+				const _o1: number[] = [];
+				if (_a1) { const _arr = _a1; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o1.push(_v.getFloat64(_i * 8, true)); }
+				const _o2: number[] = [];
+				if (_a2) { const _arr = _a2; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o2.push(_v.getFloat64(_i * 8, true)); }
+				const _o3: TimestampTz[] = [];
+				if (_a3) { const _arr = _a3; const _v = _view(_arr, _n * 8); for (let _i = 0; _i < _n; _i++) _o3.push(_v.getBigInt64(_i * 8, true)); }
+				return [_o0, _o1, _o2, _o3];
+			} finally {
+				if (_a0) _free(_a0);
+				if (_a1) _free(_a1);
+				if (_a2) _free(_a2);
+				if (_a3) _free(_a3);
+			}
+		} finally {
+			_free(_ycoords);
+			_free(_zcoords);
+			_free(_times);
+			_free(_count);
+		}
+	}
+
 	/** MEOS: tpoint_cumulative_length */
 	cumulativeLength(spheroid: boolean): Temporal {
 		return wrapTemporal(F.tpoint_cumulative_length(this.ptr, spheroid)) as Temporal;
@@ -20403,6 +20660,11 @@ export class TGeogPoint extends TPoint {
 			_free(_cells);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TGeogPoint */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: tgeogpoint_quadbin_split */
@@ -20691,6 +20953,11 @@ export class TGeography extends TGeo {
 		return super.endValue() as Geography;
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TGeography */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geography for a TGeography */
 	override shortestline(gs: Geo | TGeo, spheroid: boolean): Geography | null {
 		return super.shortestline(gs, spheroid) as Geography | null;
@@ -20964,6 +21231,11 @@ export class TGeomPoint extends TPoint {
 			_free(_cells);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TGeomPoint */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: tgeompoint_quadbin_split */
@@ -21404,6 +21676,11 @@ export class TGeometry extends TGeo {
 		if (gs instanceof TGeometry) return this._etouches_tgeo_tgeo(gs as TGeometry);
 		if (gs instanceof Geometry) return this._etouches_tgeo_geo(gs as Geometry);
 		throw new TypeError(`TGeometry.etouches: no overload takes these arguments`);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TGeometry */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: shortestline_tgeo_geo, shortestline_tgeo_tgeo, which answers a Geometry for a TGeometry */
@@ -21847,6 +22124,11 @@ export class TH3Index extends TCellIndex {
 	/** MEOS: th3index_minus_value */
 	minusValue(cell: H3Index): this | null {
 		return wrapTemporalOrNull(F.th3index_minus_value(this.ptr, cell.value)) as this | null;
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TH3Index */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: always_eq_h3index_th3index */
@@ -22414,6 +22696,11 @@ export class TInt extends TNumber {
 		if (i instanceof TBox) return this._nad_tint_tbox(i as TBox);
 		if (typeof i === 'number') return this._nad_tint_int(i as number);
 		throw new TypeError(`TInt.nad: no overload takes these arguments`);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TInt */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: add_int_tint */
@@ -23277,6 +23564,11 @@ export class TJsonb extends TAlpha {
 		return wrapTemporalOrNull(F.tjsonb_object_field_text(this.ptr, key, F.nullhandletype_from_string(null_handle))) as Temporal | null;
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TJsonb */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: tjsonb_path_exists */
 	pathExists(jp: JsonPath, vars: Jsonb, silent: boolean, tz: boolean): Temporal | null {
 		return wrapTemporalOrNull(F.tjsonb_path_exists(this.ptr, jp.ptr, vars.ptr, silent, tz)) as Temporal | null;
@@ -23921,6 +24213,11 @@ export class TNPoint extends TSpatial {
 		if (gs instanceof TNPoint) return this._nai_tnpoint_tnpoint(gs as TNPoint);
 		if (gs instanceof NPoint) return this._nai_tnpoint_npoint(gs as NPoint);
 		throw new TypeError(`TNPoint.nai: no overload takes these arguments`);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TNPoint */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: overlaps_rid_tnpoint_bigintset, overlaps_rid_tnpoint_tnpoint, chosen by the arguments' types */
@@ -25026,6 +25323,11 @@ export class TPCPatch extends TSpatial {
 		return F.tpcpatch_npoints(this.ptr);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TPCPatch */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: tpcpatch_pcid */
 	pcid(): number {
 		return F.tpcpatch_pcid(this.ptr);
@@ -25445,6 +25747,11 @@ export class TPCPoint extends TSpatial {
 	/** MEOS: nad_tpcpoint_geo */
 	nad(gs: Geo): number {
 		return F.nad_tpcpoint_geo(this.ptr, gs.ptr);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TPCPoint */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: tpcpoint_pcid */
@@ -25978,6 +26285,11 @@ export class TPose extends TSpatial {
 		throw new TypeError(`TPose.nai: no overload takes these arguments`);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TPose */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: tpose_pitch */
 	pitch(): Temporal | null {
 		return wrapTemporalOrNull(F.tpose_pitch(this.ptr)) as Temporal | null;
@@ -26469,6 +26781,11 @@ export class TPoseChain extends TSpatial {
 		return F.tposechain_num_poses(this.ptr);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TPoseChain */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: tposechain_rotate */
 	rotate(angle: number, x0: number, y0: number): this {
 		return wrapTemporal(F.tposechain_rotate(this.ptr, angle, x0, y0)) as this;
@@ -26953,6 +27270,11 @@ export class TQuadbin extends TCellIndex {
 	/** MEOS: tquadbin_minus_value */
 	minusValue(cell: Quadbin): this | null {
 		return wrapTemporalOrNull(F.tquadbin_minus_value(this.ptr, cell.value)) as this | null;
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TQuadbin */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: always_eq_quadbin_tquadbin */
@@ -27736,6 +28058,11 @@ export class TRGeometry extends TSpatial {
 		throw new TypeError(`TRGeometry.nai: no overload takes these arguments`);
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TRGeometry */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: trgeometry_pitch */
 	pitch(): Temporal | null {
 		return wrapTemporalOrNull(F.trgeometry_pitch(this.ptr)) as Temporal | null;
@@ -27819,6 +28146,11 @@ export class TRGeometry extends TSpatial {
 			_free(_duration);
 			_free(_count);
 		}
+	}
+
+	/** MEOS: trgeometry_space_time_volume */
+	spaceTimeVolume(): number {
+		return F.trgeometry_space_time_volume(this.ptr);
 	}
 
 	/** MEOS: trgeometry_speed */
@@ -28359,6 +28691,11 @@ export class TS2Cell extends TCellIndex {
 		return wrapTemporalOrNull(F.ts2cell_minus_value(this.ptr, cell.value)) as this | null;
 	}
 
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TS2Cell */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
+	}
+
 	/** MEOS: always_eq_s2cell_ts2cell */
 	ralwaysEq(cell: S2Cell): number {
 		return F.always_eq_s2cell_ts2cell(cell.value, this.ptr);
@@ -28895,6 +29232,11 @@ export class TText extends TAlpha {
 	/** MEOS: ttext_min_value */
 	minValue(): string {
 		return F.ttext_min_value(this.ptr);
+	}
+
+	/** MEOS: temporal_occurrence_origins, which answers a TsTzSet for a TText */
+	override occurrenceOrigins(ref: TimestampTz, origins: Set, s: Span): TsTzSet | null {
+		return super.occurrenceOrigins(ref, origins, s) as TsTzSet | null;
 	}
 
 	/** MEOS: temporal_segm_duration, which answers a TBool for a TText */

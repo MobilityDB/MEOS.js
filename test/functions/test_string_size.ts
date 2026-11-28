@@ -28,7 +28,7 @@ describe('a string read for the size MEOS writes', () => {
 	});
 
 	it('takes no argument for a function whose only parameter is the size', () => {
-		assert.match(meos_version(), /^MobilityDB/);
+		assert.match(meos_version(), /^MEOS /);
 	});
 
 	it('writes the size of a hex WKB where the size_t it writes fits', () => {
