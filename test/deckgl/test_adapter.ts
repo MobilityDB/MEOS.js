@@ -94,6 +94,20 @@ describe('tgeompointToTrips - instant', () => {
 	});
 });
 
+describe('tgeompointToTrips - coordinates against MF-JSON', () => {
+	// A source answering MF-JSON alone, the path the adapter takes for it
+	const mfjsonOnly = (t: TGeomPoint) => ({
+		asMFJSON: (b?: boolean, f?: number, p?: number, s?: string | null) => t.asMFJSON(b, f, p, s),
+	});
+	const DISCRETE = `SRID=4326;{POINT(4.35 50.85)@${T0}, POINT(4.36 50.86)@${T1}}`;
+	for (const [name, wkt] of [['instant', INST], ['sequence', SEQ], ['sequence set', SEQSET], ['discrete sequence', DISCRETE]]) {
+		it(`answers the trips of a ${name} its MF-JSON gives`, () => {
+			using t = TGeomPoint.fromString(wkt);
+			assert.deepEqual(tgeompointToTrips(t), tgeompointToTrips(mfjsonOnly(t)));
+		});
+	}
+});
+
 describe('tgeompointsToTrips - shared clock', () => {
 	it('aligns multiple trips on one origin and reports the range', () => {
 		using a = TGeomPoint.fromString(SEQ); // 09:00 → 09:10

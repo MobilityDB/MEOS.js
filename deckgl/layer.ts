@@ -16,6 +16,7 @@ import {
 	type Trip,
 	type TripCollection,
 	type ToTripsOptions,
+	type CoordsSource,
 	type MfjsonSource,
 } from './adapter.js';
 
@@ -52,7 +53,7 @@ export function tripsLayer(
  * directly — this convenience discards that metadata.
  */
 export function tripsLayerFromTGeompoints(
-	tgeompoints: MfjsonSource[],
+	tgeompoints: (CoordsSource | MfjsonSource)[],
 	props: MobilityTripsLayerProps = {},
 	options: ToTripsOptions = {}
 ): TripsLayer<Trip> {

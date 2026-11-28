@@ -1,4 +1,5 @@
-import { Temporal, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
+import { Temporal, TInterpolation, temporalFromBinary, temporalFromHexWKB } from '../../temporal/Temporal.js';
+import { TGeomPoint as GeneratedTGeomPoint, TPoint as GeneratedTPoint } from '../../../objects/objects.generated.js';
 import type { Ptr, TimestampTz } from '../../../functions/functions.generated.js';
 import { readWkb } from '../../../functions/wkb.js';
 import {
@@ -77,6 +78,7 @@ import {
 	bearing_tpoint_point,
 	bearing_point_tpoint,
 	bearing_tpoint_tpoint,
+	timestamptz_to_unix_us,
 } from '../../../functions/functions.generated.js';
 import type { TFloat } from '../tfloat/TFloat.js';
 import type { TBool } from '../tbool/TBool.js';
@@ -393,6 +395,25 @@ export class TGeomPoint extends Temporal<string> {
 		const wkt = geo_as_text(gs, 15);
 		meos_free(gs);
 		return wkt;
+	}
+
+	/**
+	 * The x and y coordinates and the timestamps, in Unix milliseconds, of the
+	 * instants of each sequence, as MEOS answers them for the sequence: the
+	 * sequences of a continuous value one by one, and an instant or a discrete
+	 * sequence, which has no sequences, whole.
+	 * MEOS: temporal_sequences, tpoint_coords
+	 */
+	sequenceCoords(): { x: number[]; y: number[]; ms: number[] }[] {
+		const whole = new GeneratedTGeomPoint(this._inner);
+		const interp = this.interpolation();
+		if (interp === TInterpolation.None || interp === TInterpolation.Discrete) return [coordsOf(whole)];
+		const sequences = whole.sequences();
+		try {
+			return sequences.map(seq => coordsOf(seq as GeneratedTPoint));
+		} finally {
+			for (const seq of sequences) seq.free();
+		}
 	}
 
 	/**
@@ -823,4 +844,10 @@ export class TGeomPoint extends Temporal<string> {
 	naiTemporal(other: TGeomPoint): Ptr {
 		return nai_tgeo_tgeo(this._inner, other.inner, true);
 	}
+}
+
+/** The coordinates of the instants of a temporal point and their timestamps in Unix milliseconds. */
+function coordsOf(t: GeneratedTPoint): { x: number[]; y: number[]; ms: number[] } {
+	const [x, y, , times] = t.coords();
+	return { x, y, ms: times.map(ts => Number(timestamptz_to_unix_us(ts)) / 1000) };
 }
