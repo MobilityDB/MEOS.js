@@ -170,7 +170,7 @@ describe('BigIntSpanSet - Comparisons', () => {
 describe('BigIntSpanSet - shiftScale', () => {
 	it('shift only', () => {
 		const ss = BigIntSpanSet.fromText('{[1, 5), [8, 12)}');
-		const r = ss.shiftScale(10n, 0n, true, false);
+		const r = ss.shift(10n);
 		assert.equal(r.lower(), 11n);
 		ss.free();
 		r.free();
@@ -178,7 +178,7 @@ describe('BigIntSpanSet - shiftScale', () => {
 
 	it('scale only: width adjusts', () => {
 		const ss = BigIntSpanSet.fromText('{[0, 10)}');
-		const r = ss.shiftScale(0n, 20n, false, true);
+		const r = ss.scale(20n);
 		assert.equal(r.lower(), 0n);
 		assert.equal(r.width(), 21n); // BigInt half-open: width 20 → span [0, 21)
 		ss.free();

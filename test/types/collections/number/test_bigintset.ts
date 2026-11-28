@@ -200,7 +200,7 @@ describe('BigIntSet - Comparisons', () => {
 describe('BigIntSet - shiftScale', () => {
 	it('shift only: all elements shift by 10', () => {
 		const s = BigIntSet.fromText('{1, 3, 7}');
-		const r = s.shiftScale(10n, 0n, true, false);
+		const r = s.shift(10n);
 		assert.equal(r.startValue(), 11n);
 		assert.equal(r.endValue(), 17n);
 		s.free();
@@ -209,7 +209,7 @@ describe('BigIntSet - shiftScale', () => {
 
 	it('scale only: elements are scaled', () => {
 		const s = BigIntSet.fromText('{0, 10}');
-		const r = s.shiftScale(0n, 20n, false, true);
+		const r = s.scale(20n);
 		assert.equal(r.startValue(), 0n);
 		assert.equal(r.endValue(), 21n); // BigInt spans +1 for half-open: bounding [0,11)→[0,22) → last element 21
 		s.free();

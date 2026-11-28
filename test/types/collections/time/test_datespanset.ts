@@ -417,7 +417,7 @@ describe('DateSpanSet - Conversions', () => {
 describe('DateSpanSet - shiftScale', () => {
 	it('shift by 10 days moves spanset forward', () => {
 		const ss = DateSpanSet.fromText('{[2000-01-01, 2000-01-11)}');
-		const shifted = ss.shiftScale(10, 0, true, false);
+		const shifted = ss.shift(10);
 		assert.equal(shifted.toString(), '{[2000-01-11, 2000-01-21)}');
 		ss.free();
 		shifted.free();

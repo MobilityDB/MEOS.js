@@ -282,7 +282,7 @@ describe('generated object layer: members answering their receiver type', () => 
 		assert.ok(e instanceof IntSpan);
 		assert.equal(e!.lower(), 0);
 		assert.equal(e!.upper(), 6);
-		using moved = s.shiftScale(10, 0, true, false);
+		using moved = s.shift(10);
 		assert.equal(moved.lower(), 11);
 	});
 });

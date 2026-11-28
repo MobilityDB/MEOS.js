@@ -415,7 +415,7 @@ describe('IntSpanSet - Comparisons', () => {
 describe('IntSpanSet - Math methods', () => {
 	it('shiftScale shifts spanset forward', () => {
 		const ss = IntSpanSet.fromText('{[1, 5)}');
-		const shifted = ss.shiftScale(2, 0, true, false);
+		const shifted = ss.shift(2);
 		assert.equal(shifted.lower(), 3);
 		assert.equal(shifted.upper(), 7);
 		ss.free();

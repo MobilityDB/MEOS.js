@@ -282,7 +282,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 
 	it('shift only: lower moves by shift amount', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(10n, 0n, true, false);
+		const r = s.shift(10n);
 		assert.equal(r.lower(), 11n);
 		assert.equal(r.upper(), 15n);
 		s.free();
@@ -291,7 +291,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 
 	it('scale only: width is adjusted', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(0n, 8n, false, true);
+		const r = s.scale(8n);
 		assert.equal(r.lower(), 1n);
 		assert.equal(r.width(), 9n);
 		s.free();
@@ -300,7 +300,7 @@ describe('BigIntSpan - expand / shiftScale', () => {
 
 	it('shift and scale together', () => {
 		const s = BigIntSpan.fromText('[1, 5)');
-		const r = s.shiftScale(10n, 8n, true, true);
+		const r = s.shiftScale(10n, 8n);
 		assert.equal(r.lower(), 11n);
 		assert.equal(r.width(), 9n);
 		s.free();

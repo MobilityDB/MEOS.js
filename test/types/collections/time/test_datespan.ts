@@ -245,7 +245,7 @@ describe('DateSpan - Comparisons', () => {
 describe('DateSpan - shiftScale', () => {
 	it('shift only: lower moves by shift days', () => {
 		const s = DateSpan.make(D0, D10);  // [2000-01-01, 2000-01-11)
-		const r = s.shiftScale(10, 0, true, false);
+		const r = s.shift(10);
 		assert.equal(r.lower(), 10);  // D10
 		assert.equal(r.upper(), 20);  // D20
 		s.free();
@@ -254,7 +254,7 @@ describe('DateSpan - shiftScale', () => {
 
 	it('scale only: width is adjusted', () => {
 		const s = DateSpan.make(D0, D10);
-		const r = s.shiftScale(0, 20, false, true);
+		const r = s.scale(20);
 		assert.equal(r.lower(), D0);
 		assert.equal(r.upper(), 21);
 		s.free();
@@ -263,7 +263,7 @@ describe('DateSpan - shiftScale', () => {
 
 	it('shift and scale together', () => {
 		const s = DateSpan.make(D0, D10);
-		const r = s.shiftScale(10, 20, true, true);
+		const r = s.shiftScale(10, 20);
 		assert.equal(r.lower(), 10);
 		assert.equal(r.upper(), 31);
 		s.free();
