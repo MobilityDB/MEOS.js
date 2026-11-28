@@ -4,6 +4,7 @@
 
 export { initMeos, getModule } from './runtime/meos.js';
 export * from './functions/errors.js';
+export { MEOSJS_VERSION, meosjs_version, meosjs_full_version } from './functions/version.js';
 // The collections and the boxes are the generated object layer's (codegen/ObjectGenerator.ts).
 export {
 	Set, Span, SpanSet, TBox, STBox,
